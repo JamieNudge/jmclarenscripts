@@ -15,7 +15,7 @@ export default function Home() {
       <section className="relative z-10 pt-20 pb-12 px-4">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-6xl md:text-8xl font-bold text-white mb-6 tracking-tight">
-            Jamie's Portfolio
+            Jamie&apos;s Portfolio
           </h1>
           <p className="text-xl md:text-2xl text-white/90 mb-4 max-w-2xl mx-auto">
             Crafting innovative mobile & desktop experiences
