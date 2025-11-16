@@ -1,0 +1,71 @@
+import { App } from '@/types/app';
+
+// ADD YOUR APP DATA HERE!
+export const apps: App[] = [
+  {
+    id: 'draw-with-friends',
+    name: 'Draw With Friends',
+    tagline: 'Real-time collaborative drawing',
+    description: 'A fun, interactive iOS app where friends can draw together in real-time. Features include turn-based and simultaneous drawing modes, echo effects, and photo backgrounds.',
+    color: '#FF6B9D',
+    icon: '/images/draw-with-friends-icon.png',
+    screenshots: [
+      '/images/draw-with-friends-1.png',
+      '/images/draw-with-friends-2.png',
+      '/images/draw-with-friends-3.png',
+    ],
+    features: [
+      'Real-time collaboration',
+      'Turn-based & simultaneous modes',
+      'Echo drawing effects',
+      'Photo backgrounds',
+      'Room-based sessions',
+    ],
+    appStoreUrl: 'https://apps.apple.com/your-app',
+    platform: 'iOS',
+    status: 'live',
+  },
+  {
+    id: 'desktop-totem',
+    name: 'Desktop Totem',
+    tagline: 'Your most-used files, ranked',
+    description: 'A beautiful macOS app that displays your most frequently accessed files and apps as a customizable totem pole on your desktop.',
+    color: '#8B4513',
+    icon: '/images/desktop-totem-icon.png',
+    screenshots: [
+      '/images/desktop-totem-1.png',
+    ],
+    features: [
+      'Real usage tracking',
+      'Beautiful totem pole UI',
+      'Always-on-top mode',
+      'Smart filtering',
+      'One-click file access',
+    ],
+    platform: 'macOS',
+    status: 'beta',
+  },
+  {
+    id: 'nudgetronic',
+    name: 'Nudgetronic',
+    tagline: 'Screen time management done right',
+    description: 'Take control of your digital wellbeing with smart app blocking, grace periods, and auto-end timers.',
+    color: '#4A90E2',
+    icon: '/images/nudgetronic-icon.png',
+    screenshots: [
+      '/images/nudgetronic-1.png',
+      '/images/nudgetronic-2.png',
+    ],
+    features: [
+      'Full-screen shields',
+      '2-minute grace periods',
+      'Auto-end timers',
+      'Web domain blocking',
+      'Category-based limits',
+    ],
+    appStoreUrl: 'https://apps.apple.com/your-app',
+    platform: 'iOS',
+    status: 'live',
+  },
+];
+
