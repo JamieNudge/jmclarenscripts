@@ -12,7 +12,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500">
       {/* Hero section */}
-      <section className="relative z-10 pt-20 pb-12 px-4">
+      <section className="relative z-10 pt-8 pb-6 px-4">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-6xl md:text-8xl font-bold text-white mb-6 tracking-tight">
             Jamie&apos;s Portfolio
