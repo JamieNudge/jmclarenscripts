@@ -73,7 +73,7 @@ export default function Home() {
             Bluesky
           </a>
           <a
-            href="https://github.com/yourhandle"
+            href="https://github.com/JamieNudge"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-white transition-colors"
