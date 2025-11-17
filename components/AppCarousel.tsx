@@ -117,40 +117,53 @@ export default function AppCarousel({ apps, onAppSelect }: AppCarouselProps) {
                     isCenter ? 'ring-4 ring-white/30' : ''
                   }`}
                   style={{
-                    backgroundColor: app.color,
-                    backgroundImage: `linear-gradient(135deg, ${app.color} 0%, ${app.color}dd 100%)`,
+                    backgroundColor: '#1a1a1a',
                   }}
                 >
-                  {/* Phone mockup frame */}
-                  <div className="relative w-full h-full p-4 flex flex-col items-center justify-center">
-                    {/* Status bar area */}
-                    <div className="absolute top-8 left-1/2 -translate-x-1/2 w-32 h-6 bg-black rounded-full" />
+                  {/* Phone mockup with screenshot */}
+                  <div className="relative w-full h-full">
+                    {/* Status bar notch */}
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-8 bg-black rounded-b-3xl z-20" />
                     
-                    {/* App icon */}
-                    <div className="w-24 h-24 bg-white rounded-3xl shadow-lg flex items-center justify-center mb-6">
-                      <span className="text-4xl">{app.name[0]}</span>
-                    </div>
+                    {/* Screenshot as background */}
+                    {app.screenshots[0] ? (
+                      <img
+                        src={app.screenshots[0]}
+                        alt={app.name}
+                        className="absolute inset-0 w-full h-full object-cover"
+                      />
+                    ) : (
+                      // Fallback if no screenshot
+                      <div
+                        className="absolute inset-0 flex items-center justify-center"
+                        style={{
+                          backgroundImage: `linear-gradient(135deg, ${app.color} 0%, ${app.color}dd 100%)`,
+                        }}
+                      >
+                        <div className="text-center">
+                          <div className="w-24 h-24 bg-white rounded-3xl shadow-lg flex items-center justify-center mb-6 mx-auto">
+                            <span className="text-4xl">{app.name[0]}</span>
+                          </div>
+                          <h3 className="text-white text-xl font-bold px-4">
+                            {app.name}
+                          </h3>
+                        </div>
+                      </div>
+                    )}
 
-                    {/* App name */}
-                    <h3 className="text-white text-2xl font-bold mb-2 text-center px-4">
-                      {app.name}
-                    </h3>
-
-                    {/* Tagline */}
-                    <p className="text-white/90 text-sm text-center px-6 mb-4">
-                      {app.tagline}
-                    </p>
-
-                    {/* Platform badge */}
-                    <div className="px-4 py-2 bg-white/20 rounded-full backdrop-blur-sm">
-                      <span className="text-white text-xs font-semibold">
-                        {app.platform}
-                      </span>
+                    {/* App name overlay at bottom */}
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/60 to-transparent p-6 pt-12">
+                      <h3 className="text-white text-xl font-bold mb-1">
+                        {app.name}
+                      </h3>
+                      <p className="text-white/80 text-xs">
+                        {app.tagline}
+                      </p>
                     </div>
 
                     {/* Status badge */}
-                    <div className="absolute bottom-6 right-6">
-                      <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                    <div className="absolute top-12 right-4 z-20">
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold shadow-lg ${
                         app.status === 'live' ? 'bg-green-400 text-green-900' :
                         app.status === 'beta' ? 'bg-yellow-400 text-yellow-900' :
                         'bg-purple-400 text-purple-900'
