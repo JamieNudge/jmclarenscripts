@@ -82,7 +82,7 @@ export default function Home() {
           </a>
         </div>
         <p className="mt-8 text-sm">
-          © {new Date().getFullYear()} Jamie. All rights reserved.
+          © {new Date().getFullYear()} Jamie McLaren. All rights reserved.
         </p>
       </footer>
 
