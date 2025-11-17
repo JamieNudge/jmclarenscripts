@@ -70,7 +70,7 @@ export default function Home() {
             rel="noopener noreferrer"
             className="hover:text-white transition-colors"
           >
-            <BlueskyIcon />
+            <Bluesky/>
           </a>
           <a
             href="https://github.com/yourhandle"
