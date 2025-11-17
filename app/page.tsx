@@ -59,7 +59,7 @@ export default function Home() {
         <p className="mb-4">Want to collaborate or learn more?</p>
         <div className="flex gap-6 justify-center">
           <a
-            href="mailto:your.email@example.com"
+            href="mailto:jmclarenscripts@gmail.com"
             className="hover:text-white transition-colors"
           >
             Email
