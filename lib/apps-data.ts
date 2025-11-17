@@ -147,5 +147,27 @@ export const apps: App[] = [
     platform: 'iOS',
     status: 'live',
   },
+  {
+    id: 'doomscroll-stopper',
+    name: 'Doomscroll Stopper',
+    tagline: 'Break the scroll, reclaim your time',
+    description: 'Stop endless scrolling with intelligent app blocking and mindful usage reminders. Take back control of your digital habits.',
+    color: '#E91E63',
+    icon: '/images/doomscroll-stopper-icon.png',
+    screenshots: [
+      '/images/doomscroll-stopper-1.png',
+      '/images/doomscroll-stopper-2.png',
+    ],
+    features: [
+      'Smart scroll detection',
+      'Usage time limits',
+      'Break reminders',
+      'App blocking',
+      'Daily insights',
+    ],
+    appStoreUrl: 'https://apps.apple.com/your-app',
+    platform: 'iOS',
+    status: 'live',
+  },
 ];
 
