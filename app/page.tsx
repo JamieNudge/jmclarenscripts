@@ -65,7 +65,7 @@ export default function Home() {
             Email
           </a>
           <a
-            href="https://twitter.com/yourhandle"
+            href="https://bsky.app/profile/jmclaren.bsky.social"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-white transition-colors"
