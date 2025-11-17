@@ -26,10 +26,10 @@ export const apps: App[] = [
     status: 'live',
   },
   {
-    id: 'desktop-totem',
-    name: 'Desktop Totem',
-    tagline: 'Your most-used files, ranked',
-    description: 'A beautiful macOS app that displays your most frequently accessed files and apps as a customizable totem pole on your desktop.',
+    id: 'aikido-vocabulary-app',
+    name: 'Aikido Vocabulary App',
+    tagline: 'Japanese Language Trainer for students of Aikido',
+    description: 'A Japanese language learning app for students of Aikido, designed to help them learn the vocabulary and phrases used in Aikido.',
     color: '#8B4513',
     icon: '/images/desktop-totem-icon.png',
     screenshots: [
