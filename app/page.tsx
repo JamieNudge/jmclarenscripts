@@ -22,6 +22,43 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Quick Access Thumbnails */}
+      <section className="relative z-10 py-6 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
+            {apps.map((app) => (
+              <button
+                key={`thumb-${app.id}`}
+                onClick={() => setSelectedApp(app)}
+                className="group flex-shrink-0 relative"
+              >
+                <div className="w-20 h-20 rounded-2xl overflow-hidden bg-white/10 backdrop-blur-sm border-2 border-white/20 hover:border-white/50 transition-all duration-300 hover:scale-110">
+                  {app.screenshots[0] ? (
+                    <img
+                      src={app.screenshots[0]}
+                      alt={app.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div
+                      className="w-full h-full flex items-center justify-center text-white font-bold text-2xl"
+                      style={{ backgroundColor: app.color }}
+                    >
+                      {app.name[0]}
+                    </div>
+                  )}
+                </div>
+                <div className="text-center mt-2">
+                  <p className="text-xs text-white/70 group-hover:text-white transition-colors truncate max-w-[80px]">
+                    {app.name}
+                  </p>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Apps Grid */}
       <section className="relative z-10 py-8 px-4">
         <div className="max-w-6xl mx-auto">
