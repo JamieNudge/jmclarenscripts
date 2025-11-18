@@ -17,7 +17,7 @@ export default function Home() {
             Jamie&apos;s Portfolio
           </h1>
           <p className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto">
-            Crafting innovative mobile & desktop experiences
+            iOS & macOS Developer — Real Apps, Built with a Mix of Logic, Curiosity and AI-Assisted Development
           </p>
         </div>
       </section>
