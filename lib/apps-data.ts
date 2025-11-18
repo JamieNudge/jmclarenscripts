@@ -143,7 +143,7 @@ export const apps: App[] = [
       'Web domain blocking',
       'Category-based limits',
     ],
-    appStoreUrl: 'https://apps.apple.com/your-app',
+    appStoreUrl: 'https://apps.apple.com/gb/app/nudgetronic/id6752445547',
     platform: 'iOS',
     status: 'live',
   },
