@@ -9,7 +9,7 @@ export default function Home() {
   const [selectedApp, setSelectedApp] = useState<App | null>(null);
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-[#1f2937] to-[#4b5563]">
+    <main className="min-h-screen bg-gradient-to-b from-[#111827] to-[#1f2937]">
       {/* Hero section */}
       <section className="relative z-10 pt-12 pb-8 px-4">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-center gap-8">
