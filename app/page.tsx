@@ -28,12 +28,14 @@ export default function Home() {
       </section>
 
       {/* 3D Carousel */}
-      <section className="relative z-10 py-8">
-        <AppCarousel apps={apps} onAppSelect={setSelectedApp} />
+      <section className="relative z-10 py-12">
+        <div className="min-h-[600px] flex items-center justify-center">
+          <AppCarousel apps={apps} onAppSelect={setSelectedApp} />
+        </div>
       </section>
 
       {/* Stats section */}
-      <section className="relative z-20 py-16 px-4 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500">
+      <section className="relative z-10 py-16 px-4">
         <div className="max-w-4xl mx-auto grid grid-cols-3 gap-8 text-center">
           <div>
             <div className="text-5xl font-bold text-white mb-2">{apps.length}</div>
@@ -55,7 +57,7 @@ export default function Home() {
       </section>
 
       {/* Contact/Footer */}
-      <footer className="relative z-20 py-12 px-4 text-center text-white/60 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500">
+      <footer className="relative z-10 py-12 px-4 text-center text-white/60">
         <p className="mb-4">Want to collaborate or learn more?</p>
         <div className="flex gap-6 justify-center">
           <a
