@@ -33,9 +33,9 @@ export default function Home() {
                 className="group flex-shrink-0 relative"
               >
                 <div className="w-20 h-20 rounded-2xl overflow-hidden bg-white/10 backdrop-blur-sm border-2 border-white/20 hover:border-white/50 transition-all duration-300 hover:scale-110">
-                  {app.screenshots[0] ? (
+                  {app.icon ? (
                     <img
-                      src={app.screenshots[0]}
+                      src={app.icon}
                       alt={app.name}
                       className="w-full h-full object-cover"
                     />
