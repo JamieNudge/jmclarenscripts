@@ -28,8 +28,10 @@ export default function Home() {
       </section>
 
       {/* 3D Carousel */}
-      <section className="relative z-10">
-        <AppCarousel apps={apps} onAppSelect={setSelectedApp} />
+      <section className="relative z-10 py-12">
+        <div className="min-h-[600px] flex items-center justify-center">
+          <AppCarousel apps={apps} onAppSelect={setSelectedApp} />
+        </div>
       </section>
 
       {/* Stats section */}
