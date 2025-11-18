@@ -165,7 +165,7 @@ export const apps: App[] = [
       'App blocking',
       'Daily insights',
     ],
-    appStoreUrl: 'https://apps.apple.com/your-app',
+    appStoreUrl: 'https://apps.apple.com/gb/app/doomscroll-stopper/id6754539688',
     platform: 'iOS',
     status: 'live',
   },
