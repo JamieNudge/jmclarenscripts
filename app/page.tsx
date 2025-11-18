@@ -55,6 +55,26 @@ export default function Home() {
                 </div>
               </button>
             ))}
+            
+            {/* Call to Action Thumbnail */}
+            <a
+              href="mailto:jmclarenscripts@gmail.com"
+              className="group flex-shrink-0 relative"
+            >
+              <div className="w-20 h-20 rounded-2xl overflow-hidden bg-gradient-to-br from-yellow-400 to-orange-500 border-2 border-yellow-300/50 hover:border-yellow-300 transition-all duration-300 hover:scale-110 flex items-center justify-center">
+                <div className="text-center p-2">
+                  <div className="text-2xl mb-1">✨</div>
+                  <div className="text-[10px] font-bold text-white leading-tight">
+                    Your App!
+                  </div>
+                </div>
+              </div>
+              <div className="text-center mt-2">
+                <p className="text-xs text-white/70 group-hover:text-white transition-colors truncate max-w-[80px]">
+                  Let&apos;s build
+                </p>
+              </div>
+            </a>
           </div>
         </div>
       </section>
