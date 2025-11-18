@@ -14,7 +14,7 @@ export default function Home() {
       <section className="relative z-10 pt-12 pb-8 px-4">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-center gap-8">
           {/* Hero image on the left */}
-          <div className="w-40 h-40 md:w-56 md:h-56 rounded-3xl overflow-hidden shadow-2xl border border-white/20 bg-white/10">
+          <div className="w-28 h-28 md:w-40 md:h-40 rounded-3xl overflow-hidden shadow-2xl border border-white/20 bg-white/10">
             <img
               src="/images/hero.png"
               alt="Jamie presenting app work"
