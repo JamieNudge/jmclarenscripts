@@ -12,13 +12,25 @@ export default function Home() {
     <main className="min-h-screen bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500">
       {/* Hero section */}
       <section className="relative z-10 pt-12 pb-8 px-4">
-        <div className="max-w-6xl mx-auto text-center">
-          <h1 className="text-5xl md:text-7xl font-bold text-white mb-4 tracking-tight">
-            Jamie&apos;s Portfolio
-          </h1>
-          <p className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto">
-            iOS & macOS Developer — Real Apps, Built with a Mix of Logic, Curiosity and AI-Assisted Development
-          </p>
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-center gap-8">
+          {/* Hero image on the left */}
+          <div className="w-40 h-40 md:w-56 md:h-56 rounded-3xl overflow-hidden shadow-2xl border border-white/20 bg-white/10">
+            <img
+              src="/images/hero.png"
+              alt="Jamie presenting app work"
+              className="w-full h-full object-cover"
+            />
+          </div>
+
+          {/* Heading and tagline */}
+          <div className="text-center md:text-left">
+            <h1 className="text-5xl md:text-7xl font-bold text-white mb-4 tracking-tight">
+              Jamie&apos;s Portfolio
+            </h1>
+            <p className="text-lg md:text-xl text-white/80 max-w-2xl">
+              iOS & macOS Developer — Real Apps, Built with a Mix of Logic, Curiosity and AI-Assisted Development
+            </p>
+          </div>
         </div>
       </section>
 
