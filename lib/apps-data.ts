@@ -31,7 +31,7 @@ export const apps: App[] = [
     tagline: 'Japanese Language Trainer for students of Aikido',
     description: 'A Japanese language learning app for students of Aikido, designed to help them learn the vocabulary and phrases used in Aikido.',
     color: '#8B4513',
-    icon: '/images/desktop-totem-icon.png',
+    icon: '/images/aikido-vocabulary-icon.png',
     screenshots: [
       '/images/desktop-totem-1.png',
     ],
