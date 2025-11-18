@@ -28,7 +28,7 @@ export default function Home() {
       </section>
 
       {/* 3D Carousel */}
-      <section className="relative z-50 py-12 mb-40">
+      <section className="relative z-50 py-12 mb-40 min-h-[700px] flex items-center justify-center">
         <AppCarousel apps={apps} onAppSelect={setSelectedApp} />
       </section>
 
