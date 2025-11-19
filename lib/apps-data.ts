@@ -31,7 +31,8 @@ export const apps: App[] = [
     tagline: 'Japanese Language Trainer for students of Aikido',
     description:
       'A focused Japanese vocabulary trainer for Aikido students. Learn key dojo phrases, technique names and etiquette terms with simple drills you can run between classes.',
-    color: '#8B4513',
+    // Use a calm indigo/blue that matches the iOS-style screenshots better than brown
+    color: '#2563EB',
     icon: '/images/aikido-vocabulary-icon.png',
     screenshots: [
       '/images/aikido-vocab-1.png',
