@@ -9,6 +9,7 @@ export interface App {
   features: string[];
   appStoreUrl?: string;
   websiteUrl?: string;
+  privacyUrl?: string;
   platform: 'iOS' | 'macOS' | 'Web' | 'Cross-platform';
   status: 'live' | 'beta' | 'coming-soon';
 }

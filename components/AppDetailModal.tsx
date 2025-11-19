@@ -134,6 +134,14 @@ export default function AppDetailModal({ app, onClose }: AppDetailModalProps) {
                   Visit Website
                 </a>
               )}
+              {app.privacyUrl && (
+                <a
+                  href={app.privacyUrl}
+                  className="px-8 py-4 border border-gray-300 dark:border-gray-700 rounded-full font-semibold text-gray-900 dark:text-white bg-white/80 dark:bg-gray-900/60 hover:bg-white dark:hover:bg-gray-800 transition-colors"
+                >
+                  Privacy Policy
+                </a>
+              )}
             </div>
           </div>
         </motion.div>
