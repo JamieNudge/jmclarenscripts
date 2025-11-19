@@ -93,7 +93,7 @@ export default function AppDetailModal({ app, onClose }: AppDetailModalProps) {
               </ul>
             </section>
 
-            {/* Screenshots placeholder */}
+            {/* Screenshots */}
             {app.screenshots.length > 0 && (
               <section className="mb-8">
                 <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Screenshots</h3>
@@ -101,10 +101,13 @@ export default function AppDetailModal({ app, onClose }: AppDetailModalProps) {
                   {app.screenshots.map((screenshot, index) => (
                     <div
                       key={index}
-                      className="flex-shrink-0 w-64 h-96 bg-gray-200 dark:bg-gray-800 rounded-2xl flex items-center justify-center"
+                      className="flex-shrink-0 w-64 h-96 bg-gray-200 dark:bg-gray-800 rounded-2xl overflow-hidden border border-gray-200/50 dark:border-gray-700/60"
                     >
-                      <span className="text-gray-400">Screenshot {index + 1}</span>
-                      {/* Add your actual images here */}
+                      <img
+                        src={screenshot}
+                        alt={`${app.name} screenshot ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                   ))}
                 </div>

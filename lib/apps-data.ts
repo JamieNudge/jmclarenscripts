@@ -34,7 +34,10 @@ export const apps: App[] = [
     color: '#8B4513',
     icon: '/images/aikido-vocabulary-icon.png',
     screenshots: [
-      '/images/desktop-totem-1.png',
+      '/images/aikido-vocab-1.png',
+      '/images/aikido-vocab-2.png',
+      '/images/aikido-vocab-3.png',
+      '/images/aikido-vocab-4.png',
     ],
     features: [
       'Curated Aikido dojo vocabulary',
