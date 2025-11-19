@@ -16,7 +16,7 @@ export default function AikidoVocabularyPrivacyPage() {
             href="/"
             className="inline-flex items-center gap-2 text-sm text-white/80 hover:text-white rounded-full bg-white/10 px-4 py-2 border border-white/20 hover:bg-white/15 transition-colors"
           >
-            <span className="text-lg leading-none">×</span>
+            <span className="text-lg leading-none">←</span>
             <span>Back to portfolio</span>
           </a>
         </div>
