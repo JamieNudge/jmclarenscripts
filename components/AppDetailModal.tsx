@@ -145,6 +145,14 @@ export default function AppDetailModal({ app, onClose }: AppDetailModalProps) {
                   Privacy Policy
                 </a>
               )}
+              {app.contentRatingUrl && (
+                <a
+                  href={app.contentRatingUrl}
+                  className="px-8 py-4 border border-gray-300/70 dark:border-gray-700/70 rounded-full font-semibold text-gray-900 dark:text-white bg-transparent hover:bg-white/10 dark:hover:bg-white/5 transition-colors"
+                >
+                  Age &amp; Content Rating
+                </a>
+              )}
             </div>
           </div>
         </motion.div>

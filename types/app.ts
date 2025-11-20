@@ -10,6 +10,7 @@ export interface App {
   appStoreUrl?: string;
   websiteUrl?: string;
   privacyUrl?: string;
+  contentRatingUrl?: string;
   platform: 'iOS' | 'macOS' | 'Web' | 'Cross-platform';
   status: 'live' | 'beta' | 'coming-soon';
 }

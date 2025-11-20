@@ -50,6 +50,7 @@ export const apps: App[] = [
     platform: 'iOS',
     status: 'beta',
     privacyUrl: '/privacy/aikido-vocabulary',
+    contentRatingUrl: '/aikido-vocabulary/content-rating',
   },
   {
     id: 'desktop-totem',
