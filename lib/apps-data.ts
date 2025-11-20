@@ -161,7 +161,8 @@ export const apps: App[] = [
     name: 'Doomscroll Stopper',
     tagline: 'Break the scroll, reclaim your time',
     description: 'Stop endless scrolling with intelligent app blocking and mindful usage reminders. Take back control of your digital habits.',
-    color: '#E91E63',
+    // Warm orange that matches the app's highlight colour better than pink
+    color: '#F97316',
     icon: '/images/doomscroll-stopper-icon.png',
     screenshots: [
       '/images/doomscroll-stopper-1.png',
