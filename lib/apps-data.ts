@@ -35,6 +35,8 @@ export const apps: App[] = [
     color: '#2563EB',
     icon: '/images/aikido-vocabulary-icon.png',
     screenshots: [
+      // First screenshot is used for the card; use the new main shot there
+      '/images/aikido-vocab-main.png',
       '/images/aikido-vocab-1.png',
       '/images/aikido-vocab-2.png',
       '/images/aikido-vocab-3.png',
