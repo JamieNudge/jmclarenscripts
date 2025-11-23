@@ -72,6 +72,7 @@ export const apps: App[] = [
     ],
     platform: 'macOS',
     status: 'beta',
+    privacyUrl: '/privacy/desktop-totem',
     accessibilityUrl: '/accessibility/desktop-totem',
   },
   {
