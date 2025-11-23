@@ -46,8 +46,16 @@ export default function AppDetailModal({ app, onClose }: AppDetailModalProps) {
               background: `linear-gradient(135deg, ${app.color} 0%, ${app.color}dd 100%)`,
             }}
           >
-            <div className="w-24 h-24 bg-white rounded-3xl shadow-2xl flex items-center justify-center mb-4">
-              <span className="text-5xl">{app.name[0]}</span>
+            <div className="w-24 h-24 bg-white rounded-3xl shadow-2xl flex items-center justify-center mb-4 overflow-hidden">
+              {app.icon ? (
+                <img
+                  src={app.icon}
+                  alt={`${app.name} icon`}
+                  className="w-full h-full object-contain"
+                />
+              ) : (
+                <span className="text-5xl">{app.name[0]}</span>
+              )}
             </div>
             <h2 className="text-4xl font-bold mb-2">{app.name}</h2>
             <p className="text-xl text-white/90">{app.tagline}</p>
@@ -151,6 +159,14 @@ export default function AppDetailModal({ app, onClose }: AppDetailModalProps) {
                   className="px-8 py-4 border border-gray-300/70 dark:border-gray-700/70 rounded-full font-semibold text-gray-900 dark:text-white bg-transparent hover:bg-white/10 dark:hover:bg-white/5 transition-colors"
                 >
                   Age &amp; Content Rating
+                </a>
+              )}
+              {app.accessibilityUrl && (
+                <a
+                  href={app.accessibilityUrl}
+                  className="px-8 py-4 border border-gray-300/70 dark:border-gray-700/70 rounded-full font-semibold text-gray-900 dark:text-white bg-transparent hover:bg-white/10 dark:hover:bg-white/5 transition-colors"
+                >
+                  Accessibility
                 </a>
               )}
             </div>

@@ -11,6 +11,7 @@ export interface App {
   websiteUrl?: string;
   privacyUrl?: string;
   contentRatingUrl?: string;
+  accessibilityUrl?: string;
   platform: 'iOS' | 'macOS' | 'Web' | 'Cross-platform';
   status: 'live' | 'beta' | 'coming-soon';
 }
