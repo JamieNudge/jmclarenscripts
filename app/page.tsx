@@ -107,7 +107,9 @@ export default function Home() {
                     <img
                       src={app.screenshots[0]}
                       alt={app.name}
-                      className="w-full h-full object-cover"
+                      className={`w-full h-full ${
+                        app.platform === 'macOS' ? 'object-contain' : 'object-cover'
+                      }`}
                     />
                   ) : (
                     <div
@@ -121,7 +123,6 @@ export default function Home() {
                       </div>
                     </div>
                   )}
-                  
                   {/* Status Badge */}
                   <div className="absolute top-3 right-3">
                     <span className={`px-3 py-1 rounded-full text-xs font-bold shadow-lg ${
