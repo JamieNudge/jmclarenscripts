@@ -10,26 +10,26 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#111827] to-[#1f2937]">
-      {/* Hero section */}
-      <section className="relative z-10 pt-12 pb-8 px-4">
-        <div className="max-w-6xl mx-auto">
-          {/* Hero image - full width */}
-          <div className="w-full max-w-3xl mx-auto rounded-3xl overflow-hidden shadow-2xl border border-white/20 bg-white/10 mb-8">
-            <img
-              src="/images/hero.png"
-              alt="Jamie - iOS Developer"
-              className="w-full h-auto"
-            />
-          </div>
-
-          {/* Heading and tagline */}
-          <div className="text-center">
-            <h1 className="text-5xl md:text-7xl font-bold text-white mb-4 tracking-tight">
-              Jamie&apos;s Portfolio
-            </h1>
-            <p className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto">
-              iOS & macOS Developer — Real Apps, Built with a Mix of Logic, Curiosity and AI-Assisted Development
-            </p>
+      {/* Hero section - full bleed with text overlay */}
+      <section className="relative z-10 w-full">
+        {/* Hero image - no borders, blends into page */}
+        <div className="relative w-full">
+          <img
+            src="/images/hero.png"
+            alt="Jamie - iOS Developer"
+            className="w-full h-auto"
+          />
+          
+          {/* Text overlay on the right side (over code background) */}
+          <div className="absolute inset-0 flex items-center justify-end px-6 md:px-12 lg:px-16">
+            <div className="text-right max-w-lg lg:max-w-xl">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-3 md:mb-4 tracking-tight drop-shadow-2xl">
+                Jamie&apos;s Portfolio
+              </h1>
+              <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white drop-shadow-lg">
+                iOS & macOS Developer — Real Apps, Built with a Mix of Logic, Curiosity and AI-Assisted Development
+              </p>
+            </div>
           </div>
         </div>
       </section>
