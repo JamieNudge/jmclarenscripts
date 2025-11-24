@@ -12,12 +12,12 @@ export default function Home() {
     <main className="min-h-screen bg-gradient-to-b from-[#111827] to-[#1f2937]">
       {/* Hero section - code background with circular headshot and text on left */}
       <section className="relative z-10 w-full bg-[#1a1f2e] py-12 md:py-16">
-        {/* Code background image */}
+        {/* Code background image - positioned to show only code (right side) */}
         <div className="absolute inset-0 opacity-50">
           <img
             src="/images/hero.png"
             alt="Code background"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover object-right"
           />
         </div>
         
