@@ -12,21 +12,21 @@ export default function Home() {
     <main className="min-h-screen bg-gradient-to-b from-[#111827] to-[#1f2937]">
       {/* Hero section - full bleed with text overlay */}
       <section className="relative z-10 w-full">
-        {/* Hero image - no borders, blends into page */}
-        <div className="relative w-full">
+        {/* Hero image - constrained height on desktop */}
+        <div className="relative w-full max-h-[300px] md:max-h-[400px] overflow-hidden">
           <img
             src="/images/hero.png"
             alt="Jamie - iOS Developer"
-            className="w-full h-auto"
+            className="w-full h-auto object-cover"
           />
           
-          {/* Text overlay on the right side (over code background) */}
-          <div className="absolute inset-0 flex items-center justify-end px-6 md:px-12 lg:px-16">
-            <div className="text-right max-w-lg lg:max-w-xl">
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-3 md:mb-4 tracking-tight drop-shadow-2xl">
+          {/* Text overlay - positioned lower on mobile, right side on desktop */}
+          <div className="absolute inset-0 flex items-end md:items-center justify-center md:justify-end px-6 pb-8 md:pb-0 md:px-12 lg:px-16">
+            <div className="text-center md:text-right max-w-lg lg:max-w-xl">
+              <h1 className="text-3xl sm:text-4xl md:text-4xl lg:text-5xl font-bold text-white mb-2 md:mb-3 tracking-tight drop-shadow-2xl">
                 Jamie&apos;s Portfolio
               </h1>
-              <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white drop-shadow-lg">
+              <p className="text-xs sm:text-sm md:text-base lg:text-lg text-white drop-shadow-lg">
                 iOS & macOS Developer — Real Apps, Built with a Mix of Logic, Curiosity and AI-Assisted Development
               </p>
             </div>
