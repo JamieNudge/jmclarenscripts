@@ -109,12 +109,12 @@ export default function AppDetailModal({ app, onClose }: AppDetailModalProps) {
                   {app.screenshots.map((screenshot, index) => (
                     <div
                       key={index}
-                      className="flex-shrink-0 w-64 h-96 bg-gray-200 dark:bg-gray-800 rounded-2xl overflow-hidden border border-gray-200/50 dark:border-gray-700/60"
+                      className="flex-shrink-0 w-64 h-96 bg-gray-200 dark:bg-gray-800 rounded-2xl overflow-hidden border border-gray-200/50 dark:border-gray-700/60 flex items-center justify-center"
                     >
                       <img
                         src={screenshot}
                         alt={`${app.name} screenshot ${index + 1}`}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-contain"
                       />
                     </div>
                   ))}
@@ -167,6 +167,14 @@ export default function AppDetailModal({ app, onClose }: AppDetailModalProps) {
                   className="px-8 py-4 border border-gray-300/70 dark:border-gray-700/70 rounded-full font-semibold text-gray-900 dark:text-white bg-transparent hover:bg-white/10 dark:hover:bg-white/5 transition-colors"
                 >
                   Accessibility
+                </a>
+              )}
+              {app.supportUrl && (
+                <a
+                  href={app.supportUrl}
+                  className="px-8 py-4 border border-gray-300/70 dark:border-gray-700/70 rounded-full font-semibold text-gray-900 dark:text-white bg-transparent hover:bg-white/10 dark:hover:bg-white/5 transition-colors"
+                >
+                  Support
                 </a>
               )}
             </div>

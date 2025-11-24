@@ -9,6 +9,7 @@ export interface App {
   features: string[];
   appStoreUrl?: string;
   websiteUrl?: string;
+  supportUrl?: string;
   privacyUrl?: string;
   contentRatingUrl?: string;
   accessibilityUrl?: string;

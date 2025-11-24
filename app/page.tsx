@@ -23,13 +23,12 @@ export default function Home() {
         
         {/* Content: Circular photo + text on left */}
         <div className="relative max-w-6xl mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8">
-          {/* Circular headshot - positioned to show face on left side of landscape image */}
+          {/* Circular headshot */}
           <div className="w-40 h-40 md:w-48 md:h-48 lg:w-56 lg:h-56 rounded-full overflow-hidden border-4 border-white shadow-2xl flex-shrink-0">
             <img
-              src="/images/hero.png"
+              src="/images/headshot.png"
               alt="Jamie - iOS Developer"
-              className="w-full h-full object-cover object-left"
-              style={{ transform: 'scale(2.4)', transformOrigin: 'left center' }}
+              className="w-full h-full object-cover"
             />
           </div>
           

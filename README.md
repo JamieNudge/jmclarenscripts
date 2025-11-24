@@ -125,3 +125,4 @@ MIT - Feel free to use this for your own portfolio!
 
 Built with ❤️ using Next.js and Framer Motion.
 
+
