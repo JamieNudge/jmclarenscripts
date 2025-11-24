@@ -10,17 +10,8 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#111827] to-[#1f2937]">
-      {/* Hero section - code background with circular headshot and text on left */}
-      <section className="relative z-10 w-full bg-[#1a1f2e] py-12 md:py-16">
-        {/* Code background image - positioned to show only code (right side) */}
-        <div className="absolute inset-0 opacity-50">
-          <img
-            src="/images/hero.png"
-            alt="Code background"
-            className="w-full h-full object-cover object-right"
-          />
-        </div>
-        
+      {/* Hero section - dark background with circular headshot and text on left */}
+      <section className="relative z-10 w-full bg-gradient-to-br from-[#1a1f2e] via-[#0f172a] to-[#1e293b] py-12 md:py-16">
         {/* Content: Circular photo + text on left */}
         <div className="relative max-w-6xl mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8">
           {/* Circular headshot */}
