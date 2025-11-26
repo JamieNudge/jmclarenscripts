@@ -143,5 +143,23 @@ export const apps: App[] = [
     platform: 'iOS',
     status: 'beta',
   },
+  {
+    id: 'recipe-saviour',
+    name: 'Recipe Saviour',
+    tagline: 'Save recipes from any website',
+    description: 'Extract and save recipes from any website with a single tap. Recipe Saviour automatically parses ingredients, instructions, and cooking times into a clean, readable format.',
+    color: '#EF4444',
+    icon: '/images/recipe-saviour-icon.png',
+    screenshots: [],
+    features: [
+      'Extract recipes from any website',
+      'Clean, readable format',
+      'Save ingredients and instructions',
+      'Offline access to saved recipes',
+      'Simple and fast',
+    ],
+    platform: 'iOS',
+    status: 'development',
+  },
 ];
 
