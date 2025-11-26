@@ -159,7 +159,7 @@ export const apps: App[] = [
       'Simple and fast',
     ],
     platform: 'iOS',
-    status: 'development',
+    status: 'coming-soon',
   },
 ];
 
