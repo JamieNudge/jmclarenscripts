@@ -61,7 +61,7 @@ export const apps: App[] = [
       'Desktop Totem keeps your most-used Mac apps in a live “totem” on your screen so you can jump back into your real work with a single click.',
     color: '#1E293B',
     icon: '/images/desktop-totem-icon.png',
-    screenshots: ['/images/desktop-totem-1.png'],
+    screenshots: ['/images/desktop-totem-1.png', '/images/desktop-totem-2.png'],
     features: [
       'Live ranking of your most-used apps',
       'Slim menu bar popover and optional desktop totem',
@@ -70,7 +70,7 @@ export const apps: App[] = [
       'VoiceOver-friendly navigation with clear labels',
     ],
     platform: 'macOS',
-    status: 'beta',
+    status: 'live',
     websiteUrl: 'https://jmclarenscripts.vercel.app/#desktop-totem',
     supportUrl: '/support/desktop-totem',
     privacyUrl: '/privacy/desktop-totem',

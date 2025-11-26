@@ -106,18 +106,24 @@ export default function AppDetailModal({ app, onClose }: AppDetailModalProps) {
               <section className="mb-8">
                 <h3 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Screenshots</h3>
                 <div className="flex gap-4 overflow-x-auto pb-4">
-                  {app.screenshots.map((screenshot, index) => (
-                    <div
-                      key={index}
-                      className="flex-shrink-0 w-64 h-96 bg-gray-200 dark:bg-gray-800 rounded-2xl overflow-hidden border border-gray-200/50 dark:border-gray-700/60 flex items-center justify-center"
-                    >
-                      <img
-                        src={screenshot}
-                        alt={`${app.name} screenshot ${index + 1}`}
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-                  ))}
+                  {app.screenshots.map((screenshot, index) => {
+                    const isMacApp = app.platform === 'macOS';
+
+                    return (
+                      <div
+                        key={index}
+                        className={`flex-shrink-0 bg-gray-200 dark:bg-gray-800 rounded-2xl overflow-hidden border border-gray-200/50 dark:border-gray-700/60 flex items-center justify-center ${
+                          isMacApp ? 'w-[420px] aspect-[16/10]' : 'w-64 h-96'
+                        }`}
+                      >
+                        <img
+                          src={screenshot}
+                          alt={`${app.name} screenshot ${index + 1}`}
+                          className={isMacApp ? 'w-full h-full object-cover' : 'w-full h-full object-contain'}
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
               </section>
             )}
