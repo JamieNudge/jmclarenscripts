@@ -121,5 +121,27 @@ export const apps: App[] = [
     platform: 'iOS',
     status: 'live',
   },
+  {
+    id: 'stat-strike',
+    name: 'Stat Strike',
+    tagline: 'Smart Football Predictions',
+    description: 'Find high-scoring football fixtures using a proven statistical algorithm. Stat Strike analyzes 11 key criteria across head-to-head records, home form, away form, and scoring patterns to identify matches with genuine goal potential.',
+    color: '#10B981',
+    icon: '/images/stat-strike-icon.png',
+    screenshots: [
+      '/images/stat-strike-1.png',
+      '/images/stat-strike-2.png',
+      '/images/stat-strike-3.png',
+    ],
+    features: [
+      'Proven 11-criteria algorithm',
+      'Two-layer validation system',
+      'Multiple goal bands (2.5, 3.5, 4.5, 5.5)',
+      'Track Record with auto-check',
+      'Standard & Experimental thresholds',
+    ],
+    platform: 'iOS',
+    status: 'beta',
+  },
 ];
 
