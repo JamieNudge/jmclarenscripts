@@ -166,6 +166,7 @@ export const apps: App[] = [
     ],
     platform: 'iOS',
     status: 'beta',
+    privacyUrl: '/privacy/recipe-saviour',
   },
 ];
 
