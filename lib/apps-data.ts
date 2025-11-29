@@ -151,9 +151,9 @@ export const apps: App[] = [
     color: '#EF4444',
     icon: '/images/recipe-saviour-icon.png',
     screenshots: [
+      '/images/recipe-saviour-3.png',
       '/images/recipe-saviour-1.png',
       '/images/recipe-saviour-2.png',
-      '/images/recipe-saviour-3.png',
       '/images/recipe-saviour-4.png',
     ],
     features: [
