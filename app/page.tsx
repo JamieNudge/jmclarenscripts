@@ -47,12 +47,12 @@ export default function Home() {
       {/* Quick Access Thumbnails */}
       <section className="relative z-10 py-6 px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
+          <div className="grid grid-cols-4 md:flex md:flex-nowrap gap-4 md:overflow-x-auto pb-4 md:scrollbar-hide justify-items-center">
             {apps.map((app) => (
               <button
                 key={`thumb-${app.id}`}
                 onClick={() => setSelectedApp(app)}
-                className="group flex-shrink-0 relative"
+                className="group relative"
               >
                 <div className="w-20 h-20 rounded-2xl overflow-hidden bg-white/10 backdrop-blur-sm border-2 border-white/20 hover:border-white/50 transition-all duration-300 hover:scale-110">
                   {app.icon ? (
@@ -104,7 +104,7 @@ export default function Home() {
       {/* Apps Grid */}
       <section className="relative z-10 py-8 px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {apps.map((app) => (
               <button
                 key={app.id}
