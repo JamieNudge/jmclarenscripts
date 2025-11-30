@@ -177,7 +177,9 @@ export const apps: App[] = [
     color: '#FBBF24',
     icon: '/images/ball-finder-icon.png',
     screenshots: [
-      // Screenshots to be added
+      '/images/ball-finder-1.png',
+      '/images/ball-finder-2.png',
+      '/images/ball-finder-3.png',
     ],
     features: [
       'Real-time camera scanning',
@@ -198,7 +200,10 @@ export const apps: App[] = [
     color: '#DC2626',
     icon: '/images/roma-icon.png',
     screenshots: [
-      // Screenshots to be added
+      '/images/roma-1.png',
+      '/images/roma-2.png',
+      '/images/roma-3.png',
+      '/images/roma-4.png',
     ],
     features: [
       'Daily reminder notifications',
