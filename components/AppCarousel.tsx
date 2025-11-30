@@ -153,10 +153,10 @@ export default function AppCarousel({ apps, onAppSelect }: AppCarouselProps) {
 
                     {/* App name overlay at bottom */}
                     <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/60 to-transparent p-6 pt-12">
-                      <h3 className="text-white text-xl font-bold mb-1">
+                      <h3 className="text-white text-xl font-bold mb-1 break-words">
                         {app.name}
                       </h3>
-                      <p className="text-white/80 text-xs">
+                      <p className="text-white/80 text-xs break-words">
                         {app.tagline}
                       </p>
                     </div>
