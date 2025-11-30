@@ -47,7 +47,7 @@ export default function Home() {
       {/* Quick Access Thumbnails */}
       <section className="relative z-10 py-6 px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-4 md:flex md:items-end gap-4 md:overflow-x-auto pb-4 md:scrollbar-hide justify-items-center">
+          <div className="grid grid-cols-4 md:flex md:items-center gap-4 md:overflow-x-auto pb-4 md:scrollbar-hide justify-items-center">
             {apps.map((app) => (
               <button
                 key={`thumb-${app.id}`}
