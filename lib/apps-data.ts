@@ -216,5 +216,26 @@ export const apps: App[] = [
     platform: 'iOS',
     status: 'beta',
   },
+  {
+    id: 'research-lab',
+    name: 'Research Lab',
+    tagline: 'Data-driven pattern recognition',
+    description: 'A macOS research tool that analyzes large datasets using multi-criteria statistical models to identify high-confidence patterns. Features real-time API integration, intelligent caching for offline analysis, and exportable results for performance tracking.',
+    color: '#10B981',
+    icon: '/images/research-lab-icon.png',
+    screenshots: [
+      // No screenshots - private research tool
+    ],
+    features: [
+      'Multi-criteria statistical analysis engine',
+      'API integration with manual control',
+      'Smart data caching and offline analysis',
+      'Confidence scoring and filtering',
+      'Searchable dataset with 1000+ daily entries',
+      'Export capabilities for performance tracking',
+    ],
+    platform: 'macOS',
+    status: 'beta',
+  },
 ];
 
