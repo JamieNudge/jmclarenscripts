@@ -71,7 +71,7 @@ export default function Home() {
                   )}
                 </div>
                 <div className="text-center mt-2">
-                  <p className="text-xs text-white/70 group-hover:text-white transition-colors truncate max-w-[80px]">
+                  <p className="text-xs text-white/70 group-hover:text-white transition-colors max-w-[80px] break-words leading-tight">
                     {app.name}
                   </p>
                 </div>
