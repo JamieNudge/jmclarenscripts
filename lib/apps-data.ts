@@ -169,5 +169,47 @@ export const apps: App[] = [
     privacyUrl: '/privacy/recipe-saviour',
     disclaimerUrl: '/disclaimer/recipe-saviour',
   },
+  {
+    id: 'ball-finder',
+    name: 'Ball Finder',
+    tagline: 'Find your lost balls...',
+    description: 'Use your iPhone camera to scan and find lost balls in the park. Ball Finder uses real-time detection with ML training to help you locate balls quickly, with visual guidance and haptic feedback.',
+    color: '#FBBF24',
+    icon: '/images/ball-finder-icon.png',
+    screenshots: [
+      // Screenshots to be added
+    ],
+    features: [
+      'Real-time camera scanning',
+      'ML-powered ball detection',
+      'Cumulative learning from training photos',
+      'Visual bounding boxes and distance hints',
+      'Haptic feedback when balls detected',
+      'Diagnostic logging for troubleshooting',
+    ],
+    platform: 'iOS',
+    status: 'beta',
+  },
+  {
+    id: 'roma',
+    name: 'Roma',
+    tagline: 'All thoughts lead to Rome...',
+    description: 'A delightful daily reminder app based on the premise that all men think about Rome every day. Set your reminder time, answer the daily question, and discover fun facts about Ancient Rome.',
+    color: '#DC2626',
+    icon: '/images/roma-icon.png',
+    screenshots: [
+      // Screenshots to be added
+    ],
+    features: [
+      'Daily reminder notifications',
+      'Roman numeral time picker',
+      'Visual countdown timer',
+      'Fun facts about Ancient Rome',
+      'Beautiful Palatino typography',
+      'Thoughtful UX with 3-second delays',
+    ],
+    platform: 'iOS',
+    status: 'beta',
+  },
 ];
 
