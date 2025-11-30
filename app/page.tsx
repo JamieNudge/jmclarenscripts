@@ -70,8 +70,8 @@ export default function Home() {
                     </div>
                   )}
                 </div>
-                <div className="text-center mt-2">
-                  <p className="text-xs text-white/70 group-hover:text-white transition-colors truncate max-w-[80px]">
+                <div className="text-center mt-2 h-8 flex items-center justify-center">
+                  <p className="text-xs text-white/70 group-hover:text-white transition-colors line-clamp-2 max-w-[80px]">
                     {app.name}
                   </p>
                 </div>
