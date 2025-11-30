@@ -40,7 +40,7 @@ export default function RecipeSaviourPrivacy() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold text-white mb-4">What We Don't Do</h2>
+            <h2 className="text-2xl font-semibold text-white mb-4">What We Don&apos;t Do</h2>
             <ul className="list-disc list-inside space-y-2 ml-4">
               <li>No user accounts or login required</li>
               <li>No analytics or tracking</li>
@@ -63,7 +63,7 @@ export default function RecipeSaviourPrivacy() {
             <h2 className="text-2xl font-semibold text-white mb-4">Local Storage</h2>
             <p>
               All saved recipes, meal plans, and shopping lists are stored locally on your 
-              device using iOS's standard storage. This data never leaves your device and 
+              device using iOS&apos;s standard storage. This data never leaves your device and 
               is not accessible to us.
             </p>
           </section>
@@ -78,7 +78,7 @@ export default function RecipeSaviourPrivacy() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-semibold text-white mb-4">Children's Privacy</h2>
+            <h2 className="text-2xl font-semibold text-white mb-4">Children&apos;s Privacy</h2>
             <p>
               Recipe Saviour does not knowingly collect information from children under 13.
             </p>
