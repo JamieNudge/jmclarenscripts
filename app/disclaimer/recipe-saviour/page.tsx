@@ -26,7 +26,7 @@ export default function RecipeSaviourDisclaimer() {
         {/* Header */}
         <div className="mb-12">
           <h1 className="text-4xl font-bold mb-4">Recipe Saviour Disclaimer</h1>
-          <p className="text-slate-400">Last Updated: December 2, 2025</p>
+          <p className="text-slate-400">Last Updated: December 3, 2025</p>
         </div>
 
         {/* Content */}
@@ -74,6 +74,37 @@ export default function RecipeSaviourDisclaimer() {
           </section>
 
           <section>
+            <h2 className="text-2xl font-semibold text-white mb-4">⚠️ Allergen Detection - Critical Information</h2>
+            <p className="mb-4 text-orange-300 font-semibold">
+              Recipe Saviour&apos;s allergen detection feature is an ASSISTANCE TOOL ONLY. 
+              It is NOT a substitute for reading food labels or consulting medical professionals.
+            </p>
+            <p className="mb-4">
+              The allergen detection feature has important limitations:
+            </p>
+            <ul className="list-disc list-inside space-y-2 ml-4">
+              <li><strong>Cannot detect cross-contamination risks</strong> - &quot;May contain traces of&quot; warnings cannot be identified</li>
+              <li><strong>Cannot guarantee complete detection</strong> - Some allergen forms or derivatives may not be recognised</li>
+              <li><strong>Recipe extraction may be imperfect</strong> - Ingredients may be missed or misinterpreted</li>
+              <li><strong>Substitution suggestions are not guaranteed safe</strong> - Always verify with your allergist</li>
+            </ul>
+            <p className="mt-4 mb-4 font-semibold">
+              Your responsibility when using allergen detection:
+            </p>
+            <ul className="list-disc list-inside space-y-2 ml-4">
+              <li>ALWAYS read actual food labels before consuming</li>
+              <li>Verify all ingredients with original recipe sources</li>
+              <li>Consult your allergist or doctor about safe substitutions</li>
+              <li>When in doubt, do not consume</li>
+            </ul>
+            <p className="mt-4 text-orange-300">
+              Recipe Saviour is not liable for allergic reactions. By using this feature, 
+              you acknowledge these limitations and accept responsibility for verifying 
+              allergen information independently.
+            </p>
+          </section>
+
+          <section>
             <h2 className="text-2xl font-semibold text-white mb-4">No Warranty</h2>
             <p className="mb-4">
               Recipe Saviour is provided &quot;as is&quot; without warranties of any kind, 
@@ -82,7 +113,7 @@ export default function RecipeSaviourDisclaimer() {
             <ul className="list-disc list-inside space-y-2 ml-4">
               <li>We are not responsible for the accuracy, safety, or quality of recipes</li>
               <li>Always use your judgment when following cooking instructions</li>
-              <li>Check for food allergies and dietary restrictions</li>
+              <li>Check for food allergies and dietary restrictions independently</li>
               <li>Verify cooking times and temperatures for food safety</li>
             </ul>
           </section>

@@ -26,7 +26,7 @@ export default function RecipeSaviourPrivacy() {
         {/* Header */}
         <div className="mb-12">
           <h1 className="text-4xl font-bold mb-4">Recipe Saviour Privacy Policy</h1>
-          <p className="text-slate-400">Last Updated: December 2, 2025</p>
+          <p className="text-slate-400">Last Updated: December 3, 2025</p>
         </div>
 
         {/* Content */}
@@ -65,6 +65,21 @@ export default function RecipeSaviourPrivacy() {
               All saved recipes, meal plans, and shopping lists are stored locally on your 
               device using iOS&apos;s standard storage. This data is not accessible to us.
             </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold text-white mb-4">Allergen Profile Data</h2>
+            <p className="mb-4">
+              Recipe Saviour includes an optional allergen detection feature. If you choose 
+              to set up an allergen profile:
+            </p>
+            <ul className="list-disc list-inside space-y-2 ml-4">
+              <li>Your allergen settings are stored locally on your device only</li>
+              <li>Custom allergens and keywords you add remain on your device</li>
+              <li>Dismissed warnings and preferences are stored locally</li>
+              <li>No allergen data is transmitted to us or any third party</li>
+              <li>Your health-related preferences are never shared</li>
+            </ul>
           </section>
 
           <section>
