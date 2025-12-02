@@ -26,7 +26,7 @@ export default function RecipeSaviourDisclaimer() {
         {/* Header */}
         <div className="mb-12">
           <h1 className="text-4xl font-bold mb-4">Recipe Saviour Disclaimer</h1>
-          <p className="text-slate-400">Last Updated: November 30, 2025</p>
+          <p className="text-slate-400">Last Updated: December 2, 2025</p>
         </div>
 
         {/* Content */}
@@ -56,6 +56,20 @@ export default function RecipeSaviourDisclaimer() {
               <li>This app is for personal, non-commercial use only</li>
               <li>Recipes should be saved for your own cooking and meal planning</li>
               <li>We encourage visiting and supporting the original recipe creators</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold text-white mb-4">Sharing Recipes</h2>
+            <p className="mb-4">
+              Recipe Saviour allows you to share recipes and shopping lists with others. 
+              When sharing content:
+            </p>
+            <ul className="list-disc list-inside space-y-2 ml-4">
+              <li>You remain responsible for respecting the original creator&apos;s copyright</li>
+              <li>Shared recipes should be for personal use among friends and family</li>
+              <li>Commercial redistribution of recipes is not permitted</li>
+              <li>Consider crediting the original source when sharing</li>
             </ul>
           </section>
 
