@@ -85,6 +85,8 @@ export default function RecipeSaviourDisclaimer() {
             <ul className="list-disc list-inside space-y-2 ml-4">
               <li><strong>Cannot detect cross-contamination risks</strong> - &quot;May contain traces of&quot; warnings cannot be identified</li>
               <li><strong>Cannot guarantee complete detection</strong> - Some allergen forms or derivatives may not be recognised</li>
+              <li><strong>Hidden allergens not identified</strong> - Allergens within compound ingredients (e.g., peanuts in &quot;curry paste&quot;) are not detected</li>
+              <li><strong>Cannot check product packaging</strong> - Allergen warnings on actual ingredient packaging cannot be verified</li>
               <li><strong>Recipe extraction may be imperfect</strong> - Ingredients may be missed or misinterpreted</li>
               <li><strong>Substitution suggestions are not guaranteed safe</strong> - Always verify with your allergist</li>
             </ul>
@@ -92,7 +94,8 @@ export default function RecipeSaviourDisclaimer() {
               Your responsibility when using allergen detection:
             </p>
             <ul className="list-disc list-inside space-y-2 ml-4">
-              <li>ALWAYS read actual food labels before consuming</li>
+              <li>ALWAYS read actual food labels and packaging before consuming</li>
+              <li>Check ingredient packaging for allergen warnings when shopping</li>
               <li>Verify all ingredients with original recipe sources</li>
               <li>Consult your allergist or doctor about safe substitutions</li>
               <li>When in doubt, do not consume</li>
