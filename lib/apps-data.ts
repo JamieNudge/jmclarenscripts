@@ -25,35 +25,6 @@ export const apps: App[] = [
     status: 'live',
   },
   {
-    id: 'aikido-vocabulary-app',
-    name: 'Aikido Vocabulary App',
-    tagline: 'Japanese Language Trainer for students of Aikido',
-    description:
-      'A focused Japanese vocabulary trainer for Aikido students. Learn key dojo phrases, technique names and etiquette terms with simple drills you can run between classes.',
-    // Use a calm indigo/blue that matches the iOS-style screenshots better than brown
-    color: '#2563EB',
-    icon: '/images/aikido-vocabulary-icon.png',
-    screenshots: [
-      // First screenshot is used for the card; use the new main shot there
-      '/images/aikido-vocab-main.png',
-      '/images/aikido-vocab-1.png',
-      '/images/aikido-vocab-2.png',
-      '/images/aikido-vocab-3.png',
-      '/images/aikido-vocab-4.png',
-    ],
-    features: [
-      'Curated Aikido dojo vocabulary',
-      'Reading + English meaning for each term',
-      'Lightweight on-device progress tracking',
-      'No accounts and no ads',
-      'Designed for quick review between classes',
-    ],
-    platform: 'iOS',
-    status: 'beta',
-    privacyUrl: '/privacy/aikido-vocabulary',
-    contentRatingUrl: '/aikido-vocabulary/content-rating',
-  },
-  {
     id: 'doomscroll-stopper',
     name: 'Doomscroll Stopper',
     tagline: 'Break the scroll, reclaim your time',
@@ -120,6 +91,35 @@ export const apps: App[] = [
     supportUrl: '/support/desktop-totem',
     privacyUrl: '/privacy/desktop-totem',
     accessibilityUrl: '/accessibility/desktop-totem',
+  },
+  {
+    id: 'aikido-vocabulary-app',
+    name: 'Aikido Vocabulary App',
+    tagline: 'Japanese Language Trainer for students of Aikido',
+    description:
+      'A focused Japanese vocabulary trainer for Aikido students. Learn key dojo phrases, technique names and etiquette terms with simple drills you can run between classes.',
+    // Use a calm indigo/blue that matches the iOS-style screenshots better than brown
+    color: '#2563EB',
+    icon: '/images/aikido-vocabulary-icon.png',
+    screenshots: [
+      // First screenshot is used for the card; use the new main shot there
+      '/images/aikido-vocab-main.png',
+      '/images/aikido-vocab-1.png',
+      '/images/aikido-vocab-2.png',
+      '/images/aikido-vocab-3.png',
+      '/images/aikido-vocab-4.png',
+    ],
+    features: [
+      'Curated Aikido dojo vocabulary',
+      'Reading + English meaning for each term',
+      'Lightweight on-device progress tracking',
+      'No accounts and no ads',
+      'Designed for quick review between classes',
+    ],
+    platform: 'iOS',
+    status: 'beta',
+    privacyUrl: '/privacy/aikido-vocabulary',
+    contentRatingUrl: '/aikido-vocabulary/content-rating',
   },
   {
     id: 'stat-strike',
