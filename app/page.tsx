@@ -20,7 +20,27 @@ export default function Home() {
             className="w-full h-full object-cover"
           />
         </div>
-        
+
+        {/* Top-right contact links */}
+        <div className="relative max-w-6xl mx-auto px-6 md:px-12">
+          <div className="absolute right-6 md:right-12 top-4 flex gap-4 text-xs md:text-sm text-white/80">
+            <a
+              href="mailto:jmclarenscripts@gmail.com"
+              className="hover:text-white hover:underline transition-colors"
+            >
+              Email
+            </a>
+            <a
+              href="https://www.linkedin.com/in/jamie-i-mclaren"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white hover:underline transition-colors"
+            >
+              LinkedIn
+            </a>
+          </div>
+        </div>
+
         {/* Content: Circular photo + text on left */}
         <div className="relative max-w-6xl mx-auto px-6 md:px-12 flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8">
           {/* Circular headshot */}
