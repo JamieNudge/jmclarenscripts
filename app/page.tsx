@@ -101,25 +101,36 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Apps Grid */}
+      {/* Apps List – compact, scan-friendly rows */}
       <section className="relative z-10 py-8 px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <h2 className="text-lg font-semibold text-white/90 mb-3">
+            Apps overview
+          </h2>
+          <p className="text-sm text-white/60 mb-4">
+            Small previews with quick-read titles and taglines for fast scanning.
+          </p>
+
+          <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 divide-y divide-white/5">
             {apps.map((app) => (
               <button
                 key={app.id}
                 onClick={() => setSelectedApp(app)}
-                className="group relative bg-white/10 backdrop-blur-sm rounded-2xl overflow-hidden hover:bg-white/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl"
+                className="group w-full text-left px-4 sm:px-6 py-4 flex items-center gap-4 hover:bg-white/10 transition-colors"
               >
-                {/* App Screenshot */}
-                <div className="relative aspect-[9/16] bg-gray-900">
-                  {app.screenshots[0] ? (
+                {/* Small preview thumbnail */}
+                <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-2xl overflow-hidden bg-white/10 border border-white/10 flex-shrink-0">
+                  {app.icon ? (
+                    <img
+                      src={app.icon}
+                      alt={app.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : app.screenshots[0] ? (
                     <img
                       src={app.screenshots[0]}
                       alt={app.name}
-                      className={`w-full h-full ${
-                        app.platform === 'macOS' ? 'object-contain' : 'object-cover'
-                      }`}
+                      className="w-full h-full object-cover"
                     />
                   ) : (
                     <div
@@ -128,33 +139,36 @@ export default function Home() {
                         backgroundImage: `linear-gradient(135deg, ${app.color} 0%, ${app.color}dd 100%)`,
                       }}
                     >
-                      <div className="text-white text-6xl font-bold opacity-20">
+                      <span className="text-white text-xl font-bold opacity-80">
                         {app.name[0]}
-                      </div>
+                      </span>
                     </div>
                   )}
-                  {/* Status Badge */}
-                  <div className="absolute top-3 right-3">
-                    <span className={`px-3 py-1 rounded-full text-xs font-bold shadow-lg ${
-                      app.status === 'live' ? 'bg-green-400 text-green-900' :
-                      app.status === 'beta' ? 'bg-yellow-400 text-yellow-900' :
-                      'bg-purple-400 text-purple-900'
-                    }`}>
+                </div>
+
+                {/* Text content */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-2 mb-1">
+                    <h3 className="text-sm sm:text-base font-semibold text-white truncate group-hover:text-white">
+                      {app.name}
+                    </h3>
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-semibold ${
+                        app.status === 'live'
+                          ? 'bg-green-400 text-green-900'
+                          : app.status === 'beta'
+                          ? 'bg-yellow-400 text-yellow-900'
+                          : 'bg-purple-400 text-purple-900'
+                      }`}
+                    >
                       {app.status.toUpperCase()}
                     </span>
                   </div>
-                </div>
-
-                {/* App Info */}
-                <div className="p-5 text-left">
-                  <h3 className="text-xl font-bold text-white mb-2 group-hover:text-white/90 transition-colors">
-                    {app.name}
-                  </h3>
-                  <p className="text-sm text-white/70 mb-3">
+                  <p className="text-xs sm:text-sm text-white/70 line-clamp-2">
                     {app.tagline}
                   </p>
-                  <div className="flex items-center gap-2 text-xs text-white/60">
-                    <span className="px-2 py-1 bg-white/10 rounded">
+                  <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] sm:text-xs text-white/60">
+                    <span className="px-2 py-0.5 bg-white/10 rounded-full">
                       {app.platform}
                     </span>
                     <span>•</span>
