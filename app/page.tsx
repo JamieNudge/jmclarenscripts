@@ -200,6 +200,14 @@ export default function Home() {
               Bluesky
             </a>
             <a
+              href="https://www.linkedin.com/in/jamie-mclaren-950a722b1"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors"
+            >
+              LinkedIn
+            </a>
+            <a
               href="https://github.com/JamieNudge"
               target="_blank"
               rel="noopener noreferrer"
