@@ -200,7 +200,7 @@ export default function Home() {
               Bluesky
             </a>
             <a
-              href="https://www.linkedin.com/in/jamie-mclaren-950a722b1"
+              href="https://www.linkedin.com/in/jamie-i-mclaren"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-white transition-colors"
