@@ -10,8 +10,9 @@ export const apps: App[] = [
     color: '#FF6B9D',
     icon: '/images/draw-with-friends-icon.png',
     screenshots: [
-      // Currently only this screenshot is available in /public/images
       '/images/draw-with-friends-1.png',
+      '/images/draw-with-friends-2.png',
+      '/images/draw-with-friends-3.png',
     ],
     features: [
       'Real-time collaboration',
