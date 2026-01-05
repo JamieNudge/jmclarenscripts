@@ -138,7 +138,7 @@ export default function AppDetailModal({ app, onClose }: AppDetailModalProps) {
                   className="px-8 py-4 rounded-full font-semibold text-white transition-transform hover:scale-105 shadow-lg"
                   style={{ backgroundColor: app.color }}
                 >
-                  {app.platform === 'iOS' ? 'View on App Store' : 'Download'}
+                  View on App Store
                 </a>
               )}
               {app.websiteUrl && (
