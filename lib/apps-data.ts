@@ -21,7 +21,7 @@ export const apps: App[] = [
       'Photo backgrounds',
       'Room-based sessions',
     ],
-    appStoreUrl: 'https://apps.apple.com/your-app',
+    appStoreUrl: 'https://apps.apple.com/gb/app/draw-with-friends/id6755112480',
     platform: 'iOS',
     status: 'live',
   },
