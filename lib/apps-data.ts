@@ -88,7 +88,7 @@ export const apps: App[] = [
     ],
     platform: 'macOS',
     status: 'live',
-    websiteUrl: 'https://jmclarenscripts.vercel.app/#desktop-totem',
+    appStoreUrl: 'https://apps.apple.com/gb/app/desktop-totem/id6755545138?mt=12',
     supportUrl: '/support/desktop-totem',
     privacyUrl: '/privacy/desktop-totem',
     accessibilityUrl: '/accessibility/desktop-totem',
