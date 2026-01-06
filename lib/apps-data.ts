@@ -124,9 +124,9 @@ export const apps: App[] = [
   },
   {
     id: 'stat-strike',
-    name: 'Stat Strike',
+    name: 'StatStrike',
     tagline: 'Smart Football Predictions',
-    description: 'Stat Strike uses key criteria to identify matches with genuine goal potential.',
+    description: 'StatStrike uses key criteria to identify matches with genuine goal potential.',
     color: '#10B981',
     icon: '/images/stat-strike-icon.png',
     screenshots: [
@@ -143,6 +143,7 @@ export const apps: App[] = [
     ],
     platform: 'iOS',
     status: 'beta',
+    contentRatingUrl: '/statstrike/content-rating',
   },
   {
     id: 'recipe-saviour',
