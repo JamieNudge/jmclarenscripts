@@ -144,6 +144,8 @@ export const apps: App[] = [
     platform: 'iOS',
     status: 'beta',
     contentRatingUrl: '/statstrike/content-rating',
+    privacyUrl: '/privacy/statstrike',
+    supportUrl: '/privacy/statstrike',
   },
   {
     id: 'recipe-saviour',
