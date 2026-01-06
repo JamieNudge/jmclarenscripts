@@ -98,6 +98,55 @@ export default function StatStrikeContentRatingPage() {
             <li>Seek help if they have concerns about gambling addiction</li>
           </ul>
 
+          <h3 className="text-lg font-semibold mt-4">Gambling Support</h3>
+          <p>
+            Please gamble responsibly. If you feel your gambling is becoming a problem, support
+            and advice are available at:
+          </p>
+          <ul className="list-disc list-inside space-y-1 ml-4">
+            <li>
+              <a
+                href="https://www.begambleaware.org"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-blue-300"
+              >
+                BeGambleAware — begambleaware.org
+              </a>
+            </li>
+            <li>
+              <a
+                href="tel:08088020133"
+                className="underline hover:text-blue-300"
+              >
+                National Gambling Helpline — 0808 8020 133
+              </a>
+            </li>
+          </ul>
+
+          <h2 className="text-xl font-semibold mt-4">Legal Disclaimer</h2>
+          <p>
+            This application provides statistical football data and predictive analysis. The content
+            is supplied for information and entertainment purposes only and does not constitute
+            betting advice, financial advice, or a recommendation to place wagers.
+          </p>
+          <p>
+            No guarantee is made, express or implied, as to the accuracy, performance, or outcome of
+            any predictions or statistics presented within the app. Football results are inherently
+            uncertain and past performance is not a reliable indicator of future outcomes.
+          </p>
+          <p>
+            Any decisions made in relation to betting, wagering, or financial expenditure are made
+            entirely at the user&apos;s own discretion and risk. By using this application, you
+            acknowledge that the developer and publisher accept no responsibility or liability for
+            any financial loss, damages, or consequences arising from reliance on the content
+            provided.
+          </p>
+          <p>
+            This application does not facilitate or encourage gambling. Users must ensure they
+            comply with all applicable laws and regulations in their jurisdiction.
+          </p>
+
           <h2 className="text-xl font-semibold mt-4">Summary</h2>
           <p>
             StatStrike is a <span className="font-semibold">statistical analysis and prediction
