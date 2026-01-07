@@ -70,7 +70,7 @@ export const apps: App[] = [
     appStoreUrl: 'https://apps.apple.com/gb/app/nudgetronic/id6752445547',
     platform: 'iOS',
     status: 'live',
-    privacyUrl: 'https://jamienudge.github.io/Nudgetronic/PrivacyPolicy.html',
+    privacyUrl: '/privacy/nudgetronic',
     supportUrl: 'https://jamienudge.github.io/Nudgetronic/Support.html',
   },
   {
