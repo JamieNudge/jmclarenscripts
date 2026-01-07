@@ -58,6 +58,7 @@ export const apps: App[] = [
     screenshots: [
       '/images/nudgetronic-1.png',
       '/images/nudgetronic-2.png',
+      '/images/nudgetronic-3.png',
     ],
     features: [
       'Full-screen shields',
@@ -69,6 +70,8 @@ export const apps: App[] = [
     appStoreUrl: 'https://apps.apple.com/gb/app/nudgetronic/id6752445547',
     platform: 'iOS',
     status: 'live',
+    privacyUrl: 'https://jamienudge.github.io/Nudgetronic/PrivacyPolicy.html',
+    supportUrl: 'https://jamienudge.github.io/Nudgetronic/Support.html',
   },
   {
     id: 'desktop-totem',
