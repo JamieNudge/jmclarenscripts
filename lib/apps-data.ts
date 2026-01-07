@@ -71,7 +71,7 @@ export const apps: App[] = [
     platform: 'iOS',
     status: 'live',
     privacyUrl: '/privacy/nudgetronic',
-    supportUrl: 'https://jamienudge.github.io/Nudgetronic/Support.html',
+    supportUrl: '/support/nudgetronic',
   },
   {
     id: 'desktop-totem',
