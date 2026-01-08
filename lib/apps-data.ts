@@ -135,6 +135,8 @@ export const apps: App[] = [
     screenshots: [
       '/images/stat-strike-1.png',
       '/images/stat-strike-2.png',
+      '/images/stat-strike-3.png',
+      '/images/stat-strike-4.png',
     ],
     features: [
       'MVVM architecture with Swift Concurrency (async/await)',
