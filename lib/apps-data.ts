@@ -149,7 +149,7 @@ export const apps: App[] = [
       'Transparent Track Record with win/loss reconciliation',
     ],
     platform: 'iOS',
-    status: 'beta',
+    status: 'in-review',
     contentRatingUrl: '/statstrike/content-rating',
     privacyUrl: '/privacy/statstrike',
     supportUrl: '/privacy/statstrike',

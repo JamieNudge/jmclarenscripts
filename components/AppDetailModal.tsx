@@ -66,9 +66,10 @@ export default function AppDetailModal({ app, onClose }: AppDetailModalProps) {
               <span className={`px-4 py-2 rounded-full text-sm font-bold ${
                 app.status === 'live' ? 'bg-green-400 text-green-900' :
                 app.status === 'beta' ? 'bg-yellow-400 text-yellow-900' :
+                app.status === 'in-review' ? 'bg-blue-400 text-blue-900' :
                 'bg-purple-400 text-purple-900'
               }`}>
-                {app.status.toUpperCase()}
+                {app.status === 'in-review' ? 'In App Store Review' : app.status.toUpperCase()}
               </span>
             </div>
           </div>
