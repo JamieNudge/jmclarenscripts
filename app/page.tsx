@@ -176,12 +176,10 @@ export default function Home() {
                           ? 'bg-green-400 text-green-900'
                           : app.status === 'beta'
                           ? 'bg-yellow-400 text-yellow-900'
-                          : app.status === 'in-review'
-                          ? 'bg-blue-400 text-blue-900'
                           : 'bg-purple-400 text-purple-900'
                       }`}
                     >
-                      {app.status === 'in-review' ? 'In App Store Review' : app.status.toUpperCase()}
+                      {app.status.toUpperCase()}
                     </span>
                   </div>
                   <p className="text-xs sm:text-sm text-white/70 line-clamp-2">
