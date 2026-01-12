@@ -152,7 +152,8 @@ export const apps: App[] = [
     status: 'in-review',
     contentRatingUrl: '/statstrike/content-rating',
     privacyUrl: '/privacy/statstrike',
-    supportUrl: '/privacy/statstrike',
+    termsUrl: '/terms/statstrike',
+    supportUrl: '/support/statstrike',
   },
   {
     id: 'recipe-saviour',

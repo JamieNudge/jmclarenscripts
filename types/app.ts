@@ -11,6 +11,7 @@ export interface App {
   websiteUrl?: string;
   supportUrl?: string;
   privacyUrl?: string;
+  termsUrl?: string;
   disclaimerUrl?: string;
   contentRatingUrl?: string;
   accessibilityUrl?: string;
