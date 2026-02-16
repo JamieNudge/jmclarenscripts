@@ -163,7 +163,11 @@ export const apps: App[] = [
     description: 'A multi-model football prediction app that analyses Over and Under 2.5 Goals markets using four independent statistical models. GoalLab curates high-confidence Best Picks based on model agreement and historical win rates, with transparent confidence bands, a cloud-synced track record, and an ad-supported free tier.',
     color: '#0891B2',
     icon: '/images/goallab-icon.png',
-    screenshots: [],
+    screenshots: [
+      '/images/goallab-1.png',
+      '/images/goallab-2.png',
+      '/images/goallab-3.png',
+    ],
     features: [
       'Multi-model Over & Under 2.5 Goals forecasting',
       'Curated Best Picks with model agreement filtering',
