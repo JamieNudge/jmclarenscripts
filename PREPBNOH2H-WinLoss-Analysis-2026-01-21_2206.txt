@@ -1,0 +1,343 @@
+═══════════════════════════════════════════════════════════════════════
+📊 WIN vs LOSS PATTERN ANALYSIS
+═══════════════════════════════════════════════════════════════════════
+Total Reconciled: 626 | Wins: 278 | Losses: 348
+Overall Win Rate: 44.4%
+═══════════════════════════════════════════════════════════════════════
+
+📈 WIN RATE BY MATCH % BANDS:
+────────────────────────────────────────────
+  70%+    :  44.4% (278/626) ████████
+
+📊 WIN RATE BY SAMPLE SIZE (Fingerprint Rarity):
+────────────────────────────────────────────
+   (Are RARE fingerprints more predictive than common ones?)
+
+  20-29  (Very Rare)    : 100.0% (3/3) ████████████████████
+  30-49  (Rare)         : 100.0% (4/4) ████████████████████
+  50-99  (Uncommon)     : 100.0% (2/2) ████████████████████
+  100-199 (Moderate)    :  34.3% (12/35) ██████
+  200-399 (Common)      :  46.1% (70/152) █████████
+  400-599 (Very Common) :  42.3% (55/130) ████████
+  600+   (Ubiquitous)   :  44.0% (132/300) ████████
+
+  📈 Avg sample size: WINS 491 | LOSSES 502
+  ➡️ No clear correlation between sample size and wins
+
+🎯 WIN RATE BY PREDICTED SCORELINE:
+────────────────────────────────────────────
+  3-3     :  39.8% (78/196)
+  4-2     :  41.5% (56/135)
+  4-3     :  44.1% (26/59)
+  2-4     :  43.9% (25/57)
+  5-1     :  57.4% (31/54)
+  5-2     :  34.2% (13/38)
+  2-5     :  38.7% (12/31)
+  1-5     :  55.6% (15/27)
+  3-4     :  65.0% (13/20)
+  8-0     : 100.0% (2/2)
+  1-8     : 100.0% (1/1)
+  9-0     : 100.0% (1/1)
+  8-1     : 100.0% (1/1)
+  0-9     : 100.0% (1/1)
+  5-4     : 100.0% (1/1)
+
+🏟️ WIN RATE BY LEAGUE (min 3 forecasts):
+────────────────────────────────────────────
+  🟢 100.0% (4/4) Chile - Segunda División
+  🟢 100.0% (3/3) Venezuela - Segunda División
+  🟢 100.0% (3/3) Israel - Ligat Ha'al
+  🟢 100.0% (3/3) Uzbekistan - Super League
+  🟢 100.0% (4/4) Romania - Liga 1 Feminin
+  🟢 100.0% (3/3) China - League One
+  🟢 100.0% (9/9) Germany - U19 Bundesliga
+  🟢  87.5% (7/8) Norway - 1. Division
+  🟢  80.0% (4/5) Belgium - Challenger Pro League
+  🟢  75.0% (3/4) USA - MLS Next Pro
+  🟢  75.0% (3/4) England - Non League Premier - Southern Central
+  🟢  75.0% (3/4) Spain - Primera División Femenina
+  🟢  75.0% (3/4) Italy - Serie A Women
+  🟢  75.0% (3/4) Algeria - Ligue 2
+  🟢  75.0% (3/4) Poland - I Liga
+  🟢  75.0% (3/4) Thailand - Thai League 2
+  🟢  75.0% (3/4) England - Non League Premier - Northern
+  🟢  66.7% (2/3) France - National 2 - Group C
+  🟢  66.7% (4/6) Turkey - Süper Lig
+  🟢  66.7% (4/6) France - National 2 - Group A
+
+🎯 WIN RATE BY POSITION MATCHES (Home+Away out of 12):
+────────────────────────────────────────────
+  12      :  44.4% (278/626) ████████
+
+📐 WIN vs LOSS AVERAGES:
+────────────────────────────────────────────
+  Match %:        WINS avg 72.0%  |  LOSSES avg 71.9%
+  Sample Size:    WINS avg 491    |  LOSSES avg 502
+  Position Match: WINS avg 12.0/12 |  LOSSES avg 12.0/12
+
+❌ WHAT ACTUALLY HAPPENED IN LOSSES:
+────────────────────────────────────────────
+  💤 2-1: 67 times (total goals: 3)
+  💤 1-1: 63 times (total goals: 2)
+  💤 1-2: 50 times (total goals: 3)
+  💤 0-1: 25 times (total goals: 1)
+  💤 1-0: 24 times (total goals: 1)
+  💤 2-0: 19 times (total goals: 2)
+  💤 0-0: 15 times (total goals: 0)
+  💤 3-0: 11 times (total goals: 3)
+  ⚡ 3-1: 10 times (total goals: 4)
+  💤 0-2: 9 times (total goals: 2)
+
+🎭 LOSS BREAKDOWN:
+────────────────────────────────────────────
+  🔥 Still Dramatic (6+ goals): 14 (4.0%)
+  ⚡ Mid Scoring (4-5 goals):   50 (14.4%)
+  💤 Low Scoring (<4 goals):    284 (81.6%)
+
+⚖️ HOME vs AWAY MATCH BALANCE:
+────────────────────────────────────────────
+   (Does it matter which side has more matches?)
+
+  ⚖️ Balanced (H = A):    44.4% (278/626)
+
+🎯 NEAR MISS ANALYSIS (Losses only):
+────────────────────────────────────────────
+   (How close were wrong predictions?)
+
+  🎯 Right total, wrong score: 6 (1.7%)
+  📍 Off by 1 goal:            13 (3.7%)
+  📍 Off by 2 goals:           36 (10.3%)
+  ❌ Off by 3+ goals:          293 (84.2%)
+
+🥅 BTTS vs CLEAN SHEET PREDICTIONS:
+────────────────────────────────────────────
+  ⚽⚽ BTTS predictions:        44.1% (274/622)
+  🧤 Clean sheet predictions: 100.0% (4/4)
+
+📊 WIN RATE BY PREDICTED TOTAL GOALS:
+────────────────────────────────────────────
+  6 goals   :  43.7% (205/469) ████████
+  7 goals   :  43.2% (64/148) ████████
+  8 goals   : 100.0% (2/2) ████████████████████
+  9+ goals  : 100.0% (7/7) ████████████████████
+
+═══════════════════════════════════════════════════════════════════════
+🔬 DEEP FINGERPRINT ANALYSIS (626 records with full data)
+═══════════════════════════════════════════════════════════════════════
+
+📍 WIN RATE BY INDIVIDUAL POSITION:
+────────────────────────────────────────────
+   (Does matching at certain positions predict wins better?)
+
+  🏠 Home Pos 1:  44.4% (278/626) ████████
+  ✈️ Away Pos 1:  44.4% (278/626) ████████
+  🏠 Home Pos 2:  44.4% (278/626) ████████
+  ✈️ Away Pos 2:  44.4% (278/626) ████████
+  🏠 Home Pos 3:  44.4% (278/626) ████████
+  ✈️ Away Pos 3:  44.4% (278/626) ████████
+  🏠 Home Pos 4:  44.4% (278/626) ████████
+  ✈️ Away Pos 4:  44.4% (278/626) ████████
+  🏠 Home Pos 5:  44.4% (278/626) ████████
+  ✈️ Away Pos 5:  44.4% (278/626) ████████
+  🏠 Home Pos 6:  44.4% (278/626) ████████
+  ✈️ Away Pos 6:  44.4% (278/626) ████████
+
+⭐ WIN RATE BY QUALITY SCORE:
+────────────────────────────────────────────
+  0-20%   :  44.4% (278/626) ████████
+
+⏰ WIN RATE BY KICKOFF TIME:
+────────────────────────────────────────────
+  Morning (10-12)   :  65.1% (28/43)
+  Early PM (12-15)  :  46.8% (65/139)
+  Afternoon (15-17) :  45.4% (64/141)
+  Evening (17-20)   :  36.5% (73/200)
+  Night (20+)       :  52.5% (21/40)
+
+📅 WIN RATE BY DAY OF WEEK:
+────────────────────────────────────────────
+  Sun  :  47.9% (69/144)
+  Mon  :  17.6% (13/74)
+  Tue  :  40.0% (14/35)
+  Wed  :  25.9% (7/27)
+  Thu  :  35.7% (10/28)
+  Fri  :  47.6% (40/84)
+  Sat  :  53.4% (125/234)
+
+🎯 STRONG INDICATOR ANALYSIS:
+────────────────────────────────────────────
+   (Which indicators appear more in wins vs losses?)
+
+  Best performing indicators:
+    🟡 H2H1:5-1@92%: 33% win rate (1W/2L)
+    🔴 H2H1:3-3@92%: 12% win rate (1W/7L)
+    🔴 H2H1:4-2@92%: 0% win rate (0W/8L)
+    🔴 H2H1:5-1@93%: 0% win rate (0W/3L)
+
+📊 FINGERPRINT QUALITY: WINS vs LOSSES:
+────────────────────────────────────────────
+  Home Quality:     WINS avg 6.7%  |  LOSSES avg 6.2%
+  Away Quality:     WINS avg 6.7%  |  LOSSES avg 6.1%
+  Combined Quality: WINS avg 6.7%  |  LOSSES avg 6.1%
+  Home Hit Rate:    WINS avg 100.0%  |  LOSSES avg 100.0%
+  Away Hit Rate:    WINS avg 100.0%  |  LOSSES avg 100.0%
+
+🏆 LEAGUE POSITION ANALYSIS:
+────────────────────────────────────────────
+  Top vs Bottom:     46.2% (141/305)
+  Both Top Half:     47.1% (56/119)
+  Both Bottom Half:  39.8% (51/128)
+
+  Win rate by position difference:
+    Home 5+ higher    :  43.2% (67/155)
+    Home 1-4 higher   :  42.9% (54/126)
+    Level (0)         :   0.0% (0/2)
+    Away 1-4 higher   :  48.8% (63/129)
+    Away 5+ higher    :  45.3% (62/137)
+
+⚽ TEAM SCORING & CONCESSION ANALYSIS:
+────────────────────────────────────────────
+  Home Avg Scored:    WINS 3.45 | LOSSES 2.84
+  Away Avg Scored:    WINS 3.47 | LOSSES 2.94
+  Home Avg Conceded:  WINS 1.97 | LOSSES 1.95
+  Away Avg Conceded:  WINS 2.09 | LOSSES 2.11
+  Combined Avg Goals: WINS 10.98 | LOSSES 9.84
+
+  Win rate by Combined Goals Potential:
+    Low (<5)          :   0.0% (0/2)
+    Medium (5-7)      :   0.0% (0/7)
+    High (7-9)        :   0.0% (0/26)
+    Very High (9+)    :  46.9% (277/590)
+
+🔬 FINGERPRINT RARITY ANALYSIS:
+────────────────────────────────────────────
+   (Do rare, specific fingerprints outperform common ones?)
+
+  📊 SAMPLE SIZE × MATCH % INTERACTION:
+    Rare + High Match%:    100.0% (9/9)
+    Common + High Match%:   43.7% (204/467)
+
+  🎯 WIN RATE BY SCORELINE + RARITY:
+    3-4   🔹MED    (avg 277 samples):  65.0% (13/20) █████████████
+    5-1   ⬜COMMON  (avg 536 samples):  57.4% (31/54) ███████████
+    1-5   ⬜COMMON  (avg 325 samples):  55.6% (15/27) ███████████
+    4-3   🔹MED    (avg 272 samples):  44.1% (26/59) ████████
+    2-4   ⬜COMMON  (avg 515 samples):  43.9% (25/57) ████████
+    4-2   ⬜COMMON  (avg 600 samples):  41.5% (56/135) ████████
+    3-3   ⬜COMMON  (avg 643 samples):  39.8% (78/196) ███████
+    2-5   🔹MED    (avg 167 samples):  38.7% (12/31) ███████
+    5-2   🔹MED    (avg 259 samples):  34.2% (13/38) ██████
+
+  🎯 OPTIMAL RARITY ZONES:
+    Rare (<100 samples):     100.0% (9/9)
+    Medium (100-299):         43.3% (65/150)
+    Common (300+):            43.7% (204/467)
+
+🕐 RECENCY WEIGHTING ANALYSIS:
+────────────────────────────────────────────
+   (Do recent games (G1-G2) predict better than older (G5-G6)?)
+
+  Recent (G1-G2) matches:  WINS avg 4.00/4 | LOSSES avg 4.00/4
+  Older (G5-G6) matches:   WINS avg 4.00/4 | LOSSES avg 4.00/4
+
+💪 STRONG INDICATOR COUNT ANALYSIS:
+────────────────────────────────────────────
+   (How many 30%+ frequency matches does a forecast have?)
+
+  Avg strong indicators:   WINS 0.03 | LOSSES 0.07
+
+  0 strong  :  45.8% (272/594) █████████
+  1 strong  :  16.1% (5/31) ███
+
+🔗 CONSECUTIVE MATCHES ANALYSIS:
+────────────────────────────────────────────
+   (Do consecutive matches like G1+G2+G3 predict better?)
+
+  Avg longest consecutive: WINS 6.00 | LOSSES 6.00
+
+  6 consec  :  44.4% (278/626) ████████
+
+⚖️ HOME/AWAY MATCH BALANCE:
+────────────────────────────────────────────
+   (Balanced H+A vs lopsided - which predicts better?)
+
+  Balanced  :  44.4% (278/626) ████████
+
+📊 FREQUENCY CONCENTRATION:
+────────────────────────────────────────────
+   (Few high-freq matches vs many low-freq - which is better?)
+
+  Avg frequency of matches: WINS 6.7% | LOSSES 6.1%
+
+  Low freq (<20%), many (≥10) matches: 44.4% (278/626)
+
+🎯 SCORELINE SHAPE ANALYSIS:
+────────────────────────────────────────────
+   (Blowout vs balanced vs draw predictions)
+
+  Draw (X-X)    :  39.8% (78/196) ███████
+  Close (±1)    :  50.0% (40/80) ██████████
+  Clear (±2)    :  42.2% (81/192) ████████
+  Blowout (±3+) :  50.0% (79/158) ██████████
+
+🏠✈️ PREDICTED RESULT TYPE:
+────────────────────────────────────────────
+  Home Win  :  45.2% (132/292) █████████
+  Draw      :  39.8% (78/196) ███████
+  Away Win  :  49.3% (68/138) █████████
+
+🤝 H2H HISTORICAL ANALYSIS:
+────────────────────────────────────────────
+   (Model doesn't use H2H for predictions - but does it correlate with wins?)
+
+  Avg H2H goals:     WINS 3.77 | LOSSES 3.05
+  Avg H2H 6+ games:  WINS 1.71 | LOSSES 1.45
+  Avg H2H O2.5%%:    WINS 66.3%% | LOSSES 56.1%%
+  Avg H2H highest:   WINS 6.6 | LOSSES 6.4
+
+  Win rate by H2H drama history:
+    Had 6+ goal H2H game:   47.6% (278/584) █████████
+    No 6+ goal H2H game:     0.0% (0/38) 
+
+  Win rate by H2H avg goals:
+    Low (<2.5)        :  25.3% (22/87) █████
+    Medium (2.5-3)    :  33.3% (51/153) ██████
+    High (3-4)        :  43.0% (104/242) ████████
+    Very High (4+)    :  72.1% (101/140) ██████████████
+
+  💡 INSIGHT: Wins have HIGHER H2H goal averages! Teams with dramatic H2H history may be an edge.
+
+═══════════════════════════════════════════════════════════════════════
+🔁 CONSECUTIVE SCORELINE ANALYSIS:
+   Does predicting a repeat of the most recent game work?
+────────────────────────────────────────────
+
+  Distribution:
+    Total with position data: 626
+    Predicted = Home's last home game: 168 (27%)
+    Predicted = Away's last away game: 163 (26%)
+    Predicted = Either team's last game: 232 (37%)
+    Predicted ≠ Any recent game: 394 (63%)
+
+  Win rates (CRITICAL - does back-to-back prediction work?):
+    Pred = Home's last:       68.5% (115/168) █████████████
+    Pred = Away's last:       69.9% (114/163) █████████████
+    Pred = Either recent:     57.3% (133/232) ███████████
+    Pred ≠ Recent (NOVEL):    36.8% (145/394) ███████ ← Compare!
+
+  Examples of 'consecutive' predictions:
+    Stuttgart U19 vs Kickers Offenbach U19: Pred=9-1, HomeRecent=9-1, AwayRecent=8-1 → Actual=9-1 ✅ WIN
+    SD Family vs Irtysh: Pred=2-7, HomeRecent=2-7, AwayRecent=1-2 → Actual=2-7 ✅ WIN
+    New Mexico United vs Oakland Roots: Pred=3-3, HomeRecent=2-1, AwayRecent=3-3 → Actual=3-3 ✅ WIN
+    Farul Constanţa W vs Atletic Olimpia Gherla W: Pred=8-0, HomeRecent=8-0, AwayRecent=8-0 → Actual=8-0 ✅ WIN
+    Mechelen II vs Harelbeke: Pred=3-3, HomeRecent=3-3, AwayRecent=3-3 → Actual=3-3 ✅ WIN
+
+  🔥 SURPRISING: 'Consecutive' predictions (repeating recent) perform BETTER!
+  💡 Dramatic runs may be real - keep these predictions!
+
+═══════════════════════════════════════════════════════════════════════
+💡 KEY INSIGHTS & RECOMMENDATIONS:
+────────────────────────────────────────────
+  📈 Best Match % band: 70%+ at 44.4% win rate
+
+═══════════════════════════════════════════════════════════════════════

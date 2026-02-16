@@ -2,12 +2,12 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'U25Pro — Terms of Use',
+  title: 'GoalLab — Terms of Use',
   description:
-    'Terms of Use for U25Pro, an Under 2.5 Goals football prediction app.',
+    'Terms of Use for GoalLab, a multi-model football prediction app for Over and Under 2.5 Goals markets.',
 };
 
-export default function U25ProTermsPage() {
+export default function GoalLabTermsPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#0c1929] to-[#164e63] text-white">
       <div className="max-w-3xl mx-auto px-4 py-12 md:py-16">
@@ -23,46 +23,47 @@ export default function U25ProTermsPage() {
         </Link>
 
         <h1 className="text-3xl md:text-4xl font-bold mb-4">
-          U25Pro — Terms of Use
+          GoalLab — Terms of Use
         </h1>
         <p className="text-sm text-white/60 mb-8">
-          Last updated: January 2026
+          Last updated: February 2026
         </p>
 
         <section className="space-y-6 text-sm md:text-base leading-relaxed text-white/90">
           <p>
-            Welcome to U25Pro. By downloading, installing, or using this application, you agree
+            Welcome to GoalLab. By downloading, installing, or using this application, you agree
             to be bound by these Terms of Use. If you do not agree to these terms, please do not
             use the app.
           </p>
 
           <h2 className="text-xl font-semibold mt-8">1. Nature of the Service</h2>
           <p>
-            U25Pro is an Under 2.5 Goals specialist football prediction application. It provides
-            predictions and statistical analysis focused specifically on identifying low-scoring
-            football matches based on historical data and team performance patterns.
+            GoalLab is a multi-model football prediction application. It analyses Over and Under
+            2.5 Goals markets using four independent statistical models, curating high-confidence
+            Best Picks based on model agreement and historical win rates. The app provides
+            confidence bands, transparent track records, and performance insights.
           </p>
           <p className="font-semibold text-yellow-400">
-            U25Pro is for informational and entertainment purposes only. Predictions are not
+            GoalLab is for informational and entertainment purposes only. Predictions are not
             guarantees of outcomes. Past performance does not guarantee future results.
           </p>
 
           <h2 className="text-xl font-semibold mt-8">2. No Gambling Advice</h2>
           <p>
-            U25Pro does not provide gambling, betting, or financial advice. The app presents
+            GoalLab does not provide gambling, betting, or financial advice. The app presents
             statistical analysis and predictions that users may choose to use at their own
             discretion. The developer does not recommend, encourage, or endorse gambling of any
             kind.
           </p>
           <p>
-            If you choose to use the information provided by U25Pro for betting purposes, you
+            If you choose to use the information provided by GoalLab for betting purposes, you
             do so entirely at your own risk. You are solely responsible for any decisions you make
             based on the app&apos;s content.
           </p>
 
           <h2 className="text-xl font-semibold mt-8">3. Age Requirement</h2>
           <p>
-            U25Pro is intended for users aged 18 years and older. By using this app, you
+            GoalLab is intended for users aged 18 years and older. By using this app, you
             confirm that you are at least 18 years of age. The app contains content related to
             betting markets and odds, which may be restricted in certain jurisdictions.
           </p>
@@ -79,7 +80,7 @@ export default function U25ProTermsPage() {
             <li>Seek help if gambling becomes a problem</li>
           </ul>
           <p className="mt-4">
-            For support with problem gambling, please contact organizations such as{' '}
+            For support with problem gambling, please contact organisations such as{' '}
             <a href="https://www.begambleaware.org" target="_blank" rel="noopener noreferrer" className="underline hover:text-cyan-300">
               BeGambleAware.org
             </a>{' '}
@@ -88,14 +89,14 @@ export default function U25ProTermsPage() {
 
           <h2 className="text-xl font-semibold mt-8">5. Advertising</h2>
           <p>
-            U25Pro displays advertisements through Google AdMob. By using the app, you agree to
+            GoalLab displays advertisements through Google AdMob. By using the app, you agree to
             the display of advertisements. You may remove advertisements by purchasing an ad-free
             subscription or lifetime access through the app.
           </p>
 
           <h2 className="text-xl font-semibold mt-8">6. Subscriptions and Purchases</h2>
           <p>
-            U25Pro offers ad-free access through in-app purchases managed by Apple&apos;s App Store:
+            GoalLab offers ad-free access through in-app purchases managed by Apple&apos;s App Store:
           </p>
           <ul className="list-disc list-inside space-y-1 ml-4">
             <li>Payment will be charged to your Apple ID account at confirmation of purchase</li>
@@ -111,7 +112,7 @@ export default function U25ProTermsPage() {
 
           <h2 className="text-xl font-semibold mt-8">7. Data Accuracy</h2>
           <p>
-            U25Pro uses third-party data sources for fixture information, statistics, and
+            GoalLab uses third-party data sources for fixture information, statistics, and
             match results. While we strive to provide accurate information, we cannot guarantee
             the accuracy, completeness, or timeliness of all data. Data may be delayed, incomplete,
             or contain errors.
@@ -123,7 +124,7 @@ export default function U25ProTermsPage() {
 
           <h2 className="text-xl font-semibold mt-8">8. Limitation of Liability</h2>
           <p>
-            To the fullest extent permitted by law, the developer of U25Pro shall not be
+            To the fullest extent permitted by law, the developer of GoalLab shall not be
             liable for any direct, indirect, incidental, special, consequential, or punitive
             damages arising from:
           </p>
@@ -137,14 +138,14 @@ export default function U25ProTermsPage() {
 
           <h2 className="text-xl font-semibold mt-8">9. Intellectual Property</h2>
           <p>
-            U25Pro, including its design, features, and content, is protected by copyright
+            GoalLab, including its design, features, and content, is protected by copyright
             and other intellectual property laws. You may not copy, modify, distribute, or create
             derivative works based on the app without express written permission.
           </p>
 
           <h2 className="text-xl font-semibold mt-8">10. Termination</h2>
           <p>
-            We reserve the right to terminate or suspend access to U25Pro at any time, without
+            We reserve the right to terminate or suspend access to GoalLab at any time, without
             notice, for conduct that we believe violates these Terms of Use or is harmful to other
             users, us, or third parties.
           </p>
@@ -170,7 +171,7 @@ export default function U25ProTermsPage() {
           <p className="mt-2">
             <span className="font-semibold">Email:</span>{' '}
             <a
-              href="mailto:jmclarenscripts@gmail.com?subject=U25Pro%20Terms%20of%20Use"
+              href="mailto:jmclarenscripts@gmail.com?subject=GoalLab%20Terms%20of%20Use"
               className="underline hover:text-cyan-300"
             >
               jmclarenscripts@gmail.com
@@ -179,11 +180,11 @@ export default function U25ProTermsPage() {
 
           <div className="mt-12 pt-8 border-t border-white/10">
             <p className="text-white/60 text-sm">
-              By using U25Pro, you acknowledge that you have read, understood, and agree to
+              By using GoalLab, you acknowledge that you have read, understood, and agree to
               be bound by these Terms of Use.
             </p>
             <p className="mt-4">
-              <Link href="/privacy/u25pro" className="underline hover:text-cyan-300">
+              <Link href="/privacy/goallab" className="underline hover:text-cyan-300">
                 View Privacy Policy
               </Link>
             </p>
