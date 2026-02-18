@@ -301,6 +301,8 @@ export const apps: App[] = [
     ],
     platform: 'iOS',
     status: 'in-review',
+    privacyUrl: '/privacy/maincode',
+    supportUrl: '/support/maincode',
   },
 ];
 
