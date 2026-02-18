@@ -56,6 +56,7 @@ export const apps: App[] = [
     ],
     platform: 'iOS',
     status: 'in-review',
+    googlePlayStatus: 'in-review',
     contentRatingUrl: '/goallab/content-rating',
     privacyUrl: '/privacy/goallab',
     termsUrl: '/terms/goallab',
