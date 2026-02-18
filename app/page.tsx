@@ -56,7 +56,7 @@ export default function Home() {
               Jamie&apos;s Portfolio
             </h1>
             <p className="text-base md:text-lg lg:text-xl text-white/90 max-w-2xl">
-              iOS, macOS & Android Developer - Real Apps, Built with a mix of Logic, Curiosity and AI-Assisted Development
+              macOS, iOS & Android Developer - Real Apps, Built with a mix of Logic, Curiosity and AI-Assisted Development
             </p>
           </div>
         </div>
