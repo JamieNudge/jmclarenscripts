@@ -161,15 +161,25 @@ export default function AppCarousel({ apps, onAppSelect }: AppCarouselProps) {
                       </p>
                     </div>
 
-                    {/* Status badge */}
-                    <div className="absolute top-12 right-4 z-20">
+                    {/* Status badge(s) */}
+                    <div className="absolute top-12 right-4 z-20 flex flex-wrap gap-1 justify-end max-w-[60%]">
                       <span className={`px-3 py-1 rounded-full text-xs font-bold shadow-lg ${
                         app.status === 'live' ? 'bg-green-400 text-green-900' :
                         app.status === 'beta' ? 'bg-yellow-400 text-yellow-900' :
+                        app.status === 'in-review' ? 'bg-blue-400 text-blue-900' :
                         'bg-purple-400 text-purple-900'
                       }`}>
-                        {app.status.toUpperCase()}
+                        {app.status === 'in-review' ? 'App Store Review' : app.status.toUpperCase()}
                       </span>
+                      {app.googlePlayStatus && (
+                        <span className={`px-3 py-1 rounded-full text-xs font-bold shadow-lg ${
+                          app.googlePlayStatus === 'in-review' ? 'bg-blue-400 text-blue-900' :
+                          app.googlePlayStatus === 'live' ? 'bg-green-400 text-green-900' :
+                          'bg-yellow-400 text-yellow-900'
+                        }`}>
+                          {app.googlePlayStatus === 'in-review' ? 'Google Play Review' : app.googlePlayStatus.toUpperCase()}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>

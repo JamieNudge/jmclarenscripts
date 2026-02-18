@@ -17,5 +17,7 @@ export interface App {
   accessibilityUrl?: string;
   platform: 'iOS' | 'macOS' | 'Web' | 'Cross-platform';
   status: 'live' | 'beta' | 'coming-soon' | 'in-review';
+  /** When set, show a second badge for Android/Google Play (e.g. app is Live on iOS but in review on Google Play). */
+  googlePlayStatus?: 'live' | 'beta' | 'coming-soon' | 'in-review';
 }
 

@@ -59,7 +59,7 @@ export default function AppDetailModal({ app, onClose }: AppDetailModalProps) {
             </div>
             <h2 className="text-4xl font-bold mb-2">{app.name}</h2>
             <p className="text-xl text-white/90">{app.tagline}</p>
-            <div className="flex gap-3 mt-4">
+            <div className="flex flex-wrap gap-3 mt-4">
               <span className="px-4 py-2 bg-white/20 rounded-full backdrop-blur-sm text-sm font-semibold">
                 {app.platform}
               </span>
@@ -71,6 +71,16 @@ export default function AppDetailModal({ app, onClose }: AppDetailModalProps) {
               }`}>
                 {app.status === 'in-review' ? 'In App Store Review' : app.status.toUpperCase()}
               </span>
+              {app.googlePlayStatus && (
+                <span className={`px-4 py-2 rounded-full text-sm font-bold ${
+                  app.googlePlayStatus === 'in-review' ? 'bg-blue-400 text-blue-900' :
+                  app.googlePlayStatus === 'live' ? 'bg-green-400 text-green-900' :
+                  app.googlePlayStatus === 'beta' ? 'bg-yellow-400 text-yellow-900' :
+                  'bg-purple-400 text-purple-900'
+                }`}>
+                  {app.googlePlayStatus === 'in-review' ? 'In Google Play Review' : app.googlePlayStatus.toUpperCase()}
+                </span>
+              )}
             </div>
           </div>
 

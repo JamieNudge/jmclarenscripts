@@ -56,7 +56,7 @@ export default function Home() {
               Jamie&apos;s Portfolio
             </h1>
             <p className="text-base md:text-lg lg:text-xl text-white/90 max-w-2xl">
-              iOS & macOS Developer - Real Apps, Built with a mix of Logic, Curiosity and AI-Assisted Development
+              iOS, macOS & Android Developer - Real Apps, Built with a mix of Logic, Curiosity and AI-Assisted Development
             </p>
           </div>
         </div>
@@ -183,6 +183,19 @@ export default function Home() {
                     >
                       {app.status === 'in-review' ? 'In App Store Review' : app.status.toUpperCase()}
                     </span>
+                    {app.googlePlayStatus && (
+                      <span
+                        className={`px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-semibold ${
+                          app.googlePlayStatus === 'in-review'
+                            ? 'bg-blue-400 text-blue-900'
+                            : app.googlePlayStatus === 'live'
+                            ? 'bg-green-400 text-green-900'
+                            : 'bg-yellow-400 text-yellow-900'
+                        }`}
+                      >
+                        {app.googlePlayStatus === 'in-review' ? 'In Google Play Review' : app.googlePlayStatus.toUpperCase()}
+                      </span>
+                    )}
                   </div>
                   <p className="text-xs sm:text-sm text-white/70 line-clamp-2">
                     {app.tagline}

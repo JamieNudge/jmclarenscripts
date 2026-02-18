@@ -150,6 +150,7 @@ export const apps: App[] = [
     ],
     platform: 'iOS',
     status: 'live',
+    googlePlayStatus: 'in-review',
     appStoreUrl: 'https://apps.apple.com/gb/app/statstrike/id6757434374',
     contentRatingUrl: '/statstrike/content-rating',
     privacyUrl: '/privacy/statstrike',
@@ -299,7 +300,7 @@ export const apps: App[] = [
       'SwiftUI, Firebase Auth & Realtime Database',
     ],
     platform: 'iOS',
-    status: 'beta',
+    status: 'in-review',
   },
 ];
 
