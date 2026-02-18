@@ -122,12 +122,9 @@ export default function Home() {
       {/* Apps List – compact, scan-friendly rows */}
       <section className="relative z-10 py-8 px-4">
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-lg font-semibold text-white/90 mb-3">
+          <h2 className="text-lg font-semibold text-white/90 mb-4">
             Apps overview
           </h2>
-          <p className="text-sm text-white/60 mb-4">
-            Small previews with quick-read titles and taglines for fast scanning.
-          </p>
 
           <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 divide-y divide-white/5">
             {apps.map((app) => (
