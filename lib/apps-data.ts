@@ -106,7 +106,7 @@ export const apps: App[] = [
       'Placeholder — features to be added',
     ],
     platform: 'Cross-platform',
-    status: 'coming-soon',
+    status: 'beta',
     privacyUrl: '/privacy/contact-care',
     supportUrl: '/support/contact-care',
   },
