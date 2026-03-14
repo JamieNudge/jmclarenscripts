@@ -26,6 +26,12 @@ Use these full URLs in app store listings (e.g. Google Play, App Store) and in-a
 
 ---
 
+## Contact Care
+- Privacy: https://jmclarenscripts.vercel.app/privacy/contact-care
+- Support: https://jmclarenscripts.vercel.app/support/contact-care
+
+---
+
 ## Other apps
 - Nudgetronic: `/privacy/nudgetronic`, `/support/nudgetronic`
 - Recipe Saviour: `/privacy/recipe-saviour`, `/support/recipe-saviour`

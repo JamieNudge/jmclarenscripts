@@ -89,6 +89,28 @@ export const apps: App[] = [
     supportUrl: '/support/maincode',
   },
   {
+    id: 'contact-care',
+    name: 'Contact Care',
+    tagline: 'Cross-platform contact management',
+    description:
+      'Contact Care is a cross-platform app for managing and caring for your contacts. Placeholder — full description and features to be added.',
+    color: '#14B8A6',
+    icon: '/images/contact-care-icon.png',
+    screenshots: [
+      '/images/contact-care-1.png',
+      '/images/contact-care-2.png',
+      '/images/contact-care-3.png',
+    ],
+    features: [
+      'Cross-platform (iOS & Android)',
+      'Placeholder — features to be added',
+    ],
+    platform: 'Cross-platform',
+    status: 'coming-soon',
+    privacyUrl: '/privacy/contact-care',
+    supportUrl: '/support/contact-care',
+  },
+  {
     id: 'draw-with-friends',
     name: 'Draw With Friends',
     tagline: 'Real-time collaborative drawing',
