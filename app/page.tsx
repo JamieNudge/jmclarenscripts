@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import AppDetailModal from '@/components/AppDetailModal';
 import { apps } from '@/lib/apps-data';
 import { App } from '@/types/app';
@@ -245,6 +246,9 @@ export default function Home() {
             >
               GitHub
             </a>
+            <Link href="/privacy" className="hover:text-white transition-colors">
+              Privacy
+            </Link>
           </div>
           <p className="text-xs opacity-60">
             © {new Date().getFullYear()} Jamie McLaren. All rights reserved.
