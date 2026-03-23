@@ -21,7 +21,7 @@ export default function RootLayout({
         <Script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6299348707363839"
-          strategy="afterInteractive"
+          strategy="beforeInteractive"
           crossOrigin="anonymous"
         />
         {children}
