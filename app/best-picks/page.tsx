@@ -54,18 +54,18 @@ function AdLayoutPlaceholder({
 export default function BestPicksPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#111827] to-[#1f2937] text-white flex flex-col">
-      <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-10 md:py-14 lg:px-6">
-        <div className="flex justify-end mb-8">
-          <Link
-            href="/privacy"
-            className="text-sm text-white/70 hover:text-white underline-offset-2 hover:underline"
-          >
-            Privacy policy
-          </Link>
-        </div>
+      <div className="flex flex-1 flex-col lg:flex-row lg:min-h-0 w-full min-h-0">
+        <div className="flex-1 min-w-0 px-4 py-10 md:py-14 lg:px-6 lg:pr-8">
+          <div className="max-w-6xl mx-auto w-full">
+            <div className="flex justify-end mb-8">
+              <Link
+                href="/privacy"
+                className="text-sm text-white/70 hover:text-white underline-offset-2 hover:underline"
+              >
+                Privacy policy
+              </Link>
+            </div>
 
-        <div className="flex flex-col lg:flex-row lg:items-start gap-8 lg:gap-10">
-          <div className="flex-1 min-w-0">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-8 md:mb-10">
               Today&apos;s Best Picks
             </h1>
@@ -120,14 +120,14 @@ export default function BestPicksPage() {
               </div>
             </div>
           </div>
-
-          <aside className="lg:w-36 xl:w-40 flex-shrink-0 lg:pt-2">
-            <AdLayoutPlaceholder
-              orientation="vertical"
-              className="min-h-[200px] lg:min-h-[min(360px,45vh)] w-full"
-            />
-          </aside>
         </div>
+
+        <aside className="hidden lg:flex w-[150px] xl:w-[170px] flex-shrink-0 flex-col border-l border-white/10 bg-black/15">
+          <AdLayoutPlaceholder
+            orientation="vertical"
+            className="flex-1 w-full min-h-[min(360px,45vh)] lg:min-h-[min(560px,72vh)] rounded-l-lg border-y-0 border-r-0 border-l-0"
+          />
+        </aside>
       </div>
 
       <footer className="w-full border-t border-white/10 bg-black/20 mt-auto">
