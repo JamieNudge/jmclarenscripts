@@ -213,7 +213,11 @@ function PickPanel({
         </p>
       )}
 
-      {!state.error && !waiting && state.picks.length > 0 && !hasLp && (
+      {!state.error &&
+        !waiting &&
+        state.picks.length > 0 &&
+        !hasLp &&
+        filtered.length === 0 && (
         <p className="text-sm text-white/60 leading-relaxed">
           Today&apos;s selection has no <code className="text-xs text-white/50">leaguePerformance</code>{' '}
           map (no leagues met the best-performing threshold, or data not uploaded).
@@ -351,6 +355,12 @@ export function FirebasePicksPanels() {
 
   return (
     <>
+      <p className="sm:col-span-2 text-[11px] text-white/40 -mt-2 mb-1 leading-relaxed">
+        Data paths use calendar date{' '}
+        <code className="text-white/55 text-[10px]">{dateKey}</code>
+        <span className="text-white/30"> · {picksTimeZoneFromEnv()}</span>
+        {' — '}admin saves must use the same date to appear here.
+      </p>
       {configHint && (
         <div className="sm:col-span-2 rounded-xl border border-amber-400/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100/95 leading-relaxed">
           Firebase is not configured. Copy{' '}

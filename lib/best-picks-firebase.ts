@@ -89,11 +89,17 @@ export function isBestPerformingLeaguePick(p: PickRecord): boolean {
   return false;
 }
 
+/** True for owner-added rows (website admin API), including loose RTDB/JSON shapes. */
+export function isManualEditorPick(p: PickRecord): boolean {
+  const v = p._bestPicksManualEditor;
+  return v === true || v === 1 || v === 'true';
+}
+
 export function pickPassesBestFilter(
   p: PickRecord,
   leagueWinRates: Record<string, number>,
 ): boolean {
-  if (p._bestPicksManualEditor === true) return true;
+  if (isManualEditorPick(p)) return true;
   return isInBestPerformingLeagues(p, leagueWinRates) || isBestPerformingLeaguePick(p);
 }
 
@@ -144,7 +150,7 @@ function formatKickoffField(v: unknown): string | null {
 
 export function pickDisplaySubtitle(p: PickRecord): string | null {
   const parts: string[] = [];
-  if (p._bestPicksManualEditor === true) parts.push('Editor pick');
+  if (isManualEditorPick(p)) parts.push('Editor pick');
   const league = p.league;
   if (typeof league === 'string' && league.trim()) parts.push(league.trim());
   const kickoff = formatKickoffField(p.kickoff ?? p.time ?? p.date);
@@ -188,7 +194,7 @@ export function statStrikeRtdbPathsFromEnv(dateKey: string): {
 
 /** Tag manual-export rows so they always pass the best-leagues filter on the public page. */
 export function ensureManualEditorTag(p: PickRecord): PickRecord {
-  if (p._bestPicksManualEditor === true) return p;
+  if (isManualEditorPick(p)) return p;
   return { ...p, _bestPicksManualEditor: true };
 }
 
