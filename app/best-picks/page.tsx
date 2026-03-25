@@ -1,14 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { AdSenseOrPlaceholder } from '@/components/AdSenseOrPlaceholder';
 import { FirebasePicksPanels } from '@/components/best-picks/FirebasePicksPanels';
 import { apps } from '@/lib/apps-data';
 import type { App } from '@/types/app';
-
-const bestPicksSidebarAdSlot =
-  process.env.NEXT_PUBLIC_ADSENSE_SLOT_BEST_PICKS_SIDEBAR ?? '';
-const bestPicksFooterAdSlot =
-  process.env.NEXT_PUBLIC_ADSENSE_SLOT_BEST_PICKS_FOOTER ?? '';
 
 export const metadata: Metadata = {
   title: "Today's Best Picks",
@@ -27,6 +21,33 @@ function storeLinkAccentClass(appId: string) {
   if (appId === 'stat-strike') return 'text-emerald-300 group-hover:text-emerald-200';
   if (appId === 'goallab') return 'text-cyan-300 group-hover:text-cyan-200';
   return 'text-white/90 group-hover:text-white';
+}
+
+/** Layout-only guides; Google Auto ads inject from the root layout script. */
+function AdLayoutPlaceholder({
+  orientation,
+  className = '',
+}: {
+  orientation: 'vertical' | 'horizontal';
+  className?: string;
+}) {
+  return (
+    <div
+      className={`rounded-xl border border-dashed border-white/25 bg-black/20 flex items-center justify-center text-white/35 text-[10px] md:text-xs font-medium uppercase tracking-wider text-center px-2 ${className}`}
+      aria-hidden
+    >
+      {orientation === 'vertical' ? (
+        <span
+          className="inline-block [writing-mode:vertical-rl] rotate-180 py-4"
+          style={{ letterSpacing: '0.2em' }}
+        >
+          Auto ads area
+        </span>
+      ) : (
+        <span className="px-4 py-3">Auto ads may also appear in-page via Google</span>
+      )}
+    </div>
+  );
 }
 
 export default function BestPicksPage() {
@@ -122,8 +143,7 @@ export default function BestPicksPage() {
           </div>
 
           <aside className="lg:w-36 xl:w-40 flex-shrink-0 lg:pt-2">
-            <AdSenseOrPlaceholder
-              slot={bestPicksSidebarAdSlot}
+            <AdLayoutPlaceholder
               orientation="vertical"
               className="min-h-[200px] lg:min-h-[min(360px,45vh)] w-full"
             />
@@ -140,12 +160,7 @@ export default function BestPicksPage() {
             <span className="text-white/25"> · </span>
             Google ads may appear on this page; the privacy policy covers cookies and how ads work.
           </p>
-          <AdSenseOrPlaceholder
-            slot={bestPicksFooterAdSlot}
-            orientation="horizontal"
-            className="w-full min-h-[90px]"
-            minHeight="90px"
-          />
+          <AdLayoutPlaceholder orientation="horizontal" className="w-full min-h-[90px]" />
         </div>
       </footer>
     </main>
