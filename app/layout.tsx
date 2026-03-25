@@ -5,6 +5,9 @@ import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
+const ADSENSE_CLIENT_ID =
+  process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID ?? "ca-pub-6299348707363839";
+
 export const metadata: Metadata = {
   title: "Jamie's App Portfolio",
   description: "Showcase of innovative mobile and desktop applications",
@@ -20,7 +23,7 @@ export default function RootLayout({
       <body className={`${inter.className} antialiased`}>
         <Script
           async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6299348707363839"
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${encodeURIComponent(ADSENSE_CLIENT_ID)}`}
           strategy="beforeInteractive"
           crossOrigin="anonymous"
         />

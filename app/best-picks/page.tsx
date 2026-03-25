@@ -1,8 +1,14 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { AdSenseOrPlaceholder } from '@/components/AdSenseOrPlaceholder';
 import { FirebasePicksPanels } from '@/components/best-picks/FirebasePicksPanels';
 import { apps } from '@/lib/apps-data';
 import type { App } from '@/types/app';
+
+const bestPicksSidebarAdSlot =
+  process.env.NEXT_PUBLIC_ADSENSE_SLOT_BEST_PICKS_SIDEBAR ?? '';
+const bestPicksFooterAdSlot =
+  process.env.NEXT_PUBLIC_ADSENSE_SLOT_BEST_PICKS_FOOTER ?? '';
 
 export const metadata: Metadata = {
   title: "Today's Best Picks",
@@ -21,32 +27,6 @@ function storeLinkAccentClass(appId: string) {
   if (appId === 'stat-strike') return 'text-emerald-300 group-hover:text-emerald-200';
   if (appId === 'goallab') return 'text-cyan-300 group-hover:text-cyan-200';
   return 'text-white/90 group-hover:text-white';
-}
-
-function AdPlaceholder({
-  orientation,
-  className = '',
-}: {
-  orientation: 'vertical' | 'horizontal';
-  className?: string;
-}) {
-  return (
-    <div
-      className={`rounded-xl border border-dashed border-white/25 bg-black/20 flex items-center justify-center text-white/40 text-xs font-medium uppercase tracking-wider ${className}`}
-      aria-hidden
-    >
-      {orientation === 'vertical' ? (
-        <span
-          className="inline-block [writing-mode:vertical-rl] rotate-180 py-4"
-          style={{ letterSpacing: '0.2em' }}
-        >
-          Ad placeholder
-        </span>
-      ) : (
-        <span className="px-4 py-3">Ad placeholder — AdSense</span>
-      )}
-    </div>
-  );
 }
 
 export default function BestPicksPage() {
@@ -78,16 +58,9 @@ export default function BestPicksPage() {
 
         <div className="flex flex-col lg:flex-row lg:items-start gap-8 lg:gap-10">
           <div className="flex-1 min-w-0">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-3 md:mb-4">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-8 md:mb-10">
               Today&apos;s Best Picks
             </h1>
-            <p className="text-sm text-white/55 mb-8 md:mb-10 max-w-2xl">
-              This page may show Google ads. See the{' '}
-              <Link href="/privacy" className="underline hover:text-white/90">
-                privacy policy
-              </Link>{' '}
-              for cookies and how ads work on this site.
-            </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5">
               <FirebasePicksPanels />
@@ -149,7 +122,8 @@ export default function BestPicksPage() {
           </div>
 
           <aside className="lg:w-36 xl:w-40 flex-shrink-0 lg:pt-2">
-            <AdPlaceholder
+            <AdSenseOrPlaceholder
+              slot={bestPicksSidebarAdSlot}
               orientation="vertical"
               className="min-h-[200px] lg:min-h-[min(360px,45vh)] w-full"
             />
@@ -159,12 +133,19 @@ export default function BestPicksPage() {
 
       <footer className="w-full border-t border-white/10 bg-black/20 mt-auto">
         <div className="max-w-6xl mx-auto px-4 py-6 lg:px-6 space-y-4">
-          <p className="text-center text-xs text-white/50">
-            <Link href="/privacy" className="underline hover:text-white/80">
+          <p className="text-center text-[11px] md:text-xs text-white/35 leading-relaxed max-w-md mx-auto">
+            <Link href="/privacy" className="underline hover:text-white/55 underline-offset-2">
               Privacy policy
             </Link>
+            <span className="text-white/25"> · </span>
+            Google ads may appear on this page; the privacy policy covers cookies and how ads work.
           </p>
-          <AdPlaceholder orientation="horizontal" className="w-full min-h-[90px]" />
+          <AdSenseOrPlaceholder
+            slot={bestPicksFooterAdSlot}
+            orientation="horizontal"
+            className="w-full min-h-[90px]"
+            minHeight="90px"
+          />
         </div>
       </footer>
     </main>

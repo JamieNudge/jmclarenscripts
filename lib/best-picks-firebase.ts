@@ -112,16 +112,32 @@ export function pickDisplayTitle(p: PickRecord): string {
   return 'Pick';
 }
 
+/** Kick-off as people read it: `25/03/2026 19:45 UTC` (always UTC for numeric / ISO values). */
+function formatKickoffUtc(ms: number): string {
+  const d = new Date(ms);
+  if (Number.isNaN(d.getTime())) return '';
+  const dd = String(d.getUTCDate()).padStart(2, '0');
+  const mm = String(d.getUTCMonth() + 1).padStart(2, '0');
+  const yyyy = d.getUTCFullYear();
+  const hh = String(d.getUTCHours()).padStart(2, '0');
+  const min = String(d.getUTCMinutes()).padStart(2, '0');
+  return `${dd}/${mm}/${yyyy} ${hh}:${min} UTC`;
+}
+
 function formatKickoffField(v: unknown): string | null {
   if (v == null) return null;
   if (typeof v === 'number' && Number.isFinite(v)) {
-    try {
-      return new Date(v).toLocaleString(undefined, { dateStyle: 'short', timeStyle: 'short' });
-    } catch {
-      return null;
-    }
+    const ms = v < 10_000_000_000 ? v * 1000 : v;
+    const s = formatKickoffUtc(ms);
+    return s || null;
   }
-  if (typeof v === 'string' && v.trim()) return v.trim();
+  if (typeof v === 'string') {
+    const t = v.trim();
+    if (!t) return null;
+    const parsed = Date.parse(t);
+    if (!Number.isNaN(parsed)) return formatKickoffUtc(parsed) || t;
+    return t;
+  }
   return null;
 }
 
