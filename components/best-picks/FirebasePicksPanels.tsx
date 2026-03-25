@@ -38,9 +38,12 @@ function PickPanel({
   const hasLp = Object.keys(leagueWinRates).length > 0;
   const waiting = state.loading || !state.ready || !selectionReady;
 
+  /** ~5 pick rows visible; more scroll inside the panel (not the whole page). */
+  const listMaxHeightClass = 'max-h-[min(22rem,50vh)]';
+
   return (
-    <div className="rounded-2xl border border-white/15 bg-white/5 p-6 md:p-8 min-h-[160px] flex flex-col justify-center">
-      <h2 className="text-lg md:text-xl font-semibold text-white mb-2">{label}</h2>
+    <div className="rounded-2xl border border-white/15 bg-white/5 p-6 md:p-8 min-h-[160px] flex flex-col justify-start">
+      <h2 className="text-lg md:text-xl font-semibold text-white mb-2 shrink-0">{label}</h2>
 
       {state.error && (
         <p className="text-sm text-red-300/90 leading-relaxed" role="alert">
@@ -72,24 +75,28 @@ function PickPanel({
       )}
 
       {!state.error && !waiting && filtered.length > 0 && (
-        <ul className="space-y-3 mt-1">
-          {filtered.map((p, i) => {
-            const key =
-              (typeof p.id === 'number' && String(p.id)) ||
-              (typeof p.id === 'string' && p.id) ||
-              `${pickDisplayTitle(p)}-${i}`;
-            const sub = pickDisplaySubtitle(p);
-            return (
-              <li
-                key={key}
-                className="rounded-xl border border-white/10 bg-black/20 px-3 py-2.5"
-              >
-                <p className="text-sm font-medium text-white">{pickDisplayTitle(p)}</p>
-                {sub && <p className="text-xs text-white/55 mt-0.5">{sub}</p>}
-              </li>
-            );
-          })}
-        </ul>
+        <div
+          className={`mt-1 min-h-0 ${listMaxHeightClass} overflow-y-auto overflow-x-hidden overscroll-y-contain pr-1 -mr-0.5 [scrollbar-gutter:stable] scroll-smooth`}
+        >
+          <ul className="space-y-3 pb-0.5">
+            {filtered.map((p, i) => {
+              const key =
+                (typeof p.id === 'number' && String(p.id)) ||
+                (typeof p.id === 'string' && p.id) ||
+                `${pickDisplayTitle(p)}-${i}`;
+              const sub = pickDisplaySubtitle(p);
+              return (
+                <li
+                  key={key}
+                  className="rounded-xl border border-white/10 bg-black/20 px-3 py-2.5 shrink-0"
+                >
+                  <p className="text-sm font-medium text-white">{pickDisplayTitle(p)}</p>
+                  {sub && <p className="text-xs text-white/55 mt-0.5">{sub}</p>}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       )}
     </div>
   );
