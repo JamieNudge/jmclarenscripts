@@ -131,7 +131,136 @@ npm run dev
 
 ---
 
-## Part D — Database rules (if you see permission errors)
+## Part D — Owner admin: add your own picks + YouTube video (spoon-feed)
+
+This is **optional**. Skip until you want picks or a video that **you** type in, instead of only what the Mac forecaster uploads.
+
+**Idea in one sentence:** You open a **secret URL** on your site, paste a **password** you invented, fill a form, click **Save**. The server writes to Firebase; **`/best-picks`** updates automatically (no redeploy).
+
+### D1 — What gets stored where
+
+| Path in Realtime Database | Who writes it | What it’s for |
+|---------------------------|---------------|----------------|
+| `unanimousExports/{date}` | Mac app | Forecaster (leave it alone) |
+| `selections/{date}` | Mac app | League performance map |
+| **`manualExports/{date}`** | **Your admin page (via API)** | **Your** extra Over/Under picks + **YouTube** id + optional title |
+
+The public page **merges** manual picks **on top of** (before) forecaster picks. Manual rows show **“Editor pick”** in the subtitle and always appear (they don’t need the “best performing league” filter).
+
+The **Video** box on `/best-picks` reads **`youtubeId`** and **`videoTitle`** from the **same** `manualExports/{date}` object.
+
+### D2 — One-time: create the admin password (you invent it)
+
+1. Open **Passwords** (Apple) or any generator.
+2. Create a **long random string** (e.g. 32+ characters). Example shape: `k7QmP9x...` (don’t use this one).
+3. **Save it** somewhere safe (password manager). This value will be **`ADMIN_MANUAL_PICKS_KEY`**.  
+   **Nobody else should know it.** It is not stored in Git.
+
+### D3 — One-time: Firebase service account JSON (lets the *server* write Firebase)
+
+The **browser** is not allowed to write `manualExports` (by design). **Vercel’s server** uses a **service account** file.
+
+1. Open **[Firebase Console](https://console.firebase.google.com)** → your project.
+2. **Gear** → **Project settings** → tab **Service accounts**.
+3. Click **Generate new private key** → confirm → a **`.json`** file downloads.
+4. **Open that file in TextEdit** (or Cursor). It is one JSON object with keys like `type`, `project_id`, `private_key`, etc.
+5. **Copy the entire file contents** (from `{` to `}`).
+6. **Minify to one line** (recommended for Vercel):
+   - Easiest: paste into an online “JSON minify” tool, **or**
+   - In Cursor: put the JSON in a temp file and remove the line breaks so it’s **one single line**.
+
+You will paste that **one line** into Vercel as **`FIREBASE_SERVICE_ACCOUNT_JSON`** (next step).
+
+**Security:** Treat this JSON like a password. Never commit it to GitHub. Never paste it in Discord/email.
+
+### D4 — Add three environment variables on Vercel
+
+1. **[vercel.com](https://vercel.com)** → your project → **Settings** → **Environment Variables**.
+
+2. Add:
+
+   | Name | Value | Notes |
+   |------|--------|--------|
+   | **`ADMIN_MANUAL_PICKS_KEY`** | The long password from **D2** | Production (and Preview if you use admin there) |
+   | **`FIREBASE_SERVICE_ACCOUNT_JSON`** | The **one-line** JSON from **D3** | Same |
+   | **`FIREBASE_DATABASE_URL`** (optional) | Same as **`NEXT_PUBLIC_FIREBASE_DATABASE_URL`** | Only if the server complains it can’t find the DB URL |
+
+3. **Save**, then **Redeploy** the project (Deployments → ⋯ → Redeploy).  
+   Server-side env vars are read at **runtime** for the API route, but a redeploy avoids confusion.
+
+### D5 — One-time: Realtime Database rules for `manualExports`
+
+Browsers should **read** `manualExports` (the public site does). Browsers should **not** **write** it (only your API uses Admin SDK).
+
+1. Firebase Console → **Realtime Database** → **Rules**.
+2. Ensure you have a block that **allows read** and **denies write** for clients, for example:
+
+```json
+"manualExports": {
+  ".read": true,
+  ".write": false
+}
+```
+
+Merge that into your existing JSON (don’t duplicate the outer `"rules": { ... }` wrapper). More detail: **`docs/FIREBASE_RTDB_RULES_MANUAL_EXPORTS.md`**.
+
+3. **Publish** rules.
+
+### D6 — Local testing (optional)
+
+If you run **`npm run dev`** on your Mac and want the admin API to work **locally**:
+
+1. Add to **`.env.local`** (same folder as `package.json`):
+
+```env
+ADMIN_MANUAL_PICKS_KEY=paste_the_same_password_as_vercel
+FIREBASE_SERVICE_ACCOUNT_JSON={"type":"service_account",...one line...}
+```
+
+2. Restart **`npm run dev`**.
+
+### D7 — How you use it **every day** (the actual clicks)
+
+1. **Open the admin page** in your browser (not linked from the public site — bookmark it):
+   - Live site: **`https://YOUR_DOMAIN/admin/picks`**  
+   - Local: **`http://localhost:3000/admin/picks`**
+
+2. **Section “1. Admin key”**  
+   - Paste **`ADMIN_MANUAL_PICKS_KEY`** (the password from D2).  
+   - Optional: tick **Remember key in this browser** if you trust that computer.
+
+3. **Section “2. Date & load”**  
+   - **Date** must be **`YYYY-MM-DD`** and must match the **same “today”** the Best Picks page uses (UK calendar day by default — same as Part F below).  
+   - Click **Load from Firebase** to pull whatever is already saved for that date (or empty lists).
+
+4. **Section “3. Add picks”**  
+   - Choose **Over 2.5** or **Under 2.5**.  
+   - Fill **Home team** and **Away team** (required). League / country / kickoff optional.  
+   - Click **Add pick to list**.  
+   - Repeat as needed. **Remove** clears one row from the list (only in the form until you Save).
+
+5. **Section “4. Video (YouTube)”**  
+   - Paste a full **YouTube watch URL**, a **`youtu.be/...`** link, or the **11-character video ID**.  
+   - Optional **Title** shows above the player on `/best-picks`.  
+   - Leave the URL **empty** and Save to **remove** the video for that date.
+
+6. Click **Save everything to Firebase**.  
+   - You should see **Saved to manualExports/…**.  
+   - Open **`/best-picks`** in another tab: your picks and video should show (may take a second).
+
+### D8 — If something goes wrong
+
+| Symptom | What to check |
+|---------|----------------|
+| **401 Unauthorized** | Admin key wrong, or missing **`Authorization`** (typo in key on Vercel). |
+| **503 / Server misconfigured** | **`ADMIN_MANUAL_PICKS_KEY`** or **`FIREBASE_SERVICE_ACCOUNT_JSON`** missing on Vercel. |
+| **500 with JSON error** | Service account JSON invalid (not one valid JSON object); or wrong **`FIREBASE_DATABASE_URL`**. |
+| **Save works but nothing on /best-picks** | **Date** on admin form ≠ date the page uses (timezone). Compare with Part F. |
+| **Permission denied** on public page | Rules must **allow read** on **`manualExports`**. |
+
+---
+
+## Part E — Database rules (if you see permission errors)
 
 1. Firebase Console → **Realtime Database** → **Rules**.
 
@@ -139,14 +268,15 @@ npm run dev
 
    - `unanimousExports/{date}`
    - `selections/{date}`
+   - **`manualExports/{date}`** (if you use the owner admin — Part D)
 
-3. **Do not** leave wide-open read/write on production long-term. Tighten rules once you’re happy (e.g. read-only on those branches only).
+3. **Do not** leave wide-open read/write on production long-term. Tighten rules once you’re happy (e.g. read-only on those branches only). **Writes** to **`manualExports`** should stay **false** for clients if you use Part D (server writes only).
 
 If rules block reads, the page may show an error or stay empty.
 
 ---
 
-## Part E — What “today” means
+## Part F — What “today” means
 
 The site builds the path date as **calendar day** in **`Europe/London`** by default (`NEXT_PUBLIC_PICKS_DATE_TIMEZONE`).
 
@@ -167,6 +297,8 @@ That date should match how your **Mac app** names the upload (`DailySelection.da
 | Permission / denied errors | Realtime Database **rules** blocking read |
 | Empty lists, “no leaguePerformance” | No upload for that date, or no leagues hit the 70%+ threshold in the Mac app |
 | Works locally, not on Vercel | Env vars not set on Vercel or **no redeploy** after adding them |
+| Admin **401** / **503** | See **Part D8** (admin key + service account on Vercel) |
+| Manual picks / video don’t show | Wrong **date** vs timezone; or rules block **read** on `manualExports` |
 
 ---
 
@@ -178,7 +310,12 @@ That date should match how your **Mac app** names the upload (`DailySelection.da
 | `.env.local` | Your real keys — **local only**. |
 | `lib/firebase-client.ts` | Initializes Firebase in the browser. |
 | `lib/best-picks-firebase.ts` | Paths, date, league key matching Mac app. |
-| `components/best-picks/FirebasePicksPanels.tsx` | Live listeners + UI. |
+| `lib/firebase-admin.ts` | Server-only Firebase Admin (writes `manualExports`). |
+| `app/api/admin/manual-picks/route.ts` | Owner API (Bearer key + service account). |
+| `app/admin/picks/page.tsx` | Owner form UI. |
+| `components/best-picks/FirebasePicksPanels.tsx` | Live listeners + UI (merged picks). |
+| `components/best-picks/BestPicksVideo.tsx` | YouTube embed from `manualExports`. |
+| `docs/FIREBASE_RTDB_RULES_MANUAL_EXPORTS.md` | Suggested rules for `manualExports`. |
 
 ---
 
