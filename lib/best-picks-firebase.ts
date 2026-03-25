@@ -92,7 +92,9 @@ export function isBestPerformingLeaguePick(p: PickRecord): boolean {
 /** True for owner-added rows (website admin API), including loose RTDB/JSON shapes. */
 export function isManualEditorPick(p: PickRecord): boolean {
   const v = p._bestPicksManualEditor;
-  return v === true || v === 1 || v === 'true';
+  if (v === true || v === 1) return true;
+  if (typeof v === 'string' && v.trim().toLowerCase() === 'true') return true;
+  return false;
 }
 
 export function pickPassesBestFilter(

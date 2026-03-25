@@ -182,16 +182,15 @@ function PickPanel({
   label,
   state,
   leagueWinRates,
-  selectionReady,
 }: {
   label: string;
   state: PanelState;
   leagueWinRates: Record<string, number>;
-  selectionReady: boolean;
 }) {
   const filtered = state.picks.filter((p) => pickPassesBestFilter(p, leagueWinRates));
   const hasLp = Object.keys(leagueWinRates).length > 0;
-  const waiting = state.loading || !state.ready || !selectionReady;
+  /** Do not wait for `selections/{date}`: empty league map already filters non-manual picks; manual rows must show immediately. */
+  const waiting = state.loading || !state.ready;
 
   return (
     <div className="rounded-2xl border border-white/15 bg-white/5 p-6 md:p-8 min-h-[160px] flex flex-col justify-start">
@@ -269,13 +268,11 @@ export function FirebasePicksPanels() {
     ready: false,
   });
   const [leagueWinRates, setLeagueWinRates] = useState<Record<string, number>>({});
-  const [selectionReady, setSelectionReady] = useState(false);
 
   useEffect(() => {
     if (!isFirebaseClientConfigured()) {
       setOver({ picks: [], loading: false, error: null, ready: true });
       setUnder({ picks: [], loading: false, error: null, ready: true });
-      setSelectionReady(true);
       return;
     }
 
@@ -284,7 +281,6 @@ export function FirebasePicksPanels() {
       const err = 'Could not open Realtime Database.';
       setOver((s) => ({ ...s, loading: false, error: err, ready: true }));
       setUnder((s) => ({ ...s, loading: false, error: err, ready: true }));
-      setSelectionReady(true);
       return;
     }
 
@@ -295,12 +291,10 @@ export function FirebasePicksPanels() {
 
     let unanimousVal: unknown = null;
     let manualVal: unknown = null;
-    let unanimousReady = false;
     /** When set, unanimous path failed — still merge manual picks; use null for forecaster side. */
     let unanimousError: string | null = null;
 
     const publishMerged = () => {
-      if (!unanimousReady) return;
       const uni = unanimousError != null ? null : unanimousVal;
       const { over: o, under: u } = mergeUnanimousAndManual(uni, manualVal);
       const hasAny = o.length > 0 || u.length > 0;
@@ -314,13 +308,11 @@ export function FirebasePicksPanels() {
       (snap) => {
         unanimousError = null;
         unanimousVal = snap.val();
-        unanimousReady = true;
         publishMerged();
       },
       (err) => {
         unanimousError = err.message;
         unanimousVal = null;
-        unanimousReady = true;
         publishMerged();
       },
     );
@@ -333,6 +325,8 @@ export function FirebasePicksPanels() {
       },
       (err) => {
         console.error('manualExports listener:', err);
+        manualVal = null;
+        publishMerged();
       },
     );
 
@@ -340,11 +334,9 @@ export function FirebasePicksPanels() {
       selectionRef,
       (snap) => {
         setLeagueWinRates(parseLeaguePerformanceFromSelection(snap.val()));
-        setSelectionReady(true);
       },
       () => {
         setLeagueWinRates({});
-        setSelectionReady(true);
       },
     );
 
@@ -374,18 +366,8 @@ export function FirebasePicksPanels() {
           <code className="text-xs bg-black/30 px-1.5 py-0.5 rounded">npm run dev</code>.
         </div>
       )}
-      <PickPanel
-        label="Over 2.5"
-        state={over}
-        leagueWinRates={leagueWinRates}
-        selectionReady={selectionReady}
-      />
-      <PickPanel
-        label="Under 2.5"
-        state={under}
-        leagueWinRates={leagueWinRates}
-        selectionReady={selectionReady}
-      />
+      <PickPanel label="Over 2.5" state={over} leagueWinRates={leagueWinRates} />
+      <PickPanel label="Under 2.5" state={under} leagueWinRates={leagueWinRates} />
     </>
   );
 }
