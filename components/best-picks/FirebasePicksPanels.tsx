@@ -296,28 +296,32 @@ export function FirebasePicksPanels() {
     let unanimousVal: unknown = null;
     let manualVal: unknown = null;
     let unanimousReady = false;
-    let failedUnanimous: string | null = null;
+    /** When set, unanimous path failed — still merge manual picks; use null for forecaster side. */
+    let unanimousError: string | null = null;
 
     const publishMerged = () => {
-      if (failedUnanimous || !unanimousReady) return;
-      const { over: o, under: u } = mergeUnanimousAndManual(unanimousVal, manualVal);
-      setOver({ picks: o, loading: false, error: null, ready: true });
-      setUnder({ picks: u, loading: false, error: null, ready: true });
+      if (!unanimousReady) return;
+      const uni = unanimousError != null ? null : unanimousVal;
+      const { over: o, under: u } = mergeUnanimousAndManual(uni, manualVal);
+      const hasAny = o.length > 0 || u.length > 0;
+      const blockError = unanimousError != null && !hasAny ? unanimousError : null;
+      setOver({ picks: o, loading: false, error: blockError, ready: true });
+      setUnder({ picks: u, loading: false, error: blockError, ready: true });
     };
 
     const unsubUnanimous = onValue(
       unanimousRef,
       (snap) => {
-        failedUnanimous = null;
+        unanimousError = null;
         unanimousVal = snap.val();
         unanimousReady = true;
         publishMerged();
       },
       (err) => {
-        failedUnanimous = err.message;
+        unanimousError = err.message;
+        unanimousVal = null;
         unanimousReady = true;
-        setOver({ picks: [], loading: false, error: err.message, ready: true });
-        setUnder({ picks: [], loading: false, error: err.message, ready: true });
+        publishMerged();
       },
     );
 
