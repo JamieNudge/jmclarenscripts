@@ -19,19 +19,36 @@ export function rtdbValueToPickList(val: unknown): PickRecord[] {
   return [];
 }
 
+function stringField(v: unknown): string | null {
+  if (typeof v !== 'string') return null;
+  const t = v.trim();
+  return t ? t : null;
+}
+
+/**
+ * Plain string, number, or first nested string (RTDB console / bad imports sometimes store maps).
+ */
+function pickPrimitiveText(v: unknown, depth = 0): string | null {
+  if (depth > 4) return null;
+  const s = stringField(v);
+  if (s) return s;
+  if (typeof v === 'number' && Number.isFinite(v)) return String(v);
+  if (v != null && typeof v === 'object' && !Array.isArray(v)) {
+    for (const val of Object.values(v as Record<string, unknown>)) {
+      const inner = pickPrimitiveText(val, depth + 1);
+      if (inner) return inner;
+    }
+  }
+  return null;
+}
+
 /** Stable key for deduping manual / export rows (id if present, else home/away/league). */
 export function pickMergeKey(p: PickRecord): string {
   if (typeof p.id === 'string' && p.id.trim()) return `id:${p.id.trim()}`;
   if (typeof p.id === 'number' && Number.isFinite(p.id)) return `id:${p.id}`;
-  const h = String(p.homeTeam ?? p.home ?? '')
-    .trim()
-    .toLowerCase();
-  const a = String(p.awayTeam ?? p.away ?? '')
-    .trim()
-    .toLowerCase();
-  const l = String(p.league ?? '')
-    .trim()
-    .toLowerCase();
+  const h = (pickPrimitiveText(p.homeTeam ?? p.home) ?? '').toLowerCase();
+  const a = (pickPrimitiveText(p.awayTeam ?? p.away) ?? '').toLowerCase();
+  const l = (pickPrimitiveText(p.league) ?? '').toLowerCase();
   return `teams:${h}|${a}|${l}`;
 }
 
@@ -52,12 +69,6 @@ export function mergeManualPickLists(existing: PickRecord[], additions: PickReco
     out.push(p);
   }
   return out;
-}
-
-function stringField(v: unknown): string | null {
-  if (typeof v !== 'string') return null;
-  const t = v.trim();
-  return t ? t : null;
 }
 
 /**
@@ -104,8 +115,8 @@ export function isInBestPerformingLeagues(
   leagueWinRates: Record<string, number>,
 ): boolean {
   if (Object.keys(leagueWinRates).length === 0) return false;
-  const country = stringField(p.country);
-  const league = stringField(p.league);
+  const country = pickPrimitiveText(p.country);
+  const league = pickPrimitiveText(p.league);
   if (!country || !league) return false;
   const key = leaguePerformanceLookupKey(country, league);
   return key in leagueWinRates;
@@ -148,16 +159,16 @@ export function pickPassesBestFilter(
 
 export function pickDisplayTitle(p: PickRecord): string {
   const title = p.title ?? p.match ?? p.fixture ?? p.selection;
-  const titleStr = stringField(title);
+  const titleStr = pickPrimitiveText(title);
   if (titleStr) return titleStr;
 
-  const home = stringField(p.homeTeam ?? p.home);
-  const away = stringField(p.awayTeam ?? p.away);
+  const home = pickPrimitiveText(p.homeTeam ?? p.home);
+  const away = pickPrimitiveText(p.awayTeam ?? p.away);
   if (home && away) {
     return `${home} vs ${away}`;
   }
 
-  const league = stringField(p.league);
+  const league = pickPrimitiveText(p.league);
   if (league) return league;
 
   return 'Pick';
@@ -195,7 +206,7 @@ function formatKickoffField(v: unknown): string | null {
 export function pickDisplaySubtitle(p: PickRecord): string | null {
   const parts: string[] = [];
   if (isManualEditorPick(p)) parts.push('Editor pick');
-  const league = stringField(p.league);
+  const league = pickPrimitiveText(p.league);
   if (league) parts.push(league);
   const kickoff = formatKickoffField(p.kickoff ?? p.time ?? p.date);
   if (kickoff) parts.push(kickoff);
@@ -269,8 +280,8 @@ function numOrNull(v: unknown): number | null {
 
 /** Home / away for stacked display (matches common export shapes). */
 export function pickTeams(p: PickRecord): { home: string; away: string } | null {
-  const home = stringField(p.homeTeam ?? p.home);
-  const away = stringField(p.awayTeam ?? p.away);
+  const home = pickPrimitiveText(p.homeTeam ?? p.home);
+  const away = pickPrimitiveText(p.awayTeam ?? p.away);
   if (home && away) return { home, away };
   return null;
 }
@@ -311,8 +322,8 @@ export function pickContextWarnings(p: PickRecord): string[] {
 /** Extra lines for expanded panel (optional fields from Mac / iOS-shaped exports). */
 export function pickExpandedMetaLines(p: PickRecord): string[] {
   const lines: string[] = [];
-  const country = stringField(p.country) ?? '';
-  const league = stringField(p.league) ?? '';
+  const country = pickPrimitiveText(p.country) ?? '';
+  const league = pickPrimitiveText(p.league) ?? '';
   if (country && league) lines.push(`${country} · ${league}`);
   else if (league) lines.push(league);
   else if (country) lines.push(country);
