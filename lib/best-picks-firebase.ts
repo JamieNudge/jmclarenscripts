@@ -93,6 +93,7 @@ export function pickPassesBestFilter(
   p: PickRecord,
   leagueWinRates: Record<string, number>,
 ): boolean {
+  if (p._bestPicksManualEditor === true) return true;
   return isInBestPerformingLeagues(p, leagueWinRates) || isBestPerformingLeaguePick(p);
 }
 
@@ -143,6 +144,7 @@ function formatKickoffField(v: unknown): string | null {
 
 export function pickDisplaySubtitle(p: PickRecord): string | null {
   const parts: string[] = [];
+  if (p._bestPicksManualEditor === true) parts.push('Editor pick');
   const league = p.league;
   if (typeof league === 'string' && league.trim()) parts.push(league.trim());
   const kickoff = formatKickoffField(p.kickoff ?? p.time ?? p.date);
@@ -169,14 +171,40 @@ export function picksDateStringInTimeZone(timeZone: string, when: Date = new Dat
 export function statStrikeRtdbPathsFromEnv(dateKey: string): {
   unanimousPath: string;
   selectionPath: string;
+  manualExportsPath: string;
 } {
   const unanimousRoot =
     process.env.NEXT_PUBLIC_FIREBASE_UNANIMOUS_EXPORTS_ROOT?.trim() || 'unanimousExports';
   const selectionsRoot =
     process.env.NEXT_PUBLIC_FIREBASE_SELECTIONS_ROOT?.trim() || 'selections';
+  const manualRoot =
+    process.env.NEXT_PUBLIC_FIREBASE_MANUAL_EXPORTS_ROOT?.trim() || 'manualExports';
   return {
     unanimousPath: `${unanimousRoot}/${dateKey}`,
     selectionPath: `${selectionsRoot}/${dateKey}`,
+    manualExportsPath: `${manualRoot}/${dateKey}`,
+  };
+}
+
+/** Tag manual-export rows so they always pass the best-leagues filter on the public page. */
+export function ensureManualEditorTag(p: PickRecord): PickRecord {
+  if (p._bestPicksManualEditor === true) return p;
+  return { ...p, _bestPicksManualEditor: true };
+}
+
+/**
+ * Merge `manualExports/{date}` with `unanimousExports/{date}` (manual rows first).
+ * Same child shape: `overForecasts` / `underForecasts`.
+ */
+export function mergeUnanimousAndManual(
+  unanimousVal: unknown,
+  manualVal: unknown,
+): { over: PickRecord[]; under: PickRecord[] } {
+  const u = parseUnanimousExport(unanimousVal);
+  const m = parseUnanimousExport(manualVal);
+  return {
+    over: [...m.over.map(ensureManualEditorTag), ...u.over],
+    under: [...m.under.map(ensureManualEditorTag), ...u.under],
   };
 }
 

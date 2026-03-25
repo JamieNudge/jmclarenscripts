@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { BestPicksVideo } from '@/components/best-picks/BestPicksVideo';
 import { FirebasePicksPanels } from '@/components/best-picks/FirebasePicksPanels';
 import { apps } from '@/lib/apps-data';
 import type { App } from '@/types/app';
@@ -86,15 +87,7 @@ export default function BestPicksPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5">
               <FirebasePicksPanels />
 
-              <div className="rounded-2xl border border-white/15 bg-white/5 p-6 md:p-8 min-h-[160px] flex flex-col justify-center">
-                <h2 className="text-lg md:text-xl font-semibold text-white mb-2">Video</h2>
-                <p className="text-sm text-white/60 leading-relaxed mb-4">
-                  Match preview or explainer video will go here.
-                </p>
-                <div className="aspect-video rounded-xl bg-black/30 border border-white/10 flex items-center justify-center text-white/35 text-sm">
-                  Video placeholder
-                </div>
-              </div>
+              <BestPicksVideo />
 
               <div className="rounded-2xl border border-white/15 bg-white/5 p-6 md:p-8 min-h-[160px] flex flex-col justify-center gap-3">
                 <h2 className="text-lg md:text-xl font-semibold text-white mb-1">App Store links</h2>

@@ -3,8 +3,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { onValue, ref } from 'firebase/database';
 import {
+  mergeUnanimousAndManual,
   parseLeaguePerformanceFromSelection,
-  parseUnanimousExport,
   pickContextWarnings,
   pickDisplaySubtitle,
   pickDisplayTitle,
@@ -284,20 +284,47 @@ export function FirebasePicksPanels() {
       return;
     }
 
-    const { unanimousPath, selectionPath } = statStrikeRtdbPathsFromEnv(dateKey);
+    const { unanimousPath, selectionPath, manualExportsPath } = statStrikeRtdbPathsFromEnv(dateKey);
     const unanimousRef = ref(db, unanimousPath);
+    const manualRef = ref(db, manualExportsPath);
     const selectionRef = ref(db, selectionPath);
+
+    let unanimousVal: unknown = null;
+    let manualVal: unknown = null;
+    let unanimousReady = false;
+    let failedUnanimous: string | null = null;
+
+    const publishMerged = () => {
+      if (failedUnanimous || !unanimousReady) return;
+      const { over: o, under: u } = mergeUnanimousAndManual(unanimousVal, manualVal);
+      setOver({ picks: o, loading: false, error: null, ready: true });
+      setUnder({ picks: u, loading: false, error: null, ready: true });
+    };
 
     const unsubUnanimous = onValue(
       unanimousRef,
       (snap) => {
-        const { over: o, under: u } = parseUnanimousExport(snap.val());
-        setOver({ picks: o, loading: false, error: null, ready: true });
-        setUnder({ picks: u, loading: false, error: null, ready: true });
+        failedUnanimous = null;
+        unanimousVal = snap.val();
+        unanimousReady = true;
+        publishMerged();
       },
       (err) => {
+        failedUnanimous = err.message;
+        unanimousReady = true;
         setOver({ picks: [], loading: false, error: err.message, ready: true });
         setUnder({ picks: [], loading: false, error: err.message, ready: true });
+      },
+    );
+
+    const unsubManual = onValue(
+      manualRef,
+      (snap) => {
+        manualVal = snap.val();
+        publishMerged();
+      },
+      (err) => {
+        console.error('manualExports listener:', err);
       },
     );
 
@@ -315,6 +342,7 @@ export function FirebasePicksPanels() {
 
     return () => {
       unsubUnanimous();
+      unsubManual();
       unsubSelection();
     };
   }, [dateKey]);
