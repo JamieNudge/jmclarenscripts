@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { onValue, ref } from 'firebase/database';
 import {
   mergeUnanimousAndManual,
@@ -250,9 +250,22 @@ function PickPanel({
 
 export function FirebasePicksPanels() {
   const startLoading = isFirebaseClientConfigured();
-  const dateKey = useMemo(() => {
+  const [dateKey, setDateKey] = useState(() =>
+    picksDateStringInTimeZone(picksTimeZoneFromEnv()),
+  );
+
+  useEffect(() => {
     const tz = picksTimeZoneFromEnv();
-    return picksDateStringInTimeZone(tz);
+    const refresh = () => setDateKey(picksDateStringInTimeZone(tz));
+    const id = setInterval(refresh, 60_000);
+    const onVis = () => {
+      if (document.visibilityState === 'visible') refresh();
+    };
+    document.addEventListener('visibilitychange', onVis);
+    return () => {
+      clearInterval(id);
+      document.removeEventListener('visibilitychange', onVis);
+    };
   }, []);
 
   const [over, setOver] = useState<PanelState>({

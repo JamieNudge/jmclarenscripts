@@ -19,6 +19,47 @@ export function rtdbValueToPickList(val: unknown): PickRecord[] {
   return [];
 }
 
+/** Stable key for deduping manual / export rows (id if present, else home/away/league). */
+export function pickMergeKey(p: PickRecord): string {
+  if (typeof p.id === 'string' && p.id.trim()) return `id:${p.id.trim()}`;
+  if (typeof p.id === 'number' && Number.isFinite(p.id)) return `id:${p.id}`;
+  const h = String(p.homeTeam ?? p.home ?? '')
+    .trim()
+    .toLowerCase();
+  const a = String(p.awayTeam ?? p.away ?? '')
+    .trim()
+    .toLowerCase();
+  const l = String(p.league ?? '')
+    .trim()
+    .toLowerCase();
+  return `teams:${h}|${a}|${l}`;
+}
+
+/** Append `additions` after `existing`, skipping duplicates (by id or home/away/league). */
+export function mergeManualPickLists(existing: PickRecord[], additions: PickRecord[]): PickRecord[] {
+  const seen = new Set<string>();
+  const out: PickRecord[] = [];
+  for (const p of existing) {
+    const k = pickMergeKey(p);
+    if (seen.has(k)) continue;
+    seen.add(k);
+    out.push(p);
+  }
+  for (const p of additions) {
+    const k = pickMergeKey(p);
+    if (seen.has(k)) continue;
+    seen.add(k);
+    out.push(p);
+  }
+  return out;
+}
+
+function stringField(v: unknown): string | null {
+  if (typeof v !== 'string') return null;
+  const t = v.trim();
+  return t ? t : null;
+}
+
 /**
  * Same sanitization as Swift `BestPerformingLeagueSelection.sanitizedKey`
  * (AllModelsSharedExport / leaguePerformanceForUpload).
@@ -63,9 +104,9 @@ export function isInBestPerformingLeagues(
   leagueWinRates: Record<string, number>,
 ): boolean {
   if (Object.keys(leagueWinRates).length === 0) return false;
-  const country = p.country;
-  const league = p.league;
-  if (typeof country !== 'string' || typeof league !== 'string') return false;
+  const country = stringField(p.country);
+  const league = stringField(p.league);
+  if (!country || !league) return false;
   const key = leaguePerformanceLookupKey(country, league);
   return key in leagueWinRates;
 }
@@ -107,16 +148,17 @@ export function pickPassesBestFilter(
 
 export function pickDisplayTitle(p: PickRecord): string {
   const title = p.title ?? p.match ?? p.fixture ?? p.selection;
-  if (typeof title === 'string' && title.trim()) return title.trim();
+  const titleStr = stringField(title);
+  if (titleStr) return titleStr;
 
-  const home = p.homeTeam ?? p.home;
-  const away = p.awayTeam ?? p.away;
-  if (typeof home === 'string' && typeof away === 'string' && home && away) {
+  const home = stringField(p.homeTeam ?? p.home);
+  const away = stringField(p.awayTeam ?? p.away);
+  if (home && away) {
     return `${home} vs ${away}`;
   }
 
-  const league = p.league;
-  if (typeof league === 'string' && league.trim()) return league.trim();
+  const league = stringField(p.league);
+  if (league) return league;
 
   return 'Pick';
 }
@@ -153,8 +195,8 @@ function formatKickoffField(v: unknown): string | null {
 export function pickDisplaySubtitle(p: PickRecord): string | null {
   const parts: string[] = [];
   if (isManualEditorPick(p)) parts.push('Editor pick');
-  const league = p.league;
-  if (typeof league === 'string' && league.trim()) parts.push(league.trim());
+  const league = stringField(p.league);
+  if (league) parts.push(league);
   const kickoff = formatKickoffField(p.kickoff ?? p.time ?? p.date);
   if (kickoff) parts.push(kickoff);
   return parts.length ? parts.join(' · ') : null;
@@ -227,11 +269,9 @@ function numOrNull(v: unknown): number | null {
 
 /** Home / away for stacked display (matches common export shapes). */
 export function pickTeams(p: PickRecord): { home: string; away: string } | null {
-  const home = p.homeTeam ?? p.home;
-  const away = p.awayTeam ?? p.away;
-  if (typeof home === 'string' && typeof away === 'string' && home.trim() && away.trim()) {
-    return { home: home.trim(), away: away.trim() };
-  }
+  const home = stringField(p.homeTeam ?? p.home);
+  const away = stringField(p.awayTeam ?? p.away);
+  if (home && away) return { home, away };
   return null;
 }
 
@@ -271,8 +311,8 @@ export function pickContextWarnings(p: PickRecord): string[] {
 /** Extra lines for expanded panel (optional fields from Mac / iOS-shaped exports). */
 export function pickExpandedMetaLines(p: PickRecord): string[] {
   const lines: string[] = [];
-  const country = typeof p.country === 'string' ? p.country.trim() : '';
-  const league = typeof p.league === 'string' ? p.league.trim() : '';
+  const country = stringField(p.country) ?? '';
+  const league = stringField(p.league) ?? '';
   if (country && league) lines.push(`${country} · ${league}`);
   else if (league) lines.push(league);
   else if (country) lines.push(country);

@@ -1,9 +1,14 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import type { PickRecord } from '@/lib/best-picks-firebase';
-import { picksDateStringInTimeZone, picksTimeZoneFromEnv } from '@/lib/best-picks-firebase';
+import {
+  mergeManualPickLists,
+  picksDateStringInTimeZone,
+  picksTimeZoneFromEnv,
+  rtdbValueToPickList,
+} from '@/lib/best-picks-firebase';
 import { parseYoutubeIdFromInput } from '@/lib/youtube-embed';
 import { normalizePicksCalendarDateInput } from '@/lib/picks-date-input';
 
@@ -26,20 +31,6 @@ function pickLabel(p: PickRecord, i: number) {
   const a = typeof p.awayTeam === 'string' ? p.awayTeam : '';
   if (h && a) return `${h} vs ${a}`;
   return `Pick ${i + 1}`;
-}
-
-/** Firebase may return arrays or map-shaped lists. */
-function pickListFromFirebase(val: unknown): PickRecord[] {
-  if (val == null) return [];
-  if (Array.isArray(val)) {
-    return val.filter((v): v is PickRecord => v != null && typeof v === 'object' && !Array.isArray(v));
-  }
-  if (typeof val === 'object') {
-    return Object.values(val as Record<string, unknown>).filter(
-      (v): v is PickRecord => v != null && typeof v === 'object' && !Array.isArray(v),
-    );
-  }
-  return [];
 }
 
 function draftFromPick(p: PickRecord): PickRecord {
@@ -81,6 +72,9 @@ export default function AdminPicksPage() {
   const [draft, setDraft] = useState<PickRecord>(emptyPick);
   /** When set, Add/Update applies to this row (same or new band after you change the dropdown). */
   const [editing, setEditing] = useState<{ band: Band; index: number } | null>(null);
+  /** After Load for `date`, Save replaces lists; otherwise Save merges local rows onto Firebase (avoids wiping the other band). */
+  const [lastLoadedDateKey, setLastLoadedDateKey] = useState<string | null>(null);
+  const prevDateNormRef = useRef<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -111,6 +105,15 @@ export default function AdminPicksPage() {
       /* ignore */
     }
   }, [rememberKey, adminKey]);
+
+  useEffect(() => {
+    const n = normalizePicksCalendarDateInput(date);
+    if (!n) return;
+    if (prevDateNormRef.current !== null && prevDateNormRef.current !== n) {
+      setLastLoadedDateKey(null);
+    }
+    prevDateNormRef.current = n;
+  }, [date]);
 
   const authHeaders = (): HeadersInit => ({
     Authorization: `Bearer ${adminKey.trim()}`,
@@ -145,8 +148,8 @@ export default function AdminPicksPage() {
       const d = json.data;
       if (d && typeof d === 'object' && !Array.isArray(d)) {
         const o = d as Record<string, unknown>;
-        setOverPicks(pickListFromFirebase(o.overForecasts));
-        setUnderPicks(pickListFromFirebase(o.underForecasts));
+        setOverPicks(rtdbValueToPickList(o.overForecasts));
+        setUnderPicks(rtdbValueToPickList(o.underForecasts));
         setYoutubeRaw(typeof o.youtubeId === 'string' ? o.youtubeId : '');
         setVideoTitle(typeof o.videoTitle === 'string' ? o.videoTitle : '');
       } else {
@@ -155,6 +158,7 @@ export default function AdminPicksPage() {
         setYoutubeRaw('');
         setVideoTitle('');
       }
+      setLastLoadedDateKey(used ?? dateNorm);
       setEditing(null);
       setDraft(emptyPick());
       setStatus('Loaded from Firebase.');
@@ -261,12 +265,56 @@ export default function AdminPicksPage() {
 
     setLoading(true);
     try {
+      const loadRes = await fetch(
+        `/api/admin/manual-picks?date=${encodeURIComponent(dateNorm)}`,
+        { headers: { Authorization: `Bearer ${adminKey.trim()}` } },
+      );
+      const loadJson = (await loadRes.json()) as { data?: unknown; error?: string };
+      if (!loadRes.ok) {
+        setStatus(loadJson.error || loadRes.statusText || 'Could not read Firebase before save.');
+        return;
+      }
+      const raw = loadJson.data;
+      const existing =
+        raw != null && typeof raw === 'object' && !Array.isArray(raw)
+          ? (raw as Record<string, unknown>)
+          : null;
+
+      let finalOver = overPicks;
+      let finalUnder = underPicks;
+      let mergedNote = '';
+      if (lastLoadedDateKey !== dateNorm && existing) {
+        finalOver = mergeManualPickLists(rtdbValueToPickList(existing.overForecasts), overPicks);
+        finalUnder = mergeManualPickLists(rtdbValueToPickList(existing.underForecasts), underPicks);
+        mergedNote =
+          ' Merged with what was already in Firebase for this date (use Load first if you want the lists on screen to fully replace the server).';
+      }
+
+      let youtubeIdOut = youtubeId;
+      let videoTitleOut = videoTitle.trim() || null;
+      if (lastLoadedDateKey !== dateNorm && existing) {
+        if (
+          youtubeIdOut === null &&
+          typeof existing.youtubeId === 'string' &&
+          existing.youtubeId.trim()
+        ) {
+          youtubeIdOut = existing.youtubeId.trim();
+        }
+        if (
+          !videoTitleOut &&
+          typeof existing.videoTitle === 'string' &&
+          existing.videoTitle.trim()
+        ) {
+          videoTitleOut = existing.videoTitle.trim();
+        }
+      }
+
       const body = {
         date: dateNorm,
-        overForecasts: overPicks,
-        underForecasts: underPicks,
-        youtubeId,
-        videoTitle: videoTitle.trim() || null,
+        overForecasts: finalOver,
+        underForecasts: finalUnder,
+        youtubeId: youtubeIdOut,
+        videoTitle: videoTitleOut,
       };
       const res = await fetch('/api/admin/manual-picks', {
         method: 'POST',
@@ -280,7 +328,10 @@ export default function AdminPicksPage() {
       }
       const used = (json as { dateUsed?: string }).dateUsed;
       if (used) setDate(used);
-      setStatus(`Saved to ${json.path ?? 'manualExports'}.`);
+      setLastLoadedDateKey(dateNorm);
+      setOverPicks(finalOver);
+      setUnderPicks(finalUnder);
+      setStatus(`Saved to ${json.path ?? 'manualExports'}.${mergedNote}`);
     } catch (e) {
       setStatus(e instanceof Error ? e.message : 'Save failed');
     } finally {
@@ -370,11 +421,13 @@ export default function AdminPicksPage() {
         <section className="rounded-2xl border border-white/15 bg-white/5 p-6 space-y-4">
           <h2 className="text-lg font-semibold">3. Add or edit picks</h2>
           <p className="text-xs text-white/45 leading-relaxed">
-            <strong className="text-white/55">Remove</strong> drops a row from the list; click{' '}
-            <strong className="text-white/55">Save everything to Firebase</strong> so the live site updates (postponed,
-            abandoned, wrong fixture, etc.). <strong className="text-white/55">Edit</strong> loads a row into the form;
-            use <strong className="text-white/55">Update pick</strong> when done. You can change the band while editing
-            to move Over → Under or the reverse.
+            <strong className="text-white/55">Load from Firebase</strong> for this date before editing if you want the
+            lists here to be the full source of truth. If you save without loading, new rows are{' '}
+            <strong className="text-white/55">merged</strong> onto what is already stored (other band and video are
+            kept). <strong className="text-white/55">Remove</strong> drops a row from the list;{' '}
+            <strong className="text-white/55">Save everything to Firebase</strong> updates the live site.{' '}
+            <strong className="text-white/55">Edit</strong> / <strong className="text-white/55">Update pick</strong> for
+            changes; you can switch band to move Over ↔ Under.
           </p>
           {editing && (
             <div className="flex flex-wrap items-center gap-3 rounded-lg bg-amber-500/15 border border-amber-400/30 px-3 py-2 text-sm text-amber-100/95">
