@@ -375,11 +375,8 @@ export function FirebasePicksPanels() {
 
   return (
     <>
-      <p className="sm:col-span-2 text-[11px] text-white/40 -mt-2 mb-1 leading-relaxed">
-        Data paths use calendar date{' '}
-        <code className="text-white/55 text-[10px]">{dateKey}</code>
-        <span className="text-white/30"> · {picksTimeZoneFromEnv()}</span>
-        {' — '}admin saves must use the same date to appear here.
+      <p className="sm:col-span-2 text-xs text-white/35 -mt-1 mb-1 tabular-nums" aria-label={`Selections for ${dateKey}`}>
+        {dateKey}
       </p>
       {configHint && (
         <div className="sm:col-span-2 rounded-xl border border-amber-400/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100/95 leading-relaxed">

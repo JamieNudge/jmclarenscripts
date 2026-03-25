@@ -55,24 +55,10 @@ export default function BestPicksPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#111827] to-[#1f2937] text-white flex flex-col">
       <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-10 md:py-14 lg:px-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-white/80 hover:text-white transition-colors"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-              />
-            </svg>
-            Back to portfolio
-          </Link>
+        <div className="flex justify-end mb-8">
           <Link
             href="/privacy"
-            className="text-sm text-white/70 hover:text-white underline-offset-2 hover:underline sm:text-right"
+            className="text-sm text-white/70 hover:text-white underline-offset-2 hover:underline"
           >
             Privacy policy
           </Link>
