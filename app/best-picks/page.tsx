@@ -1,26 +1,16 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { FirebasePicksPanels } from '@/components/best-picks/FirebasePicksPanels';
 import { apps } from '@/lib/apps-data';
 
 export const metadata: Metadata = {
   title: "Today's Best Picks",
   description:
-    'Goal-line best picks (Over / Under 2.5), video, and App Store links. Live picks from forecasters will appear here in a future update.',
+    'Goal-line best picks (Over / Under 2.5), video, and App Store links. Live picks load from Firebase Realtime Database when configured.',
 };
 
 const statStrike = apps.find((a) => a.id === 'stat-strike');
 const goalLab = apps.find((a) => a.id === 'goallab');
-
-function PickPlaceholder({ label }: { label: string }) {
-  return (
-    <div className="rounded-2xl border border-white/15 bg-white/5 p-6 md:p-8 min-h-[160px] flex flex-col justify-center">
-      <h2 className="text-lg md:text-xl font-semibold text-white mb-2">{label}</h2>
-      <p className="text-sm text-white/60 leading-relaxed">
-        No pick published yet. Forecasters&apos; picks will show here when connected.
-      </p>
-    </div>
-  );
-}
 
 function AdPlaceholder({
   orientation,
@@ -89,8 +79,7 @@ export default function BestPicksPage() {
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5">
-              <PickPlaceholder label="Over 2.5" />
-              <PickPlaceholder label="Under 2.5" />
+              <FirebasePicksPanels />
 
               <div className="rounded-2xl border border-white/15 bg-white/5 p-6 md:p-8 min-h-[160px] flex flex-col justify-center">
                 <h2 className="text-lg md:text-xl font-semibold text-white mb-2">Video</h2>
