@@ -5,6 +5,7 @@ import Link from 'next/link';
 import type { PickRecord } from '@/lib/best-picks-firebase';
 import { picksDateStringInTimeZone, picksTimeZoneFromEnv } from '@/lib/best-picks-firebase';
 import { parseYoutubeIdFromInput } from '@/lib/youtube-embed';
+import { normalizePicksCalendarDateInput } from '@/lib/picks-date-input';
 
 const STORAGE_KEY = 'bestpicks_admin_bearer';
 
@@ -80,9 +81,16 @@ export default function AdminPicksPage() {
       setStatus('Paste your admin key first.');
       return;
     }
+    const dateNorm = normalizePicksCalendarDateInput(date);
+    if (!dateNorm) {
+      setStatus(
+        'Could not read that date. Try 2026-03-23 or 23/03/2026 (UK day/month/year).',
+      );
+      return;
+    }
     setLoading(true);
     try {
-      const res = await fetch(`/api/admin/manual-picks?date=${encodeURIComponent(date)}`, {
+      const res = await fetch(`/api/admin/manual-picks?date=${encodeURIComponent(dateNorm)}`, {
         headers: { Authorization: `Bearer ${adminKey.trim()}` },
       });
       const json = (await res.json()) as { data?: unknown; error?: string };
@@ -90,6 +98,8 @@ export default function AdminPicksPage() {
         setStatus(json.error || res.statusText);
         return;
       }
+      const used = (json as { dateUsed?: string }).dateUsed;
+      if (used) setDate(used);
       const d = json.data;
       if (d && typeof d === 'object' && !Array.isArray(d)) {
         const o = d as Record<string, unknown>;
@@ -138,6 +148,13 @@ export default function AdminPicksPage() {
       setStatus('Admin key required.');
       return;
     }
+    const dateNorm = normalizePicksCalendarDateInput(date);
+    if (!dateNorm) {
+      setStatus(
+        'Could not read that date. Try 2026-03-23 or 23/03/2026 (UK day/month/year).',
+      );
+      return;
+    }
     const trimmedYt = youtubeRaw.trim();
     let youtubeId: string | null;
     if (trimmedYt === '') {
@@ -154,7 +171,7 @@ export default function AdminPicksPage() {
     setLoading(true);
     try {
       const body = {
-        date,
+        date: dateNorm,
         overForecasts: overPicks,
         underForecasts: underPicks,
         youtubeId,
@@ -170,6 +187,8 @@ export default function AdminPicksPage() {
         setStatus(json.error || res.statusText);
         return;
       }
+      const used = (json as { dateUsed?: string }).dateUsed;
+      if (used) setDate(used);
       setStatus(`Saved to ${json.path ?? 'manualExports'}.`);
     } catch (e) {
       setStatus(e instanceof Error ? e.message : 'Save failed');
@@ -228,13 +247,24 @@ export default function AdminPicksPage() {
 
         <section className="rounded-2xl border border-white/15 bg-white/5 p-6 space-y-4">
           <h2 className="text-lg font-semibold">2. Date &amp; load</h2>
-          <label className="block text-xs font-medium text-white/45 uppercase tracking-wide">Calendar key (YYYY-MM-DD)</label>
+          <p className="text-xs text-white/45 leading-relaxed">
+            Use <strong className="text-white/60">2026-03-23</strong> or UK style{' '}
+            <strong className="text-white/60">23/03/2026</strong> (slashes, dots, or hyphens). If a date
+            could be US or UK (both numbers ≤ 12), we use <strong className="text-white/60">day first</strong>.
+          </p>
+          <label className="block text-xs font-medium text-white/45 uppercase tracking-wide">
+            Calendar key
+          </label>
           <input
             type="text"
             className={inputCls}
             value={date}
-            onChange={(e) => setDate(e.target.value.trim())}
-            pattern="\d{4}-\d{2}-\d{2}"
+            onChange={(e) => setDate(e.target.value)}
+            onBlur={() => {
+              const n = normalizePicksCalendarDateInput(date);
+              if (n) setDate(n);
+            }}
+            placeholder="2026-03-23 or 23/03/2026"
           />
           <button
             type="button"

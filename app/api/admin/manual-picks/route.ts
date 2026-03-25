@@ -2,11 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDatabase } from 'firebase-admin/database';
 import { getFirebaseAdminApp } from '@/lib/firebase-admin';
 import type { PickRecord } from '@/lib/best-picks-firebase';
+import { normalizePicksCalendarDateInput } from '@/lib/picks-date-input';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
-
-const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 function manualRoot(): string {
   return (
@@ -52,15 +51,22 @@ export async function GET(req: NextRequest) {
   if (!authorized(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-  const date = req.nextUrl.searchParams.get('date');
-  if (!date || !DATE_RE.test(date)) {
-    return NextResponse.json({ error: 'Query ?date=YYYY-MM-DD required' }, { status: 400 });
+  const dateRaw = req.nextUrl.searchParams.get('date');
+  const date = dateRaw ? normalizePicksCalendarDateInput(dateRaw) : null;
+  if (!date) {
+    return NextResponse.json(
+      {
+        error:
+          'Invalid ?date=… Use YYYY-MM-DD, or D/M/Y with slashes/dots (e.g. 23/03/2026). Ambiguous dates use UK order.',
+      },
+      { status: 400 },
+    );
   }
   try {
     const app = getFirebaseAdminApp();
     const db = getDatabase(app);
     const snap = await db.ref(`${manualRoot()}/${date}`).once('value');
-    return NextResponse.json({ data: snap.val() ?? null });
+    return NextResponse.json({ data: snap.val() ?? null, dateUsed: date });
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Server error';
     return NextResponse.json({ error: msg }, { status: 500 });
@@ -80,9 +86,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
   }
 
-  const date = body.date;
-  if (typeof date !== 'string' || !DATE_RE.test(date)) {
-    return NextResponse.json({ error: 'Body field date (YYYY-MM-DD) required' }, { status: 400 });
+  const dateRaw = body.date;
+  const date =
+    typeof dateRaw === 'string' ? normalizePicksCalendarDateInput(dateRaw) : null;
+  if (!date) {
+    return NextResponse.json(
+      {
+        error:
+          'Invalid date. Use YYYY-MM-DD, or D/M/Y (e.g. 23/03/2026). Ambiguous dates use UK day-first order.',
+      },
+      { status: 400 },
+    );
   }
 
   const has = (k: string) => Object.prototype.hasOwnProperty.call(body, k);
@@ -130,7 +144,7 @@ export async function POST(req: NextRequest) {
     }
 
     await r.set(next);
-    return NextResponse.json({ ok: true, path: `${manualRoot()}/${date}` });
+    return NextResponse.json({ ok: true, path: `${manualRoot()}/${date}`, dateUsed: date });
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Server error';
     return NextResponse.json({ error: msg }, { status: 500 });
