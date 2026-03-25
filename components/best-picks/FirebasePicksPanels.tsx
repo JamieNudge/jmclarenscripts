@@ -284,8 +284,14 @@ export function FirebasePicksPanels() {
     ready: false,
   });
   const [leagueWinRates, setLeagueWinRates] = useState<Record<string, number>>({});
+  /** Shown on the page when the client cannot subscribe to manualExports (often rules / wrong DB). */
+  const [manualPathDiagnostic, setManualPathDiagnostic] = useState<{
+    path: string;
+    message: string;
+  } | null>(null);
 
   useEffect(() => {
+    setManualPathDiagnostic(null);
     if (!isFirebaseClientConfigured()) {
       setOver({ picks: [], loading: false, error: null, ready: true });
       setUnder({ picks: [], loading: false, error: null, ready: true });
@@ -336,11 +342,13 @@ export function FirebasePicksPanels() {
     const unsubManual = onValue(
       manualRef,
       (snap) => {
+        setManualPathDiagnostic(null);
         manualVal = snap.val();
         publishMerged();
       },
       (err) => {
         console.error('manualExports listener:', err);
+        setManualPathDiagnostic({ path: manualExportsPath, message: err.message });
         manualVal = null;
         publishMerged();
       },
@@ -380,6 +388,24 @@ export function FirebasePicksPanels() {
           <code className="text-xs bg-black/30 px-1.5 py-0.5 rounded">.env.local</code>, add your
           web app keys and Realtime Database URL, then restart{' '}
           <code className="text-xs bg-black/30 px-1.5 py-0.5 rounded">npm run dev</code>.
+        </div>
+      )}
+      {manualPathDiagnostic && (
+        <div
+          className="sm:col-span-2 rounded-xl border border-red-400/35 bg-red-950/40 px-4 py-3 text-sm text-red-100/95 leading-relaxed"
+          role="alert"
+        >
+          <p className="font-medium text-red-200">Firebase blocked reading manual picks</p>
+          <p className="text-xs text-red-100/80 mt-1 font-mono break-all">
+            Path: {manualPathDiagnostic.path}
+          </p>
+          <p className="text-xs text-red-100/85 mt-2">{manualPathDiagnostic.message}</p>
+          <p className="text-xs text-white/55 mt-2 leading-relaxed">
+            In Firebase → Realtime Database → Rules, allow client <strong className="text-white/75">read</strong> on{' '}
+            <code className="text-white/70">manualExports</code> (same idea as public reads for{' '}
+            <code className="text-white/70">unanimousExports</code>). Also check the browser console (F12) for the same
+            error text.
+          </p>
         </div>
       )}
       <PickPanel label="Over 2.5" state={over} leagueWinRates={leagueWinRates} />
