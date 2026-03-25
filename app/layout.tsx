@@ -5,11 +5,22 @@ import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
+function siteMetadataBase(): URL {
+  const explicit = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  if (explicit) {
+    const normalized = explicit.replace(/\/+$/, "");
+    return new URL(`${normalized}/`);
+  }
+  if (process.env.VERCEL_URL) return new URL(`https://${process.env.VERCEL_URL}`);
+  return new URL("http://localhost:3000");
+}
+
 /** Publisher ID for AdSense. Site-wide script matches Google Auto ads; enable Auto ads for this domain in AdSense (Ads, site settings / Get code). */
 const ADSENSE_CLIENT_ID =
   process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID ?? "ca-pub-6299348707363839";
 
 export const metadata: Metadata = {
+  metadataBase: siteMetadataBase(),
   title: "Jamie's App Portfolio",
   description: "Showcase of innovative mobile and desktop applications",
 };

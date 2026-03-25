@@ -4,10 +4,28 @@ import { FirebasePicksPanels } from '@/components/best-picks/FirebasePicksPanels
 import { apps } from '@/lib/apps-data';
 import type { App } from '@/types/app';
 
+const bestPicksDescription =
+  'Goal-line best picks (Over / Under 2.5), video, and App Store links. Live picks load from Firebase Realtime Database when configured.';
+
 export const metadata: Metadata = {
   title: "Today's Best Picks",
-  description:
-    'Goal-line best picks (Over / Under 2.5), video, and App Store links. Live picks load from Firebase Realtime Database when configured.',
+  description: bestPicksDescription,
+  openGraph: {
+    title: "Today's Best Picks",
+    description: bestPicksDescription,
+    images: [
+      {
+        url: '/images/goallab-icon.png',
+        alt: 'GoalLab',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary',
+    title: "Today's Best Picks",
+    description: bestPicksDescription,
+    images: ['/images/goallab-icon.png'],
+  },
 };
 
 const statStrike = apps.find((a) => a.id === 'stat-strike');
