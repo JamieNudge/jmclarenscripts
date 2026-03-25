@@ -28,6 +28,46 @@ function pickLabel(p: PickRecord, i: number) {
   return `Pick ${i + 1}`;
 }
 
+/** Firebase may return arrays or map-shaped lists. */
+function pickListFromFirebase(val: unknown): PickRecord[] {
+  if (val == null) return [];
+  if (Array.isArray(val)) {
+    return val.filter((v): v is PickRecord => v != null && typeof v === 'object' && !Array.isArray(v));
+  }
+  if (typeof val === 'object') {
+    return Object.values(val as Record<string, unknown>).filter(
+      (v): v is PickRecord => v != null && typeof v === 'object' && !Array.isArray(v),
+    );
+  }
+  return [];
+}
+
+function draftFromPick(p: PickRecord): PickRecord {
+  return {
+    homeTeam: String(p.homeTeam ?? p.home ?? ''),
+    awayTeam: String(p.awayTeam ?? p.away ?? ''),
+    league: String(p.league ?? ''),
+    country: String(p.country ?? ''),
+    kickoff: String(p.kickoff ?? p.time ?? p.date ?? ''),
+  };
+}
+
+function buildRowFromDraft(draft: PickRecord, base?: PickRecord): PickRecord {
+  const home = String(draft.homeTeam ?? '').trim();
+  const away = String(draft.awayTeam ?? '').trim();
+  const row: PickRecord = {
+    ...(base ?? {}),
+    homeTeam: home,
+    awayTeam: away,
+    league: String(draft.league ?? '').trim(),
+    country: String(draft.country ?? '').trim(),
+  };
+  const ko = String(draft.kickoff ?? '').trim();
+  if (ko) row.kickoff = ko;
+  else delete row.kickoff;
+  return row;
+}
+
 export default function AdminPicksPage() {
   const today = useMemo(() => picksDateStringInTimeZone(picksTimeZoneFromEnv()), []);
   const [date, setDate] = useState(today);
@@ -39,6 +79,8 @@ export default function AdminPicksPage() {
   const [videoTitle, setVideoTitle] = useState('');
   const [band, setBand] = useState<Band>('over');
   const [draft, setDraft] = useState<PickRecord>(emptyPick);
+  /** When set, Add/Update applies to this row (same or new band after you change the dropdown). */
+  const [editing, setEditing] = useState<{ band: Band; index: number } | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -103,8 +145,8 @@ export default function AdminPicksPage() {
       const d = json.data;
       if (d && typeof d === 'object' && !Array.isArray(d)) {
         const o = d as Record<string, unknown>;
-        setOverPicks(Array.isArray(o.overForecasts) ? (o.overForecasts as PickRecord[]) : []);
-        setUnderPicks(Array.isArray(o.underForecasts) ? (o.underForecasts as PickRecord[]) : []);
+        setOverPicks(pickListFromFirebase(o.overForecasts));
+        setUnderPicks(pickListFromFirebase(o.underForecasts));
         setYoutubeRaw(typeof o.youtubeId === 'string' ? o.youtubeId : '');
         setVideoTitle(typeof o.videoTitle === 'string' ? o.videoTitle : '');
       } else {
@@ -113,6 +155,8 @@ export default function AdminPicksPage() {
         setYoutubeRaw('');
         setVideoTitle('');
       }
+      setEditing(null);
+      setDraft(emptyPick());
       setStatus('Loaded from Firebase.');
     } catch (e) {
       setStatus(e instanceof Error ? e.message : 'Load failed');
@@ -121,25 +165,72 @@ export default function AdminPicksPage() {
     }
   }, [adminKey, date]);
 
-  const addDraft = () => {
+  const cancelEdit = () => {
+    setEditing(null);
+    setDraft(emptyPick());
+    setStatus(null);
+  };
+
+  const startEdit = (b: Band, index: number) => {
+    const list = b === 'over' ? overPicks : underPicks;
+    const p = list[index];
+    if (!p) return;
+    setBand(b);
+    setDraft(draftFromPick(p));
+    setEditing({ band: b, index });
+    setStatus('Editing a pick — change fields, then click Update pick. Or Cancel.');
+  };
+
+  const removePick = (b: Band, index: number) => {
+    if (b === 'over') setOverPicks((x) => x.filter((_, j) => j !== index));
+    else setUnderPicks((x) => x.filter((_, j) => j !== index));
+    if (editing?.band === b && editing.index === index) cancelEdit();
+    else if (editing?.band === b && editing.index > index) {
+      setEditing({ band: editing.band, index: editing.index - 1 });
+    }
+    setStatus('Removed from the list. Save to Firebase to remove from the live site (e.g. P-P, A-B).');
+  };
+
+  const submitDraft = () => {
     const home = String(draft.homeTeam ?? '').trim();
     const away = String(draft.awayTeam ?? '').trim();
     if (!home || !away) {
-      setStatus('Home and away team names are required to add a pick.');
+      setStatus('Home and away team names are required.');
       return;
     }
-    const row: PickRecord = {
-      homeTeam: home,
-      awayTeam: away,
-      league: String(draft.league ?? '').trim(),
-      country: String(draft.country ?? '').trim(),
-    };
-    const ko = String(draft.kickoff ?? '').trim();
-    if (ko) row.kickoff = ko;
+
+    if (editing) {
+      const { band: fromBand, index } = editing;
+      const prevList = fromBand === 'over' ? overPicks : underPicks;
+      const base = prevList[index];
+      const row = buildRowFromDraft(draft, base);
+
+      if (band === fromBand) {
+        if (fromBand === 'over') {
+          setOverPicks((x) => x.map((p, j) => (j === index ? row : p)));
+        } else {
+          setUnderPicks((x) => x.map((p, j) => (j === index ? row : p)));
+        }
+      } else {
+        if (fromBand === 'over') {
+          setOverPicks((x) => x.filter((_, j) => j !== index));
+        } else {
+          setUnderPicks((x) => x.filter((_, j) => j !== index));
+        }
+        if (band === 'over') setOverPicks((x) => [...x, row]);
+        else setUnderPicks((x) => [...x, row]);
+      }
+      setEditing(null);
+      setDraft(emptyPick());
+      setStatus('Pick updated in the list. Save to publish to Firebase.');
+      return;
+    }
+
+    const row = buildRowFromDraft(draft);
     if (band === 'over') setOverPicks((p) => [...p, row]);
     else setUnderPicks((p) => [...p, row]);
     setDraft(emptyPick());
-    setStatus('Pick added in the list below. Click Save to publish to Firebase.');
+    setStatus('Pick added. Save to publish to Firebase.');
   };
 
   const save = async () => {
@@ -277,7 +368,26 @@ export default function AdminPicksPage() {
         </section>
 
         <section className="rounded-2xl border border-white/15 bg-white/5 p-6 space-y-4">
-          <h2 className="text-lg font-semibold">3. Add picks</h2>
+          <h2 className="text-lg font-semibold">3. Add or edit picks</h2>
+          <p className="text-xs text-white/45 leading-relaxed">
+            <strong className="text-white/55">Remove</strong> drops a row from the list; click{' '}
+            <strong className="text-white/55">Save everything to Firebase</strong> so the live site updates (postponed,
+            abandoned, wrong fixture, etc.). <strong className="text-white/55">Edit</strong> loads a row into the form;
+            use <strong className="text-white/55">Update pick</strong> when done. You can change the band while editing
+            to move Over → Under or the reverse.
+          </p>
+          {editing && (
+            <div className="flex flex-wrap items-center gap-3 rounded-lg bg-amber-500/15 border border-amber-400/30 px-3 py-2 text-sm text-amber-100/95">
+              <span>Editing pick #{editing.index + 1} ({editing.band === 'over' ? 'Over' : 'Under'})</span>
+              <button
+                type="button"
+                onClick={cancelEdit}
+                className="text-xs underline underline-offset-2 hover:text-white"
+              >
+                Cancel edit
+              </button>
+            </div>
+          )}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="text-xs text-white/45">Band</label>
@@ -333,13 +443,15 @@ export default function AdminPicksPage() {
               onChange={(e) => setDraft((d) => ({ ...d, kickoff: e.target.value }))}
             />
           </div>
-          <button
-            type="button"
-            onClick={addDraft}
-            className="rounded-lg bg-emerald-600/90 hover:bg-emerald-600 px-4 py-2 text-sm font-medium"
-          >
-            Add pick to list
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={submitDraft}
+              className="rounded-lg bg-emerald-600/90 hover:bg-emerald-600 px-4 py-2 text-sm font-medium"
+            >
+              {editing ? 'Update pick' : 'Add pick to list'}
+            </button>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
             <div>
@@ -347,17 +459,30 @@ export default function AdminPicksPage() {
               <ul className="space-y-2 text-sm">
                 {overPicks.map((p, i) => (
                   <li
-                    key={i}
-                    className="flex items-center justify-between gap-2 rounded-lg bg-black/25 px-3 py-2 border border-white/10"
+                    key={typeof p.id === 'string' ? `over-${p.id}` : `over-${i}`}
+                    className={`flex items-center justify-between gap-2 rounded-lg px-3 py-2 border ${
+                      editing?.band === 'over' && editing.index === i
+                        ? 'bg-amber-500/10 border-amber-400/35'
+                        : 'bg-black/25 border-white/10'
+                    }`}
                   >
-                    <span className="truncate">{pickLabel(p, i)}</span>
-                    <button
-                      type="button"
-                      className="text-red-300 text-xs shrink-0 hover:underline"
-                      onClick={() => setOverPicks((x) => x.filter((_, j) => j !== i))}
-                    >
-                      Remove
-                    </button>
+                    <span className="truncate min-w-0">{pickLabel(p, i)}</span>
+                    <span className="flex items-center gap-2 shrink-0">
+                      <button
+                        type="button"
+                        className="text-cyan-300 text-xs hover:underline"
+                        onClick={() => startEdit('over', i)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        className="text-red-300 text-xs hover:underline"
+                        onClick={() => removePick('over', i)}
+                      >
+                        Remove
+                      </button>
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -367,17 +492,30 @@ export default function AdminPicksPage() {
               <ul className="space-y-2 text-sm">
                 {underPicks.map((p, i) => (
                   <li
-                    key={i}
-                    className="flex items-center justify-between gap-2 rounded-lg bg-black/25 px-3 py-2 border border-white/10"
+                    key={typeof p.id === 'string' ? `under-${p.id}` : `under-${i}`}
+                    className={`flex items-center justify-between gap-2 rounded-lg px-3 py-2 border ${
+                      editing?.band === 'under' && editing.index === i
+                        ? 'bg-amber-500/10 border-amber-400/35'
+                        : 'bg-black/25 border-white/10'
+                    }`}
                   >
-                    <span className="truncate">{pickLabel(p, i)}</span>
-                    <button
-                      type="button"
-                      className="text-red-300 text-xs shrink-0 hover:underline"
-                      onClick={() => setUnderPicks((x) => x.filter((_, j) => j !== i))}
-                    >
-                      Remove
-                    </button>
+                    <span className="truncate min-w-0">{pickLabel(p, i)}</span>
+                    <span className="flex items-center gap-2 shrink-0">
+                      <button
+                        type="button"
+                        className="text-cyan-300 text-xs hover:underline"
+                        onClick={() => startEdit('under', i)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        className="text-red-300 text-xs hover:underline"
+                        onClick={() => removePick('under', i)}
+                      >
+                        Remove
+                      </button>
+                    </span>
                   </li>
                 ))}
               </ul>
