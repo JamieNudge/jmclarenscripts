@@ -208,7 +208,10 @@ function PickPanel({
 
       {!state.error && !waiting && state.picks.length === 0 && (
         <p className="text-sm text-white/60 leading-relaxed">
-          Nothing in today&apos;s unanimous export for this band yet.
+          No picks for this band for the calendar date above. Data is merged from{' '}
+          <code className="text-xs text-white/50">manualExports</code> and{' '}
+          <code className="text-xs text-white/50">unanimousExports</code> in Firebase — both can be empty, or
+          manual rows may be under a different date / blocked by read rules.
         </p>
       )}
 
