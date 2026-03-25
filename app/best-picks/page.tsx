@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { FirebasePicksPanels } from '@/components/best-picks/FirebasePicksPanels';
 import { apps } from '@/lib/apps-data';
+import type { App } from '@/types/app';
 
 export const metadata: Metadata = {
   title: "Today's Best Picks",
@@ -11,6 +12,16 @@ export const metadata: Metadata = {
 
 const statStrike = apps.find((a) => a.id === 'stat-strike');
 const goalLab = apps.find((a) => a.id === 'goallab');
+
+const storeAppsWithLinks: App[] = [statStrike, goalLab].filter(
+  (a): a is App => a != null && Boolean(a.appStoreUrl)
+);
+
+function storeLinkAccentClass(appId: string) {
+  if (appId === 'stat-strike') return 'text-emerald-300 group-hover:text-emerald-200';
+  if (appId === 'goallab') return 'text-cyan-300 group-hover:text-cyan-200';
+  return 'text-white/90 group-hover:text-white';
+}
 
 function AdPlaceholder({
   orientation,
@@ -93,34 +104,45 @@ export default function BestPicksPage() {
 
               <div className="rounded-2xl border border-white/15 bg-white/5 p-6 md:p-8 min-h-[160px] flex flex-col justify-center gap-3">
                 <h2 className="text-lg md:text-xl font-semibold text-white mb-1">App Store links</h2>
-                <p className="text-sm text-white/60 leading-relaxed mb-2">
+                <p className="text-sm text-white/60 leading-relaxed mb-3">
                   Get the apps on the App Store.
                 </p>
-                <ul className="space-y-2">
-                  {statStrike?.appStoreUrl && (
-                    <li>
+                <ul className="space-y-3">
+                  {storeAppsWithLinks.map((app) => (
+                    <li key={app.id}>
                       <a
-                        href={statStrike.appStoreUrl}
+                        href={app.appStoreUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-sm font-medium text-emerald-300 hover:text-emerald-200 underline underline-offset-2"
+                        className="flex items-center gap-4 rounded-xl border border-white/10 bg-black/20 p-3 hover:border-white/25 hover:bg-white/5 transition-all group"
                       >
-                        StatStrike — App Store
+                        <div className="w-16 h-16 sm:w-[4.5rem] sm:h-[4.5rem] rounded-2xl overflow-hidden bg-white/10 backdrop-blur-sm border-2 border-white/20 group-hover:border-white/50 flex-shrink-0 transition-all duration-300">
+                          {app.icon ? (
+                            <img
+                              src={app.icon}
+                              alt={`${app.name} icon`}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div
+                              className="w-full h-full flex items-center justify-center text-white font-bold text-xl"
+                              style={{ backgroundColor: app.color }}
+                            >
+                              {app.name[0]}
+                            </div>
+                          )}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <span
+                            className={`text-sm font-semibold underline underline-offset-2 ${storeLinkAccentClass(app.id)}`}
+                          >
+                            {app.name}
+                          </span>
+                          <span className="block text-xs text-white/45 mt-0.5">App Store</span>
+                        </div>
                       </a>
                     </li>
-                  )}
-                  {goalLab?.appStoreUrl && (
-                    <li>
-                      <a
-                        href={goalLab.appStoreUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm font-medium text-cyan-300 hover:text-cyan-200 underline underline-offset-2"
-                      >
-                        GoalLab — App Store
-                      </a>
-                    </li>
-                  )}
+                  ))}
                 </ul>
               </div>
             </div>
