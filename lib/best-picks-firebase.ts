@@ -167,3 +167,86 @@ export function statStrikeRtdbPathsFromEnv(dateKey: string): {
 export function picksTimeZoneFromEnv(): string {
   return process.env.NEXT_PUBLIC_PICKS_DATE_TIMEZONE?.trim() || 'Europe/London';
 }
+
+function numOrNull(v: unknown): number | null {
+  if (typeof v === 'number' && Number.isFinite(v)) return v;
+  return null;
+}
+
+/** Home / away for stacked display (matches common export shapes). */
+export function pickTeams(p: PickRecord): { home: string; away: string } | null {
+  const home = p.homeTeam ?? p.home;
+  const away = p.awayTeam ?? p.away;
+  if (typeof home === 'string' && typeof away === 'string' && home.trim() && away.trim()) {
+    return { home: home.trim(), away: away.trim() };
+  }
+  return null;
+}
+
+/** O2.5 / U2.5 style band row when numeric fields exist on the record. */
+export function pickGoalBandValues(p: PickRecord): { label: string; value: string }[] {
+  const bands: { key: string; label: string }[] = [
+    { key: 'over25Confidence', label: 'O2.5' },
+    { key: 'over35Confidence', label: 'O3.5' },
+    { key: 'over45Confidence', label: 'O4.5' },
+    { key: 'over55Confidence', label: 'O5.5' },
+    { key: 'under25Confidence', label: 'U2.5' },
+  ];
+  const out: { label: string; value: string }[] = [];
+  for (const { key, label } of bands) {
+    const n = numOrNull(p[key]);
+    if (n != null && n > 0) out.push({ label, value: `${Math.round(n)}%` });
+  }
+  return out;
+}
+
+export function pickSignificantStats(p: PickRecord): string[] {
+  const s = p.significantStats;
+  if (!Array.isArray(s)) return [];
+  return s.filter((x): x is string => typeof x === 'string' && x.trim()).map((x) => x.trim());
+}
+
+export function pickContextWarnings(p: PickRecord): string[] {
+  const w = p.contextWarnings;
+  if (!Array.isArray(w)) return [];
+  return w.filter((x): x is string => typeof x === 'string' && x.trim()).map((x) => x.trim());
+}
+
+/** Extra lines for expanded panel (optional fields from Mac / iOS-shaped exports). */
+export function pickExpandedMetaLines(p: PickRecord): string[] {
+  const lines: string[] = [];
+  const country = typeof p.country === 'string' ? p.country.trim() : '';
+  const league = typeof p.league === 'string' ? p.league.trim() : '';
+  if (country && league) lines.push(`${country} · ${league}`);
+  else if (league) lines.push(league);
+  else if (country) lines.push(country);
+
+  const venue = typeof p.venue === 'string' ? p.venue.trim() : '';
+  if (venue) lines.push(`Venue: ${venue}`);
+
+  const ft = typeof p.forecastType === 'string' ? p.forecastType.trim() : '';
+  if (ft) lines.push(`Forecast type: ${ft}`);
+
+  const minO = numOrNull(p.minOverConfidence);
+  if (minO != null && minO > 0) lines.push(`Min over confidence: ${Math.round(minO)}%`);
+
+  const mc = numOrNull(p.matchedCriteria);
+  const tc = numOrNull(p.totalCriteria);
+  if (mc != null && tc != null) lines.push(`Criteria: ${mc} / ${tc} matched`);
+
+  const odds = numOrNull(p.bookmakerOdds);
+  if (odds != null && odds > 0) {
+    const imp = numOrNull(p.impliedProbability);
+    const impStr = imp != null && imp > 0 ? ` · ~${Math.round(imp)}% implied` : '';
+    lines.push(`Bookmaker (decimal): ${odds.toFixed(2)}${impStr}`);
+  }
+
+  const status = typeof p.status === 'string' ? p.status.trim() : '';
+  if (status) lines.push(`Status: ${status}`);
+
+  const hs = numOrNull(p.homeScore);
+  const as = numOrNull(p.awayScore);
+  if (hs != null && as != null) lines.push(`Score: ${hs} – ${as}`);
+
+  return lines;
+}

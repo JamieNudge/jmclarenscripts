@@ -5,12 +5,17 @@ import { onValue, ref } from 'firebase/database';
 import {
   parseLeaguePerformanceFromSelection,
   parseUnanimousExport,
+  pickContextWarnings,
   pickDisplaySubtitle,
   pickDisplayTitle,
+  pickExpandedMetaLines,
+  pickGoalBandValues,
   pickPassesBestFilter,
+  pickSignificantStats,
   picksDateStringInTimeZone,
   picksTimeZoneFromEnv,
   statStrikeRtdbPathsFromEnv,
+  pickTeams,
   type PickRecord,
 } from '@/lib/best-picks-firebase';
 import { getFirebaseRealtimeDb, isFirebaseClientConfigured } from '@/lib/firebase-client';
@@ -22,6 +27,156 @@ type PanelState = {
   /** First snapshot received (may be empty). */
   ready: boolean;
 };
+
+/** ~3 collapsed rows visible; scroll inside when there are more or when rows expand. */
+const LIST_MAX_HEIGHT = 'max-h-[min(13.5rem,36vh)]';
+
+function bandAccentClass(label: string): string {
+  switch (label) {
+    case 'O2.5':
+      return 'text-blue-300 border-blue-400/25 bg-blue-500/10';
+    case 'O3.5':
+      return 'text-emerald-300 border-emerald-400/25 bg-emerald-500/10';
+    case 'O4.5':
+      return 'text-orange-300 border-orange-400/25 bg-orange-500/10';
+    case 'O5.5':
+      return 'text-red-300 border-red-400/25 bg-red-500/10';
+    case 'U2.5':
+      return 'text-purple-300 border-purple-400/25 bg-purple-500/10';
+    default:
+      return 'text-sky-300 border-white/15 bg-white/10';
+  }
+}
+
+function Chevron({ open }: { open: boolean }) {
+  return (
+    <svg
+      className={`w-4 h-4 text-white/45 shrink-0 mt-0.5 transition-transform duration-200 ${
+        open ? 'rotate-90' : ''
+      }`}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      aria-hidden
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+    </svg>
+  );
+}
+
+function ExpandablePickRow({ pick, rowKey }: { pick: PickRecord; rowKey: string }) {
+  const [open, setOpen] = useState(false);
+  const title = pickDisplayTitle(pick);
+  const sub = pickDisplaySubtitle(pick);
+  const teams = pickTeams(pick);
+  const bands = pickGoalBandValues(pick);
+  const stats = pickSignificantStats(pick);
+  const warnings = pickContextWarnings(pick);
+  const meta = pickExpandedMetaLines(pick);
+  const hasDetail =
+    teams != null ||
+    bands.length > 0 ||
+    stats.length > 0 ||
+    warnings.length > 0 ||
+    meta.length > 0;
+
+  return (
+    <li className="rounded-xl border border-white/10 bg-black/20 overflow-hidden shrink-0">
+      <button
+        type="button"
+        id={`pick-trigger-${rowKey}`}
+        aria-expanded={open}
+        aria-controls={`pick-panel-${rowKey}`}
+        disabled={!hasDetail}
+        onClick={() => hasDetail && setOpen((o) => !o)}
+        className={`w-full text-left px-3 py-2.5 flex items-start gap-2 ${
+          hasDetail ? 'hover:bg-white/5 cursor-pointer' : 'cursor-default'
+        }`}
+      >
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium text-white leading-snug">{title}</p>
+          {sub && <p className="text-xs text-white/55 mt-0.5 leading-snug">{sub}</p>}
+        </div>
+        {hasDetail ? <Chevron open={open} /> : null}
+      </button>
+
+      {open && hasDetail && (
+        <div
+          id={`pick-panel-${rowKey}`}
+          role="region"
+          aria-labelledby={`pick-trigger-${rowKey}`}
+          className="px-3 pb-3 pt-2 border-t border-white/10 space-y-3 text-xs text-white/80"
+        >
+          {teams && (
+            <div className="space-y-0.5">
+              <p className="font-semibold text-white/90">{teams.home}</p>
+              <p className="text-[10px] text-white/40 pl-0.5">v</p>
+              <p className="font-semibold text-white/90">{teams.away}</p>
+            </div>
+          )}
+
+          {meta.length > 0 && (
+            <ul className="space-y-1 text-white/65 list-none">
+              {meta.map((line) => (
+                <li key={line}>{line}</li>
+              ))}
+            </ul>
+          )}
+
+          {bands.length > 0 && (
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-white/45 mb-1.5">
+                Goal bands
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {bands.map(({ label, value }) => (
+                  <span
+                    key={label}
+                    className={`inline-flex flex-col items-center px-2 py-1 rounded-lg border min-w-[2.75rem] ${bandAccentClass(
+                      label,
+                    )}`}
+                  >
+                    <span className="text-[10px] font-bold opacity-95">{label}</span>
+                    <span className="text-[11px] font-semibold text-white/90">{value}</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {stats.length > 0 && (
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-amber-200/80 mb-1.5 flex items-center gap-1">
+                <span aria-hidden>★</span> Key stats
+              </p>
+              <div className="flex flex-wrap gap-1">
+                {stats.map((s) => (
+                  <span
+                    key={s}
+                    className="px-2 py-0.5 rounded-full bg-amber-400/15 text-amber-100/90 text-[11px] font-medium border border-amber-400/20"
+                  >
+                    {s}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {warnings.length > 0 && (
+            <div className="space-y-1">
+              <p className="text-[10px] font-semibold text-orange-300/90">Notes</p>
+              {warnings.map((w) => (
+                <p key={w} className="text-orange-200/85 leading-relaxed">
+                  {w}
+                </p>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </li>
+  );
+}
 
 function PickPanel({
   label,
@@ -37,9 +192,6 @@ function PickPanel({
   const filtered = state.picks.filter((p) => pickPassesBestFilter(p, leagueWinRates));
   const hasLp = Object.keys(leagueWinRates).length > 0;
   const waiting = state.loading || !state.ready || !selectionReady;
-
-  /** ~5 pick rows visible; more scroll inside the panel (not the whole page). */
-  const listMaxHeightClass = 'max-h-[min(22rem,50vh)]';
 
   return (
     <div className="rounded-2xl border border-white/15 bg-white/5 p-6 md:p-8 min-h-[160px] flex flex-col justify-start">
@@ -76,24 +228,15 @@ function PickPanel({
 
       {!state.error && !waiting && filtered.length > 0 && (
         <div
-          className={`mt-1 min-h-0 ${listMaxHeightClass} overflow-y-auto overflow-x-hidden overscroll-y-contain pr-1 -mr-0.5 [scrollbar-gutter:stable] scroll-smooth`}
+          className={`mt-1 min-h-0 ${LIST_MAX_HEIGHT} overflow-y-auto overflow-x-hidden overscroll-y-contain pr-1 -mr-0.5 [scrollbar-gutter:stable] scroll-smooth`}
         >
-          <ul className="space-y-3 pb-0.5">
+          <ul className="space-y-2 pb-0.5">
             {filtered.map((p, i) => {
               const key =
                 (typeof p.id === 'number' && String(p.id)) ||
                 (typeof p.id === 'string' && p.id) ||
                 `${pickDisplayTitle(p)}-${i}`;
-              const sub = pickDisplaySubtitle(p);
-              return (
-                <li
-                  key={key}
-                  className="rounded-xl border border-white/10 bg-black/20 px-3 py-2.5 shrink-0"
-                >
-                  <p className="text-sm font-medium text-white">{pickDisplayTitle(p)}</p>
-                  {sub && <p className="text-xs text-white/55 mt-0.5">{sub}</p>}
-                </li>
-              );
+              return <ExpandablePickRow key={key} pick={p} rowKey={`${label}-${key}`} />;
             })}
           </ul>
         </div>

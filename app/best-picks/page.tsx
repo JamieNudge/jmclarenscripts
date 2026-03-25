@@ -129,7 +129,7 @@ export default function BestPicksPage() {
           <aside className="lg:w-36 xl:w-40 flex-shrink-0 lg:pt-2">
             <AdPlaceholder
               orientation="vertical"
-              className="min-h-[280px] lg:min-h-[420px] w-full"
+              className="min-h-[200px] lg:min-h-[min(360px,45vh)] w-full"
             />
           </aside>
         </div>
