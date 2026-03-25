@@ -13,18 +13,12 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Today's Best Picks",
     description: bestPicksDescription,
-    images: [
-      {
-        url: '/images/goallab-icon.png',
-        alt: 'GoalLab',
-      },
-    ],
+    type: 'website',
   },
   twitter: {
-    card: 'summary',
+    card: 'summary_large_image',
     title: "Today's Best Picks",
     description: bestPicksDescription,
-    images: ['/images/goallab-icon.png'],
   },
 };
 
