@@ -203,13 +203,17 @@ export function pickGoalBandValues(p: PickRecord): { label: string; value: strin
 export function pickSignificantStats(p: PickRecord): string[] {
   const s = p.significantStats;
   if (!Array.isArray(s)) return [];
-  return s.filter((x): x is string => typeof x === 'string' && x.trim()).map((x) => x.trim());
+  return s
+    .filter((x): x is string => typeof x === 'string' && x.trim().length > 0)
+    .map((x) => x.trim());
 }
 
 export function pickContextWarnings(p: PickRecord): string[] {
   const w = p.contextWarnings;
   if (!Array.isArray(w)) return [];
-  return w.filter((x): x is string => typeof x === 'string' && x.trim()).map((x) => x.trim());
+  return w
+    .filter((x): x is string => typeof x === 'string' && x.trim().length > 0)
+    .map((x) => x.trim());
 }
 
 /** Extra lines for expanded panel (optional fields from Mac / iOS-shaped exports). */
