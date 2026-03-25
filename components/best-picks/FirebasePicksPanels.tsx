@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
+import { BestPicksVideo } from '@/components/best-picks/BestPicksVideo';
 import { onValue, ref } from 'firebase/database';
 import {
   mergeUnanimousAndManual,
@@ -251,7 +252,7 @@ function PickPanel({
   );
 }
 
-export function FirebasePicksPanels() {
+export function FirebasePicksPanels({ children }: { children: ReactNode }) {
   const startLoading = isFirebaseClientConfigured();
   const [dateKey, setDateKey] = useState(() =>
     picksDateStringInTimeZone(picksTimeZoneFromEnv()),
@@ -374,7 +375,7 @@ export function FirebasePicksPanels() {
   const configHint = !isFirebaseClientConfigured();
 
   return (
-    <>
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5">
       <p className="sm:col-span-2 text-xs text-white/35 -mt-1 mb-1 tabular-nums" aria-label={`Selections for ${dateKey}`}>
         {dateKey}
       </p>
@@ -405,8 +406,10 @@ export function FirebasePicksPanels() {
           </p>
         </div>
       )}
+      {children}
       <PickPanel label="Over 2.5" state={over} leagueWinRates={leagueWinRates} />
+      <BestPicksVideo />
       <PickPanel label="Under 2.5" state={under} leagueWinRates={leagueWinRates} />
-    </>
+    </div>
   );
 }
