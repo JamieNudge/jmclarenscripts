@@ -78,7 +78,7 @@ export default function BestPicksPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#111827] to-[#1f2937] text-white flex flex-col">
       <div className="flex flex-1 flex-col lg:flex-row lg:min-h-0 w-full min-h-0">
-        <div className="flex-1 min-w-0 px-4 py-10 md:py-14 lg:px-6 lg:pr-8">
+        <div className="flex-1 min-w-0 min-h-0 px-4 py-10 md:py-14 lg:px-6 lg:pr-8">
           <div className="max-w-6xl mx-auto w-full">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-8 md:mb-10">
               Today&apos;s Best Picks
