@@ -11,7 +11,16 @@ function siteMetadataBase(): URL {
     const normalized = explicit.replace(/\/+$/, "");
     return new URL(`${normalized}/`);
   }
-  if (process.env.VERCEL_URL) return new URL(`https://${process.env.VERCEL_URL}`);
+  // Prefer stable production host so og:image matches the URL people share (jmclarenscripts.vercel.app),
+  // not VERCEL_URL (unique per deployment: jmclarenscripts-xxxx.vercel.app).
+  const productionHost = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
+  if (productionHost) {
+    const host = productionHost.replace(/^https?:\/\//, "").replace(/\/+$/, "");
+    return new URL(`https://${host}/`);
+  }
+  if (process.env.VERCEL_URL) {
+    return new URL(`https://${process.env.VERCEL_URL}/`);
+  }
   return new URL("http://localhost:3000");
 }
 
