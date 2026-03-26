@@ -7,7 +7,7 @@ import { bestPicksGridTileClassName } from '@/lib/best-picks-panel-shell';
 import type { App } from '@/types/app';
 
 const bestPicksDescription =
-  'Goal-line best picks (Over / Under 2.5), video, and App Store links. Live picks load from Firebase Realtime Database when configured.';
+  "Today's Best Picks — selected by filtering the work of four different algorithms toward what each does best. Over / Under 2.5, video, and App Store links. Live picks load from Firebase Realtime Database when configured.";
 
 export const metadata: Metadata = {
   title: "Today's Best Picks",
@@ -80,8 +80,11 @@ export default function BestPicksPage() {
       <div className="flex flex-1 flex-col lg:flex-row lg:min-h-0 w-full min-h-0">
         <div className="flex-1 min-w-0 min-h-0 px-4 py-10 md:py-14 lg:px-6 lg:pr-8">
           <div className="max-w-6xl mx-auto w-full">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-8 md:mb-10">
-              Today&apos;s Best Picks
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight mb-8 md:mb-10 max-w-4xl leading-tight">
+              <span className="block">Today&apos;s Best Picks</span>
+              <span className="block mt-3 md:mt-4 text-lg md:text-xl lg:text-2xl font-semibold text-white/90 leading-snug">
+                Selected by filtering the work of four different algorithms and what each does best!
+              </span>
             </h1>
 
             <FirebasePicksPanels>

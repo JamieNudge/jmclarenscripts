@@ -16,12 +16,11 @@ const hr = 'border-0 border-t border-white/15 my-5';
 export function BestPicksNewProductPanel() {
   return (
     <div className={bestPicksGridTileClassName}>
+      <h2 className="text-lg md:text-xl font-bold text-white tracking-tight pr-2 mb-2 shrink-0">
+        Test Your Prediction Idea — For Real
+      </h2>
       <div className={scrollArea}>
         <div className="space-y-4 text-sm text-white/75 leading-relaxed pb-1">
-          <h2 className="text-lg md:text-xl font-bold text-white tracking-tight pr-2">
-            Test Your Prediction Idea — For Real
-          </h2>
-
           <p>Have a theory for predicting match outcomes?</p>
           <p>Most ideas sound good in your head. Very few hold up over time.</p>
           <p>
