@@ -1,9 +1,11 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export type PredictionSubmissionEntry = {
   id: string;
+  read?: unknown;
+  readAt?: unknown;
   name?: unknown;
   email?: unknown;
   ideaDescribe?: unknown;
@@ -61,6 +63,16 @@ export function AdminPredictionSubmissions({ adminKey }: { adminKey: string }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [autoRefresh, setAutoRefresh] = useState(true);
+  const [actingIds, setActingIds] = useState<Set<string>>(() => new Set());
+
+  const displayEntries = useMemo(() => {
+    return [...entries].sort((a, b) => {
+      const ar = Boolean(a.read) ? 1 : 0;
+      const br = Boolean(b.read) ? 1 : 0;
+      if (ar !== br) return ar - br;
+      return (Number(b.submittedAt) || 0) - (Number(a.submittedAt) || 0);
+    });
+  }, [entries]);
 
   const fetchEntries = useCallback(async () => {
     const key = adminKey.trim();
@@ -103,6 +115,58 @@ export function AdminPredictionSubmissions({ adminKey }: { adminKey: string }) {
     return () => clearInterval(id);
   }, [autoRefresh, adminKey, fetchEntries]);
 
+  const withActing = useCallback((id: string, fn: () => Promise<void>) => {
+    setActingIds((s) => new Set(s).add(id));
+    void (async () => {
+      try {
+        await fn();
+        setError(null);
+        await fetchEntries();
+      } catch (e) {
+        setError(e instanceof Error ? e.message : 'Action failed');
+      } finally {
+        setActingIds((s) => {
+          const n = new Set(s);
+          n.delete(id);
+          return n;
+        });
+      }
+    })();
+  }, [fetchEntries]);
+
+  const markRead = useCallback(
+    (id: string) => {
+      const key = adminKey.trim();
+      if (!key) return;
+      withActing(id, async () => {
+        const res = await fetch(`/api/admin/prediction-submissions/${encodeURIComponent(id)}`, {
+          method: 'PATCH',
+          headers: { Authorization: `Bearer ${key}` },
+        });
+        const json = (await res.json()) as { error?: string };
+        if (!res.ok) throw new Error(json.error || res.statusText);
+      });
+    },
+    [adminKey, withActing],
+  );
+
+  const removeSubmission = useCallback(
+    (id: string) => {
+      const key = adminKey.trim();
+      if (!key) return;
+      if (!window.confirm('Delete this submission permanently?')) return;
+      withActing(id, async () => {
+        const res = await fetch(`/api/admin/prediction-submissions/${encodeURIComponent(id)}`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${key}` },
+        });
+        const json = (await res.json()) as { error?: string };
+        if (!res.ok) throw new Error(json.error || res.statusText);
+      });
+    },
+    [adminKey, withActing],
+  );
+
   return (
     <section className="rounded-2xl border border-violet-400/25 bg-violet-950/20 p-5 space-y-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -111,6 +175,7 @@ export function AdminPredictionSubmissions({ adminKey }: { adminKey: string }) {
           <p className="text-xs text-white/45 mt-1 leading-relaxed">
             Same admin key as picks. Data loads from{' '}
             <code className="text-violet-200/80">predictionIdeaSubmissions</code> (server only — not public read).
+            Mark read or delete per row; optional Gmail copy on submit — see <code className="text-violet-200/80">.env.example</code>.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -149,26 +214,57 @@ export function AdminPredictionSubmissions({ adminKey }: { adminKey: string }) {
       )}
 
       <ul className="space-y-3 max-h-[min(70vh,36rem)] overflow-y-auto pr-1 -mr-1 [scrollbar-gutter:stable]">
-        {entries.map((e) => (
-          <li key={e.id}>
+        {displayEntries.map((e) => (
+          <li key={e.id} className={Boolean(e.read) ? 'opacity-75' : ''}>
             <details className="rounded-xl border border-white/12 bg-black/30 overflow-hidden group">
               <summary className="cursor-pointer list-none px-3 py-2.5 hover:bg-white/5 [&::-webkit-details-marker]:hidden flex flex-col gap-1">
-                <span className="text-sm font-medium text-white">
-                  {str(e.name) || '(No name)'} <span className="text-white/40 font-normal">·</span>{' '}
-                  {str(e.email) ? (
-                    <a
-                      href={`mailto:${encodeURIComponent(str(e.email))}`}
-                      className="text-violet-300 hover:text-violet-200 underline underline-offset-2 font-normal"
-                      onClick={(ev) => ev.stopPropagation()}
+                <div className="flex flex-wrap items-start justify-between gap-2">
+                  <span className="text-sm font-medium text-white min-w-0">
+                    {str(e.name) || '(No name)'} <span className="text-white/40 font-normal">·</span>{' '}
+                    {str(e.email) ? (
+                      <a
+                        href={`mailto:${encodeURIComponent(str(e.email))}`}
+                        className="text-violet-300 hover:text-violet-200 underline underline-offset-2 font-normal"
+                        onClick={(ev) => ev.stopPropagation()}
+                      >
+                        {str(e.email)}
+                      </a>
+                    ) : (
+                      <span className="text-white/45">no email</span>
+                    )}
+                  </span>
+                  <div className="flex flex-wrap items-center gap-1.5 shrink-0" onClick={(ev) => ev.stopPropagation()}>
+                    {Boolean(e.read) && (
+                      <span className="rounded-md bg-white/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-white/55">
+                        Read
+                      </span>
+                    )}
+                    {!Boolean(e.read) && (
+                      <button
+                        type="button"
+                        disabled={actingIds.has(e.id) || !adminKey.trim()}
+                        onClick={() => markRead(e.id)}
+                        className="rounded-md bg-emerald-700/80 hover:bg-emerald-600/90 px-2 py-0.5 text-[10px] font-medium disabled:opacity-50"
+                      >
+                        Mark read
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      disabled={actingIds.has(e.id) || !adminKey.trim()}
+                      onClick={() => removeSubmission(e.id)}
+                      className="rounded-md bg-red-900/50 hover:bg-red-800/60 px-2 py-0.5 text-[10px] font-medium text-red-200/90 disabled:opacity-50"
                     >
-                      {str(e.email)}
-                    </a>
-                  ) : (
-                    <span className="text-white/45">no email</span>
-                  )}
-                </span>
+                      Delete
+                    </button>
+                  </div>
+                </div>
                 <span className="text-[11px] text-white/40 tabular-nums">
-                  {formatWhen(e.submittedAt)} · id {e.id.slice(0, 10)}…
+                  {formatWhen(e.submittedAt)}
+                  {Boolean(e.read) && e.readAt != null && (
+                    <> · read {formatWhen(e.readAt)}</>
+                  )}{' '}
+                  · id {e.id.slice(0, 10)}…
                 </span>
                 {str(e.ideaDescribe) && (
                   <span className="text-xs text-white/55 line-clamp-2">{str(e.ideaDescribe)}</span>
@@ -186,6 +282,26 @@ export function AdminPredictionSubmissions({ adminKey }: { adminKey: string }) {
                     </div>
                   );
                 })}
+                <div className="flex flex-wrap gap-2 pt-2 border-t border-white/10 mt-2">
+                  {!Boolean(e.read) && (
+                    <button
+                      type="button"
+                      disabled={actingIds.has(e.id) || !adminKey.trim()}
+                      onClick={() => markRead(e.id)}
+                      className="rounded-lg bg-emerald-700/80 hover:bg-emerald-600/90 px-3 py-1 text-[11px] font-medium disabled:opacity-50"
+                    >
+                      Mark read
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    disabled={actingIds.has(e.id) || !adminKey.trim()}
+                    onClick={() => removeSubmission(e.id)}
+                    className="rounded-lg bg-red-900/50 hover:bg-red-800/60 px-3 py-1 text-[11px] font-medium text-red-200/90 disabled:opacity-50"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
             </details>
           </li>

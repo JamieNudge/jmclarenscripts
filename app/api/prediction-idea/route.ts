@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDatabase } from 'firebase-admin/database';
 import { getFirebaseAdminApp } from '@/lib/firebase-admin';
 import { predictionIdeaSubmissionsRoot } from '@/lib/prediction-idea-server';
+import { sendPredictionIdeaNotifyEmail } from '@/lib/send-prediction-idea-email';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -86,6 +87,9 @@ export async function POST(req: NextRequest) {
     const db = getDatabase(app);
     const ref = db.ref(predictionIdeaSubmissionsRoot()).push();
     await ref.set(payload);
+    void sendPredictionIdeaNotifyEmail(payload).catch((err) => {
+      console.error('[prediction-idea] notify email failed', err);
+    });
     return NextResponse.json({ ok: true, id: ref.key });
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Server error';
