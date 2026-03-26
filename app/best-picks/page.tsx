@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { BlueskyLink } from '@/components/BlueskyLink';
 import { FirebasePicksPanels } from '@/components/best-picks/FirebasePicksPanels';
 import { apps } from '@/lib/apps-data';
 import type { App } from '@/types/app';
@@ -35,7 +36,7 @@ function storeLinkAccentClass(appId: string) {
   return 'text-white/90 group-hover:text-white';
 }
 
-/** Layout-only guides; Google Auto ads inject from the root layout script. */
+/** Reserved regions; Google Auto ads may fill these when enabled. */
 function AdLayoutPlaceholder({
   orientation,
   className = '',
@@ -68,64 +69,64 @@ export default function BestPicksPage() {
       <div className="flex flex-1 flex-col lg:flex-row lg:min-h-0 w-full min-h-0">
         <div className="flex-1 min-w-0 px-4 py-10 md:py-14 lg:px-6 lg:pr-8">
           <div className="max-w-6xl mx-auto w-full">
-            <div className="flex justify-end mb-8">
-              <Link
-                href="/privacy"
-                className="text-sm text-white/70 hover:text-white underline-offset-2 hover:underline"
-              >
-                Privacy policy
-              </Link>
-            </div>
-
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-8 md:mb-10">
               Today&apos;s Best Picks
             </h1>
 
-            <FirebasePicksPanels>
-              <div className="rounded-2xl border border-white/15 bg-white/5 p-6 md:p-8 min-h-[160px] flex flex-col justify-center gap-3">
-                <h2 className="text-lg md:text-xl font-semibold text-white mb-1">App Store links</h2>
-                <p className="text-sm text-white/60 leading-relaxed mb-3">
-                  Get the apps on the App Store.
-                </p>
-                <ul className="space-y-3">
-                  {storeAppsWithLinks.map((app) => (
-                    <li key={app.id}>
-                      <a
-                        href={app.appStoreUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-4 rounded-xl border border-white/10 bg-black/20 p-3 hover:border-white/25 hover:bg-white/5 transition-all group"
-                      >
-                        <div className="w-16 h-16 sm:w-[4.5rem] sm:h-[4.5rem] rounded-2xl overflow-hidden bg-white/10 backdrop-blur-sm border-2 border-white/20 group-hover:border-white/50 flex-shrink-0 transition-all duration-300">
-                          {app.icon ? (
-                            <img
-                              src={app.icon}
-                              alt={`${app.name} icon`}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div
-                              className="w-full h-full flex items-center justify-center text-white font-bold text-xl"
-                              style={{ backgroundColor: app.color }}
-                            >
-                              {app.name[0]}
-                            </div>
-                          )}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <span
-                            className={`text-sm font-semibold underline underline-offset-2 ${storeLinkAccentClass(app.id)}`}
+            <FirebasePicksPanels />
+
+            <div className="mt-5 md:mt-6 rounded-2xl border border-white/15 bg-white/5 p-6 md:p-8 flex flex-col justify-center gap-3">
+              <h2 className="text-lg md:text-xl font-semibold text-white mb-1">App Store links</h2>
+              <p className="text-sm text-white/60 leading-relaxed mb-3">
+                App Store links and official Bluesky where available.
+              </p>
+              <ul className="space-y-3">
+                {storeAppsWithLinks.map((app) => (
+                  <li key={app.id} className="space-y-3">
+                    <a
+                      href={app.appStoreUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-4 rounded-xl border border-white/10 bg-black/20 p-3 hover:border-white/25 hover:bg-white/5 transition-all group"
+                    >
+                      <div className="w-16 h-16 sm:w-[4.5rem] sm:h-[4.5rem] rounded-2xl overflow-hidden bg-white/10 backdrop-blur-sm border-2 border-white/20 group-hover:border-white/50 flex-shrink-0 transition-all duration-300">
+                        {app.icon ? (
+                          <img
+                            src={app.icon}
+                            alt={`${app.name} icon`}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div
+                            className="w-full h-full flex items-center justify-center text-white font-bold text-xl"
+                            style={{ backgroundColor: app.color }}
                           >
-                            {app.name}
-                          </span>
-                          <span className="block text-xs text-white/45 mt-0.5">App Store</span>
-                        </div>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </FirebasePicksPanels>
+                            {app.name[0]}
+                          </div>
+                        )}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <span
+                          className={`text-sm font-semibold underline underline-offset-2 ${storeLinkAccentClass(app.id)}`}
+                        >
+                          {app.name}
+                        </span>
+                        <span className="block text-xs text-white/45 mt-0.5">App Store</span>
+                      </div>
+                    </a>
+                    {app.blueskyUrl ? (
+                      <div className="flex flex-wrap gap-2">
+                        <BlueskyLink
+                          href={app.blueskyUrl}
+                          subtitle={app.blueskyLabel}
+                          variant="pill"
+                        />
+                      </div>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
 
@@ -139,6 +140,14 @@ export default function BestPicksPage() {
 
       <footer className="w-full border-t border-white/10 bg-black/20 mt-auto">
         <div className="max-w-6xl mx-auto px-4 py-6 lg:px-6 space-y-4">
+          <p
+            className="text-center text-[11px] md:text-xs text-white/45 leading-relaxed max-w-2xl mx-auto"
+            role="note"
+          >
+            <span className="font-medium text-white/60">Disclaimer.</span>{' '}
+            This website does not offer real money gambling, prizes, or simulated gambling. Content
+            on this page is for informational purposes only.
+          </p>
           <p className="text-center text-[11px] md:text-xs text-white/35 leading-relaxed max-w-md mx-auto">
             <Link href="/privacy" className="underline hover:text-white/55 underline-offset-2">
               Privacy policy

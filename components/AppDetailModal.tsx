@@ -1,6 +1,7 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
+import { BlueskyLink } from '@/components/BlueskyLink';
 import { App } from '@/types/app';
 
 interface AppDetailModalProps {
@@ -151,6 +152,13 @@ export default function AppDetailModal({ app, onClose }: AppDetailModalProps) {
                 >
                   View on App Store
                 </a>
+              )}
+              {app.blueskyUrl && (
+                <BlueskyLink
+                  href={app.blueskyUrl}
+                  subtitle={app.blueskyLabel}
+                  variant="button"
+                />
               )}
               {app.websiteUrl && (
                 <a

@@ -29,6 +29,8 @@ export const apps: App[] = [
     status: 'live',
     googlePlayStatus: 'in-review',
     appStoreUrl: 'https://apps.apple.com/gb/app/statstrike/id6757434374',
+    blueskyUrl: 'https://bsky.app/profile/statstrikeapp.bsky.social',
+    blueskyLabel: '@statstrikeapp',
     contentRatingUrl: '/statstrike/content-rating',
     privacyUrl: '/privacy/statstrike',
     termsUrl: '/terms/statstrike',

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { BlueskyLink } from '@/components/BlueskyLink';
 import { App } from '@/types/app';
 import Image from 'next/image';
 
@@ -162,23 +163,33 @@ export default function AppCarousel({ apps, onAppSelect }: AppCarouselProps) {
                     </div>
 
                     {/* Status badge(s) */}
-                    <div className="absolute top-12 right-4 z-20 flex flex-wrap gap-1 justify-end max-w-[60%]">
-                      <span className={`px-3 py-1 rounded-full text-xs font-bold shadow-lg ${
-                        app.status === 'live' ? 'bg-green-400 text-green-900' :
-                        app.status === 'beta' ? 'bg-yellow-400 text-yellow-900' :
-                        app.status === 'in-review' ? 'bg-blue-400 text-blue-900' :
-                        'bg-purple-400 text-purple-900'
-                      }`}>
-                        {app.status === 'in-review' ? 'App Store Review' : app.status.toUpperCase()}
-                      </span>
-                      {app.googlePlayStatus && (
+                    <div className="absolute top-12 right-4 z-20 flex flex-col items-end gap-2 max-w-[85%]">
+                      <div className="flex flex-wrap gap-1 justify-end">
                         <span className={`px-3 py-1 rounded-full text-xs font-bold shadow-lg ${
-                          app.googlePlayStatus === 'in-review' ? 'bg-blue-400 text-blue-900' :
-                          app.googlePlayStatus === 'live' ? 'bg-green-400 text-green-900' :
-                          'bg-yellow-400 text-yellow-900'
+                          app.status === 'live' ? 'bg-green-400 text-green-900' :
+                          app.status === 'beta' ? 'bg-yellow-400 text-yellow-900' :
+                          app.status === 'in-review' ? 'bg-blue-400 text-blue-900' :
+                          'bg-purple-400 text-purple-900'
                         }`}>
-                          {app.googlePlayStatus === 'in-review' ? 'Google Play Review' : app.googlePlayStatus.toUpperCase()}
+                          {app.status === 'in-review' ? 'App Store Review' : app.status.toUpperCase()}
                         </span>
+                        {app.googlePlayStatus && (
+                          <span className={`px-3 py-1 rounded-full text-xs font-bold shadow-lg ${
+                            app.googlePlayStatus === 'in-review' ? 'bg-blue-400 text-blue-900' :
+                            app.googlePlayStatus === 'live' ? 'bg-green-400 text-green-900' :
+                            'bg-yellow-400 text-yellow-900'
+                          }`}>
+                            {app.googlePlayStatus === 'in-review' ? 'Google Play Review' : app.googlePlayStatus.toUpperCase()}
+                          </span>
+                        )}
+                      </div>
+                      {isCenter && app.blueskyUrl && (
+                        <BlueskyLink
+                          href={app.blueskyUrl}
+                          subtitle={app.blueskyLabel}
+                          variant="pill"
+                          onClick={(e) => e.stopPropagation()}
+                        />
                       )}
                     </div>
                   </div>

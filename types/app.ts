@@ -8,6 +8,10 @@ export interface App {
   screenshots: string[]; // Paths to phone mockup images
   features: string[];
   appStoreUrl?: string;
+  /** Bluesky profile URL, e.g. https://bsky.app/profile/handle.bsky.social */
+  blueskyUrl?: string;
+  /** Short handle for UI, e.g. @statstrikeapp */
+  blueskyLabel?: string;
   websiteUrl?: string;
   supportUrl?: string;
   privacyUrl?: string;
