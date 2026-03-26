@@ -9,6 +9,7 @@ import {
   picksTimeZoneFromEnv,
   rtdbValueToPickList,
 } from '@/lib/best-picks-firebase';
+import { AdminPredictionEmailBlocklist } from '@/components/admin/AdminPredictionEmailBlocklist';
 import { AdminPredictionSubmissions } from '@/components/admin/AdminPredictionSubmissions';
 import { parseYoutubeIdFromInput } from '@/lib/youtube-embed';
 import { normalizePicksCalendarDateInput } from '@/lib/picks-date-input';
@@ -78,6 +79,7 @@ export default function AdminPicksPage() {
   const prevDateNormRef = useRef<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [predictionBlocklistRefreshSignal, setPredictionBlocklistRefreshSignal] = useState(0);
 
   useEffect(() => {
     try {
@@ -627,7 +629,14 @@ export default function AdminPicksPage() {
           </div>
 
           <aside className="w-full xl:w-[min(100%,22rem)] shrink-0 xl:sticky xl:top-6 space-y-4 mt-10 xl:mt-0">
-            <AdminPredictionSubmissions adminKey={adminKey} />
+            <AdminPredictionEmailBlocklist
+              adminKey={adminKey}
+              refreshSignal={predictionBlocklistRefreshSignal}
+            />
+            <AdminPredictionSubmissions
+              adminKey={adminKey}
+              onBlockedEmail={() => setPredictionBlocklistRefreshSignal((n) => n + 1)}
+            />
           </aside>
         </div>
       </div>

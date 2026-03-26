@@ -58,12 +58,19 @@ const detailRows: { key: keyof PredictionSubmissionEntry; label: string }[] = [
   { key: 'userAgent', label: 'User agent' },
 ];
 
-export function AdminPredictionSubmissions({ adminKey }: { adminKey: string }) {
+export function AdminPredictionSubmissions({
+  adminKey,
+  onBlockedEmail,
+}: {
+  adminKey: string;
+  onBlockedEmail?: () => void;
+}) {
   const [entries, setEntries] = useState<PredictionSubmissionEntry[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [actingIds, setActingIds] = useState<Set<string>>(() => new Set());
+  const [blockingEmail, setBlockingEmail] = useState<string | null>(null);
 
   const displayEntries = useMemo(() => {
     return [...entries].sort((a, b) => {
@@ -167,6 +174,40 @@ export function AdminPredictionSubmissions({ adminKey }: { adminKey: string }) {
     [adminKey, withActing],
   );
 
+  const blockSubmitterEmail = useCallback(
+    (addr: string) => {
+      const key = adminKey.trim();
+      const email = addr.trim();
+      if (!key || !email) return;
+      if (
+        !window.confirm(
+          `Block ${email}? They can still submit, but nothing is saved and you get no notification (same as honeypot).`,
+        )
+      ) {
+        return;
+      }
+      setBlockingEmail(email);
+      setError(null);
+      void (async () => {
+        try {
+          const res = await fetch('/api/admin/prediction-blocklist', {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email }),
+          });
+          const json = (await res.json()) as { error?: string };
+          if (!res.ok) throw new Error(json.error || res.statusText);
+          onBlockedEmail?.();
+        } catch (e) {
+          setError(e instanceof Error ? e.message : 'Block failed');
+        } finally {
+          setBlockingEmail(null);
+        }
+      })();
+    },
+    [adminKey, onBlockedEmail],
+  );
+
   return (
     <section className="rounded-2xl border border-violet-400/25 bg-violet-950/20 p-5 space-y-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -175,7 +216,7 @@ export function AdminPredictionSubmissions({ adminKey }: { adminKey: string }) {
           <p className="text-xs text-white/45 mt-1 leading-relaxed">
             Same admin key as picks. Data loads from{' '}
             <code className="text-violet-200/80">predictionIdeaSubmissions</code> (server only — not public read).
-            Mark read or delete per row; optional Gmail copy on submit — see <code className="text-violet-200/80">.env.example</code>.
+            Mark read, delete, or block the submitter&apos;s email. Blocked addresses are ignored server-side (no Firebase, no mail). See blocklist panel above.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -214,20 +255,23 @@ export function AdminPredictionSubmissions({ adminKey }: { adminKey: string }) {
       )}
 
       <ul className="space-y-3 max-h-[min(70vh,36rem)] overflow-y-auto pr-1 -mr-1 [scrollbar-gutter:stable]">
-        {displayEntries.map((e) => (
+        {displayEntries.map((e) => {
+          const em = str(e.email);
+          const blockBusy = Boolean(em && blockingEmail === em);
+          return (
           <li key={e.id} className={Boolean(e.read) ? 'opacity-75' : ''}>
             <details className="rounded-xl border border-white/12 bg-black/30 overflow-hidden group">
               <summary className="cursor-pointer list-none px-3 py-2.5 hover:bg-white/5 [&::-webkit-details-marker]:hidden flex flex-col gap-1">
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <span className="text-sm font-medium text-white min-w-0">
                     {str(e.name) || '(No name)'} <span className="text-white/40 font-normal">·</span>{' '}
-                    {str(e.email) ? (
+                    {em ? (
                       <a
-                        href={`mailto:${encodeURIComponent(str(e.email))}`}
+                        href={`mailto:${encodeURIComponent(em)}`}
                         className="text-violet-300 hover:text-violet-200 underline underline-offset-2 font-normal"
                         onClick={(ev) => ev.stopPropagation()}
                       >
-                        {str(e.email)}
+                        {em}
                       </a>
                     ) : (
                       <span className="text-white/45">no email</span>
@@ -242,16 +286,26 @@ export function AdminPredictionSubmissions({ adminKey }: { adminKey: string }) {
                     {!Boolean(e.read) && (
                       <button
                         type="button"
-                        disabled={actingIds.has(e.id) || !adminKey.trim()}
+                        disabled={actingIds.has(e.id) || !adminKey.trim() || blockBusy}
                         onClick={() => markRead(e.id)}
                         className="rounded-md bg-emerald-700/80 hover:bg-emerald-600/90 px-2 py-0.5 text-[10px] font-medium disabled:opacity-50"
                       >
                         Mark read
                       </button>
                     )}
+                    {em ? (
+                      <button
+                        type="button"
+                        disabled={actingIds.has(e.id) || !adminKey.trim() || blockBusy}
+                        onClick={() => blockSubmitterEmail(em)}
+                        className="rounded-md bg-amber-800/70 hover:bg-amber-700/80 px-2 py-0.5 text-[10px] font-medium text-amber-100/90 disabled:opacity-50"
+                      >
+                        {blockBusy ? 'Blocking…' : 'Block email'}
+                      </button>
+                    ) : null}
                     <button
                       type="button"
-                      disabled={actingIds.has(e.id) || !adminKey.trim()}
+                      disabled={actingIds.has(e.id) || !adminKey.trim() || blockBusy}
                       onClick={() => removeSubmission(e.id)}
                       className="rounded-md bg-red-900/50 hover:bg-red-800/60 px-2 py-0.5 text-[10px] font-medium text-red-200/90 disabled:opacity-50"
                     >
@@ -286,16 +340,26 @@ export function AdminPredictionSubmissions({ adminKey }: { adminKey: string }) {
                   {!Boolean(e.read) && (
                     <button
                       type="button"
-                      disabled={actingIds.has(e.id) || !adminKey.trim()}
+                      disabled={actingIds.has(e.id) || !adminKey.trim() || blockBusy}
                       onClick={() => markRead(e.id)}
                       className="rounded-lg bg-emerald-700/80 hover:bg-emerald-600/90 px-3 py-1 text-[11px] font-medium disabled:opacity-50"
                     >
                       Mark read
                     </button>
                   )}
+                  {em ? (
+                    <button
+                      type="button"
+                      disabled={actingIds.has(e.id) || !adminKey.trim() || blockBusy}
+                      onClick={() => blockSubmitterEmail(em)}
+                      className="rounded-lg bg-amber-800/70 hover:bg-amber-700/80 px-3 py-1 text-[11px] font-medium text-amber-100/90 disabled:opacity-50"
+                    >
+                      {blockBusy ? 'Blocking…' : 'Block email'}
+                    </button>
+                  ) : null}
                   <button
                     type="button"
-                    disabled={actingIds.has(e.id) || !adminKey.trim()}
+                    disabled={actingIds.has(e.id) || !adminKey.trim() || blockBusy}
                     onClick={() => removeSubmission(e.id)}
                     className="rounded-lg bg-red-900/50 hover:bg-red-800/60 px-3 py-1 text-[11px] font-medium text-red-200/90 disabled:opacity-50"
                   >
@@ -305,7 +369,8 @@ export function AdminPredictionSubmissions({ adminKey }: { adminKey: string }) {
               </div>
             </details>
           </li>
-        ))}
+          );
+        })}
       </ul>
     </section>
   );

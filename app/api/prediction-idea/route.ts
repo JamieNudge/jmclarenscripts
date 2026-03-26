@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDatabase } from 'firebase-admin/database';
 import { getFirebaseAdminApp } from '@/lib/firebase-admin';
-import { predictionIdeaSubmissionsRoot } from '@/lib/prediction-idea-server';
+import {
+  normalizePredictionIdeaEmail,
+  predictionIdeaBlockedEmailsRoot,
+  predictionIdeaEmailBlocklistKey,
+  predictionIdeaSubmissionsRoot,
+} from '@/lib/prediction-idea-server';
 import { sendPredictionIdeaNotifyEmail } from '@/lib/send-prediction-idea-email';
 
 export const dynamic = 'force-dynamic';
@@ -85,6 +90,13 @@ export async function POST(req: NextRequest) {
 
   try {
     const db = getDatabase(app);
+    const norm = normalizePredictionIdeaEmail(email);
+    const blockKey = predictionIdeaEmailBlocklistKey(norm);
+    const blockedSnap = await db.ref(`${predictionIdeaBlockedEmailsRoot()}/${blockKey}`).once('value');
+    if (blockedSnap.exists()) {
+      return NextResponse.json({ ok: true });
+    }
+
     const ref = db.ref(predictionIdeaSubmissionsRoot()).push();
     await ref.set(payload);
     // Await SMTP: fire-and-forget is dropped when Vercel freezes the function after the response.
