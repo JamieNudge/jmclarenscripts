@@ -39,16 +39,20 @@ Until you have real images, the site will show:
 
 ## Open Graph / WhatsApp / iMessage link previews
 
-Messengers read **`og:image`** from your page, not your portrait from the HTML. This project generates those images with Next.js **`opengraph-image.tsx`** and uses **`public/images/goallab-icon.png`** when that file exists.
+Messengers read **`og:image`** when unfurling a link (that can differ from large images on the page itself). This project generates images with Next.js **`opengraph-image.tsx`** files: **portfolio home** (`/`) uses **`headshot.png`** + portfolio copy; **Today’s Best Picks** (`/best-picks`) uses **`goallab-icon.png`** + that page’s title.
 
-### Step 1 — Add the GoalLab icon file
+### Step 1 — Images used for link previews
 
-1. Export your GoalLab app icon as **PNG** (square is fine, e.g. **512×512**).
+**Portfolio homepage (`/`):** uses **`public/images/headshot.png`**. If it’s missing, the generator falls back to a **“JM”** monogram.
+
+**Best Picks (`/best-picks`):** uses **`public/images/goallab-icon.png`**.
+
+For GoalLab (Best Picks preview):
+
+1. Export your GoalLab app icon as **PNG** (square is fine, e.g. **512×512**, or **`Icon-1024.png`** from Xcode).
 2. Name it exactly: **`goallab-icon.png`** (all lowercase, hyphen).
-3. Put it here: **`public/images/goallab-icon.png`**  
-   Full path from project root: `portfolio-site/public/images/goallab-icon.png`.
-4. **Commit and push** this file so your host (e.g. Vercel) builds with the real icon.  
-   If the file is missing, previews still work but show a **“GL”** placeholder instead of the artwork.
+3. Put it in **`public/images/goallab-icon.png`**.
+4. **Commit and push** so production includes it. If missing, Best Picks previews show a **“GL”** placeholder.
 
 ### Step 2 — Set your public site URL (production)
 
@@ -64,18 +68,15 @@ After deploy, Next.js serves generated images at:
 
 | You share this URL | Preview image comes from |
 |--------------------|---------------------------|
-| `https://yoursite.com/` | `app/opengraph-image.tsx` → **Jamie’s App Portfolio · GoalLab** |
-| `https://yoursite.com/best-picks` | `app/best-picks/opengraph-image.tsx` → **Today’s Best Picks · GoalLab** |
-
-Both use the same **`goallab-icon.png`** file.
+| `https://yoursite.com/` | `app/opengraph-image.tsx` → **Jamie’s Portfolio** + **`headshot.png`** |
+| `https://yoursite.com/best-picks` | `app/best-picks/opengraph-image.tsx` → **Today’s Best Picks** + **`goallab-icon.png`** |
 
 ### Step 4 — Confirm in a browser
 
-1. Open: `https://YOUR_DOMAIN/opengraph-image`  
-2. You should see a **1200×630** image (icon + text).  
-3. Try `https://YOUR_DOMAIN/best-picks/opengraph-image` for the Best Picks variant.
+1. Open: `https://YOUR_DOMAIN/opengraph-image` — should show **headshot + portfolio** copy.  
+2. Open: `https://YOUR_DOMAIN/best-picks/opengraph-image` — should show **GoalLab icon + Today’s Best Picks**.
 
-If you get an error page, check the deployment logs and that **`NODE`** can read `public/images/goallab-icon.png` (file committed).
+If you get an error page, check deploy logs and that **`headshot.png`** / **`goallab-icon.png`** are committed as needed.
 
 ### Step 5 — Refresh WhatsApp / Facebook cache
 

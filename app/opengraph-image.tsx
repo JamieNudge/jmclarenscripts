@@ -1,17 +1,17 @@
 import {
-  goalLabOgImageContentType,
-  goalLabOgImageSize,
-  goalLabOpenGraphImageResponse,
-} from '@/lib/goalab-opengraph-image';
+  portfolioOgImageContentType,
+  portfolioOgImageSize,
+  portfolioOpenGraphImageResponse,
+} from '@/lib/portfolio-opengraph-image';
 
-export const alt = "Jamie's App Portfolio · GoalLab";
+export const alt = "Jamie's Portfolio — macOS, iOS & Android developer";
 
-export const size = goalLabOgImageSize;
+export const size = portfolioOgImageSize;
 
-export const contentType = goalLabOgImageContentType;
+export const contentType = portfolioOgImageContentType;
 
 export const runtime = 'nodejs';
 
 export default async function Image() {
-  return goalLabOpenGraphImageResponse("Jamie's App Portfolio", 'GoalLab');
+  return portfolioOpenGraphImageResponse();
 }
