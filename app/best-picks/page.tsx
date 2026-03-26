@@ -7,7 +7,7 @@ import { bestPicksGridTileClassName } from '@/lib/best-picks-panel-shell';
 import type { App } from '@/types/app';
 
 const bestPicksDescription =
-  "Today's Best Picks — selected by filtering the work of four different algorithms toward what each does best. Over / Under 2.5, video, and App Store links. Live picks load from Firebase Realtime Database when configured.";
+  "Today's Best Picks — selected by filtering the work of four different algorithms and what each does best. Over / Under 2.5, video, and App Store links. Live picks load from Firebase Realtime Database when configured.";
 
 const bestPicksOgImage = {
   url: '/best-picks/opengraph-image',
