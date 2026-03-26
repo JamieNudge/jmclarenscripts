@@ -272,6 +272,8 @@ FIREBASE_SERVICE_ACCOUNT_JSON={"type":"service_account",...one line...}
 
 3. **Do not** leave wide-open read/write on production long-term. Tighten rules once you’re happy (e.g. read-only on those branches only). **Writes** to **`manualExports`** should stay **false** for clients if you use Part D (server writes only).
 
+4. **“Submit Your Idea” form** (`/best-picks`): submissions are written by the **server** (same **`FIREBASE_SERVICE_ACCOUNT_JSON`** as the admin API) to **`predictionIdeaSubmissions/{pushId}`** by default. You do **not** need to allow browser read/write on that path; review entries in the Firebase console. Optional env: **`FIREBASE_PREDICTION_IDEA_SUBMISSIONS_ROOT`**.
+
 If rules block reads, the page may show an error or stay empty.
 
 ---
@@ -299,6 +301,7 @@ That date should match how your **Mac app** names the upload (`DailySelection.da
 | Works locally, not on Vercel | Env vars not set on Vercel or **no redeploy** after adding them |
 | Admin **401** / **503** | See **Part D8** (admin key + service account on Vercel) |
 | Manual picks / video don’t show | Wrong **date** vs timezone; or rules block **read** on `manualExports` |
+| Form submit **503** on Best Picks | **`FIREBASE_SERVICE_ACCOUNT_JSON`** (and DB URL) not set on Vercel — same as admin API |
 
 ---
 
@@ -312,6 +315,10 @@ That date should match how your **Mac app** names the upload (`DailySelection.da
 | `lib/best-picks-firebase.ts` | Paths, date, league key matching Mac app. |
 | `lib/firebase-admin.ts` | Server-only Firebase Admin (writes `manualExports`). |
 | `app/api/admin/manual-picks/route.ts` | Owner API (Bearer key + service account). |
+| `app/api/prediction-idea/route.ts` | Public POST: saves “Submit Your Idea” form to RTDB (`predictionIdeaSubmissions`). |
+| `app/api/admin/prediction-submissions/route.ts` | Owner GET (Bearer): lists submissions for `/admin/picks` sidebar. |
+| `components/best-picks/PredictionIdeaForm.tsx` | Client form on the Best Picks prediction panel. |
+| `components/admin/AdminPredictionSubmissions.tsx` | Admin page sidebar: submissions + auto-refresh. |
 | `app/admin/picks/page.tsx` | Owner form UI. |
 | `components/best-picks/FirebasePicksPanels.tsx` | Live listeners + UI (merged picks). |
 | `components/best-picks/BestPicksVideo.tsx` | YouTube embed from `manualExports`. |

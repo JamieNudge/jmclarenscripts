@@ -1,3 +1,4 @@
+import { PredictionIdeaForm } from '@/components/best-picks/PredictionIdeaForm';
 import { bestPicksGridTileClassName } from '@/lib/best-picks-panel-shell';
 
 const scrollArea =
@@ -102,20 +103,7 @@ export function BestPicksNewProductPanel() {
 
           <hr className={hr} />
 
-          <h3 className="text-base font-semibold text-white/95">Ready to test your idea?</h3>
-          <p className="text-white/80">
-            Submit your concept below and I&apos;ll confirm whether it&apos;s suitable for implementation.
-          </p>
-          <p className="text-sm text-white/55 pt-2">
-            Until a form is available here, email{' '}
-            <a
-              href="mailto:jmclarenscripts@gmail.com?subject=Prediction%20model%20idea"
-              className="text-sky-300 hover:text-sky-200 underline underline-offset-2 font-medium"
-            >
-              jmclarenscripts@gmail.com
-            </a>
-            .
-          </p>
+          <PredictionIdeaForm />
         </div>
       </div>
     </div>

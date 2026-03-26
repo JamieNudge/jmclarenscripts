@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDatabase } from 'firebase-admin/database';
+import { isManualPicksAdminAuthorized } from '@/lib/admin-manual-picks-auth';
 import { getFirebaseAdminApp } from '@/lib/firebase-admin';
 import type { PickRecord } from '@/lib/best-picks-firebase';
 import { normalizePicksCalendarDateInput } from '@/lib/picks-date-input';
@@ -13,14 +14,6 @@ function manualRoot(): string {
     process.env.NEXT_PUBLIC_FIREBASE_MANUAL_EXPORTS_ROOT?.trim() ||
     'manualExports'
   );
-}
-
-function authorized(req: NextRequest): boolean {
-  const key = process.env.ADMIN_MANUAL_PICKS_KEY?.trim();
-  if (!key) return false;
-  const h = req.headers.get('authorization');
-  if (!h?.startsWith('Bearer ')) return false;
-  return h.slice(7).trim() === key;
 }
 
 function normalizeForecastsList(raw: unknown): PickRecord[] {
@@ -48,7 +41,7 @@ function misconfigured() {
 
 export async function GET(req: NextRequest) {
   if (!process.env.ADMIN_MANUAL_PICKS_KEY?.trim()) return misconfigured();
-  if (!authorized(req)) {
+  if (!isManualPicksAdminAuthorized(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   const dateRaw = req.nextUrl.searchParams.get('date');
@@ -75,7 +68,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   if (!process.env.ADMIN_MANUAL_PICKS_KEY?.trim()) return misconfigured();
-  if (!authorized(req)) {
+  if (!isManualPicksAdminAuthorized(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

@@ -9,6 +9,7 @@ import {
   picksTimeZoneFromEnv,
   rtdbValueToPickList,
 } from '@/lib/best-picks-firebase';
+import { AdminPredictionSubmissions } from '@/components/admin/AdminPredictionSubmissions';
 import { parseYoutubeIdFromInput } from '@/lib/youtube-embed';
 import { normalizePicksCalendarDateInput } from '@/lib/picks-date-input';
 
@@ -344,7 +345,9 @@ export default function AdminPicksPage() {
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#111827] to-[#1f2937] text-white px-4 py-10 md:py-14">
-      <div className="max-w-2xl mx-auto space-y-8">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex flex-col xl:flex-row xl:gap-10 xl:items-start">
+          <div className="flex-1 min-w-0 max-w-2xl xl:max-w-none space-y-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Link href="/best-picks" className="text-sm text-white/70 hover:text-white underline-offset-2">
             ← Back to Best Picks
@@ -621,6 +624,12 @@ export default function AdminPicksPage() {
             {status}
           </p>
         )}
+          </div>
+
+          <aside className="w-full xl:w-[min(100%,22rem)] shrink-0 xl:sticky xl:top-6 space-y-4 mt-10 xl:mt-0">
+            <AdminPredictionSubmissions adminKey={adminKey} />
+          </aside>
+        </div>
       </div>
     </main>
   );
