@@ -1,6 +1,10 @@
 'use client';
 
 import { useEffect, useState, type ReactNode } from 'react';
+import {
+  BestPicksMethodologyPlaceholderPanel,
+  BestPicksNewProductPanel,
+} from '@/components/best-picks/BestPicksExtraPanels';
 import { BestPicksVideo } from '@/components/best-picks/BestPicksVideo';
 import { onValue, ref } from 'firebase/database';
 import {
@@ -410,6 +414,8 @@ export function FirebasePicksPanels({ children }: { children: ReactNode }) {
       <PickPanel label="Over 2.5" state={over} leagueWinRates={leagueWinRates} />
       <BestPicksVideo />
       <PickPanel label="Under 2.5" state={under} leagueWinRates={leagueWinRates} />
+      <BestPicksNewProductPanel />
+      <BestPicksMethodologyPlaceholderPanel />
     </div>
   );
 }

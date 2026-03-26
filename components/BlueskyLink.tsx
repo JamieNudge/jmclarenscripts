@@ -10,20 +10,20 @@ type BlueskyLinkProps = {
 };
 
 /**
- * Bluesky profile: anchor + `/icons/bluesky.svg` (see app {@link App.blueskyUrl}).
+ * Bluesky profile: icon from `/icons/bluesky.svg` + “Bluesky” label (see {@link App.blueskyUrl}).
  */
 export function BlueskyLink({ href, subtitle, variant, className = '', onClick }: BlueskyLinkProps) {
   const anchorStyles =
     variant === 'button'
-      ? 'inline-flex items-center justify-center rounded-full bg-[#1185FE] hover:bg-[#0d6ecd] p-3.5 shadow-lg transition-transform hover:scale-105'
+      ? 'inline-flex items-center gap-2 rounded-full bg-[#1185FE] hover:bg-[#0d6ecd] px-5 py-3 shadow-lg transition-transform hover:scale-105 font-semibold text-white'
       : variant === 'pill'
-        ? 'inline-flex items-center justify-center rounded-full bg-[#1185FE]/25 border border-[#1185FE]/50 p-2 hover:bg-[#1185FE]/35 transition-colors'
-        : 'inline-flex items-center justify-center rounded-full p-1.5 hover:bg-white/10 transition-colors';
+        ? 'inline-flex items-center gap-2 rounded-full bg-[#1185FE]/25 border border-[#1185FE]/50 px-3 py-2 text-xs font-semibold text-[#93c5fd] hover:bg-[#1185FE]/35 transition-colors'
+        : 'inline-flex items-center gap-2 rounded-full px-2 py-1.5 hover:bg-white/10 transition-colors text-sm font-medium text-sky-300 hover:text-sky-200';
 
   const imgClass =
     variant === 'button'
-      ? 'h-7 w-7 shrink-0 brightness-0 invert'
-      : 'h-6 w-6 shrink-0';
+      ? 'h-6 w-6 shrink-0 brightness-0 invert'
+      : 'h-5 w-5 sm:h-6 sm:w-6 shrink-0';
 
   return (
     <a
@@ -37,11 +37,12 @@ export function BlueskyLink({ href, subtitle, variant, className = '', onClick }
       {/* eslint-disable-next-line @next/next/no-img-element -- static SVG from /public/icons */}
       <img
         src="/icons/bluesky.svg"
-        alt="Bluesky"
-        width={variant === 'button' ? 28 : 24}
-        height={variant === 'button' ? 28 : 24}
+        alt=""
+        width={variant === 'button' ? 24 : 20}
+        height={variant === 'button' ? 24 : 20}
         className={imgClass}
       />
+      <span className={variant === 'button' ? 'text-white' : ''}>Bluesky</span>
     </a>
   );
 }
