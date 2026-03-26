@@ -81,7 +81,7 @@ export default function BestPicksPage() {
                 </p>
                 <ul className="space-y-3">
                   {storeAppsWithLinks.map((app) => (
-                    <li key={app.id} className="space-y-2">
+                    <li key={app.id}>
                       <a
                         href={app.appStoreUrl}
                         target="_blank"
@@ -113,17 +113,23 @@ export default function BestPicksPage() {
                           <span className="block text-xs text-white/45 mt-0.5">App Store</span>
                         </div>
                       </a>
-                      {app.blueskyUrl ? (
-                        <BlueskyLink
-                          href={app.blueskyUrl}
-                          subtitle={app.blueskyLabel}
-                          variant="inline"
-                          className="pl-1"
-                        />
-                      ) : null}
                     </li>
                   ))}
                 </ul>
+                {storeAppsWithLinks.some((a) => a.blueskyUrl) ? (
+                  <div className="mt-4 pt-4 border-t border-white/10 flex flex-wrap gap-3">
+                    {storeAppsWithLinks
+                      .filter((a): a is App & { blueskyUrl: string } => Boolean(a.blueskyUrl))
+                      .map((app) => (
+                        <BlueskyLink
+                          key={app.id}
+                          href={app.blueskyUrl}
+                          subtitle={app.blueskyLabel}
+                          variant="inline"
+                        />
+                      ))}
+                  </div>
+                ) : null}
               </div>
             </FirebasePicksPanels>
           </div>
@@ -139,21 +145,23 @@ export default function BestPicksPage() {
 
       <footer className="w-full border-t border-white/10 bg-black/20 mt-auto">
         <div className="max-w-6xl mx-auto px-4 py-6 lg:px-6 space-y-4">
-          <p
-            className="text-center text-[11px] md:text-xs text-white/45 leading-relaxed max-w-2xl mx-auto"
-            role="note"
-          >
-            <span className="font-medium text-white/60">Disclaimer.</span>{' '}
-            This website does not offer real money gambling, prizes, or simulated gambling. Content
-            on this page is for informational purposes only.
-          </p>
-          <p className="text-center text-[11px] md:text-xs text-white/35 leading-relaxed max-w-md mx-auto">
-            <Link href="/privacy" className="underline hover:text-white/55 underline-offset-2">
-              Privacy policy
-            </Link>
-            <span className="text-white/25"> · </span>
-            Google ads may appear on this page; the privacy policy covers cookies and how ads work.
-          </p>
+          <div className="flex flex-row flex-wrap items-start justify-between gap-x-6 gap-y-2">
+            <p
+              className="text-left text-[11px] md:text-xs text-white/45 leading-relaxed max-w-[min(100%,42rem)] flex-1 min-w-[12rem]"
+              role="note"
+            >
+              <span className="font-medium text-white/60">Disclaimer.</span>{' '}
+              This website does not offer real money gambling, prizes, or simulated gambling. Content
+              on this page is for informational purposes only.
+            </p>
+            <p className="text-right text-[11px] md:text-xs text-white/35 leading-relaxed shrink-0 min-w-[10rem] max-w-sm">
+              <Link href="/privacy" className="underline hover:text-white/55 underline-offset-2">
+                Privacy policy
+              </Link>
+              <span className="text-white/25"> · </span>
+              Google ads may appear on this page; the privacy policy covers cookies and how ads work.
+            </p>
+          </div>
           <AdLayoutPlaceholder orientation="horizontal" className="w-full min-h-[90px]" />
         </div>
       </footer>
