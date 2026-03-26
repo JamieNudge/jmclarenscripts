@@ -10,7 +10,12 @@ const inputClass =
   'w-full rounded-xl border border-white/15 bg-black/25 px-3 py-2.5 text-sm text-white placeholder:text-white/35 outline-none focus:border-sky-400/50 focus:ring-1 focus:ring-sky-400/30';
 const textareaClass = `${inputClass} min-h-[100px] resize-y`;
 
-export function PredictionIdeaForm() {
+type PredictionIdeaFormProps = {
+  /** When true, omit the “Submit Your Idea” title (e.g. title lives in a `<summary>`). */
+  collapsibleTrigger?: boolean;
+};
+
+export function PredictionIdeaForm({ collapsibleTrigger = false }: PredictionIdeaFormProps) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [ideaDescribe, setIdeaDescribe] = useState('');
@@ -82,13 +87,22 @@ export function PredictionIdeaForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5 text-sm text-white/75 leading-relaxed">
-      <h3 className="text-base font-semibold text-white/95">Submit Your Idea</h3>
-      <p>
-        Please provide a clear outline of your approach. The more specific you are, the faster I can assess
-        whether it&apos;s suitable for testing.
-      </p>
-
-      <hr className={hr} />
+      {!collapsibleTrigger && (
+        <>
+          <h3 className="text-base font-semibold text-white/95">Submit Your Idea</h3>
+          <p>
+            Please provide a clear outline of your approach. The more specific you are, the faster I can assess
+            whether it&apos;s suitable for testing.
+          </p>
+          <hr className={hr} />
+        </>
+      )}
+      {collapsibleTrigger && (
+        <p className="text-white/70 -mt-1">
+          Please provide a clear outline of your approach. The more specific you are, the faster I can assess
+          whether it&apos;s suitable for testing.
+        </p>
+      )}
 
       <div>
         <p className="text-sm font-semibold text-white/90 mb-3">Your details</p>

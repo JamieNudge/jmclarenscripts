@@ -103,7 +103,27 @@ export function BestPicksNewProductPanel() {
 
           <hr className={hr} />
 
-          <PredictionIdeaForm />
+          <details className="group rounded-xl border border-white/12 bg-black/20 overflow-hidden -mx-1">
+            <summary className="cursor-pointer list-none flex items-center justify-between gap-3 px-3 py-3 text-sm font-semibold text-white hover:bg-white/5 [&::-webkit-details-marker]:hidden">
+              <span>Submit your idea</span>
+              <span className="flex items-center gap-2 text-xs font-medium text-sky-300/90 shrink-0">
+                <span className="max-sm:hidden">Click to expand</span>
+                <span className="sm:hidden">Tap to expand</span>
+                <svg
+                  className="w-4 h-4 text-white/50 transition-transform duration-200 group-open:rotate-180"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  aria-hidden
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </span>
+            </summary>
+            <div className="px-3 pb-3 pt-2 border-t border-white/10">
+              <PredictionIdeaForm collapsibleTrigger />
+            </div>
+          </details>
         </div>
       </div>
     </div>

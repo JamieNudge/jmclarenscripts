@@ -404,7 +404,8 @@ export function FirebasePicksPanels({ children }: { children: ReactNode }) {
         </div>
       )}
       {/* Dedicated 2×3: explicit row tracks so no tile’s content can set row height (prediction copy, long pick lists). */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-5 md:[grid-template-rows:repeat(2,minmax(0,26rem))] [&>*]:min-h-0">
+      {/* Mobile: 6 fixed-height rows (same idea as md 2×3). Avoids min(svh)/min() height on tiles — unreliable on some WebKit. */}
+      <div className="grid grid-cols-1 gap-4 max-md:[grid-template-rows:repeat(6,minmax(0,26rem))] md:grid-cols-3 md:gap-5 md:[grid-template-rows:repeat(2,minmax(0,26rem))] [&>*]:min-h-0 [&>*]:min-w-0">
         <BestPicksNewProductPanel />
         <PickPanel label="Over 2.5" state={over} leagueWinRates={leagueWinRates} />
         <PickPanel label="Under 2.5" state={under} leagueWinRates={leagueWinRates} />
