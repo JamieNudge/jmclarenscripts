@@ -9,6 +9,13 @@ import type { App } from '@/types/app';
 const bestPicksDescription =
   "Today's Best Picks — selected by filtering the work of four different algorithms toward what each does best. Over / Under 2.5, video, and App Store links. Live picks load from Firebase Realtime Database when configured.";
 
+const bestPicksOgImage = {
+  url: '/best-picks/opengraph-image',
+  width: 1200,
+  height: 630,
+  alt: "Today's Best Picks — GoalLab",
+} as const;
+
 export const metadata: Metadata = {
   title: "Today's Best Picks",
   description: bestPicksDescription,
@@ -16,11 +23,14 @@ export const metadata: Metadata = {
     title: "Today's Best Picks",
     description: bestPicksDescription,
     type: 'website',
+    // Explicit URLs so crawlers (e.g. WhatsApp) don’t fall back to the first on-page <img> (headshot).
+    images: [bestPicksOgImage],
   },
   twitter: {
     card: 'summary_large_image',
     title: "Today's Best Picks",
     description: bestPicksDescription,
+    images: [bestPicksOgImage.url],
   },
 };
 
