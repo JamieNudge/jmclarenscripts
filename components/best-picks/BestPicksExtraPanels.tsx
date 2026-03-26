@@ -1,3 +1,5 @@
+import { bestPicksGridTileClassName } from '@/lib/best-picks-panel-shell';
+
 /**
  * Copy for the extra grid panels on Today’s Best Picks — methodology panel still editable here.
  */
@@ -6,9 +8,6 @@ export const bestPicksMethodologyPlaceholderTitle = 'How tips are chosen';
 export const bestPicksMethodologyPlaceholderBody =
   'Placeholder: examples of how picks are selected and evaluated will likely live here.';
 
-const panelShell =
-  'rounded-2xl border border-white/15 bg-white/5 p-6 md:p-8 flex flex-col min-h-[160px] md:h-full md:min-h-0';
-
 const scrollArea =
   'min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-1 -mr-0.5 [scrollbar-gutter:stable] scroll-smooth';
 
@@ -16,7 +15,7 @@ const hr = 'border-0 border-t border-white/15 my-5';
 
 export function BestPicksNewProductPanel() {
   return (
-    <div className={panelShell}>
+    <div className={bestPicksGridTileClassName}>
       <div className={scrollArea}>
         <div className="space-y-4 text-sm text-white/75 leading-relaxed pb-1">
           <h2 className="text-lg md:text-xl font-bold text-white tracking-tight pr-2">
@@ -118,7 +117,7 @@ export function BestPicksNewProductPanel() {
 
 export function BestPicksMethodologyPlaceholderPanel() {
   return (
-    <div className="rounded-2xl border border-white/15 bg-white/5 p-6 md:p-8 min-h-[160px] md:h-full md:min-h-0 flex flex-col justify-start">
+    <div className={`${bestPicksGridTileClassName} justify-start`}>
       <h2 className="text-lg md:text-xl font-semibold text-white mb-2 shrink-0">
         {bestPicksMethodologyPlaceholderTitle}
       </h2>

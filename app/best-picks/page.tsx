@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { BlueskyLink } from '@/components/BlueskyLink';
 import { FirebasePicksPanels } from '@/components/best-picks/FirebasePicksPanels';
 import { apps } from '@/lib/apps-data';
+import { bestPicksGridTileClassName } from '@/lib/best-picks-panel-shell';
 import type { App } from '@/types/app';
 
 const bestPicksDescription =
@@ -84,71 +85,73 @@ export default function BestPicksPage() {
             </h1>
 
             <FirebasePicksPanels>
-              <div className="rounded-2xl border border-white/15 bg-white/5 p-6 md:p-8 min-h-[160px] md:h-full md:min-h-0 flex flex-col justify-start gap-3">
-                <h2 className="text-lg md:text-xl font-semibold text-white mb-1">App Store links</h2>
-                <p className="text-sm text-white/60 leading-relaxed mb-3">
+              <div className={`${bestPicksGridTileClassName} gap-3`}>
+                <h2 className="text-lg md:text-xl font-semibold text-white mb-1 shrink-0">App Store links</h2>
+                <p className="text-sm text-white/60 leading-relaxed shrink-0">
                   App Store links and official Bluesky where available.
                 </p>
-                <ul className="space-y-3">
-                  {storeAppsWithLinks.map((app) => (
-                    <li key={app.id}>
-                      <a
-                        href={app.appStoreUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-4 rounded-xl border border-white/10 bg-black/20 p-3 hover:border-white/25 hover:bg-white/5 transition-all group"
-                      >
-                        <div className="w-16 h-16 sm:w-[4.5rem] sm:h-[4.5rem] rounded-2xl overflow-hidden bg-white/10 backdrop-blur-sm border-2 border-white/20 group-hover:border-white/50 flex-shrink-0 transition-all duration-300">
-                          {app.icon ? (
-                            <img
-                              src={app.icon}
-                              alt={`${app.name} icon`}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div
-                              className="w-full h-full flex items-center justify-center text-white font-bold text-xl"
-                              style={{ backgroundColor: app.color }}
-                            >
-                              {app.name[0]}
-                            </div>
-                          )}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <span
-                              className={`text-sm font-semibold underline underline-offset-2 ${storeLinkAccentClass(app.id)}`}
-                            >
-                              {app.name}
-                            </span>
-                            {app.appStoreTrialNote ? (
-                              <span
-                                className={`shrink-0 text-[10px] sm:text-xs font-bold uppercase tracking-wide rounded-full px-2 py-0.5 ${trialNotePillClass(app.id)}`}
+                <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1 -mr-0.5 [scrollbar-gutter:stable]">
+                  <ul className="space-y-3">
+                    {storeAppsWithLinks.map((app) => (
+                      <li key={app.id}>
+                        <a
+                          href={app.appStoreUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-4 rounded-xl border border-white/10 bg-black/20 p-3 hover:border-white/25 hover:bg-white/5 transition-all group"
+                        >
+                          <div className="w-16 h-16 sm:w-[4.5rem] sm:h-[4.5rem] rounded-2xl overflow-hidden bg-white/10 backdrop-blur-sm border-2 border-white/20 group-hover:border-white/50 flex-shrink-0 transition-all duration-300">
+                            {app.icon ? (
+                              <img
+                                src={app.icon}
+                                alt={`${app.name} icon`}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div
+                                className="w-full h-full flex items-center justify-center text-white font-bold text-xl"
+                                style={{ backgroundColor: app.color }}
                               >
-                                {app.appStoreTrialNote}
-                              </span>
-                            ) : null}
+                                {app.name[0]}
+                              </div>
+                            )}
                           </div>
-                          <span className="block text-xs text-white/45 mt-0.5">App Store</span>
-                        </div>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-                {storeAppsWithLinks.some((a) => a.blueskyUrl) ? (
-                  <div className="mt-4 pt-4 border-t border-white/10 flex flex-wrap gap-3">
-                    {storeAppsWithLinks
-                      .filter((a): a is App & { blueskyUrl: string } => Boolean(a.blueskyUrl))
-                      .map((app) => (
-                        <BlueskyLink
-                          key={app.id}
-                          href={app.blueskyUrl}
-                          subtitle={app.blueskyLabel}
-                          variant="inline"
-                        />
-                      ))}
-                  </div>
-                ) : null}
+                          <div className="min-w-0 flex-1">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span
+                                className={`text-sm font-semibold underline underline-offset-2 ${storeLinkAccentClass(app.id)}`}
+                              >
+                                {app.name}
+                              </span>
+                              {app.appStoreTrialNote ? (
+                                <span
+                                  className={`shrink-0 text-[10px] sm:text-xs font-bold uppercase tracking-wide rounded-full px-2 py-0.5 ${trialNotePillClass(app.id)}`}
+                                >
+                                  {app.appStoreTrialNote}
+                                </span>
+                              ) : null}
+                            </div>
+                            <span className="block text-xs text-white/45 mt-0.5">App Store</span>
+                          </div>
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                  {storeAppsWithLinks.some((a) => a.blueskyUrl) ? (
+                    <div className="mt-4 pt-4 border-t border-white/10 flex flex-wrap gap-3">
+                      {storeAppsWithLinks
+                        .filter((a): a is App & { blueskyUrl: string } => Boolean(a.blueskyUrl))
+                        .map((app) => (
+                          <BlueskyLink
+                            key={app.id}
+                            href={app.blueskyUrl}
+                            subtitle={app.blueskyLabel}
+                            variant="inline"
+                          />
+                        ))}
+                    </div>
+                  ) : null}
+                </div>
               </div>
             </FirebasePicksPanels>
           </div>

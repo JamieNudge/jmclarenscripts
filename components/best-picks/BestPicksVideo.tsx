@@ -8,6 +8,7 @@ import {
   statStrikeRtdbPathsFromEnv,
 } from '@/lib/best-picks-firebase';
 import { getFirebaseRealtimeDb, isFirebaseClientConfigured } from '@/lib/firebase-client';
+import { bestPicksGridTileClassName } from '@/lib/best-picks-panel-shell';
 import { youtubeEmbedSrc } from '@/lib/youtube-embed';
 
 export function BestPicksVideo() {
@@ -38,7 +39,7 @@ export function BestPicksVideo() {
   const configured = isFirebaseClientConfigured();
 
   return (
-    <div className="rounded-2xl border border-white/15 bg-white/5 p-6 md:p-8 min-h-[160px] md:h-full md:min-h-0 flex flex-col">
+    <div className={bestPicksGridTileClassName}>
       <h2 className="text-lg md:text-xl font-semibold text-white mb-2 shrink-0">Video</h2>
       {videoTitle && (
         <p className="text-sm text-white/75 leading-relaxed mb-3 shrink-0">{videoTitle}</p>

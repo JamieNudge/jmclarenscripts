@@ -7,6 +7,7 @@ import {
 } from '@/components/best-picks/BestPicksExtraPanels';
 import { BestPicksVideo } from '@/components/best-picks/BestPicksVideo';
 import { onValue, ref } from 'firebase/database';
+import { bestPicksGridTileClassName } from '@/lib/best-picks-panel-shell';
 import {
   mergeUnanimousAndManual,
   parseLeaguePerformanceFromSelection,
@@ -32,9 +33,6 @@ type PanelState = {
   /** First snapshot received (may be empty). */
   ready: boolean;
 };
-
-/** ~3 collapsed rows visible; scroll inside when there are more or when rows expand. */
-const LIST_MAX_HEIGHT = 'max-h-[min(13.5rem,36vh)]';
 
 function bandAccentClass(label: string): string {
   switch (label) {
@@ -198,50 +196,47 @@ function PickPanel({
   const waiting = state.loading || !state.ready;
 
   return (
-    <div className="rounded-2xl border border-white/15 bg-white/5 p-6 md:p-8 min-h-[160px] md:h-full md:min-h-0 flex flex-col justify-start">
+    <div className={bestPicksGridTileClassName}>
       <h2 className="text-lg md:text-xl font-semibold text-white mb-2 shrink-0">{label}</h2>
+      <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-y-contain pr-1 -mr-0.5 [scrollbar-gutter:stable] scroll-smooth">
+        {state.error && (
+          <p className="text-sm text-red-300/90 leading-relaxed" role="alert">
+            {state.error}
+          </p>
+        )}
 
-      {state.error && (
-        <p className="text-sm text-red-300/90 leading-relaxed" role="alert">
-          {state.error}
-        </p>
-      )}
+        {!state.error && waiting && (
+          <p className="text-sm text-white/60 leading-relaxed">Loading picks…</p>
+        )}
 
-      {!state.error && waiting && (
-        <p className="text-sm text-white/60 leading-relaxed">Loading picks…</p>
-      )}
+        {!state.error && !waiting && state.picks.length === 0 && (
+          <p className="text-sm text-white/60 leading-relaxed">
+            No picks for this band for the calendar date above. Data is merged from{' '}
+            <code className="text-xs text-white/50">manualExports</code> and{' '}
+            <code className="text-xs text-white/50">unanimousExports</code> in Firebase — both can be empty, or
+            manual rows may be under a different date / blocked by read rules.
+          </p>
+        )}
 
-      {!state.error && !waiting && state.picks.length === 0 && (
-        <p className="text-sm text-white/60 leading-relaxed">
-          No picks for this band for the calendar date above. Data is merged from{' '}
-          <code className="text-xs text-white/50">manualExports</code> and{' '}
-          <code className="text-xs text-white/50">unanimousExports</code> in Firebase — both can be empty, or
-          manual rows may be under a different date / blocked by read rules.
-        </p>
-      )}
+        {!state.error &&
+          !waiting &&
+          state.picks.length > 0 &&
+          !hasLp &&
+          filtered.length === 0 && (
+          <p className="text-sm text-white/60 leading-relaxed">
+            Today&apos;s selection has no <code className="text-xs text-white/50">leaguePerformance</code>{' '}
+            map (no leagues met the best-performing threshold, or data not uploaded).
+          </p>
+        )}
 
-      {!state.error &&
-        !waiting &&
-        state.picks.length > 0 &&
-        !hasLp &&
-        filtered.length === 0 && (
-        <p className="text-sm text-white/60 leading-relaxed">
-          Today&apos;s selection has no <code className="text-xs text-white/50">leaguePerformance</code>{' '}
-          map (no leagues met the best-performing threshold, or data not uploaded).
-        </p>
-      )}
+        {!state.error && !waiting && state.picks.length > 0 && hasLp && filtered.length === 0 && (
+          <p className="text-sm text-white/60 leading-relaxed">
+            No picks in leagues that qualify as best-performing today.
+          </p>
+        )}
 
-      {!state.error && !waiting && state.picks.length > 0 && hasLp && filtered.length === 0 && (
-        <p className="text-sm text-white/60 leading-relaxed">
-          No picks in leagues that qualify as best-performing today.
-        </p>
-      )}
-
-      {!state.error && !waiting && filtered.length > 0 && (
-        <div
-          className={`mt-1 min-h-0 ${LIST_MAX_HEIGHT} overflow-y-auto overflow-x-hidden overscroll-y-contain pr-1 -mr-0.5 [scrollbar-gutter:stable] scroll-smooth`}
-        >
-          <ul className="space-y-2 pb-0.5">
+        {!state.error && !waiting && filtered.length > 0 && (
+          <ul className="space-y-2 pb-0.5 mt-1">
             {filtered.map((p, i) => {
               const key =
                 (typeof p.id === 'number' && String(p.id)) ||
@@ -250,8 +245,8 @@ function PickPanel({
               return <ExpandablePickRow key={key} pick={p} rowKey={`${label}-${key}`} />;
             })}
           </ul>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
@@ -379,7 +374,7 @@ export function FirebasePicksPanels({ children }: { children: ReactNode }) {
   const configHint = !isFirebaseClientConfigured();
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5 md:items-stretch">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
       <p className="md:col-span-3 text-xs text-white/35 -mt-1 mb-1 tabular-nums" aria-label={`Selections for ${dateKey}`}>
         {dateKey}
       </p>
