@@ -379,12 +379,12 @@ export function FirebasePicksPanels({ children }: { children: ReactNode }) {
   const configHint = !isFirebaseClientConfigured();
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5">
-      <p className="sm:col-span-2 text-xs text-white/35 -mt-1 mb-1 tabular-nums" aria-label={`Selections for ${dateKey}`}>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
+      <p className="md:col-span-3 text-xs text-white/35 -mt-1 mb-1 tabular-nums" aria-label={`Selections for ${dateKey}`}>
         {dateKey}
       </p>
       {configHint && (
-        <div className="sm:col-span-2 rounded-xl border border-amber-400/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100/95 leading-relaxed">
+        <div className="md:col-span-3 rounded-xl border border-amber-400/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100/95 leading-relaxed">
           Firebase is not configured. Copy{' '}
           <code className="text-xs bg-black/30 px-1.5 py-0.5 rounded">.env.example</code> to{' '}
           <code className="text-xs bg-black/30 px-1.5 py-0.5 rounded">.env.local</code>, add your
@@ -394,7 +394,7 @@ export function FirebasePicksPanels({ children }: { children: ReactNode }) {
       )}
       {manualPathDiagnostic && (
         <div
-          className="sm:col-span-2 rounded-xl border border-red-400/35 bg-red-950/40 px-4 py-3 text-sm text-red-100/95 leading-relaxed"
+          className="md:col-span-3 rounded-xl border border-red-400/35 bg-red-950/40 px-4 py-3 text-sm text-red-100/95 leading-relaxed"
           role="alert"
         >
           <p className="font-medium text-red-200">Firebase blocked reading manual picks</p>
