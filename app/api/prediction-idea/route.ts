@@ -87,9 +87,12 @@ export async function POST(req: NextRequest) {
     const db = getDatabase(app);
     const ref = db.ref(predictionIdeaSubmissionsRoot()).push();
     await ref.set(payload);
-    void sendPredictionIdeaNotifyEmail(payload).catch((err) => {
+    // Await SMTP: fire-and-forget is dropped when Vercel freezes the function after the response.
+    try {
+      await sendPredictionIdeaNotifyEmail(payload);
+    } catch (err) {
       console.error('[prediction-idea] notify email failed', err);
-    });
+    }
     return NextResponse.json({ ok: true, id: ref.key });
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Server error';

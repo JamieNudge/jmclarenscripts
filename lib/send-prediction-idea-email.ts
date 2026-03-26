@@ -37,7 +37,8 @@ export function formatPredictionIdeaEmailBody(payload: PredictionIdeaEmailPayloa
  */
 export async function sendPredictionIdeaNotifyEmail(payload: PredictionIdeaEmailPayload): Promise<void> {
   const user = process.env.GMAIL_SMTP_USER?.trim();
-  const pass = process.env.GMAIL_SMTP_APP_PASSWORD?.trim();
+  const passRaw = process.env.GMAIL_SMTP_APP_PASSWORD;
+  const pass = passRaw ? passRaw.replace(/\s+/g, '').trim() : '';
   const to = process.env.PREDICTION_IDEA_NOTIFY_EMAIL?.trim() || user;
   if (!user || !pass || !to) return;
 
