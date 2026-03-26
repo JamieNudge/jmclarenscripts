@@ -84,7 +84,7 @@ export default function BestPicksPage() {
             </h1>
 
             <FirebasePicksPanels>
-              <div className="rounded-2xl border border-white/15 bg-white/5 p-6 md:p-8 min-h-[160px] flex flex-col justify-center gap-3">
+              <div className="rounded-2xl border border-white/15 bg-white/5 p-6 md:p-8 min-h-[160px] md:h-full md:min-h-0 flex flex-col justify-start gap-3">
                 <h2 className="text-lg md:text-xl font-semibold text-white mb-1">App Store links</h2>
                 <p className="text-sm text-white/60 leading-relaxed mb-3">
                   App Store links and official Bluesky where available.

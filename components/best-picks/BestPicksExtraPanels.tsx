@@ -7,7 +7,7 @@ export const bestPicksMethodologyPlaceholderBody =
   'Placeholder: examples of how picks are selected and evaluated will likely live here.';
 
 const panelShell =
-  'rounded-2xl border border-white/15 bg-white/5 p-6 md:p-8 flex flex-col min-h-0 max-h-[min(72vh,40rem)]';
+  'rounded-2xl border border-white/15 bg-white/5 p-6 md:p-8 flex flex-col min-h-[160px] md:h-full md:min-h-0';
 
 const scrollArea =
   'min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-1 -mr-0.5 [scrollbar-gutter:stable] scroll-smooth';
@@ -118,13 +118,13 @@ export function BestPicksNewProductPanel() {
 
 export function BestPicksMethodologyPlaceholderPanel() {
   return (
-    <div className="rounded-2xl border border-white/15 bg-white/5 p-6 md:p-8 min-h-[160px] flex flex-col justify-start">
-      <h2 className="text-lg md:text-xl font-semibold text-white mb-2">
+    <div className="rounded-2xl border border-white/15 bg-white/5 p-6 md:p-8 min-h-[160px] md:h-full md:min-h-0 flex flex-col justify-start">
+      <h2 className="text-lg md:text-xl font-semibold text-white mb-2 shrink-0">
         {bestPicksMethodologyPlaceholderTitle}
       </h2>
-      <p className="text-sm text-white/65 leading-relaxed mb-4">{bestPicksMethodologyPlaceholderBody}</p>
+      <p className="text-sm text-white/65 leading-relaxed mb-4 shrink-0">{bestPicksMethodologyPlaceholderBody}</p>
       <div
-        className="flex-1 min-h-[120px] rounded-xl border border-dashed border-white/20 bg-black/15 flex items-center justify-center text-center px-4 py-6"
+        className="flex-1 min-h-0 rounded-xl border border-dashed border-white/20 bg-black/15 flex items-center justify-center text-center px-4 py-6"
         aria-hidden
       >
         <span className="text-xs font-medium uppercase tracking-wider text-white/30">
