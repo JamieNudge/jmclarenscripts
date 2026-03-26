@@ -182,6 +182,11 @@ export default function AppCarousel({ apps, onAppSelect }: AppCarouselProps) {
                             {app.googlePlayStatus === 'in-review' ? 'Google Play Review' : app.googlePlayStatus.toUpperCase()}
                           </span>
                         )}
+                        {app.appStoreUrl && app.appStoreTrialNote ? (
+                          <span className="px-3 py-1 rounded-full text-xs font-bold shadow-lg bg-white/95 text-gray-900 border border-white/50">
+                            {app.appStoreTrialNote}
+                          </span>
+                        ) : null}
                       </div>
                       {isCenter && app.blueskyUrl && (
                         <BlueskyLink

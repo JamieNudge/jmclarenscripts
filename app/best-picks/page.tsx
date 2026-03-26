@@ -36,6 +36,16 @@ function storeLinkAccentClass(appId: string) {
   return 'text-white/90 group-hover:text-white';
 }
 
+function trialNotePillClass(appId: string) {
+  if (appId === 'stat-strike') {
+    return 'bg-emerald-500/20 text-emerald-200 border border-emerald-400/40';
+  }
+  if (appId === 'goallab') {
+    return 'bg-cyan-500/20 text-cyan-200 border border-cyan-400/40';
+  }
+  return 'bg-white/10 text-white/85 border border-white/20';
+}
+
 /** Reserved regions; Google Auto ads may fill these when enabled. */
 function AdLayoutPlaceholder({
   orientation,
@@ -105,11 +115,20 @@ export default function BestPicksPage() {
                           )}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <span
-                            className={`text-sm font-semibold underline underline-offset-2 ${storeLinkAccentClass(app.id)}`}
-                          >
-                            {app.name}
-                          </span>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span
+                              className={`text-sm font-semibold underline underline-offset-2 ${storeLinkAccentClass(app.id)}`}
+                            >
+                              {app.name}
+                            </span>
+                            {app.appStoreTrialNote ? (
+                              <span
+                                className={`shrink-0 text-[10px] sm:text-xs font-bold uppercase tracking-wide rounded-full px-2 py-0.5 ${trialNotePillClass(app.id)}`}
+                              >
+                                {app.appStoreTrialNote}
+                              </span>
+                            ) : null}
+                          </div>
                           <span className="block text-xs text-white/45 mt-0.5">App Store</span>
                         </div>
                       </a>
@@ -144,7 +163,8 @@ export default function BestPicksPage() {
       </div>
 
       <footer className="w-full border-t border-white/10 bg-black/20 mt-auto">
-        <div className="max-w-6xl mx-auto px-4 py-6 lg:px-6 space-y-4">
+        <div className="max-w-6xl mx-auto px-4 py-6 lg:px-6 space-y-4 pb-[max(6rem,env(safe-area-inset-bottom))]">
+          <AdLayoutPlaceholder orientation="horizontal" className="w-full min-h-[90px]" />
           <div className="flex flex-row flex-wrap items-start justify-between gap-x-6 gap-y-2">
             <p
               className="text-left text-[11px] md:text-xs text-white/45 leading-relaxed max-w-[min(100%,42rem)] flex-1 min-w-[12rem]"
@@ -162,7 +182,6 @@ export default function BestPicksPage() {
               Google ads may appear on this page; the privacy policy covers cookies and how ads work.
             </p>
           </div>
-          <AdLayoutPlaceholder orientation="horizontal" className="w-full min-h-[90px]" />
         </div>
       </footer>
     </main>

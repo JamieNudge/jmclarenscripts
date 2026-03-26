@@ -143,15 +143,22 @@ export default function AppDetailModal({ app, onClose }: AppDetailModalProps) {
             {/* Action buttons */}
             <div className="flex flex-wrap gap-4">
               {app.appStoreUrl && (
-                <a
-                  href={app.appStoreUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-8 py-4 rounded-full font-semibold text-white transition-transform hover:scale-105 shadow-lg"
-                  style={{ backgroundColor: app.color }}
-                >
-                  View on App Store
-                </a>
+                <div className="flex flex-col items-start gap-1.5">
+                  <a
+                    href={app.appStoreUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-8 py-4 rounded-full font-semibold text-white transition-transform hover:scale-105 shadow-lg"
+                    style={{ backgroundColor: app.color }}
+                  >
+                    View on App Store
+                  </a>
+                  {app.appStoreTrialNote ? (
+                    <p className="text-sm font-semibold pl-1" style={{ color: app.color }}>
+                      {app.appStoreTrialNote}
+                    </p>
+                  ) : null}
+                </div>
               )}
               {app.blueskyUrl && (
                 <BlueskyLink
