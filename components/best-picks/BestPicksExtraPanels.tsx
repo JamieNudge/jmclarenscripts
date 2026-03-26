@@ -83,6 +83,14 @@ export function BestPicksNewProductPanel() {
           <h3 className="text-base font-semibold text-white/95">Pricing</h3>
           <p>Flat fee depending on complexity and duration.</p>
           <p>No ongoing commitment.</p>
+          <p>
+            After the initial research period, you can extend testing for an additional fee or choose to have
+            your algorithm deployed in a dedicated app for your personal use, for a one-off fixed cost.
+          </p>
+          <p>
+            You can integrate your own low-cost API subscription, or continue using ours for a small monthly
+            fee.
+          </p>
 
           <hr className={hr} />
 
