@@ -80,9 +80,12 @@ export default function WebsitePrivacyPage() {
 
           <h2 className="text-xl font-semibold text-white mt-8">4. Cookies and Google AdSense</h2>
           <p>
-            We may use <span className="font-semibold">Google AdSense</span> to show advertisements.
-            Google and its partners may use cookies or similar technologies to serve ads based on
-            your prior visits to this or other websites, and to measure ad effectiveness.
+            <span className="font-semibold">Today&apos;s Best Picks</span> page only: we may use{' '}
+            <span className="font-semibold">Google AdSense</span> to show advertisements there. The
+            rest of this website (for example the portfolio home page) does not load the AdSense
+            script. Google and its partners may use cookies or similar technologies when you visit
+            that page, to serve ads based on your prior visits to this or other websites, and to
+            measure ad effectiveness.
           </p>
           <p>
             You can learn how Google uses data when you use our site or partners&apos; sites in
