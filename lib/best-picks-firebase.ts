@@ -233,6 +233,8 @@ export function statStrikeRtdbPathsFromEnv(dateKey: string): {
   unanimousPath: string;
   selectionPath: string;
   manualExportsPath: string;
+  /** Latest research-algorithm feed for the Best Picks grid (same date key as other exports). */
+  researchAlgorithmSelectionsPath: string;
 } {
   const unanimousRoot =
     process.env.NEXT_PUBLIC_FIREBASE_UNANIMOUS_EXPORTS_ROOT?.trim() || 'unanimousExports';
@@ -240,11 +242,77 @@ export function statStrikeRtdbPathsFromEnv(dateKey: string): {
     process.env.NEXT_PUBLIC_FIREBASE_SELECTIONS_ROOT?.trim() || 'selections';
   const manualRoot =
     process.env.NEXT_PUBLIC_FIREBASE_MANUAL_EXPORTS_ROOT?.trim() || 'manualExports';
+  const researchRoot =
+    process.env.NEXT_PUBLIC_FIREBASE_RESEARCH_SELECTIONS_ROOT?.trim() ||
+    'researchAlgorithmSelections';
   return {
     unanimousPath: `${unanimousRoot}/${dateKey}`,
     selectionPath: `${selectionsRoot}/${dateKey}`,
     manualExportsPath: `${manualRoot}/${dateKey}`,
+    researchAlgorithmSelectionsPath: `${researchRoot}/${dateKey}`,
   };
+}
+
+export type ResearchAlgorithmFeedRow = { primary: string; secondary: string | null };
+
+function stringArrayField(v: unknown): string[] | null {
+  if (!Array.isArray(v)) return null;
+  const out = v
+    .filter((x): x is string => typeof x === 'string')
+    .map((s) => s.trim())
+    .filter(Boolean);
+  return out.length ? out : null;
+}
+
+/**
+ * Normalise RTDB payload at `researchAlgorithmSelections/{date}` into scrollable rows.
+ * Supported shapes:
+ * - Array of strings
+ * - Array of pick-like objects (same helpers as Over/Under)
+ * - Object with `lines` | `items` | `selections` | `updates` | `entries` | `feed` as string[] or object map / array of picks
+ * - Single string
+ */
+export function researchAlgorithmFeedRows(val: unknown): ResearchAlgorithmFeedRow[] {
+  if (val == null) return [];
+  if (typeof val === 'string') {
+    const t = val.trim();
+    return t ? [{ primary: t, secondary: null }] : [];
+  }
+  if (Array.isArray(val)) {
+    if (val.length > 0 && val.every((x) => typeof x === 'string')) {
+      return (val as string[])
+        .map((s) => s.trim())
+        .filter(Boolean)
+        .map((primary) => ({ primary, secondary: null }));
+    }
+    const picks = rtdbValueToPickList(val);
+    return picks.map((p) => ({
+      primary: pickDisplayTitle(p),
+      secondary: pickDisplaySubtitle(p),
+    }));
+  }
+  if (typeof val === 'object' && !Array.isArray(val)) {
+    const o = val as PickRecord;
+    const nestedKeys = ['lines', 'items', 'selections', 'updates', 'entries', 'feed'] as const;
+    for (const key of nestedKeys) {
+      const raw = o[key];
+      const sa = stringArrayField(raw);
+      if (sa) return sa.map((primary) => ({ primary, secondary: null }));
+      const nestedPicks = rtdbValueToPickList(raw);
+      if (nestedPicks.length > 0) {
+        return nestedPicks.map((p) => ({
+          primary: pickDisplayTitle(p),
+          secondary: pickDisplaySubtitle(p),
+        }));
+      }
+    }
+    const picks = rtdbValueToPickList(val);
+    return picks.map((p) => ({
+      primary: pickDisplayTitle(p),
+      secondary: pickDisplaySubtitle(p),
+    }));
+  }
+  return [];
 }
 
 /** Tag manual-export rows so they always pass the best-leagues filter on the public page. */

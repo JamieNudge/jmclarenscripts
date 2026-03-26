@@ -1,13 +1,5 @@
 import { bestPicksGridTileClassName } from '@/lib/best-picks-panel-shell';
 
-/**
- * Copy for the extra grid panels on Today’s Best Picks — methodology panel still editable here.
- */
-export const bestPicksMethodologyPlaceholderTitle = 'How tips are chosen';
-
-export const bestPicksMethodologyPlaceholderBody =
-  'Placeholder: examples of how picks are selected and evaluated will likely live here.';
-
 const scrollArea =
   'min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-1 -mr-0.5 [scrollbar-gutter:stable] scroll-smooth';
 
@@ -109,25 +101,6 @@ export function BestPicksNewProductPanel() {
             .
           </p>
         </div>
-      </div>
-    </div>
-  );
-}
-
-export function BestPicksMethodologyPlaceholderPanel() {
-  return (
-    <div className={`${bestPicksGridTileClassName} justify-start`}>
-      <h2 className="text-lg md:text-xl font-semibold text-white mb-2 shrink-0">
-        {bestPicksMethodologyPlaceholderTitle}
-      </h2>
-      <p className="text-sm text-white/65 leading-relaxed mb-4 shrink-0">{bestPicksMethodologyPlaceholderBody}</p>
-      <div
-        className="flex-1 min-h-0 rounded-xl border border-dashed border-white/20 bg-black/15 flex items-center justify-center text-center px-4 py-6"
-        aria-hidden
-      >
-        <span className="text-xs font-medium uppercase tracking-wider text-white/30">
-          Content TBD
-        </span>
       </div>
     </div>
   );
