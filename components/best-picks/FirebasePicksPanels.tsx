@@ -374,7 +374,7 @@ export function FirebasePicksPanels({ children }: { children: ReactNode }) {
   const configHint = !isFirebaseClientConfigured();
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5 md:[&>*]:min-h-0">
       <p className="md:col-span-3 text-xs text-white/35 -mt-1 mb-1 tabular-nums" aria-label={`Selections for ${dateKey}`}>
         {dateKey}
       </p>
