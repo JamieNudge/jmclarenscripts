@@ -18,6 +18,7 @@ import {
   pickSignificantStats,
   picksDateStringInTimeZone,
   picksTimeZoneFromEnv,
+  sortPicksByKickoffEarliestFirst,
   statStrikeRtdbPathsFromEnv,
   pickTeams,
   type PickRecord,
@@ -189,6 +190,8 @@ function PickPanel({
   leagueWinRates: Record<string, number>;
 }) {
   const filtered = state.picks.filter((p) => pickPassesBestFilter(p, leagueWinRates));
+  /** Chronological by kickoff when the field is numeric / ISO-ish; unparseable kickoffs last. */
+  const ordered = sortPicksByKickoffEarliestFirst(filtered);
   const hasLp = Object.keys(leagueWinRates).length > 0;
   /** Do not wait for `selections/{date}`: empty league map already filters non-manual picks; manual rows must show immediately. */
   const waiting = state.loading || !state.ready;
@@ -233,9 +236,9 @@ function PickPanel({
           </p>
         )}
 
-        {!state.error && !waiting && filtered.length > 0 && (
+        {!state.error && !waiting && ordered.length > 0 && (
           <ul className="space-y-2 pb-0.5 mt-1">
-            {filtered.map((p, i) => {
+            {ordered.map((p, i) => {
               const key =
                 (typeof p.id === 'number' && String(p.id)) ||
                 (typeof p.id === 'string' && p.id) ||

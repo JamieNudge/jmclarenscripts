@@ -203,6 +203,39 @@ function formatKickoffField(v: unknown): string | null {
   return null;
 }
 
+/**
+ * Unix ms for sorting by kickoff (`kickoff` | `time` | `date`). Same interpretation as subtitle.
+ * Null if missing or not parseable as a date (e.g. raw URL text) — those rows sort last.
+ */
+export function pickKickoffSortTimeMs(p: PickRecord): number | null {
+  const v = p.kickoff ?? p.time ?? p.date;
+  if (v == null) return null;
+  if (typeof v === 'number' && Number.isFinite(v)) {
+    const ms = v < 10_000_000_000 ? v * 1000 : v;
+    const t = new Date(ms).getTime();
+    return Number.isNaN(t) ? null : t;
+  }
+  if (typeof v === 'string') {
+    const t = v.trim();
+    if (!t) return null;
+    const parsed = Date.parse(t);
+    return Number.isNaN(parsed) ? null : parsed;
+  }
+  return null;
+}
+
+/** Earliest kickoff first; unknown kickoff last; stable for equal times. */
+export function sortPicksByKickoffEarliestFirst(picks: PickRecord[]): PickRecord[] {
+  return [...picks].sort((a, b) => {
+    const ta = pickKickoffSortTimeMs(a);
+    const tb = pickKickoffSortTimeMs(b);
+    if (ta == null && tb == null) return 0;
+    if (ta == null) return 1;
+    if (tb == null) return -1;
+    return ta - tb;
+  });
+}
+
 export function pickDisplaySubtitle(p: PickRecord): string | null {
   const parts: string[] = [];
   if (isManualEditorPick(p)) parts.push('Editor pick');
