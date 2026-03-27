@@ -14,7 +14,7 @@ export function BestPicksNewProductPanel() {
       </h2>
       <div className={scrollArea}>
         <div className="space-y-4 text-sm text-white/75 leading-relaxed pb-1">
-          <p>Have a theory for predicting match outcomes?</p>
+          <p>Have a theory for predicting goal band outcomes?</p>
           <p>
             This service lets you test your approach using real data, live execution, and transparent tracking
             — so you can see how it actually performs.
