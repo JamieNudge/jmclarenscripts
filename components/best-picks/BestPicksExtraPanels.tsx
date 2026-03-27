@@ -10,7 +10,7 @@ export function BestPicksNewProductPanel() {
   return (
     <div className={bestPicksGridTileClassName}>
       <h2 className="text-lg md:text-xl font-bold text-white tracking-tight pr-2 mb-2 shrink-0">
-        Test Your Prediction Idea — In a Live Environment
+        ProphIt — Test Your Own Prediction Ideas in a living app!
       </h2>
       <div className={scrollArea}>
         <div className="space-y-4 text-sm text-white/75 leading-relaxed pb-1">
