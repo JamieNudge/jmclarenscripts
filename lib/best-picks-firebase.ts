@@ -288,6 +288,16 @@ export function statStrikeRtdbPathsFromEnv(dateKey: string): {
 
 export type ResearchAlgorithmFeedRow = { primary: string; secondary: string | null };
 
+function researchAlgorithmRowsFromPicks(
+  picks: PickRecord[],
+  secondaryFor: (p: PickRecord) => string | null,
+): ResearchAlgorithmFeedRow[] {
+  return sortPicksByKickoffEarliestFirst(picks).map((p) => ({
+    primary: pickDisplayTitle(p),
+    secondary: secondaryFor(p),
+  }));
+}
+
 /** Subtitle for `ArchivedServedPick`-shaped objects from All Models macOS uploads. */
 function researchAlgorithmPickSubtitleFromAllModels(p: PickRecord): string | null {
   const parts: string[] = [];
@@ -327,6 +337,9 @@ function stringArrayField(v: unknown): string[] | null {
  * - Object with `lines` | `items` | `selections` | `updates` | `entries` | `feed` as string[] or object map / array of picks
  * - All Models macOS: `{ groups: [{ homeTeam, awayTeam, selections: [...ArchivedServedPick], ... }] }` (researchAlgorithmSelections)
  * - Single string
+ *
+ * Pick-like rows are ordered by kickoff (`kickoff` | `time` | `date` | `fixtureDate`), earliest first; unparseable last.
+ * Plain string arrays (`lines`, etc.) keep upload order.
  */
 export function researchAlgorithmFeedRows(val: unknown): ResearchAlgorithmFeedRow[] {
   if (val == null) return [];
@@ -342,10 +355,7 @@ export function researchAlgorithmFeedRows(val: unknown): ResearchAlgorithmFeedRo
         .map((primary) => ({ primary, secondary: null }));
     }
     const picks = rtdbValueToPickList(val);
-    return picks.map((p) => ({
-      primary: pickDisplayTitle(p),
-      secondary: pickDisplaySubtitle(p),
-    }));
+    return researchAlgorithmRowsFromPicks(picks, pickDisplaySubtitle);
   }
   if (typeof val === 'object' && !Array.isArray(val)) {
     const o = val as PickRecord;
@@ -366,19 +376,21 @@ export function researchAlgorithmFeedRows(val: unknown): ResearchAlgorithmFeedRo
         }
       }
       if (allPicks.length > 0) {
-        const sorted = sortPicksByKickoffEarliestFirst(allPicks);
-        return sorted.map((p) => ({
-          primary: pickDisplayTitle(p),
-          secondary: researchAlgorithmPickSubtitleFromAllModels(p),
-        }));
+        return researchAlgorithmRowsFromPicks(allPicks, researchAlgorithmPickSubtitleFromAllModels);
       }
-      const groupRows: ResearchAlgorithmFeedRow[] = [];
+      const groupCandidates: PickRecord[] = [];
       for (const g of groupsRaw) {
         if (!g || typeof g !== 'object' || Array.isArray(g)) continue;
         const grp = g as PickRecord;
         const home = pickPrimitiveText(grp.homeTeam);
         const away = pickPrimitiveText(grp.awayTeam);
         if (!home || !away) continue;
+        groupCandidates.push(grp);
+      }
+      const sortedGroups = sortPicksByKickoffEarliestFirst(groupCandidates);
+      const groupRows: ResearchAlgorithmFeedRow[] = sortedGroups.map((grp) => {
+        const home = pickPrimitiveText(grp.homeTeam) ?? '';
+        const away = pickPrimitiveText(grp.awayTeam) ?? '';
         const labelStr = Array.isArray(grp.modelLabels)
           ? grp.modelLabels.filter((x) => typeof x === 'string').join(' · ')
           : null;
@@ -388,11 +400,11 @@ export function researchAlgorithmFeedRows(val: unknown): ResearchAlgorithmFeedRo
           pickPrimitiveText(grp.league),
           formatKickoffField(grp.fixtureDate),
         ].filter(Boolean);
-        groupRows.push({
+        return {
           primary: `${home} vs ${away}`,
           secondary: parts.length ? parts.join(' · ') : null,
-        });
-      }
+        };
+      });
       if (groupRows.length > 0) return groupRows;
     }
     const nestedKeys = ['lines', 'items', 'selections', 'updates', 'entries', 'feed'] as const;
@@ -402,17 +414,11 @@ export function researchAlgorithmFeedRows(val: unknown): ResearchAlgorithmFeedRo
       if (sa) return sa.map((primary) => ({ primary, secondary: null }));
       const nestedPicks = rtdbValueToPickList(raw);
       if (nestedPicks.length > 0) {
-        return nestedPicks.map((p) => ({
-          primary: pickDisplayTitle(p),
-          secondary: pickDisplaySubtitle(p),
-        }));
+        return researchAlgorithmRowsFromPicks(nestedPicks, pickDisplaySubtitle);
       }
     }
     const picks = rtdbValueToPickList(val);
-    return picks.map((p) => ({
-      primary: pickDisplayTitle(p),
-      secondary: pickDisplaySubtitle(p),
-    }));
+    return researchAlgorithmRowsFromPicks(picks, pickDisplaySubtitle);
   }
   return [];
 }
