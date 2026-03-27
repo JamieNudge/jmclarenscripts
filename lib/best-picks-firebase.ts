@@ -204,12 +204,32 @@ function formatKickoffField(v: unknown): string | null {
 }
 
 /**
- * Unix ms for sorting by kickoff (`kickoff` | `time` | `date`). Same interpretation as subtitle.
- * Null if missing or not parseable as a date (e.g. raw URL text) — those rows sort last.
+ * Tried in order for sort, subtitle, and copying parent `groups[]` time onto `selections[]` children.
  */
-export function pickKickoffSortTimeMs(p: PickRecord): number | null {
-  const v = p.kickoff ?? p.time ?? p.date ?? p.fixtureDate;
-  if (v == null) return null;
+const KICKOFF_SORT_FIELD_KEYS = [
+  'kickoff',
+  'time',
+  'date',
+  'fixtureDate',
+  'matchDate',
+  'startTime',
+  'scheduledStart',
+  'utcKickoff',
+  'eventDate',
+  'kickOff',
+  'fixtureKickoff',
+] as const;
+
+function isEmptyKickoffSlot(v: unknown): boolean {
+  return v == null || v === '';
+}
+
+/**
+ * Epoch ms for sorting. Supports unix seconds/ms, ISO strings, UK-style dd/mm/yyyy (day first),
+ * and Firestore-style `{ _seconds, _nanoseconds }` / `{ seconds, nanoseconds }`.
+ */
+function timeUnknownToSortMs(v: unknown): number | null {
+  if (isEmptyKickoffSlot(v)) return null;
   if (typeof v === 'number' && Number.isFinite(v)) {
     const ms = v < 10_000_000_000 ? v * 1000 : v;
     const t = new Date(ms).getTime();
@@ -218,21 +238,81 @@ export function pickKickoffSortTimeMs(p: PickRecord): number | null {
   if (typeof v === 'string') {
     const t = v.trim();
     if (!t) return null;
-    const parsed = Date.parse(t);
-    return Number.isNaN(parsed) ? null : parsed;
+    let parsed = Date.parse(t);
+    if (!Number.isNaN(parsed)) return parsed;
+    const m = t.match(/^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})(?:[ T]+(\d{1,2}):(\d{2}))?/);
+    if (m) {
+      const day = Number(m[1]);
+      const month = Number(m[2]) - 1;
+      const year = Number(m[3]);
+      const hh = m[4] != null ? Number(m[4]) : 12;
+      const min = m[5] != null ? Number(m[5]) : 0;
+      if (day >= 1 && day <= 31 && month >= 0 && month <= 11 && year >= 1900) {
+        parsed = Date.UTC(year, month, day, hh, min, 0, 0);
+        if (!Number.isNaN(parsed)) return parsed;
+      }
+    }
+    return null;
+  }
+  if (typeof v === 'object' && !Array.isArray(v)) {
+    const o = v as Record<string, unknown>;
+    if (typeof o._seconds === 'number' && Number.isFinite(o._seconds)) {
+      const nano = typeof o._nanoseconds === 'number' ? o._nanoseconds / 1e6 : 0;
+      return o._seconds * 1000 + nano;
+    }
+    if (typeof o.seconds === 'number' && Number.isFinite(o.seconds)) {
+      const nano = typeof o.nanoseconds === 'number' ? o.nanoseconds / 1e6 : 0;
+      return o.seconds * 1000 + nano;
+    }
   }
   return null;
 }
 
-/** Earliest kickoff first; unknown kickoff last; stable for equal times. */
+/** Unix ms for sorting; null if no parseable time on the record. */
+export function pickKickoffSortTimeMs(p: PickRecord): number | null {
+  for (const k of KICKOFF_SORT_FIELD_KEYS) {
+    const ms = timeUnknownToSortMs(p[k]);
+    if (ms != null) return ms;
+  }
+  return null;
+}
+
+function formatKickoffFromPickRecord(p: PickRecord): string | null {
+  for (const k of KICKOFF_SORT_FIELD_KEYS) {
+    const v = p[k];
+    if (isEmptyKickoffSlot(v)) continue;
+    const ms = timeUnknownToSortMs(v);
+    if (ms != null) {
+      const s = formatKickoffUtc(ms);
+      if (s) return s;
+    }
+    const legacy = formatKickoffField(v);
+    if (legacy) return legacy;
+  }
+  return null;
+}
+
+/** Copy kickoff-related fields from a `groups[]` row onto a child selection when the child omits them. */
+function mergeGroupKickoffOntoSelection(grp: PickRecord, item: PickRecord): PickRecord {
+  const out: PickRecord = { ...item };
+  for (const k of KICKOFF_SORT_FIELD_KEYS) {
+    if (!isEmptyKickoffSlot(out[k])) continue;
+    const gv = grp[k];
+    if (!isEmptyKickoffSlot(gv)) out[k] = gv;
+  }
+  return out;
+}
+
+/** Earliest kickoff first; unknown kickoff last; title tie-break when times equal or missing. */
 export function sortPicksByKickoffEarliestFirst(picks: PickRecord[]): PickRecord[] {
   return [...picks].sort((a, b) => {
     const ta = pickKickoffSortTimeMs(a);
     const tb = pickKickoffSortTimeMs(b);
-    if (ta == null && tb == null) return 0;
+    if (ta == null && tb == null) return pickDisplayTitle(a).localeCompare(pickDisplayTitle(b));
     if (ta == null) return 1;
     if (tb == null) return -1;
-    return ta - tb;
+    if (ta !== tb) return ta - tb;
+    return pickDisplayTitle(a).localeCompare(pickDisplayTitle(b));
   });
 }
 
@@ -241,7 +321,7 @@ export function pickDisplaySubtitle(p: PickRecord): string | null {
   if (isManualEditorPick(p)) parts.push('Editor pick');
   const league = pickPrimitiveText(p.league);
   if (league) parts.push(league);
-  const kickoff = formatKickoffField(p.kickoff ?? p.time ?? p.date ?? p.fixtureDate);
+  const kickoff = formatKickoffFromPickRecord(p);
   if (kickoff) parts.push(kickoff);
   return parts.length ? parts.join(' · ') : null;
 }
@@ -315,7 +395,7 @@ function researchAlgorithmPickSubtitleFromAllModels(p: PickRecord): string | nul
   if (oc) parts.push(oc.toUpperCase());
   const league = pickPrimitiveText(p.league);
   if (league) parts.push(league);
-  const kick = formatKickoffField(p.fixtureDate);
+  const kick = formatKickoffFromPickRecord(p);
   if (kick) parts.push(kick);
   return parts.length ? parts.join(' · ') : pickDisplaySubtitle(p);
 }
@@ -338,7 +418,7 @@ function stringArrayField(v: unknown): string[] | null {
  * - All Models macOS: `{ groups: [{ homeTeam, awayTeam, selections: [...ArchivedServedPick], ... }] }` (researchAlgorithmSelections)
  * - Single string
  *
- * Pick-like rows are ordered by kickoff (`kickoff` | `time` | `date` | `fixtureDate`), earliest first; unparseable last.
+ * Pick-like rows are ordered by kickoff (several field names + group-inherited times), earliest UTC first; unparseable last.
  * Plain string arrays (`lines`, etc.) keep upload order.
  */
 export function researchAlgorithmFeedRows(val: unknown): ResearchAlgorithmFeedRow[] {
@@ -370,7 +450,7 @@ export function researchAlgorithmFeedRows(val: unknown): ResearchAlgorithmFeedRo
         if (Array.isArray(sel)) {
           for (const item of sel) {
             if (item && typeof item === 'object' && !Array.isArray(item)) {
-              allPicks.push(item as PickRecord);
+              allPicks.push(mergeGroupKickoffOntoSelection(grp, item as PickRecord));
             }
           }
         }
@@ -398,7 +478,7 @@ export function researchAlgorithmFeedRows(val: unknown): ResearchAlgorithmFeedRo
           labelStr,
           pickPrimitiveText(grp.displayStatus),
           pickPrimitiveText(grp.league),
-          formatKickoffField(grp.fixtureDate),
+          formatKickoffFromPickRecord(grp),
         ].filter(Boolean);
         return {
           primary: `${home} vs ${away}`,
