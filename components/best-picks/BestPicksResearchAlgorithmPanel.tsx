@@ -77,8 +77,8 @@ export function BestPicksResearchAlgorithmPanel({ dateKey }: { dateKey: string }
           <p className="text-sm text-white/60 leading-relaxed">
             No entries for <span className="tabular-nums text-white/50">{dateKey}</span> yet. Write to{' '}
             <code className="text-xs text-white/45 break-all">{researchAlgorithmSelectionsPath}</code>
-            {' — '}array of strings, array of pick objects, or e.g.{' '}
-            <code className="text-xs text-white/45">lines</code>.
+            {' — '}e.g. <code className="text-xs text-white/45">groups[].selections[]</code> (All Models
+            app), array of strings, pick objects, or <code className="text-xs text-white/45">lines</code>.
           </p>
         )}
         {rows.length > 0 && (

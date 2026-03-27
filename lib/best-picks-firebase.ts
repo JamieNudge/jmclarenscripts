@@ -208,7 +208,7 @@ function formatKickoffField(v: unknown): string | null {
  * Null if missing or not parseable as a date (e.g. raw URL text) — those rows sort last.
  */
 export function pickKickoffSortTimeMs(p: PickRecord): number | null {
-  const v = p.kickoff ?? p.time ?? p.date;
+  const v = p.kickoff ?? p.time ?? p.date ?? p.fixtureDate;
   if (v == null) return null;
   if (typeof v === 'number' && Number.isFinite(v)) {
     const ms = v < 10_000_000_000 ? v * 1000 : v;
@@ -241,7 +241,7 @@ export function pickDisplaySubtitle(p: PickRecord): string | null {
   if (isManualEditorPick(p)) parts.push('Editor pick');
   const league = pickPrimitiveText(p.league);
   if (league) parts.push(league);
-  const kickoff = formatKickoffField(p.kickoff ?? p.time ?? p.date);
+  const kickoff = formatKickoffField(p.kickoff ?? p.time ?? p.date ?? p.fixtureDate);
   if (kickoff) parts.push(kickoff);
   return parts.length ? parts.join(' · ') : null;
 }
@@ -288,6 +288,28 @@ export function statStrikeRtdbPathsFromEnv(dateKey: string): {
 
 export type ResearchAlgorithmFeedRow = { primary: string; secondary: string | null };
 
+/** Subtitle for `ArchivedServedPick`-shaped objects from All Models macOS uploads. */
+function researchAlgorithmPickSubtitleFromAllModels(p: PickRecord): string | null {
+  const parts: string[] = [];
+  const app = pickPrimitiveText(p.sourceApp);
+  if (app) parts.push(app);
+  const tier = pickPrimitiveText(p.sourceTier);
+  if (tier) parts.push(tier);
+  const band = pickPrimitiveText(p.predictedBand);
+  if (band) parts.push(band);
+  const conf = p.confidence;
+  if (typeof conf === 'number' && Number.isFinite(conf)) {
+    parts.push(`${Math.round(conf)}%`);
+  }
+  const oc = pickPrimitiveText(p.outcome);
+  if (oc) parts.push(oc.toUpperCase());
+  const league = pickPrimitiveText(p.league);
+  if (league) parts.push(league);
+  const kick = formatKickoffField(p.fixtureDate);
+  if (kick) parts.push(kick);
+  return parts.length ? parts.join(' · ') : pickDisplaySubtitle(p);
+}
+
 function stringArrayField(v: unknown): string[] | null {
   if (!Array.isArray(v)) return null;
   const out = v
@@ -303,6 +325,7 @@ function stringArrayField(v: unknown): string[] | null {
  * - Array of strings
  * - Array of pick-like objects (same helpers as Over/Under)
  * - Object with `lines` | `items` | `selections` | `updates` | `entries` | `feed` as string[] or object map / array of picks
+ * - All Models macOS: `{ groups: [{ homeTeam, awayTeam, selections: [...ArchivedServedPick], ... }] }` (researchAlgorithmSelections)
  * - Single string
  */
 export function researchAlgorithmFeedRows(val: unknown): ResearchAlgorithmFeedRow[] {
@@ -326,6 +349,52 @@ export function researchAlgorithmFeedRows(val: unknown): ResearchAlgorithmFeedRo
   }
   if (typeof val === 'object' && !Array.isArray(val)) {
     const o = val as PickRecord;
+    // All Models Best Forecaster → RTDB `researchAlgorithmSelections/{date}`
+    const groupsRaw = o.groups;
+    if (Array.isArray(groupsRaw) && groupsRaw.length > 0) {
+      const allPicks: PickRecord[] = [];
+      for (const g of groupsRaw) {
+        if (!g || typeof g !== 'object' || Array.isArray(g)) continue;
+        const grp = g as PickRecord;
+        const sel = grp.selections;
+        if (Array.isArray(sel)) {
+          for (const item of sel) {
+            if (item && typeof item === 'object' && !Array.isArray(item)) {
+              allPicks.push(item as PickRecord);
+            }
+          }
+        }
+      }
+      if (allPicks.length > 0) {
+        const sorted = sortPicksByKickoffEarliestFirst(allPicks);
+        return sorted.map((p) => ({
+          primary: pickDisplayTitle(p),
+          secondary: researchAlgorithmPickSubtitleFromAllModels(p),
+        }));
+      }
+      const groupRows: ResearchAlgorithmFeedRow[] = [];
+      for (const g of groupsRaw) {
+        if (!g || typeof g !== 'object' || Array.isArray(g)) continue;
+        const grp = g as PickRecord;
+        const home = pickPrimitiveText(grp.homeTeam);
+        const away = pickPrimitiveText(grp.awayTeam);
+        if (!home || !away) continue;
+        const labelStr = Array.isArray(grp.modelLabels)
+          ? grp.modelLabels.filter((x) => typeof x === 'string').join(' · ')
+          : null;
+        const parts = [
+          labelStr,
+          pickPrimitiveText(grp.displayStatus),
+          pickPrimitiveText(grp.league),
+          formatKickoffField(grp.fixtureDate),
+        ].filter(Boolean);
+        groupRows.push({
+          primary: `${home} vs ${away}`,
+          secondary: parts.length ? parts.join(' · ') : null,
+        });
+      }
+      if (groupRows.length > 0) return groupRows;
+    }
     const nestedKeys = ['lines', 'items', 'selections', 'updates', 'entries', 'feed'] as const;
     for (const key of nestedKeys) {
       const raw = o[key];
