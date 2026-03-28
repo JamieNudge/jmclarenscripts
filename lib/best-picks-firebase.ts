@@ -292,10 +292,18 @@ function formatKickoffFromPickRecord(p: PickRecord): string | null {
   return null;
 }
 
-/** Copy kickoff-related fields from a `groups[]` row onto a child selection when the child omits them. */
+/** Status-like fields copied from parent `groups[]` onto selections (filtering / subtitles). */
+const GROUP_STATUS_INHERIT_KEYS = ['displayStatus', 'status', 'fixtureStatus', 'matchStatus'] as const;
+
+/** Copy kickoff- and status-related fields from a `groups[]` row onto a child selection when the child omits them. */
 function mergeGroupKickoffOntoSelection(grp: PickRecord, item: PickRecord): PickRecord {
   const out: PickRecord = { ...item };
   for (const k of KICKOFF_SORT_FIELD_KEYS) {
+    if (!isEmptyKickoffSlot(out[k])) continue;
+    const gv = grp[k];
+    if (!isEmptyKickoffSlot(gv)) out[k] = gv;
+  }
+  for (const k of GROUP_STATUS_INHERIT_KEYS) {
     if (!isEmptyKickoffSlot(out[k])) continue;
     const gv = grp[k];
     if (!isEmptyKickoffSlot(gv)) out[k] = gv;
@@ -381,11 +389,75 @@ export function statStrikeRtdbPathsFromEnv(dateKey: string): {
 
 export type ResearchAlgorithmFeedRow = { primary: string; secondary: string | null };
 
+/** Postponed / abandoned / cancelled-style codes — hidden from the research feed so NS (etc.) on the panel date surface first. */
+const RESEARCH_FEED_EXCLUDED_STATUS_TOKENS = new Set([
+  'PP',
+  'POST',
+  'POSTPONED',
+  'ABN',
+  'ABANDONED',
+  'CANC',
+  'CANCELLED',
+  'CANCELED',
+  'VOID',
+  'SUSP',
+  'SUSPENDED',
+  'INTR',
+  'INTERRUPTED',
+]);
+
+function normalizedResearchFeedStatusTokens(raw: string): string[] {
+  const u = raw.toUpperCase().trim();
+  if (!u) return [];
+  const compact = u.replace(/[^A-Z0-9]/g, '');
+  const words = u
+    .split(/[\s/|,-]+/)
+    .map((w) => w.replace(/[^A-Z0-9]/g, ''))
+    .filter(Boolean);
+  return Array.from(new Set([compact, ...words]));
+}
+
+function pickResearchFeedStatusExcluded(p: PickRecord): boolean {
+  for (const k of GROUP_STATUS_INHERIT_KEYS) {
+    const t = pickPrimitiveText(p[k]);
+    if (!t) continue;
+    for (const token of normalizedResearchFeedStatusTokens(t)) {
+      if (RESEARCH_FEED_EXCLUDED_STATUS_TOKENS.has(token)) return true;
+    }
+  }
+  return false;
+}
+
+function pickKickoffMatchesCalendarDateKey(p: PickRecord, dateKey: string, timeZone: string): boolean {
+  const ms = pickKickoffSortTimeMs(p);
+  if (ms == null) return false;
+  return picksDateStringInTimeZone(timeZone, new Date(ms)) === dateKey;
+}
+
+/** Keep fixtures on the Best Picks calendar day (site timezone) and drop postponed/abandoned/cancelled rows. */
+function filterResearchPicksForAlgorithmPanel(picks: PickRecord[], dateKey: string): PickRecord[] {
+  const dk = dateKey.trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dk)) return picks;
+  const tz = picksTimeZoneFromEnv();
+  return picks.filter(
+    (p) => pickKickoffMatchesCalendarDateKey(p, dk, tz) && !pickResearchFeedStatusExcluded(p),
+  );
+}
+
+function groupPassesResearchAlgorithmPanelFilter(grp: PickRecord, dateKey: string): boolean {
+  const dk = dateKey.trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dk)) return true;
+  if (pickResearchFeedStatusExcluded(grp)) return false;
+  return pickKickoffMatchesCalendarDateKey(grp, dk, picksTimeZoneFromEnv());
+}
+
 function researchAlgorithmRowsFromPicks(
   picks: PickRecord[],
+  dateKey: string,
   secondaryFor: (p: PickRecord) => string | null,
 ): ResearchAlgorithmFeedRow[] {
-  return sortPicksByKickoffLatestFirst(picks).map((p) => ({
+  const filtered = filterResearchPicksForAlgorithmPanel(picks, dateKey);
+  return sortPicksByKickoffLatestFirst(filtered).map((p) => ({
     primary: pickDisplayTitle(p),
     secondary: secondaryFor(p),
   }));
@@ -432,9 +504,10 @@ function stringArrayField(v: unknown): string[] | null {
  * - Single string
  *
  * Pick-like rows are ordered by kickoff (several field names + group-inherited times), latest UTC first; unparseable last.
- * Plain string arrays (`lines`, etc.) keep upload order.
+ * Rows are limited to kickoffs on `dateKey` (same calendar day as the panel, in `NEXT_PUBLIC_PICKS_DATE_TIMEZONE`) and exclude
+ * postponed/abandoned/cancelled-style statuses (PP, ABN, …). Plain string arrays (`lines`, etc.) are unchanged.
  */
-export function researchAlgorithmFeedRows(val: unknown): ResearchAlgorithmFeedRow[] {
+export function researchAlgorithmFeedRows(val: unknown, dateKey: string): ResearchAlgorithmFeedRow[] {
   if (val == null) return [];
   if (typeof val === 'string') {
     const t = val.trim();
@@ -448,7 +521,7 @@ export function researchAlgorithmFeedRows(val: unknown): ResearchAlgorithmFeedRo
         .map((primary) => ({ primary, secondary: null }));
     }
     const picks = rtdbValueToPickList(val);
-    return researchAlgorithmRowsFromPicks(picks, pickDisplaySubtitle);
+    return researchAlgorithmRowsFromPicks(picks, dateKey, pickDisplaySubtitle);
   }
   if (typeof val === 'object' && !Array.isArray(val)) {
     const o = val as PickRecord;
@@ -469,7 +542,7 @@ export function researchAlgorithmFeedRows(val: unknown): ResearchAlgorithmFeedRo
         }
       }
       if (allPicks.length > 0) {
-        return researchAlgorithmRowsFromPicks(allPicks, researchAlgorithmPickSubtitleFromAllModels);
+        return researchAlgorithmRowsFromPicks(allPicks, dateKey, researchAlgorithmPickSubtitleFromAllModels);
       }
       const groupCandidates: PickRecord[] = [];
       for (const g of groupsRaw) {
@@ -480,7 +553,8 @@ export function researchAlgorithmFeedRows(val: unknown): ResearchAlgorithmFeedRo
         if (!home || !away) continue;
         groupCandidates.push(grp);
       }
-      const sortedGroups = sortPicksByKickoffLatestFirst(groupCandidates);
+      const filteredGroups = groupCandidates.filter((grp) => groupPassesResearchAlgorithmPanelFilter(grp, dateKey));
+      const sortedGroups = sortPicksByKickoffLatestFirst(filteredGroups);
       const groupRows: ResearchAlgorithmFeedRow[] = sortedGroups.map((grp) => {
         const home = pickPrimitiveText(grp.homeTeam) ?? '';
         const away = pickPrimitiveText(grp.awayTeam) ?? '';
@@ -507,11 +581,11 @@ export function researchAlgorithmFeedRows(val: unknown): ResearchAlgorithmFeedRo
       if (sa) return sa.map((primary) => ({ primary, secondary: null }));
       const nestedPicks = rtdbValueToPickList(raw);
       if (nestedPicks.length > 0) {
-        return researchAlgorithmRowsFromPicks(nestedPicks, pickDisplaySubtitle);
+        return researchAlgorithmRowsFromPicks(nestedPicks, dateKey, pickDisplaySubtitle);
       }
     }
     const picks = rtdbValueToPickList(val);
-    return researchAlgorithmRowsFromPicks(picks, pickDisplaySubtitle);
+    return researchAlgorithmRowsFromPicks(picks, dateKey, pickDisplaySubtitle);
   }
   return [];
 }

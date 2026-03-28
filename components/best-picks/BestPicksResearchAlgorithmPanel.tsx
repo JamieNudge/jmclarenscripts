@@ -42,7 +42,7 @@ export function BestPicksResearchAlgorithmPanel({ dateKey }: { dateKey: string }
       (snap) => {
         setError(null);
         setLoading(false);
-        setRows(researchAlgorithmFeedRows(snap.val()));
+        setRows(researchAlgorithmFeedRows(snap.val(), dateKey));
       },
       (err) => {
         setError(err.message);
@@ -75,10 +75,12 @@ export function BestPicksResearchAlgorithmPanel({ dateKey }: { dateKey: string }
         )}
         {configured && !error && !loading && rows.length === 0 && (
           <p className="text-sm text-white/60 leading-relaxed">
-            No entries for <span className="tabular-nums text-white/50">{dateKey}</span> yet. Write to{' '}
+            No picks to show for <span className="tabular-nums text-white/50">{dateKey}</span> after filtering to
+            that calendar day and dropping postponed/abandoned/cancelled fixtures — or nothing uploaded yet.
+            Data:{' '}
             <code className="text-xs text-white/45 break-all">{researchAlgorithmSelectionsPath}</code>
-            {' — '}e.g. <code className="text-xs text-white/45">groups[].selections[]</code> (All Models
-            app), array of strings, pick objects, or <code className="text-xs text-white/45">lines</code>.
+            {' — '}e.g. <code className="text-xs text-white/45">groups[].selections[]</code>, pick objects, or{' '}
+            <code className="text-xs text-white/45">lines</code> (strings are not day-filtered).
           </p>
         )}
         {rows.length > 0 && (
