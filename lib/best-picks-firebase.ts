@@ -316,6 +316,19 @@ export function sortPicksByKickoffEarliestFirst(picks: PickRecord[]): PickRecord
   });
 }
 
+/** Latest kickoff first (newest at top of scroll); unknown kickoff last; title tie-break when times equal. */
+export function sortPicksByKickoffLatestFirst(picks: PickRecord[]): PickRecord[] {
+  return [...picks].sort((a, b) => {
+    const ta = pickKickoffSortTimeMs(a);
+    const tb = pickKickoffSortTimeMs(b);
+    if (ta == null && tb == null) return pickDisplayTitle(a).localeCompare(pickDisplayTitle(b));
+    if (ta == null) return 1;
+    if (tb == null) return -1;
+    if (ta !== tb) return tb - ta;
+    return pickDisplayTitle(a).localeCompare(pickDisplayTitle(b));
+  });
+}
+
 export function pickDisplaySubtitle(p: PickRecord): string | null {
   const parts: string[] = [];
   if (isManualEditorPick(p)) parts.push('Editor pick');
@@ -372,7 +385,7 @@ function researchAlgorithmRowsFromPicks(
   picks: PickRecord[],
   secondaryFor: (p: PickRecord) => string | null,
 ): ResearchAlgorithmFeedRow[] {
-  return sortPicksByKickoffEarliestFirst(picks).map((p) => ({
+  return sortPicksByKickoffLatestFirst(picks).map((p) => ({
     primary: pickDisplayTitle(p),
     secondary: secondaryFor(p),
   }));
@@ -418,7 +431,7 @@ function stringArrayField(v: unknown): string[] | null {
  * - All Models macOS: `{ groups: [{ homeTeam, awayTeam, selections: [...ArchivedServedPick], ... }] }` (researchAlgorithmSelections)
  * - Single string
  *
- * Pick-like rows are ordered by kickoff (several field names + group-inherited times), earliest UTC first; unparseable last.
+ * Pick-like rows are ordered by kickoff (several field names + group-inherited times), latest UTC first; unparseable last.
  * Plain string arrays (`lines`, etc.) keep upload order.
  */
 export function researchAlgorithmFeedRows(val: unknown): ResearchAlgorithmFeedRow[] {
@@ -467,7 +480,7 @@ export function researchAlgorithmFeedRows(val: unknown): ResearchAlgorithmFeedRo
         if (!home || !away) continue;
         groupCandidates.push(grp);
       }
-      const sortedGroups = sortPicksByKickoffEarliestFirst(groupCandidates);
+      const sortedGroups = sortPicksByKickoffLatestFirst(groupCandidates);
       const groupRows: ResearchAlgorithmFeedRow[] = sortedGroups.map((grp) => {
         const home = pickPrimitiveText(grp.homeTeam) ?? '';
         const away = pickPrimitiveText(grp.awayTeam) ?? '';
