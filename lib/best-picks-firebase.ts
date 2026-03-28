@@ -457,7 +457,7 @@ function researchAlgorithmRowsFromPicks(
   secondaryFor: (p: PickRecord) => string | null,
 ): ResearchAlgorithmFeedRow[] {
   const filtered = filterResearchPicksForAlgorithmPanel(picks, dateKey);
-  return sortPicksByKickoffLatestFirst(filtered).map((p) => ({
+  return sortPicksByKickoffEarliestFirst(filtered).map((p) => ({
     primary: pickDisplayTitle(p),
     secondary: secondaryFor(p),
   }));
@@ -503,7 +503,7 @@ function stringArrayField(v: unknown): string[] | null {
  * - All Models macOS: `{ groups: [{ homeTeam, awayTeam, selections: [...ArchivedServedPick], ... }] }` (researchAlgorithmSelections)
  * - Single string
  *
- * Pick-like rows are ordered by kickoff (several field names + group-inherited times), latest UTC first; unparseable last.
+ * Pick-like rows are ordered by kickoff (several field names + group-inherited times), earliest UTC first within the day; unparseable last.
  * Rows are limited to kickoffs on `dateKey` (same calendar day as the panel, in `NEXT_PUBLIC_PICKS_DATE_TIMEZONE`) and exclude
  * postponed/abandoned/cancelled-style statuses (PP, ABN, …). Plain string arrays (`lines`, etc.) are unchanged.
  */
@@ -554,7 +554,7 @@ export function researchAlgorithmFeedRows(val: unknown, dateKey: string): Resear
         groupCandidates.push(grp);
       }
       const filteredGroups = groupCandidates.filter((grp) => groupPassesResearchAlgorithmPanelFilter(grp, dateKey));
-      const sortedGroups = sortPicksByKickoffLatestFirst(filteredGroups);
+      const sortedGroups = sortPicksByKickoffEarliestFirst(filteredGroups);
       const groupRows: ResearchAlgorithmFeedRow[] = sortedGroups.map((grp) => {
         const home = pickPrimitiveText(grp.homeTeam) ?? '';
         const away = pickPrimitiveText(grp.awayTeam) ?? '';
