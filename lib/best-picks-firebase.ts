@@ -536,6 +536,56 @@ function filterResearchPicksForAlgorithmPanel(picks: PickRecord[], dateKey: stri
   );
 }
 
+/** Internal-only: merged subtitle lines when several model lines share one fixture + band. */
+const RESEARCH_MERGED_SUBTITLE_LINES = '__researchMergedSubtitleLines';
+
+function researchFixtureBandKey(p: PickRecord): string {
+  const fidRaw = p.fixtureID ?? p.fixtureId ?? p.fixture_id;
+  let idPart: string;
+  if (typeof fidRaw === 'number' && Number.isFinite(fidRaw)) {
+    idPart = `fid:${fidRaw}`;
+  } else if (typeof fidRaw === 'string' && fidRaw.trim()) {
+    idPart = `fid:${fidRaw.trim()}`;
+  } else {
+    const h = (pickPrimitiveText(p.homeTeam ?? p.home) ?? '').toLowerCase();
+    const a = (pickPrimitiveText(p.awayTeam ?? p.away) ?? '').toLowerCase();
+    idPart = `teams:${h}|${a}`;
+  }
+  const band = (pickPrimitiveText(p.predictedBand) ?? '')
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .trim();
+  return `${idPart}|band:${band}`;
+}
+
+/**
+ * All Models uploads one `selections[]` entry per source app line; same fixture can repeat.
+ * Collapse to one row per fixture+band with stacked subtitle lines.
+ */
+function mergeResearchPicksSameFixtureBand(picks: PickRecord[]): PickRecord[] {
+  const buckets = new Map<string, PickRecord[]>();
+  for (const p of picks) {
+    const k = researchFixtureBandKey(p);
+    const arr = buckets.get(k);
+    if (arr) arr.push(p);
+    else buckets.set(k, [p]);
+  }
+  const out: PickRecord[] = [];
+  for (const group of Array.from(buckets.values())) {
+    if (group.length === 1) {
+      out.push(group[0]);
+      continue;
+    }
+    const anchor: PickRecord = { ...group[0] };
+    const lines = group
+      .map((p) => researchAlgorithmPickSubtitleFromAllModels(p))
+      .filter((s): s is string => s != null && s.length > 0);
+    if (lines.length > 0) anchor[RESEARCH_MERGED_SUBTITLE_LINES] = lines;
+    out.push(anchor);
+  }
+  return out;
+}
+
 function groupPassesResearchAlgorithmPanelFilter(grp: PickRecord, dateKey: string): boolean {
   const dk = dateKey.trim();
   if (!/^\d{4}-\d{2}-\d{2}$/.test(dk)) return true;
@@ -577,6 +627,14 @@ function researchAlgorithmPickSubtitleFromAllModels(p: PickRecord): string | nul
   return parts.length ? parts.join(' · ') : pickDisplaySubtitle(p);
 }
 
+function researchAlgorithmPickSubtitleFromAllModelsOrMerged(p: PickRecord): string | null {
+  const merged = p[RESEARCH_MERGED_SUBTITLE_LINES];
+  if (Array.isArray(merged) && merged.length > 0 && merged.every((x) => typeof x === 'string')) {
+    return (merged as string[]).join('\n');
+  }
+  return researchAlgorithmPickSubtitleFromAllModels(p);
+}
+
 function stringArrayField(v: unknown): string[] | null {
   if (!Array.isArray(v)) return null;
   const out = v
@@ -592,7 +650,7 @@ function stringArrayField(v: unknown): string[] | null {
  * - Array of strings
  * - Array of pick-like objects (same helpers as Over/Under)
  * - Object with `lines` | `items` | `selections` | `updates` | `entries` | `feed` as string[] or object map / array of picks
- * - All Models macOS: `{ groups: [{ homeTeam, awayTeam, selections: [...ArchivedServedPick], ... }] }` (researchAlgorithmSelections)
+ * - All Models macOS: `{ groups: [{ homeTeam, awayTeam, selections: [...ArchivedServedPick], ... }] }` (researchAlgorithmSelections); multiple `selections` for the same fixture+band are merged into one row with stacked subtitle lines
  * - Single string
  *
  * Pick-like rows are ordered by kickoff (several field names + group-inherited times), earliest UTC first within the day; unparseable last.
@@ -634,7 +692,8 @@ export function researchAlgorithmFeedRows(val: unknown, dateKey: string): Resear
         }
       }
       if (allPicks.length > 0) {
-        return researchAlgorithmRowsFromPicks(allPicks, dateKey, researchAlgorithmPickSubtitleFromAllModels);
+        const merged = mergeResearchPicksSameFixtureBand(allPicks);
+        return researchAlgorithmRowsFromPicks(merged, dateKey, researchAlgorithmPickSubtitleFromAllModelsOrMerged);
       }
       const groupCandidates: PickRecord[] = [];
       for (const g of groupsRaw) {
@@ -699,8 +758,8 @@ export function mergeUnanimousAndManual(
   const u = parseUnanimousExport(unanimousVal);
   const m = parseUnanimousExport(manualVal);
   return {
-    over: [...m.over.map(ensureManualEditorTag), ...u.over],
-    under: [...m.under.map(ensureManualEditorTag), ...u.under],
+    over: mergeManualPickLists([], [...m.over.map(ensureManualEditorTag), ...u.over]),
+    under: mergeManualPickLists([], [...m.under.map(ensureManualEditorTag), ...u.under]),
   };
 }
 

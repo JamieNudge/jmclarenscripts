@@ -258,7 +258,7 @@ FIREBASE_SERVICE_ACCOUNT_JSON={"type":"service_account",...one line...}
 | **503 / Server misconfigured** | **`ADMIN_MANUAL_PICKS_KEY`** or **`FIREBASE_SERVICE_ACCOUNT_JSON`** missing on Vercel. |
 | **500 with JSON error** | Service account JSON invalid (not one valid JSON object); or wrong **`FIREBASE_DATABASE_URL`**. |
 | **Save works but nothing on /best-picks** | **Date** on admin form ≠ date the page uses (timezone). Compare with Part F. |
-| **Permission denied** on public page | Rules must **allow read** on **`manualExports`**. |
+| **Permission denied** on public page | Rules must **allow read** on **`manualExports`**, **`dailyConsensusSelections`**, and any other paths the page reads (see Part E). |
 
 ---
 
@@ -273,9 +273,11 @@ FIREBASE_SERVICE_ACCOUNT_JSON={"type":"service_account",...one line...}
    - **`researchAlgorithmSelections/{date}`** and **`dailyConsensusSelections/{date}`** (All Models Best Forecaster uploads)
    - **`manualExports/{date}`** (if you use the owner admin — Part D)
 
-3. **Do not** leave wide-open read/write on production long-term. Tighten rules once you’re happy (e.g. read-only on those branches only). **Writes** to **`manualExports`** should stay **false** for clients if you use Part D (server writes only).
+3. **Example** — if your tree is split by feature, ensure each branch used by `/best-picks` has **`.read": true`** (and **`.write": false`** for clients where uploads are server/Mac-only). Copy-paste fragments: **`docs/FIREBASE_RTDB_RULES_MANUAL_EXPORTS.md`** (`manualExports`), **`docs/FIREBASE_RTDB_RULES_DAILY_CONSENSUS.md`** (`dailyConsensusSelections`).
 
-4. **“Submit Your Idea” form** (`/best-picks`): submissions are written by the **server** (same **`FIREBASE_SERVICE_ACCOUNT_JSON`** as the admin API) to **`predictionIdeaSubmissions/{pushId}`** by default. You do **not** need to allow browser read/write on that path; review entries in the Firebase console. Optional env: **`FIREBASE_PREDICTION_IDEA_SUBMISSIONS_ROOT`**.
+4. **Do not** leave wide-open read/write on production long-term. Tighten rules once you’re happy (e.g. read-only on those branches only). **Writes** to **`manualExports`** should stay **false** for clients if you use Part D (server writes only).
+
+5. **“Submit Your Idea” form** (`/best-picks`): submissions are written by the **server** (same **`FIREBASE_SERVICE_ACCOUNT_JSON`** as the admin API) to **`predictionIdeaSubmissions/{pushId}`** by default. You do **not** need to allow browser read/write on that path; review entries in the Firebase console. Optional env: **`FIREBASE_PREDICTION_IDEA_SUBMISSIONS_ROOT`**.
 
 If rules block reads, the page may show an error or stay empty.
 
@@ -328,6 +330,7 @@ That date should match how your **Mac app** names the upload (`DailySelection.da
 | `components/best-picks/FirebasePicksPanels.tsx` | Live listeners + UI (merged picks). |
 | `components/best-picks/BestPicksVideo.tsx` | YouTube embed from `manualExports`. |
 | `docs/FIREBASE_RTDB_RULES_MANUAL_EXPORTS.md` | Suggested rules for `manualExports`. |
+| `docs/FIREBASE_RTDB_RULES_DAILY_CONSENSUS.md` | Suggested rules for `dailyConsensusSelections` (fixes Daily consensus permission errors). |
 
 ---
 
