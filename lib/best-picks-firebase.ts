@@ -86,6 +86,12 @@ export function leaguePerformanceLookupKey(country: string, league: string): str
     .replace(/\]/g, ')');
 }
 
+/**
+ * Same threshold as Stat Strike InPlay `FixtureListView` when the **Best Performing** league chip
+ * filters fixtures (`rate >= 70`).
+ */
+export const BEST_PERFORMING_LEAGUE_MIN_WIN_RATE_PCT = 70;
+
 /** `selections/{date}` payload: optional league → win rate % for iOS "Best Performing" chip. */
 export function parseLeaguePerformanceFromSelection(val: unknown): Record<string, number> {
   if (val == null || typeof val !== 'object' || Array.isArray(val)) return {};
@@ -119,7 +125,12 @@ export function isInBestPerformingLeagues(
   const league = pickPrimitiveText(p.league);
   if (!country || !league) return false;
   const key = leaguePerformanceLookupKey(country, league);
-  return key in leagueWinRates;
+  const rate = leagueWinRates[key];
+  return (
+    typeof rate === 'number' &&
+    !Number.isNaN(rate) &&
+    rate >= BEST_PERFORMING_LEAGUE_MIN_WIN_RATE_PCT
+  );
 }
 
 /** Fallback for other upload shapes (boolean / tags). */
@@ -149,11 +160,23 @@ export function isManualEditorPick(p: PickRecord): boolean {
   return false;
 }
 
+/** When `selections/{date}` has no `leaguePerformance`, show every merged pick (not only BPL). */
+export function bestPicksUnfilteredWhenLeaguePerformanceMissing(): boolean {
+  const v = process.env.NEXT_PUBLIC_BEST_PICKS_UNFILTERED_WHEN_NO_LEAGUE_PERFORMANCE?.trim().toLowerCase();
+  return v === '1' || v === 'true' || v === 'yes';
+}
+
 export function pickPassesBestFilter(
   p: PickRecord,
   leagueWinRates: Record<string, number>,
 ): boolean {
   if (isManualEditorPick(p)) return true;
+  if (
+    Object.keys(leagueWinRates).length === 0 &&
+    bestPicksUnfilteredWhenLeaguePerformanceMissing()
+  ) {
+    return true;
+  }
   return isInBestPerformingLeagues(p, leagueWinRates) || isBestPerformingLeaguePick(p);
 }
 

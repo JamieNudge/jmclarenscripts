@@ -7,6 +7,7 @@ import { BestPicksVideo } from '@/components/best-picks/BestPicksVideo';
 import { onValue, ref } from 'firebase/database';
 import { bestPicksGridTileClassName } from '@/lib/best-picks-panel-shell';
 import {
+  bestPicksUnfilteredWhenLeaguePerformanceMissing,
   mergeUnanimousAndManual,
   parseLeaguePerformanceFromSelection,
   pickContextWarnings,
@@ -193,12 +194,22 @@ function PickPanel({
   /** Chronological by kickoff when the field is numeric / ISO-ish; unparseable kickoffs last. */
   const ordered = sortPicksByKickoffEarliestFirst(filtered);
   const hasLp = Object.keys(leagueWinRates).length > 0;
+  const relaxedNoLp =
+    !hasLp && bestPicksUnfilteredWhenLeaguePerformanceMissing() && ordered.length > 0;
   /** Do not wait for `selections/{date}`: empty league map already filters non-manual picks; manual rows must show immediately. */
   const waiting = state.loading || !state.ready;
 
   return (
     <div className={bestPicksGridTileClassName}>
       <h2 className="text-lg md:text-xl font-semibold text-white mb-2 shrink-0">{label}</h2>
+      {relaxedNoLp && (
+        <p className="text-[11px] text-amber-200/90 leading-snug mb-2 shrink-0">
+          No <code className="text-[10px] text-white/60">leaguePerformance</code> for this date — showing
+          all exported picks (set{' '}
+          <code className="text-[10px] text-white/60">NEXT_PUBLIC_BEST_PICKS_UNFILTERED_WHEN_NO_LEAGUE_PERFORMANCE</code>{' '}
+          off to hide them again).
+        </p>
+      )}
       <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-y-contain pr-1 -mr-0.5 [scrollbar-gutter:stable] scroll-smooth">
         {state.error && (
           <p className="text-sm text-red-300/90 leading-relaxed" role="alert">
@@ -232,7 +243,8 @@ function PickPanel({
 
         {!state.error && !waiting && state.picks.length > 0 && hasLp && filtered.length === 0 && (
           <p className="text-sm text-white/60 leading-relaxed">
-            No picks in leagues that qualify as best-performing today.
+            No picks in leagues at or above the best-performing win-rate threshold (same as iOS: ≥70%
+            in <code className="text-xs text-white/50">leaguePerformance</code>).
           </p>
         )}
 

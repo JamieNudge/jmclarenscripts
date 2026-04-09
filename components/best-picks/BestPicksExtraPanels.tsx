@@ -9,9 +9,17 @@ const hr = 'border-0 border-t border-white/15 my-5';
 export function BestPicksNewProductPanel() {
   return (
     <div className={bestPicksGridTileClassName}>
-      <h2 className="text-lg md:text-xl font-bold text-white tracking-tight pr-2 mb-2 shrink-0">
-        ProphIt — Test Your Own Prediction Ideas in a living app!
-      </h2>
+      <div className="flex flex-wrap items-center gap-2 mb-2 shrink-0 pr-2">
+        <h2 className="text-lg md:text-xl font-bold text-white tracking-tight min-w-0 flex-1">
+          ProphIt — Test Your Own Prediction Ideas in a living app!
+        </h2>
+        <span
+          className="shrink-0 rounded-full border border-amber-400/40 bg-amber-500/15 px-2.5 py-1 text-[11px] font-bold tracking-wide text-amber-100/95 shadow-sm shadow-amber-900/20"
+          title="This project is in the research stage"
+        >
+          Coming Soon!
+        </span>
+      </div>
       <div className={scrollArea}>
         <div className="space-y-4 text-sm text-white/75 leading-relaxed pb-1">
           <p>Have a theory for predicting goal band outcomes?</p>
