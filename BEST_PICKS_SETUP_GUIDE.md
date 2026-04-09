@@ -10,7 +10,7 @@ This walks you from zero to a live `/best-picks` page that reads **Firebase Real
 |--------|------------|
 | **Your Next.js site** | Folder `portfolio-site` on your Desktop → deploys to **Vercel** (e.g. jmclarenscripts). |
 | **Firebase** | Project **stat-strike-firebase** (or whatever yours is called). |
-| **Data the page reads** | For **today’s date** (UK time by default): `unanimousExports/YYYY-MM-DD` and `selections/YYYY-MM-DD`. |
+| **Data the page reads** | For **today’s date** (UK time by default): `unanimousExports/YYYY-MM-DD`, `selections/YYYY-MM-DD`, `researchAlgorithmSelections/YYYY-MM-DD`, and **`dailyConsensusSelections/YYYY-MM-DD`** (consensus top-N from **All Models Best Forecaster**, uploaded together with research selections). |
 
 The Mac app uploads there; the website only **listens** (read). It does **not** need Firebase Hosting.
 
@@ -143,6 +143,8 @@ This is **optional**. Skip until you want picks or a video that **you** type in,
 |---------------------------|---------------|----------------|
 | `unanimousExports/{date}` | Mac app | Forecaster (leave it alone) |
 | `selections/{date}` | Mac app | League performance map |
+| `researchAlgorithmSelections/{date}` | All Models Best Forecaster (Mac) | Full selections panel feed |
+| **`dailyConsensusSelections/{date}`** | **All Models Best Forecaster (Mac)** | **Consensus-filtered daily top picks** (same upload action as research) |
 | **`manualExports/{date}`** | **Your admin page (via API)** | **Your** extra Over/Under picks + **YouTube** id + optional title |
 
 The public page **merges** manual picks **on top of** (before) forecaster picks. Manual rows show **“Editor pick”** in the subtitle and always appear (they don’t need the “best performing league” filter).
@@ -268,6 +270,7 @@ FIREBASE_SERVICE_ACCOUNT_JSON={"type":"service_account",...one line...}
 
    - `unanimousExports/{date}`
    - `selections/{date}`
+   - **`researchAlgorithmSelections/{date}`** and **`dailyConsensusSelections/{date}`** (All Models Best Forecaster uploads)
    - **`manualExports/{date}`** (if you use the owner admin — Part D)
 
 3. **Do not** leave wide-open read/write on production long-term. Tighten rules once you’re happy (e.g. read-only on those branches only). **Writes** to **`manualExports`** should stay **false** for clients if you use Part D (server writes only).
@@ -286,6 +289,8 @@ So it looks for:
 
 - `unanimousExports/2026-03-25` (example)
 - `selections/2026-03-25`
+- `researchAlgorithmSelections/2026-03-25`
+- `dailyConsensusSelections/2026-03-25`
 
 That date should match how your **Mac app** names the upload (`DailySelection.date` / same key you use when uploading). If your “day” is always UK, you’re aligned. If not, change the timezone env var.
 

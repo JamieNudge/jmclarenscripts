@@ -369,6 +369,8 @@ export function statStrikeRtdbPathsFromEnv(dateKey: string): {
   manualExportsPath: string;
   /** Latest research-algorithm feed for the Best Picks grid (same date key as other exports). */
   researchAlgorithmSelectionsPath: string;
+  /** All Models Best Forecaster: consensus-filtered daily top-N (same London date key). */
+  dailyConsensusSelectionsPath: string;
 } {
   const unanimousRoot =
     process.env.NEXT_PUBLIC_FIREBASE_UNANIMOUS_EXPORTS_ROOT?.trim() || 'unanimousExports';
@@ -379,11 +381,101 @@ export function statStrikeRtdbPathsFromEnv(dateKey: string): {
   const researchRoot =
     process.env.NEXT_PUBLIC_FIREBASE_RESEARCH_SELECTIONS_ROOT?.trim() ||
     'researchAlgorithmSelections';
+  const dailyConsensusRoot =
+    process.env.NEXT_PUBLIC_FIREBASE_DAILY_CONSENSUS_ROOT?.trim() || 'dailyConsensusSelections';
   return {
     unanimousPath: `${unanimousRoot}/${dateKey}`,
     selectionPath: `${selectionsRoot}/${dateKey}`,
     manualExportsPath: `${manualRoot}/${dateKey}`,
     researchAlgorithmSelectionsPath: `${researchRoot}/${dateKey}`,
+    dailyConsensusSelectionsPath: `${dailyConsensusRoot}/${dateKey}`,
+  };
+}
+
+export type DailyConsensusPickParsed = {
+  fixtureID: number;
+  home: string;
+  away: string;
+  league: string;
+  country: string;
+  band: string;
+  kickoff: string;
+  sources: number;
+  confidence: number;
+  compositeScore: number;
+  outcome: string;
+  homeScore: number | null;
+  awayScore: number | null;
+};
+
+export type DailyConsensusFeedParsed = {
+  picks: DailyConsensusPickParsed[];
+  record: { wins: number; losses: number; pending: number; voids: number; rate: number };
+  minSources: number | null;
+  maxPicksPerDay: number | null;
+};
+
+function num(v: unknown): number | null {
+  if (typeof v === 'number' && Number.isFinite(v)) return v;
+  if (typeof v === 'string' && v.trim() !== '' && !Number.isNaN(Number(v))) return Number(v);
+  return null;
+}
+
+function str(v: unknown): string {
+  if (v == null) return '';
+  if (typeof v === 'string') return v;
+  if (typeof v === 'number' || typeof v === 'boolean') return String(v);
+  return '';
+}
+
+/** Parses RTDB payload from All Models Best Forecaster `dailyConsensusSelections/{date}`. */
+export function parseDailyConsensusSelections(val: unknown): DailyConsensusFeedParsed | null {
+  if (val == null || typeof val !== 'object' || Array.isArray(val)) return null;
+  const o = val as Record<string, unknown>;
+  const rawPicks = o.picks;
+  if (!Array.isArray(rawPicks)) return null;
+
+  const picks: DailyConsensusPickParsed[] = [];
+  for (const item of rawPicks) {
+    if (item == null || typeof item !== 'object' || Array.isArray(item)) continue;
+    const p = item as Record<string, unknown>;
+    const fid = num(p.fixtureID ?? p.fixtureId);
+    if (fid == null) continue;
+    picks.push({
+      fixtureID: fid,
+      home: str(p.home),
+      away: str(p.away),
+      league: str(p.league),
+      country: str(p.country),
+      band: str(p.band),
+      kickoff: str(p.kickoff),
+      sources: num(p.sources) ?? 0,
+      confidence: num(p.confidence) ?? 0,
+      compositeScore: num(p.compositeScore) ?? 0,
+      outcome: str(p.outcome).toLowerCase() || 'pending',
+      homeScore: num(p.homeScore),
+      awayScore: num(p.awayScore),
+    });
+  }
+
+  const rec = o.record;
+  let record = { wins: 0, losses: 0, pending: 0, voids: 0, rate: 0 };
+  if (rec != null && typeof rec === 'object' && !Array.isArray(rec)) {
+    const r = rec as Record<string, unknown>;
+    record = {
+      wins: num(r.wins) ?? 0,
+      losses: num(r.losses) ?? 0,
+      pending: num(r.pending) ?? 0,
+      voids: num(r.voids) ?? 0,
+      rate: num(r.rate) ?? 0,
+    };
+  }
+
+  return {
+    picks,
+    record,
+    minSources: num(o.minSources),
+    maxPicksPerDay: num(o.maxPicksPerDay),
   };
 }
 
