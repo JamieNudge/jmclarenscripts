@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BlueskyLink } from '@/components/BlueskyLink';
-import { BestPicksIntro } from '@/components/best-picks/BestPicksIntro';
-import { FirebasePicksPanels } from '@/components/best-picks/FirebasePicksPanels';
+import { BestPicksHeadAndPanels } from '@/components/best-picks/BestPicksHeadAndPanels';
 import { apps } from '@/lib/apps-data';
 import { bestPicksGridTileClassName } from '@/lib/best-picks-panel-shell';
 import type { App } from '@/types/app';
@@ -91,9 +90,7 @@ export default function BestPicksPage() {
       <div className="flex flex-1 flex-col lg:flex-row lg:min-h-0 w-full min-h-0">
         <div className="flex-1 min-w-0 min-h-0 px-4 py-10 md:py-14 lg:px-6 lg:pr-8">
           <div className="max-w-6xl mx-auto w-full">
-            <BestPicksIntro />
-
-            <FirebasePicksPanels>
+            <BestPicksHeadAndPanels>
               <div className={`${bestPicksGridTileClassName} gap-3`}>
                 <h2 className="text-lg md:text-xl font-semibold text-white mb-1 shrink-0">App Store links</h2>
                 <p className="text-sm text-white/60 leading-relaxed shrink-0">
@@ -162,7 +159,7 @@ export default function BestPicksPage() {
                   ) : null}
                 </div>
               </div>
-            </FirebasePicksPanels>
+            </BestPicksHeadAndPanels>
           </div>
         </div>
 

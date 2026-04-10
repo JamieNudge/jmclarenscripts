@@ -1,17 +1,28 @@
+'use client';
+
 import Link from 'next/link';
 
 /**
  * Compact hero + one collapsible block so the picks grid stays high on the viewport.
+ * `dateKey` is supplied by {@link BestPicksHeadAndPanels} so it stays in sync with Firebase paths.
  */
-export function BestPicksIntro() {
+export function BestPicksIntro({ dateKey }: { dateKey: string }) {
   return (
     <header className="max-w-4xl mb-5 md:mb-6 space-y-3">
-      <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight leading-tight text-white">
-        <span className="block">Today&apos;s Best Picks</span>
-        <span className="block mt-2 md:mt-3 text-lg md:text-xl lg:text-2xl font-semibold text-amber-50/90 leading-snug">
+      <div>
+        <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight leading-tight text-white space-y-1">
+          <span className="block">Today&apos;s Best Picks</span>
+          <span
+            className="block text-base md:text-lg lg:text-xl font-semibold text-amber-200/70 tabular-nums tracking-wide"
+            aria-label={`Calendar day ${dateKey}`}
+          >
+            — {dateKey}
+          </span>
+        </h1>
+        <p className="mt-2 md:mt-3 text-lg md:text-xl lg:text-2xl font-semibold text-amber-50/90 leading-snug">
           Selected by filtering the work of four different algorithms and what each does best!
-        </span>
-      </h1>
+        </p>
+      </div>
 
       <details className="group rounded-xl border border-amber-200/15 bg-black/25 px-3 py-2.5 md:px-4 md:py-3">
         <summary className="cursor-pointer list-none flex items-center justify-between gap-2 text-xs md:text-sm font-semibold text-amber-50/95 hover:text-amber-50 [&::-webkit-details-marker]:hidden">

@@ -17,8 +17,6 @@ import {
   pickGoalBandValues,
   pickPassesBestFilter,
   pickSignificantStats,
-  picksDateStringInTimeZone,
-  picksTimeZoneFromEnv,
   sortPicksByKickoffEarliestFirst,
   statStrikeRtdbPathsFromEnv,
   pickTeams,
@@ -223,7 +221,7 @@ function PickPanel({
 
         {!state.error && !waiting && state.picks.length === 0 && (
           <p className="text-sm text-white/60 leading-relaxed">
-            No picks for this band for the calendar date above. Data is merged from{' '}
+            No picks for this band for this calendar day. Data is merged from{' '}
             <code className="text-xs text-white/50">manualExports</code> and{' '}
             <code className="text-xs text-white/50">unanimousExports</code> in Firebase — both can be empty, or
             manual rows may be under a different date / blocked by read rules.
@@ -264,25 +262,14 @@ function PickPanel({
   );
 }
 
-export function FirebasePicksPanels({ children }: { children: ReactNode }) {
+export function FirebasePicksPanels({
+  dateKey,
+  children,
+}: {
+  dateKey: string;
+  children: ReactNode;
+}) {
   const startLoading = isFirebaseClientConfigured();
-  const [dateKey, setDateKey] = useState(() =>
-    picksDateStringInTimeZone(picksTimeZoneFromEnv()),
-  );
-
-  useEffect(() => {
-    const tz = picksTimeZoneFromEnv();
-    const refresh = () => setDateKey(picksDateStringInTimeZone(tz));
-    const id = setInterval(refresh, 60_000);
-    const onVis = () => {
-      if (document.visibilityState === 'visible') refresh();
-    };
-    document.addEventListener('visibilitychange', onVis);
-    return () => {
-      clearInterval(id);
-      document.removeEventListener('visibilitychange', onVis);
-    };
-  }, []);
 
   const [over, setOver] = useState<PanelState>({
     picks: [],
@@ -388,9 +375,6 @@ export function FirebasePicksPanels({ children }: { children: ReactNode }) {
 
   return (
     <div className="grid grid-cols-1 gap-4 md:gap-5">
-      <p className="text-xs text-white/35 -mt-1 mb-2 tabular-nums" aria-label={`Selections for ${dateKey}`}>
-        {dateKey}
-      </p>
       {configHint && (
         <div className="rounded-xl border border-amber-400/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100/95 leading-relaxed">
           Firebase is not configured. Copy{' '}
