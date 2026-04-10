@@ -166,7 +166,7 @@ export default function BestPicksPage() {
           </div>
         </div>
 
-        <aside className="hidden lg:flex w-[150px] xl:w-[170px] flex-shrink-0 flex-col border-l border-amber-200/10 bg-black/20">
+        <aside className="hidden lg:flex w-[150px] xl:w-[170px] flex-shrink-0 flex-col border-l border-amber-200/12 bg-slate-900/25">
           <AdLayoutPlaceholder
             orientation="vertical"
             className="flex-1 w-full min-h-[min(360px,45vh)] lg:min-h-[min(560px,72vh)] rounded-l-lg border-y-0 border-r-0 border-l-0"
@@ -174,7 +174,7 @@ export default function BestPicksPage() {
         </aside>
       </div>
 
-      <footer className="w-full border-t border-white/10 bg-black/20 mt-auto">
+      <footer className="w-full border-t border-white/10 bg-slate-900/30 mt-auto">
         <div className="max-w-6xl mx-auto px-4 py-6 lg:px-6 space-y-4 pb-[max(6rem,env(safe-area-inset-bottom))]">
           <AdLayoutPlaceholder orientation="horizontal" className="w-full min-h-[90px]" />
           <div className="flex flex-row flex-wrap items-start justify-between gap-x-6 gap-y-2">

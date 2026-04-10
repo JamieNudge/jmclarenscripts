@@ -6,4 +6,4 @@
  */
 /** Restrained gold-tinted shell (rollback: revert to border-white/15 bg-white/5). */
 export const bestPicksGridTileClassName =
-  'box-border rounded-2xl border border-amber-200/14 bg-white/[0.035] shadow-sm shadow-black/15 p-6 md:p-8 flex flex-col overflow-hidden min-w-0 min-h-0 h-full max-h-full';
+  'box-border rounded-2xl border border-amber-200/16 bg-white/[0.055] shadow-sm shadow-black/20 p-6 md:p-8 flex flex-col overflow-hidden min-w-0 min-h-0 h-full max-h-full';

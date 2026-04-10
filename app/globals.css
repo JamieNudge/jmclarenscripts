@@ -73,10 +73,10 @@ body.best-picks-route iframe[src*='fundingchoicesmessages.google.com'] {
   z-index: 2147482999 !important;
 }
 
-/* /best-picks page: cool base + very subtle warm lift (not a bright gold wash). */
+/* /best-picks page: lifted blue-slate (lighter than near-black) + soft amber halo for gold harmony. */
 body.best-picks-route .bp-best-picks-surface {
   background:
-    radial-gradient(ellipse 85% 55% at 50% -15%, rgba(251, 191, 36, 0.055), transparent 52%),
-    linear-gradient(180deg, #10141c 0%, #161b26 42%, #1b222e 100%);
+    radial-gradient(ellipse 90% 58% at 50% -12%, rgba(251, 191, 36, 0.06), transparent 55%),
+    linear-gradient(180deg, #2a3344 0%, #323e52 42%, #3a4a5e 100%);
 }
 
