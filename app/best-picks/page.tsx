@@ -183,8 +183,10 @@ export default function BestPicksPage() {
               role="note"
             >
               <span className="font-medium text-white/60">Disclaimer.</span>{' '}
-              This website does not offer real money gambling, prizes, or simulated gambling. Content
-              on this page is for informational purposes only.
+              Statistical views of past match patterns are{' '}
+              <span className="text-white/55">not</span> guarantees of future results. This website does not offer
+              real money gambling, prizes, or simulated gambling. Content on this page is for informational purposes
+              only.
             </p>
             <p className="text-right text-[11px] md:text-xs text-white/35 leading-relaxed shrink-0 min-w-[10rem] max-w-sm">
               <Link href="/privacy" className="underline hover:text-white/55 underline-offset-2">
