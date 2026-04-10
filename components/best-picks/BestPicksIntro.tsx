@@ -10,13 +10,10 @@ export function BestPicksIntro({ dateKey }: { dateKey: string }) {
   return (
     <header className="max-w-4xl mb-5 md:mb-6 space-y-3">
       <div>
-        <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight leading-tight text-white space-y-1">
-          <span className="block">Today&apos;s Best Picks</span>
-          <span
-            className="block text-base md:text-lg lg:text-xl font-semibold text-amber-200/70 tabular-nums tracking-wide"
-            aria-label={`Calendar day ${dateKey}`}
-          >
-            — {dateKey}
+        <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight leading-tight text-white flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+          <span>Today&apos;s Best Picks</span>
+          <span className="text-lg md:text-2xl lg:text-3xl font-semibold text-amber-200/75 tabular-nums tracking-wide shrink-0">
+            {dateKey}
           </span>
         </h1>
         <p className="mt-2 md:mt-3 text-lg md:text-xl lg:text-2xl font-semibold text-amber-50/90 leading-snug">
