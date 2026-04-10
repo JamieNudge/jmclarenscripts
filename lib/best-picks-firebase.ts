@@ -318,6 +318,22 @@ function formatKickoffFromPickRecord(p: PickRecord): string | null {
 /** Status-like fields copied from parent `groups[]` onto selections (filtering / subtitles). */
 const GROUP_STATUS_INHERIT_KEYS = ['displayStatus', 'status', 'fixtureStatus', 'matchStatus'] as const;
 
+/** Result fields often updated on the group row when matches go FT; copy onto each selection if missing. */
+const GROUP_RESULT_INHERIT_KEYS = [
+  'homeScore',
+  'awayScore',
+  'outcome',
+  'homeGoals',
+  'awayGoals',
+  'score',
+  'fullTimeScore',
+  'finalScore',
+] as const;
+
+function isEmptyResultInheritSlot(v: unknown): boolean {
+  return v == null || v === '' || (typeof v === 'number' && !Number.isFinite(v));
+}
+
 /** Copy kickoff- and status-related fields from a `groups[]` row onto a child selection when the child omits them. */
 function mergeGroupKickoffOntoSelection(grp: PickRecord, item: PickRecord): PickRecord {
   const out: PickRecord = { ...item };
@@ -330,6 +346,11 @@ function mergeGroupKickoffOntoSelection(grp: PickRecord, item: PickRecord): Pick
     if (!isEmptyKickoffSlot(out[k])) continue;
     const gv = grp[k];
     if (!isEmptyKickoffSlot(gv)) out[k] = gv;
+  }
+  for (const k of GROUP_RESULT_INHERIT_KEYS) {
+    if (!isEmptyResultInheritSlot(out[k])) continue;
+    const gv = grp[k];
+    if (!isEmptyResultInheritSlot(gv)) out[k] = gv;
   }
   return out;
 }
@@ -628,6 +649,16 @@ function researchAlgorithmRowsFromPicks(
   }));
 }
 
+/** `2-1` style line when RTDB has numeric or string score fields (per-model or consensus-shaped rows). */
+function pickScoreSummaryLine(p: PickRecord): string | null {
+  const hs = num(p.homeScore ?? p.homeGoals);
+  const aws = num(p.awayScore ?? p.awayGoals);
+  if (hs != null && aws != null) return `${hs}-${aws}`;
+  const raw = pickPrimitiveText(p.score ?? p.fullTimeScore ?? p.finalScore);
+  if (raw) return raw.replace(/\s+/g, '');
+  return null;
+}
+
 /** Subtitle for `ArchivedServedPick`-shaped objects from All Models macOS uploads. */
 function researchAlgorithmPickSubtitleFromAllModels(p: PickRecord): string | null {
   const parts: string[] = [];
@@ -641,6 +672,8 @@ function researchAlgorithmPickSubtitleFromAllModels(p: PickRecord): string | nul
   if (typeof conf === 'number' && Number.isFinite(conf)) {
     parts.push(`${Math.round(conf)}%`);
   }
+  const scoreLine = pickScoreSummaryLine(p);
+  if (scoreLine) parts.push(scoreLine);
   const oc = pickPrimitiveText(p.outcome);
   if (oc) parts.push(oc.toUpperCase());
   const league = pickPrimitiveText(p.league);
@@ -735,9 +768,13 @@ export function researchAlgorithmFeedRows(val: unknown, dateKey: string): Resear
         const labelStr = Array.isArray(grp.modelLabels)
           ? grp.modelLabels.filter((x) => typeof x === 'string').join(' · ')
           : null;
+        const scoreLine = pickScoreSummaryLine(grp);
+        const oc = pickPrimitiveText(grp.outcome);
         const parts = [
           labelStr,
           pickPrimitiveText(grp.displayStatus),
+          scoreLine,
+          oc ? oc.toUpperCase() : null,
           pickPrimitiveText(grp.league),
           formatKickoffFromPickRecord(grp),
         ].filter(Boolean);

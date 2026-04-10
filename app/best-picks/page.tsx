@@ -1,13 +1,14 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BlueskyLink } from '@/components/BlueskyLink';
+import { BestPicksIntro } from '@/components/best-picks/BestPicksIntro';
 import { FirebasePicksPanels } from '@/components/best-picks/FirebasePicksPanels';
 import { apps } from '@/lib/apps-data';
 import { bestPicksGridTileClassName } from '@/lib/best-picks-panel-shell';
 import type { App } from '@/types/app';
 
 const bestPicksDescription =
-  "Today's Best Picks — selected by filtering the work of four different algorithms and what each does best. Over / Under 2.5, video, and App Store links. Live picks load from Firebase Realtime Database when configured.";
+  "Today's Best Picks — statistical patterns from multiple forecasting pipelines (StatStrike, GoalLab, Firebase). Over / Under 2.5, research strip, video, and App Store links. Live data from Firebase when configured; informational only.";
 
 const bestPicksOgImage = {
   url: '/best-picks/opengraph-image',
@@ -42,17 +43,17 @@ const storeAppsWithLinks: App[] = [statStrike, goalLab].filter(
 );
 
 function storeLinkAccentClass(appId: string) {
-  if (appId === 'stat-strike') return 'text-emerald-300 group-hover:text-emerald-200';
-  if (appId === 'goallab') return 'text-cyan-300 group-hover:text-cyan-200';
+  if (appId === 'stat-strike') return 'text-teal-200/90 group-hover:text-teal-100';
+  if (appId === 'goallab') return 'text-amber-200/95 group-hover:text-amber-100';
   return 'text-white/90 group-hover:text-white';
 }
 
 function trialNotePillClass(appId: string) {
   if (appId === 'stat-strike') {
-    return 'bg-emerald-500/20 text-emerald-200 border border-emerald-400/40';
+    return 'bg-teal-500/15 text-teal-100/95 border border-teal-400/30';
   }
   if (appId === 'goallab') {
-    return 'bg-cyan-500/20 text-cyan-200 border border-cyan-400/40';
+    return 'bg-amber-500/15 text-amber-100/95 border border-amber-400/35';
   }
   return 'bg-white/10 text-white/85 border border-white/20';
 }
@@ -86,16 +87,11 @@ function AdLayoutPlaceholder({
 
 export default function BestPicksPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-[#111827] to-[#1f2937] text-white flex flex-col">
+    <main className="min-h-screen bp-best-picks-surface text-white flex flex-col">
       <div className="flex flex-1 flex-col lg:flex-row lg:min-h-0 w-full min-h-0">
         <div className="flex-1 min-w-0 min-h-0 px-4 py-10 md:py-14 lg:px-6 lg:pr-8">
           <div className="max-w-6xl mx-auto w-full">
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight mb-8 md:mb-10 max-w-4xl leading-tight">
-              <span className="block">Today&apos;s Best Picks</span>
-              <span className="block mt-3 md:mt-4 text-lg md:text-xl lg:text-2xl font-semibold text-white/90 leading-snug">
-                Selected by filtering the work of four different algorithms and what each does best!
-              </span>
-            </h1>
+            <BestPicksIntro />
 
             <FirebasePicksPanels>
               <div className={`${bestPicksGridTileClassName} gap-3`}>
@@ -111,9 +107,9 @@ export default function BestPicksPage() {
                           href={app.appStoreUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-4 rounded-xl border border-white/10 bg-black/20 p-3 hover:border-white/25 hover:bg-white/5 transition-all group"
+                          className="flex items-center gap-4 rounded-xl border border-amber-200/12 bg-black/25 p-3 hover:border-amber-200/22 hover:bg-white/[0.04] transition-all group"
                         >
-                          <div className="w-16 h-16 sm:w-[4.5rem] sm:h-[4.5rem] rounded-2xl overflow-hidden bg-white/10 backdrop-blur-sm border-2 border-white/20 group-hover:border-white/50 flex-shrink-0 transition-all duration-300">
+                          <div className="w-16 h-16 sm:w-[4.5rem] sm:h-[4.5rem] rounded-2xl overflow-hidden bg-white/10 backdrop-blur-sm border-2 border-amber-200/15 group-hover:border-amber-200/35 flex-shrink-0 transition-all duration-300">
                             {app.icon ? (
                               <img
                                 src={app.icon}
@@ -170,7 +166,7 @@ export default function BestPicksPage() {
           </div>
         </div>
 
-        <aside className="hidden lg:flex w-[150px] xl:w-[170px] flex-shrink-0 flex-col border-l border-white/10 bg-black/15">
+        <aside className="hidden lg:flex w-[150px] xl:w-[170px] flex-shrink-0 flex-col border-l border-amber-200/10 bg-black/20">
           <AdLayoutPlaceholder
             orientation="vertical"
             className="flex-1 w-full min-h-[min(360px,45vh)] lg:min-h-[min(560px,72vh)] rounded-l-lg border-y-0 border-r-0 border-l-0"

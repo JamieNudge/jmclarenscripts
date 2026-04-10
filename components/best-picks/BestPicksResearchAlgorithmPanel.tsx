@@ -172,7 +172,11 @@ export function BestPicksResearchAlgorithmPanel({ dateKey }: { dateKey: string }
       <div className="shrink-0 mb-2">
         <h2 className="text-lg md:text-xl font-semibold text-white">{bestPicksResearchAlgorithmPanelTitle}</h2>
         <p className="text-[11px] text-white/45 mt-1 leading-snug">
-          Multi-model daily consensus plus per-model lines (All Models Best Forecaster uploads).
+          Multi-model daily consensus plus per-model lines (All Models Best Forecaster uploads). Both feeds use
+          Firebase <code className="text-[10px] text-white/35">onValue</code> — the page updates as soon as RTDB
+          changes (no fixed polling interval). FT scores and outcomes only move when those fields are written to{' '}
+          <code className="text-[10px] text-white/35">dailyConsensusSelections</code> and{' '}
+          <code className="text-[10px] text-white/35">researchAlgorithmSelections</code> for this date.
         </p>
       </div>
 

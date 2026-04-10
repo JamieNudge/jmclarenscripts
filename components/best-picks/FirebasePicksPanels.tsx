@@ -391,6 +391,10 @@ export function FirebasePicksPanels({ children }: { children: ReactNode }) {
       <p className="text-xs text-white/35 -mt-1 mb-1 tabular-nums" aria-label={`Selections for ${dateKey}`}>
         {dateKey}
       </p>
+      <p className="text-[11px] text-white/42 leading-snug max-w-3xl mb-3">
+        Expanded pick stats show percentages from the forecasting pipeline; the match window behind each line can
+        differ by statistic (not always a fixed &quot;last six&quot; sample).
+      </p>
       {configHint && (
         <div className="rounded-xl border border-amber-400/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100/95 leading-relaxed">
           Firebase is not configured. Copy{' '}
