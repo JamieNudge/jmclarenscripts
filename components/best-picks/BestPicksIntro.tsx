@@ -80,12 +80,9 @@ export function BestPicksIntro() {
               Under 2.5; curated picks when models align.
             </li>
             <li>
-              <span className="font-semibold text-amber-100/90">This page</span> — Merged O/U 2.5 from Firebase{' '}
-              <code className="text-[11px] text-white/45">unanimousExports</code> +{' '}
-              <code className="text-[11px] text-white/45">manualExports</code>; league context from{' '}
-              <code className="text-[11px] text-white/45">selections</code>; research strip from{' '}
-              <code className="text-[11px] text-white/45">researchAlgorithmSelections</code> /{' '}
-              <code className="text-[11px] text-white/45">dailyConsensusSelections</code> when uploaded.
+              <span className="font-semibold text-amber-100/90">This page</span> — A daily updated list of highlighted
+              forecasts (when your pipeline syncs), supporting context, and product links—App Store tiles, optional
+              video, and ProphIt. How the pick tiles are built from Firebase is summarised in the next paragraphs.
             </li>
           </ul>
 
