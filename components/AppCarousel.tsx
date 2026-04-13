@@ -134,7 +134,7 @@ export default function AppCarousel({ apps, onAppSelect }: AppCarouselProps) {
                         className="absolute inset-0 w-full h-full object-cover"
                       />
                     ) : (
-                      // Fallback if no screenshot
+                      // Fallback if no screenshot — use app icon when provided (e.g. PopGoals)
                       <div
                         className="absolute inset-0 flex items-center justify-center"
                         style={{
@@ -142,8 +142,21 @@ export default function AppCarousel({ apps, onAppSelect }: AppCarouselProps) {
                         }}
                       >
                         <div className="text-center">
-                          <div className="w-24 h-24 bg-white rounded-3xl shadow-lg flex items-center justify-center mb-6 mx-auto">
-                            <span className="text-4xl">{app.name[0]}</span>
+                          <div className="relative w-24 h-24 bg-white rounded-3xl shadow-lg flex items-center justify-center mb-6 mx-auto overflow-visible">
+                            {app.icon ? (
+                              <img
+                                src={app.icon}
+                                alt=""
+                                className="w-[88%] h-[88%] object-contain rounded-2xl"
+                              />
+                            ) : (
+                              <span className="text-4xl">{app.name[0]}</span>
+                            )}
+                            {app.status === 'beta' && (
+                              <span className="absolute -bottom-1 -right-1 px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-amber-400 text-amber-950 shadow-md border border-amber-200/90">
+                                BETA
+                              </span>
+                            )}
                           </div>
                           <h3 className="text-white text-xl font-bold px-4">
                             {app.name}

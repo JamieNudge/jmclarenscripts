@@ -25,7 +25,7 @@ Use these full URLs in app store listings (e.g. Google Play, App Store) and in-a
 - Terms: https://jmclarenscripts.vercel.app/terms/popgoals
 - Support: https://jmclarenscripts.vercel.app/support/popgoals
 - Disclaimer: https://jmclarenscripts.vercel.app/disclaimer/popgoals
-- Content rating: https://jmclarenscripts.vercel.app/popgoals/content-rating
+- Content rating: https://jmclarenscripts.vercel.app/popgoals/content-rating (in-app + Settings)
 
 ---
 
