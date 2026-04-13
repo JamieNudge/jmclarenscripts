@@ -147,6 +147,11 @@ export default function WebsitePrivacyPage() {
                 GoalLab — privacy policy
               </Link>
             </li>
+            <li>
+              <Link href="/privacy/popgoals" className="underline hover:text-blue-300">
+                PopGoals — privacy policy
+              </Link>
+            </li>
           </ul>
           <p>
             Other apps linked from the portfolio have policies under{' '}

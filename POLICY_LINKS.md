@@ -20,6 +20,15 @@ Use these full URLs in app store listings (e.g. Google Play, App Store) and in-a
 
 ---
 
+## PopGoals
+- Privacy: https://jmclarenscripts.vercel.app/privacy/popgoals
+- Terms: https://jmclarenscripts.vercel.app/terms/popgoals
+- Support: https://jmclarenscripts.vercel.app/support/popgoals
+- Disclaimer: https://jmclarenscripts.vercel.app/disclaimer/popgoals
+- Content rating: https://jmclarenscripts.vercel.app/popgoals/content-rating
+
+---
+
 ## MainCode
 - Privacy: https://jmclarenscripts.vercel.app/privacy/maincode
 - Support: https://jmclarenscripts.vercel.app/support/maincode
