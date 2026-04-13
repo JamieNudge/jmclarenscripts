@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import AppDetailModal from '@/components/AppDetailModal';
+import { betaMarketingIconClipStyle } from '@/lib/beta-marketing-icon-clip';
 import { apps } from '@/lib/apps-data';
 import { App } from '@/types/app';
 
@@ -79,6 +80,7 @@ export default function Home() {
                       src={app.icon}
                       alt={app.name}
                       className="w-full h-full object-cover"
+                      style={betaMarketingIconClipStyle(app.status)}
                     />
                   ) : (
                     <div
@@ -87,11 +89,6 @@ export default function Home() {
                     >
                       {app.name[0]}
                     </div>
-                  )}
-                  {app.status === 'beta' && (
-                    <span className="absolute bottom-0 right-0 translate-y-0.5 translate-x-0.5 px-1.5 py-0.5 rounded-md text-[8px] font-extrabold leading-none bg-amber-400 text-amber-950 shadow-md border border-amber-200/90">
-                      BETA
-                    </span>
                   )}
                 </div>
                 <div className="text-center mt-2 h-8 flex items-center justify-center">
@@ -146,6 +143,7 @@ export default function Home() {
                       src={app.icon}
                       alt={app.name}
                       className="w-full h-full object-cover"
+                      style={betaMarketingIconClipStyle(app.status)}
                     />
                   ) : app.screenshots[0] ? (
                     <img
@@ -164,11 +162,6 @@ export default function Home() {
                         {app.name[0]}
                       </span>
                     </div>
-                  )}
-                  {app.status === 'beta' && (
-                    <span className="absolute bottom-0 right-0 px-1 py-0.5 rounded-sm text-[7px] sm:text-[8px] font-extrabold leading-none bg-amber-400 text-amber-950 shadow border border-amber-200/80">
-                      BETA
-                    </span>
                   )}
                 </div>
 

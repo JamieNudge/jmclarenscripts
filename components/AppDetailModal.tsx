@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { BlueskyLink } from '@/components/BlueskyLink';
+import { betaMarketingIconClipStyle } from '@/lib/beta-marketing-icon-clip';
 import { App } from '@/types/app';
 
 interface AppDetailModalProps {
@@ -53,6 +54,7 @@ export default function AppDetailModal({ app, onClose }: AppDetailModalProps) {
                   src={app.icon}
                   alt={`${app.name} icon`}
                   className="w-full h-full object-contain"
+                  style={betaMarketingIconClipStyle(app.status)}
                 />
               ) : (
                 <span className="text-5xl">{app.name[0]}</span>

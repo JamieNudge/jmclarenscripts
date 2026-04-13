@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BlueskyLink } from '@/components/BlueskyLink';
+import { betaMarketingIconClipStyle } from '@/lib/beta-marketing-icon-clip';
 import { App } from '@/types/app';
 import Image from 'next/image';
 
@@ -148,14 +149,10 @@ export default function AppCarousel({ apps, onAppSelect }: AppCarouselProps) {
                                 src={app.icon}
                                 alt=""
                                 className="w-[88%] h-[88%] object-contain rounded-2xl"
+                                style={betaMarketingIconClipStyle(app.status)}
                               />
                             ) : (
                               <span className="text-4xl">{app.name[0]}</span>
-                            )}
-                            {app.status === 'beta' && (
-                              <span className="absolute -bottom-1 -right-1 px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-amber-400 text-amber-950 shadow-md border border-amber-200/90">
-                                BETA
-                              </span>
                             )}
                           </div>
                           <h3 className="text-white text-xl font-bold px-4">
