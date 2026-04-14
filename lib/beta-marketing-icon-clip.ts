@@ -7,8 +7,9 @@ import type { App } from '@/types/app';
  * Replace icons with badge-free assets when you have them; this is a safe fallback.
  */
 export function betaMarketingIconClipStyle(
-  status: App['status']
+  app: Pick<App, 'status' | 'iconHasEmbeddedBetaBadge'>
 ): CSSProperties | undefined {
-  if (status !== 'beta') return undefined;
+  if (app.status !== 'beta') return undefined;
+  if (app.iconHasEmbeddedBetaBadge === false) return undefined;
   return { clipPath: 'inset(0 11% 12% 0)' };
 }

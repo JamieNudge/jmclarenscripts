@@ -80,7 +80,7 @@ export default function Home() {
                       src={app.icon}
                       alt={app.name}
                       className="w-full h-full object-cover"
-                      style={betaMarketingIconClipStyle(app.status)}
+                      style={betaMarketingIconClipStyle(app)}
                     />
                   ) : (
                     <div
@@ -143,7 +143,7 @@ export default function Home() {
                       src={app.icon}
                       alt={app.name}
                       className="w-full h-full object-cover"
-                      style={betaMarketingIconClipStyle(app.status)}
+                      style={betaMarketingIconClipStyle(app)}
                     />
                   ) : app.screenshots[0] ? (
                     <img

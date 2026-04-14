@@ -149,7 +149,7 @@ export default function AppCarousel({ apps, onAppSelect }: AppCarouselProps) {
                                 src={app.icon}
                                 alt=""
                                 className="w-[88%] h-[88%] object-contain rounded-2xl"
-                                style={betaMarketingIconClipStyle(app.status)}
+                                style={betaMarketingIconClipStyle(app)}
                               />
                             ) : (
                               <span className="text-4xl">{app.name[0]}</span>

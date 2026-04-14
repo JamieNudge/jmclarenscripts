@@ -54,7 +54,7 @@ export default function AppDetailModal({ app, onClose }: AppDetailModalProps) {
                   src={app.icon}
                   alt={`${app.name} icon`}
                   className="w-full h-full object-contain"
-                  style={betaMarketingIconClipStyle(app.status)}
+                  style={betaMarketingIconClipStyle(app)}
                 />
               ) : (
                 <span className="text-5xl">{app.name[0]}</span>

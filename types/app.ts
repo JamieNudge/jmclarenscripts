@@ -23,6 +23,11 @@ export interface App {
   accessibilityUrl?: string;
   platform: 'iOS' | 'macOS' | 'Web' | 'Cross-platform';
   status: 'live' | 'beta' | 'coming-soon' | 'in-review';
+  /**
+   * When `false`, skip clip-path that hides an embedded “BETA” chip on the PNG.
+   * Omit for beta apps whose marketing icon still includes that chip.
+   */
+  iconHasEmbeddedBetaBadge?: boolean;
   /** When set, show a second badge for Android/Google Play (e.g. app is Live on iOS but in review on Google Play). */
   googlePlayStatus?: 'live' | 'beta' | 'coming-soon' | 'in-review';
 }

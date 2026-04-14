@@ -84,6 +84,7 @@ export const apps: App[] = [
     ],
     platform: 'iOS',
     status: 'beta',
+    iconHasEmbeddedBetaBadge: false,
     privacyUrl: '/privacy/popgoals',
     termsUrl: '/terms/popgoals',
     supportUrl: '/support/popgoals',
