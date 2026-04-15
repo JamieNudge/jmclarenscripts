@@ -45,9 +45,10 @@ export function BestPicksIntro({ dateKey }: { dateKey: string }) {
               Under 2.5; curated picks when models align.
             </li>
             <li>
-              <span className="font-semibold text-amber-100/90">This page</span> — A daily updated list of highlighted
-              forecasts (when your pipeline syncs), supporting context, and product links—App Store tiles, optional
-              video, and ProphIt. How the pick tiles are built from Firebase is summarised in the next paragraphs.
+              <span className="font-semibold text-amber-100/90">This page</span> —{' '}
+              <strong className="font-medium text-white/85">Latest Research Selections</strong> (daily consensus and
+              per-model lines from Firebase), App Store tiles, optional video, ProphIt, and a{' '}
+              <strong className="font-medium text-white/85">Coming Soon</strong> slot for an upcoming beta app.
             </li>
           </ul>
 
@@ -56,14 +57,16 @@ export function BestPicksIntro({ dateKey }: { dateKey: string }) {
             promises, or financial advice.
           </p>
           <p>
-            <strong className="font-medium text-white/85">Over / Under 2.5</strong> tiles combine automated exports
-            with any manual rows, then (when available) filter to best-performing leagues in the uploaded archive
-            (same idea as the in-app chip: strong historical win rate in that league).
+            <strong className="font-medium text-white/85">Latest Research Selections</strong> reads{' '}
+            <code className="text-[10px] text-white/60">dailyConsensusSelections</code> and{' '}
+            <code className="text-[10px] text-white/60">researchAlgorithmSelections</code> for the London calendar date
+            shown in the headline. Over and Under 2.5 style bands can both appear in that panel when your upload
+            includes them.
           </p>
           <p>
-            <strong className="font-medium text-white/85">Expanded pick stats</strong> (e.g. in-app key stats) use
-            whatever match window the forecasting pipeline attached; it can differ by statistic—not always a fixed
-            &quot;last six&quot; sample unless the label says so.
+            <strong className="font-medium text-white/85">Stat labels</strong> on model lines use whatever match
+            window the forecasting pipeline attached; it can differ by statistic—not always a fixed &quot;last
+            six&quot; sample unless the label says so.
           </p>
           <p className="text-xs text-white/50">
             App terms &amp; privacy: App Store listings and{' '}

@@ -7,7 +7,7 @@ import { bestPicksGridTileClassName } from '@/lib/best-picks-panel-shell';
 import type { App } from '@/types/app';
 
 const bestPicksDescription =
-  "Today's Best Picks — statistical patterns from multiple forecasting pipelines (StatStrike, GoalLab, Firebase). Over / Under 2.5, research strip, video, and App Store links. Live data from Firebase when configured; informational only.";
+  "Today's Best Picks — statistical patterns from multiple forecasting pipelines (StatStrike, GoalLab, Firebase). Latest research selections, video, App Store links, and a coming-soon beta slot. Live data from Firebase when configured; informational only.";
 
 const bestPicksOgImage = {
   url: '/best-picks/opengraph-image',

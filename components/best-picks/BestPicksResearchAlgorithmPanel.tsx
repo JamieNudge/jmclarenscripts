@@ -174,9 +174,16 @@ export function BestPicksResearchAlgorithmPanel({ dateKey }: { dateKey: string }
         <p className="text-[11px] text-white/45 mt-1 leading-snug">
           Multi-model daily consensus plus per-model lines (All Models Best Forecaster uploads). Both feeds use
           Firebase <code className="text-[10px] text-white/35">onValue</code> — the page updates as soon as RTDB
-          changes (no fixed polling interval). FT scores and outcomes only move when those fields are written to{' '}
-          <code className="text-[10px] text-white/35">dailyConsensusSelections</code> and{' '}
-          <code className="text-[10px] text-white/35">researchAlgorithmSelections</code> for this date.
+          changes (no fixed polling interval). This page does not compute full-time results—it reflects whatever is
+          in Realtime Database when it updates. <strong className="text-white/70">Daily consensus</strong> uses each
+          pick&apos;s <code className="text-[10px] text-white/35">outcome</code>,{' '}
+          <code className="text-[10px] text-white/35">homeScore</code>, and{' '}
+          <code className="text-[10px] text-white/35">awayScore</code> under{' '}
+          <code className="text-[10px] text-white/35">dailyConsensusSelections</code>.{' '}
+          <strong className="text-white/70">Per-model</strong> lines pull the same fields from{' '}
+          <code className="text-[10px] text-white/35">researchAlgorithmSelections</code> (including values merged from
+          parent <code className="text-[10px] text-white/35">groups[]</code> onto each selection). If those fields
+          never change after kickoff, you keep seeing <span className="text-white/60">pending</span>.
         </p>
       </div>
 
