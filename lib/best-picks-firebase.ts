@@ -548,7 +548,7 @@ export type ResearchAlgorithmPerModelStructured = {
   bandDisplay: string | null;
   /** Raw `predictedBand` for pill colour logic */
   bandRaw: string | null;
-  /** Source app / tier line (no confidence %) */
+  /** Uploader / source app label only (no internal model tier — avoids “per model” reading as many models). */
   modelTag: string | null;
   score: string | null;
   outcome: string;
@@ -741,9 +741,7 @@ function buildPerModelStructuredFromPick(p: PickRecord): ResearchAlgorithmPerMod
   const bandRaw = pickPrimitiveText(p.predictedBand);
   const bandDisplay = bandRaw ? formatBandAsGoalsPhrase(bandRaw) : null;
 
-  const app = pickPrimitiveText(p.sourceApp);
-  const tier = pickPrimitiveText(p.sourceTier);
-  const modelTag = [app, tier].filter(Boolean).join(' · ') || null;
+  const modelTag = pickPrimitiveText(p.sourceApp);
 
   const score = pickScoreSummaryLine(p);
   const oc = pickPrimitiveText(p.outcome);
@@ -780,10 +778,13 @@ function buildPerModelStructuredFromGroup(grp: PickRecord): ResearchAlgorithmPer
   const bandRaw = pickPrimitiveText(grp.predictedBand);
   const bandDisplay = bandRaw ? formatBandAsGoalsPhrase(bandRaw) : null;
 
-  const labelStr = Array.isArray(grp.modelLabels)
-    ? grp.modelLabels.filter((x): x is string => typeof x === 'string').join(' · ')
-    : null;
-  const modelTag = labelStr && labelStr.trim() ? labelStr.trim() : null;
+  const labels = Array.isArray(grp.modelLabels)
+    ? grp.modelLabels
+        .filter((x): x is string => typeof x === 'string')
+        .map((s) => s.trim())
+        .filter(Boolean)
+    : [];
+  const modelTag = labels.length > 0 ? labels[0] : null;
 
   const score = pickScoreSummaryLine(grp);
   const oc = pickPrimitiveText(grp.outcome);
@@ -801,13 +802,11 @@ function buildPerModelStructuredFromGroup(grp: PickRecord): ResearchAlgorithmPer
   };
 }
 
-/** Subtitle for `ArchivedServedPick`-shaped objects from All Models macOS uploads. */
+/** Subtitle for `ArchivedServedPick`-shaped objects from All Models macOS uploads (uploader only — no `sourceTier`). */
 function researchAlgorithmPickSubtitleFromAllModels(p: PickRecord): string | null {
   const parts: string[] = [];
   const app = pickPrimitiveText(p.sourceApp);
   if (app) parts.push(app);
-  const tier = pickPrimitiveText(p.sourceTier);
-  if (tier) parts.push(tier);
   const band = pickPrimitiveText(p.predictedBand);
   if (band) parts.push(band);
   const conf = p.confidence;
