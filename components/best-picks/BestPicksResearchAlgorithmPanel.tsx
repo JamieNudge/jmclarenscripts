@@ -54,7 +54,7 @@ function ConsensusPickRow({ pick }: { pick: DailyConsensusPickParsed }) {
           <p className="text-sm font-medium text-white leading-snug">
             {pick.home} <span className="text-white/40 font-normal">vs</span> {pick.away}
           </p>
-          <p className="text-xs text-white/50 mt-0.5 leading-snug">
+          <p className="text-xs text-white/90 mt-0.5 leading-snug">
             {pick.country}
             {pick.league ? ` · ${pick.league}` : ''}
             {pick.kickoff ? ` · ${pick.kickoff}` : ''}
@@ -70,7 +70,7 @@ function ConsensusPickRow({ pick }: { pick: DailyConsensusPickParsed }) {
             {pick.sources} models
           </span>
           {pick.confidence > 0 ? (
-            <span className="text-[10px] tabular-nums text-white/45">{Math.round(pick.confidence)}%</span>
+            <span className="text-[10px] tabular-nums text-white">{Math.round(pick.confidence)}%</span>
           ) : null}
           {score ? (
             <span className="text-xs font-bold tabular-nums text-white/90">{score}</span>
@@ -167,58 +167,54 @@ export function BestPicksResearchAlgorithmPanel({ dateKey }: { dateKey: string }
 
   const showDivider = hasConsensusContent && hasResearchContent;
 
+  const sourcesCapLine =
+    consensus && (consensus.minSources != null || consensus.maxPicksPerDay != null)
+      ? [
+          consensus.minSources != null ? `≥${consensus.minSources} sources` : null,
+          consensus.maxPicksPerDay != null ? `top ${consensus.maxPicksPerDay}/day` : null,
+        ]
+          .filter(Boolean)
+          .join(' · ')
+      : null;
+
   return (
     <div className={`${bestPicksGridTileClassName} justify-start`}>
-      <div className="shrink-0 mb-2">
+      <div className="shrink-0 mb-3">
         <h2 className="text-lg md:text-xl font-semibold text-white">{bestPicksResearchAlgorithmPanelTitle}</h2>
-        <p className="text-[11px] text-white/45 mt-1 leading-snug">
-          Multi-model daily consensus plus per-model lines (All Models Best Forecaster uploads). Both feeds use
-          Firebase <code className="text-[10px] text-white/35">onValue</code> — the page updates as soon as RTDB
-          changes (no fixed polling interval). This page does not compute full-time results—it reflects whatever is
-          in Realtime Database when it updates. <strong className="text-white/70">Daily consensus</strong> uses each
-          pick&apos;s <code className="text-[10px] text-white/35">outcome</code>,{' '}
-          <code className="text-[10px] text-white/35">homeScore</code>, and{' '}
-          <code className="text-[10px] text-white/35">awayScore</code> under{' '}
-          <code className="text-[10px] text-white/35">dailyConsensusSelections</code>.{' '}
-          <strong className="text-white/70">Per-model</strong> lines pull the same fields from{' '}
-          <code className="text-[10px] text-white/35">researchAlgorithmSelections</code> (including values merged from
-          parent <code className="text-[10px] text-white/35">groups[]</code> onto each selection). If those fields
-          never change after kickoff, you keep seeing <span className="text-white/60">pending</span>.
+        <p className="text-sm text-white mt-2 leading-relaxed">
+          Selections are driven by multi-model consensus in an attempt to determine a highly reliable list for every
+          day.
         </p>
       </div>
 
       <div className={scrollArea}>
         {!configured && (
-          <p className="text-sm text-white/60 leading-relaxed">
-            Firebase is not configured — add keys in <code className="text-xs text-white/45">.env.local</code>.
+          <p className="text-sm text-white leading-relaxed">
+            Firebase is not configured — add keys in <code className="text-xs text-white/90">.env.local</code>.
           </p>
         )}
 
         {configured && (
           <>
             <div className="mb-1">
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-white/50 mb-2">Daily consensus</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-white mb-2">Daily consensus</p>
               {consensusError ? (
-                <p className="text-sm text-red-300/90 leading-relaxed mb-2" role="alert">
+                <p className="text-sm text-red-300 leading-relaxed mb-2" role="alert">
                   {consensusError}
                 </p>
               ) : null}
               {!consensusError && consensusLoading && (
-                <p className="text-sm text-white/60 leading-relaxed">Loading…</p>
+                <p className="text-sm text-white leading-relaxed">Loading…</p>
               )}
-              {!consensusError && !consensusLoading && consensus && (consensus.minSources != null || consensus.maxPicksPerDay != null) && (
-                <p className="text-[10px] text-white/40 tabular-nums mb-2">
-                  {consensus.minSources != null ? `≥${consensus.minSources} sources` : ''}
-                  {consensus.minSources != null && consensus.maxPicksPerDay != null ? ' · ' : ''}
-                  {consensus.maxPicksPerDay != null ? `top ${consensus.maxPicksPerDay}/day` : ''}
-                </p>
-              )}
+              {!consensusError && !consensusLoading && sourcesCapLine ? (
+                <p className="text-sm text-white tabular-nums mb-2 leading-snug">{sourcesCapLine}</p>
+              ) : null}
               {!consensusError && !consensusLoading && recordLine ? (
-                <p className="text-[11px] text-white/50 mb-2 leading-relaxed">{recordLine}</p>
+                <p className="text-sm text-white mb-3 leading-snug">{recordLine}</p>
               ) : null}
               {!consensusError && !consensusLoading && !hasConsensusContent && (
-                <p className="text-sm text-white/55 leading-relaxed">
-                  No consensus for <span className="tabular-nums text-white/45">{dateKey}</span> yet.
+                <p className="text-sm text-white leading-relaxed">
+                  No consensus for <span className="tabular-nums text-white">{dateKey}</span> yet.
                 </p>
               )}
               {hasConsensusContent && (
@@ -233,20 +229,18 @@ export function BestPicksResearchAlgorithmPanel({ dateKey }: { dateKey: string }
             {showDivider && <div className="border-t border-white/10 my-3 shrink-0" aria-hidden />}
 
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-white/50 mb-2">
-                Per-model selections
-              </p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-white mb-2">Per-model selections</p>
               {researchError ? (
-                <p className="text-sm text-red-300/90 leading-relaxed" role="alert">
+                <p className="text-sm text-red-300 leading-relaxed" role="alert">
                   {researchError}
                 </p>
               ) : null}
               {!researchError && researchLoading && (
-                <p className="text-sm text-white/60 leading-relaxed">Loading…</p>
+                <p className="text-sm text-white leading-relaxed">Loading…</p>
               )}
               {!researchError && !researchLoading && !hasResearchContent && (
-                <p className="text-sm text-white/55 leading-relaxed">
-                  No lines for <span className="tabular-nums text-white/45">{dateKey}</span> after filtering.
+                <p className="text-sm text-white leading-relaxed">
+                  No lines for <span className="tabular-nums text-white">{dateKey}</span> after filtering.
                 </p>
               )}
               {hasResearchContent && (
@@ -258,7 +252,7 @@ export function BestPicksResearchAlgorithmPanel({ dateKey }: { dateKey: string }
                     >
                       <p className="text-sm font-medium text-white leading-snug">{row.primary}</p>
                       {row.secondary ? (
-                        <p className="text-xs text-white/55 mt-0.5 leading-snug whitespace-pre-line">
+                        <p className="text-xs text-white/90 mt-0.5 leading-snug whitespace-pre-line">
                           {row.secondary}
                         </p>
                       ) : null}
