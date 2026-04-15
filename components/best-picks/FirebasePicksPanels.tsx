@@ -41,25 +41,13 @@ export function FirebasePicksPanels({
           <code className="text-xs bg-black/30 px-1.5 py-0.5 rounded">npm run dev</code>.
         </div>
       )}
-      {/*
-        md+: left column = 3-up strip (App Store, Coming Soon, Video) + research tile filling
-        remaining height; right column = ProphIt full height. Capped height so research + ProphIt
-        keep internal scroll instead of growing with content.
-      */}
-      <div className="flex min-h-0 flex-col gap-4 md:h-[min(46rem,calc(100dvh-7rem))] md:flex-row md:items-stretch md:gap-5">
-        <div className="flex h-full min-h-0 min-w-0 flex-1 flex-col gap-4">
-          <div className="grid grid-cols-1 gap-4 max-md:[grid-template-rows:repeat(3,minmax(0,26rem))] md:grid-cols-3 md:gap-5 md:[grid-template-rows:minmax(0,26rem)] [&>*]:min-h-0 [&>*]:min-w-0">
-            {children}
-            <BestPicksComingSoonPanel />
-            <BestPicksVideo />
-          </div>
-          <div className="flex h-full min-h-0 flex-1 flex-col max-md:min-h-[min(26rem,65dvh)]">
-            <BestPicksResearchAlgorithmPanel dateKey={dateKey} />
-          </div>
-        </div>
-        <aside className="flex h-full min-h-0 w-full shrink-0 flex-col md:w-[min(100%,22rem)] lg:w-96">
-          <BestPicksNewProductPanel />
-        </aside>
+      {/* Dedicated grid: explicit row tracks so no tile’s content can set row height. */}
+      <div className="grid grid-cols-1 gap-4 max-md:[grid-template-rows:repeat(5,minmax(0,26rem))] md:grid-cols-3 md:gap-5 md:[grid-template-rows:repeat(2,minmax(0,26rem))] [&>*]:min-h-0 [&>*]:min-w-0">
+        {children}
+        <BestPicksResearchAlgorithmPanel dateKey={dateKey} />
+        <BestPicksComingSoonPanel />
+        <BestPicksVideo />
+        <BestPicksNewProductPanel />
       </div>
     </div>
   );

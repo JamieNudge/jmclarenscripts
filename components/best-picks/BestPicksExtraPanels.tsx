@@ -8,7 +8,7 @@ const hr = 'border-0 border-t border-white/15 my-5';
 
 export function BestPicksNewProductPanel() {
   return (
-    <div className={`${bestPicksGridTileClassName} min-h-0`}>
+    <div className={bestPicksGridTileClassName}>
       <div className="flex flex-wrap items-center gap-2 mb-2 shrink-0 pr-2">
         <h2 className="text-lg md:text-xl font-bold text-white tracking-tight min-w-0 flex-1">
           ProphIt — Test Your Own Prediction Ideas in a living app!
