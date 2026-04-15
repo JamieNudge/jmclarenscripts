@@ -52,20 +52,20 @@ function ConsensusPickRow({ pick }: { pick: DailyConsensusPickParsed }) {
   const metaLine = [venue, pick.kickoff?.trim()].filter(Boolean).join(' · ');
 
   return (
-    <li className="rounded-xl border border-white/10 bg-black/25 px-3 py-2 shrink-0">
-      {/* Grid: text column always gets remaining width (avoids flex-wrap squeezing meta to one word per line). */}
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:gap-x-3 sm:items-center">
-        <div className="min-w-0">
-          <p className="text-sm font-medium text-white leading-snug">
-            <span className="break-words">{pick.home}</span>
+    <li className="rounded-xl border border-white/10 bg-black/25 px-3 py-2.5 shrink-0">
+      {/* Stacked: full-width fixture + context first; model / outcome chips on a second row (no side-by-side squeeze). */}
+      <div className="flex w-full min-w-0 flex-col gap-2.5">
+        <div className="w-full min-w-0">
+          <p className="text-sm font-medium text-white leading-relaxed text-pretty">
+            {pick.home}
             <span className="text-white/50 font-normal mx-1">v</span>
-            <span className="break-words">{pick.away}</span>
+            {pick.away}
           </p>
           {metaLine ? (
-            <p className="text-xs text-white/90 mt-1 leading-snug line-clamp-2">{metaLine}</p>
+            <p className="text-xs text-white/90 mt-1.5 leading-relaxed text-pretty">{metaLine}</p>
           ) : null}
         </div>
-        <div className="flex min-w-0 flex-shrink-0 flex-row flex-wrap items-center gap-1.5 sm:flex-nowrap sm:justify-end">
+        <div className="flex w-full min-w-0 flex-row flex-wrap items-center gap-1.5">
           <span
             className={`text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-md border ${bandPillClass(pick.band)}`}
           >
