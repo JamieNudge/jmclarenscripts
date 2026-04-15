@@ -41,13 +41,24 @@ export function FirebasePicksPanels({
           <code className="text-xs bg-black/30 px-1.5 py-0.5 rounded">npm run dev</code>.
         </div>
       )}
-      {/* Dedicated grid: explicit row tracks so no tile’s content can set row height. */}
+      {/*
+        md: 3×2 with explicit placement — left: App / Video; centre: Latest Research (row-span 2);
+        right: Coming Soon / ProphIt. Mobile: same stack top-to-bottom.
+      */}
       <div className="grid grid-cols-1 gap-4 max-md:[grid-template-rows:repeat(5,minmax(0,26rem))] md:grid-cols-3 md:gap-5 md:[grid-template-rows:repeat(2,minmax(0,26rem))] [&>*]:min-h-0 [&>*]:min-w-0">
-        {children}
-        <BestPicksResearchAlgorithmPanel dateKey={dateKey} />
-        <BestPicksComingSoonPanel />
-        <BestPicksVideo />
-        <BestPicksNewProductPanel />
+        <div className="min-h-0 md:col-start-1 md:row-start-1">{children}</div>
+        <div className="min-h-0 md:col-start-1 md:row-start-2">
+          <BestPicksVideo />
+        </div>
+        <div className="flex min-h-0 flex-col md:col-start-2 md:row-start-1 md:row-span-2 md:h-full md:min-h-0">
+          <BestPicksResearchAlgorithmPanel dateKey={dateKey} />
+        </div>
+        <div className="min-h-0 md:col-start-3 md:row-start-1">
+          <BestPicksComingSoonPanel />
+        </div>
+        <div className="min-h-0 md:col-start-3 md:row-start-2">
+          <BestPicksNewProductPanel />
+        </div>
       </div>
     </div>
   );

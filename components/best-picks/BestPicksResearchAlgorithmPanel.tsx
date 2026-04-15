@@ -185,7 +185,7 @@ export function BestPicksResearchAlgorithmPanel({ dateKey }: { dateKey: string }
       : null;
 
   return (
-    <div className={`${bestPicksGridTileClassName} justify-start`}>
+    <div className={`${bestPicksGridTileClassName} min-h-0 h-full justify-start`}>
       <div className="shrink-0 mb-3 space-y-4">
         <div>
           <h2 className="text-lg md:text-xl font-semibold text-white">{bestPicksResearchAlgorithmPanelTitle}</h2>
