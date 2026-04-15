@@ -197,6 +197,23 @@ export function pickDisplayTitle(p: PickRecord): string {
   return 'Pick';
 }
 
+/**
+ * Split combined fixture strings ("Home vs Away", "Home v Away") when RTDB rows only set
+ * `title` / `match` / `fixture` / `selection` and omit `homeTeam` / `awayTeam` (common for some uploads).
+ */
+function splitFixtureTitleIntoTeams(raw: string): { home: string; away: string } | null {
+  const t = raw.trim();
+  if (!t) return null;
+  const splitters = [/\s+vs\.?\s+/i, /\s+v\s+/i, /\s+@\s+/] as const;
+  for (const re of splitters) {
+    const parts = t.split(re).map((s) => s.trim()).filter(Boolean);
+    if (parts.length === 2 && parts[0].length > 0 && parts[1].length > 0) {
+      return { home: parts[0], away: parts[1] };
+    }
+  }
+  return null;
+}
+
 /** Kick-off as people read it: `25/03/2026 19:45 UTC` (always UTC for numeric / ISO values). */
 function formatKickoffUtc(ms: number): string {
   const d = new Date(ms);
@@ -712,11 +729,10 @@ function stripConfidencePctFromResearchModelLine(line: string): string {
 }
 
 function buildPerModelStructuredFromPick(p: PickRecord): ResearchAlgorithmPerModelStructured | null {
-  const home = pickPrimitiveText(p.homeTeam ?? p.home);
-  const away = pickPrimitiveText(p.awayTeam ?? p.away);
-  if (!home || !away) return null;
+  const teams = pickTeams(p);
+  if (!teams) return null;
 
-  const fixtureLine = `${home} v ${away}`;
+  const fixtureLine = `${teams.home} v ${teams.away}`;
   const country = pickPrimitiveText(p.country);
   const league = pickPrimitiveText(p.league);
   const kick = formatKickoffFromPickRecord(p);
@@ -752,11 +768,10 @@ function buildPerModelStructuredFromPick(p: PickRecord): ResearchAlgorithmPerMod
 }
 
 function buildPerModelStructuredFromGroup(grp: PickRecord): ResearchAlgorithmPerModelStructured | null {
-  const home = pickPrimitiveText(grp.homeTeam);
-  const away = pickPrimitiveText(grp.awayTeam);
-  if (!home || !away) return null;
+  const teams = pickTeams(grp);
+  if (!teams) return null;
 
-  const fixtureLine = `${home} v ${away}`;
+  const fixtureLine = `${teams.home} v ${teams.away}`;
   const country = pickPrimitiveText(grp.country);
   const league = pickPrimitiveText(grp.league);
   const kick = formatKickoffFromPickRecord(grp);
@@ -967,11 +982,18 @@ function numOrNull(v: unknown): number | null {
   return null;
 }
 
-/** Home / away for stacked display (matches common export shapes). */
+/** Home / away for stacked display (matches common export shapes + combined `title` / `fixture` strings). */
 export function pickTeams(p: PickRecord): { home: string; away: string } | null {
   const home = pickPrimitiveText(p.homeTeam ?? p.home);
   const away = pickPrimitiveText(p.awayTeam ?? p.away);
   if (home && away) return { home, away };
+  const titleKeys = ['title', 'match', 'fixture', 'selection'] as const;
+  for (const k of titleKeys) {
+    const s = pickPrimitiveText(p[k]);
+    if (!s) continue;
+    const pair = splitFixtureTitleIntoTeams(s);
+    if (pair) return pair;
+  }
   return null;
 }
 
