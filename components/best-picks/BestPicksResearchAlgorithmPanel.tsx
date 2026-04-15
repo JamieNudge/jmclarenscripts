@@ -42,6 +42,16 @@ function outcomeClass(outcome: string): string {
   }
 }
 
+/** Readable market line for consensus band chips (O/U 2.5 expanded per product copy). */
+function consensusBandDisplayLabel(band: string): string {
+  const b = band.toLowerCase();
+  if (b.includes('2.5')) {
+    if (b.includes('under')) return 'Under 2.5 Goals';
+    if (b.includes('over')) return 'Over 2.5 Goals';
+  }
+  return band.trim() || 'Market';
+}
+
 function ConsensusPickRow({ pick }: { pick: DailyConsensusPickParsed }) {
   const score =
     pick.homeScore != null && pick.awayScore != null
@@ -67,18 +77,13 @@ function ConsensusPickRow({ pick }: { pick: DailyConsensusPickParsed }) {
         </div>
         <div className="flex w-full min-w-0 flex-row flex-wrap items-center gap-1.5">
           <span
-            className={`text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-md border ${bandPillClass(pick.band)}`}
+            className={`text-[11px] font-semibold leading-snug normal-case tracking-normal px-2 py-1 rounded-md border ${bandPillClass(pick.band)}`}
           >
-            {pick.band.includes('2.5') ? (pick.band.toLowerCase().includes('under') ? 'U2.5' : 'O2.5') : pick.band}
+            {consensusBandDisplayLabel(pick.band)}
           </span>
           <span className="text-[10px] font-semibold text-purple-200/95 border border-purple-400/25 bg-purple-500/15 px-2 py-0.5 rounded-md whitespace-nowrap">
             {pick.sources} models
           </span>
-          {pick.confidence > 0 ? (
-            <span className="text-[10px] tabular-nums text-white whitespace-nowrap">
-              {Math.round(pick.confidence)}%
-            </span>
-          ) : null}
           {score ? (
             <span className="text-xs font-bold tabular-nums text-white whitespace-nowrap">{score}</span>
           ) : null}
