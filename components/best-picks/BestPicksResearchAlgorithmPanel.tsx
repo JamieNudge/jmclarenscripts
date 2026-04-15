@@ -4,12 +4,14 @@ import { useEffect, useState } from 'react';
 import { onValue, ref } from 'firebase/database';
 import { bestPicksGridTileClassName } from '@/lib/best-picks-panel-shell';
 import {
+  formatBandAsGoalsPhrase,
   parseDailyConsensusSelections,
   researchAlgorithmFeedRows,
   statStrikeRtdbPathsFromEnv,
   type DailyConsensusFeedParsed,
   type DailyConsensusPickParsed,
   type ResearchAlgorithmFeedRow,
+  type ResearchAlgorithmPerModelStructured,
 } from '@/lib/best-picks-firebase';
 import { getFirebaseRealtimeDb, isFirebaseClientConfigured } from '@/lib/firebase-client';
 
@@ -42,16 +44,6 @@ function outcomeClass(outcome: string): string {
   }
 }
 
-/** Readable market line for consensus band chips (O/U 2.5 expanded per product copy). */
-function consensusBandDisplayLabel(band: string): string {
-  const b = band.toLowerCase();
-  if (b.includes('2.5')) {
-    if (b.includes('under')) return 'Under 2.5 Goals';
-    if (b.includes('over')) return 'Over 2.5 Goals';
-  }
-  return band.trim() || 'Market';
-}
-
 function ConsensusPickRow({ pick }: { pick: DailyConsensusPickParsed }) {
   const score =
     pick.homeScore != null && pick.awayScore != null
@@ -79,7 +71,7 @@ function ConsensusPickRow({ pick }: { pick: DailyConsensusPickParsed }) {
           <span
             className={`text-[11px] font-semibold leading-snug normal-case tracking-normal px-2 py-1 rounded-md border ${bandPillClass(pick.band)}`}
           >
-            {consensusBandDisplayLabel(pick.band)}
+            {formatBandAsGoalsPhrase(pick.band)}
           </span>
           <span className="text-[10px] font-semibold text-purple-200/95 border border-purple-400/25 bg-purple-500/15 px-2 py-0.5 rounded-md whitespace-nowrap">
             {pick.sources} models
@@ -93,6 +85,73 @@ function ConsensusPickRow({ pick }: { pick: DailyConsensusPickParsed }) {
             {pick.outcome}
           </span>
         </div>
+      </div>
+    </li>
+  );
+}
+
+const PER_MODEL_FIXTURE_SEP = ' v ';
+
+function splitPerModelFixtureLine(fixtureLine: string): { home: string; away: string } {
+  const i = fixtureLine.indexOf(PER_MODEL_FIXTURE_SEP);
+  if (i < 0) return { home: fixtureLine, away: '' };
+  return {
+    home: fixtureLine.slice(0, i),
+    away: fixtureLine.slice(i + PER_MODEL_FIXTURE_SEP.length),
+  };
+}
+
+function PerModelPickRow({ row }: { row: ResearchAlgorithmPerModelStructured }) {
+  const { home, away } = splitPerModelFixtureLine(row.fixtureLine);
+
+  return (
+    <li className="rounded-xl border border-white/10 bg-black/25 px-3 py-2.5 shrink-0">
+      <div className="flex w-full min-w-0 flex-col gap-2.5">
+        <div className="w-full min-w-0">
+          <p className="text-sm font-medium text-white leading-relaxed text-pretty">
+            {home}
+            {away ? (
+              <>
+                <span className="text-white/50 font-normal mx-1">v</span>
+                {away}
+              </>
+            ) : null}
+          </p>
+          {row.metaLine ? (
+            <p className="text-xs text-white/90 mt-1.5 leading-relaxed text-pretty">{row.metaLine}</p>
+          ) : null}
+        </div>
+        <div className="flex w-full min-w-0 flex-row flex-wrap items-center gap-1.5">
+          {row.bandDisplay ? (
+            <span
+              className={`text-[11px] font-semibold leading-snug normal-case tracking-normal px-2 py-1 rounded-md border ${bandPillClass(row.bandRaw ?? row.bandDisplay)}`}
+            >
+              {row.bandDisplay}
+            </span>
+          ) : null}
+          {row.modelTag ? (
+            <span className="text-[10px] font-semibold text-purple-200/95 border border-purple-400/25 bg-purple-500/15 px-2 py-0.5 rounded-md max-w-full min-w-0 leading-snug text-pretty break-words">
+              {row.modelTag}
+            </span>
+          ) : null}
+          {row.score ? (
+            <span className="text-xs font-bold tabular-nums text-white whitespace-nowrap">{row.score}</span>
+          ) : null}
+          <span
+            className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-md border whitespace-nowrap ${outcomeClass(row.outcome)}`}
+          >
+            {row.outcome}
+          </span>
+        </div>
+        {row.mergedDetailLines && row.mergedDetailLines.length > 0 ? (
+          <div className="space-y-1 pt-0.5 border-t border-white/5">
+            {row.mergedDetailLines.map((line, j) => (
+              <p key={j} className="text-[11px] text-white/75 leading-relaxed text-pretty">
+                {line}
+              </p>
+            ))}
+          </div>
+        ) : null}
       </div>
     </li>
   );
@@ -261,19 +320,23 @@ export function BestPicksResearchAlgorithmPanel({ dateKey }: { dateKey: string }
               )}
               {hasResearchContent && (
                 <ul className="space-y-2 pb-0.5 mt-1">
-                  {rows.map((row, i) => (
-                    <li
-                      key={`${row.primary.slice(0, 80)}-${i}`}
-                      className="rounded-xl border border-white/10 bg-black/20 px-3 py-2.5 shrink-0"
-                    >
-                      <p className="text-sm font-medium text-white leading-snug">{row.primary}</p>
-                      {row.secondary ? (
-                        <p className="text-xs text-white/90 mt-0.5 leading-snug whitespace-pre-line">
-                          {row.secondary}
-                        </p>
-                      ) : null}
-                    </li>
-                  ))}
+                  {rows.map((row, i) =>
+                    row.perModel ? (
+                      <PerModelPickRow key={`pm-${row.perModel.fixtureLine}-${i}`} row={row.perModel} />
+                    ) : (
+                      <li
+                        key={`${row.primary.slice(0, 80)}-${i}`}
+                        className="rounded-xl border border-white/10 bg-black/20 px-3 py-2.5 shrink-0"
+                      >
+                        <p className="text-sm font-medium text-white leading-snug">{row.primary}</p>
+                        {row.secondary ? (
+                          <p className="text-xs text-white/90 mt-0.5 leading-snug whitespace-pre-line">
+                            {row.secondary}
+                          </p>
+                        ) : null}
+                      </li>
+                    ),
+                  )}
                 </ul>
               )}
             </div>

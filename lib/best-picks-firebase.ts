@@ -523,7 +523,38 @@ export function parseDailyConsensusSelections(val: unknown): DailyConsensusFeedP
   };
 }
 
-export type ResearchAlgorithmFeedRow = { primary: string; secondary: string | null };
+/** Pick-shaped per-model row for the research panel (matches consensus card layout on the client). */
+export type ResearchAlgorithmPerModelStructured = {
+  fixtureLine: string;
+  metaLine: string | null;
+  /** Human-readable band, e.g. Over 2.5 Goals */
+  bandDisplay: string | null;
+  /** Raw `predictedBand` for pill colour logic */
+  bandRaw: string | null;
+  /** Source app / tier line (no confidence %) */
+  modelTag: string | null;
+  score: string | null;
+  outcome: string;
+  /** Merged model lines with confidence % stripped */
+  mergedDetailLines: string[] | null;
+};
+
+export type ResearchAlgorithmFeedRow = {
+  primary: string;
+  secondary: string | null;
+  perModel?: ResearchAlgorithmPerModelStructured | null;
+};
+
+/** Shared with consensus + per-model chips. */
+export function formatBandAsGoalsPhrase(band: string): string {
+  const b = band.toLowerCase();
+  if (b.includes('2.5')) {
+    if (b.includes('under')) return 'Under 2.5 Goals';
+    if (b.includes('over')) return 'Over 2.5 Goals';
+  }
+  const t = band.trim();
+  return t.length > 0 ? t : 'Market';
+}
 
 /** Postponed / abandoned / cancelled-style codes — hidden from the research feed so NS (etc.) on the panel date surface first. */
 const RESEARCH_FEED_EXCLUDED_STATUS_TOKENS = new Set([
@@ -643,10 +674,20 @@ function researchAlgorithmRowsFromPicks(
   secondaryFor: (p: PickRecord) => string | null,
 ): ResearchAlgorithmFeedRow[] {
   const filtered = filterResearchPicksForAlgorithmPanel(picks, dateKey);
-  return sortPicksByKickoffEarliestFirst(filtered).map((p) => ({
-    primary: pickDisplayTitle(p),
-    secondary: secondaryFor(p),
-  }));
+  return sortPicksByKickoffEarliestFirst(filtered).map((p) => {
+    const perModel = buildPerModelStructuredFromPick(p);
+    if (perModel) {
+      return {
+        primary: perModel.fixtureLine,
+        secondary: null,
+        perModel,
+      };
+    }
+    return {
+      primary: pickDisplayTitle(p),
+      secondary: secondaryFor(p),
+    };
+  });
 }
 
 /** `2-1` style line when RTDB has numeric or string score fields (per-model or consensus-shaped rows). */
@@ -657,6 +698,92 @@ function pickScoreSummaryLine(p: PickRecord): string | null {
   const raw = pickPrimitiveText(p.score ?? p.fullTimeScore ?? p.finalScore);
   if (raw) return raw.replace(/\s+/g, '');
   return null;
+}
+
+function stripConfidencePctFromResearchModelLine(line: string): string {
+  return line
+    .replace(/\s*·\s*\d{1,3}\s*%\s*/gi, ' · ')
+    .replace(/\s*·\s*\d{1,3}\s*$/i, '')
+    .replace(/\s{2,}/g, ' ')
+    .replace(/\s*·\s*·/g, ' · ')
+    .replace(/^\s*·\s*/, '')
+    .replace(/\s*·\s*$/, '')
+    .trim();
+}
+
+function buildPerModelStructuredFromPick(p: PickRecord): ResearchAlgorithmPerModelStructured | null {
+  const home = pickPrimitiveText(p.homeTeam ?? p.home);
+  const away = pickPrimitiveText(p.awayTeam ?? p.away);
+  if (!home || !away) return null;
+
+  const fixtureLine = `${home} v ${away}`;
+  const country = pickPrimitiveText(p.country);
+  const league = pickPrimitiveText(p.league);
+  const kick = formatKickoffFromPickRecord(p);
+  const metaLine = [country, league, kick].filter(Boolean).join(' · ') || null;
+
+  const bandRaw = pickPrimitiveText(p.predictedBand);
+  const bandDisplay = bandRaw ? formatBandAsGoalsPhrase(bandRaw) : null;
+
+  const app = pickPrimitiveText(p.sourceApp);
+  const tier = pickPrimitiveText(p.sourceTier);
+  const modelTag = [app, tier].filter(Boolean).join(' · ') || null;
+
+  const score = pickScoreSummaryLine(p);
+  const oc = pickPrimitiveText(p.outcome);
+  const outcome = oc ? oc.toLowerCase() : 'pending';
+
+  const merged = p[RESEARCH_MERGED_SUBTITLE_LINES];
+  let mergedDetailLines: string[] | null = null;
+  if (Array.isArray(merged) && merged.length > 0 && merged.every((x) => typeof x === 'string')) {
+    mergedDetailLines = (merged as string[]).map(stripConfidencePctFromResearchModelLine).filter((s) => s.length > 0);
+  }
+
+  return {
+    fixtureLine,
+    metaLine,
+    bandDisplay,
+    bandRaw,
+    modelTag,
+    score,
+    outcome,
+    mergedDetailLines,
+  };
+}
+
+function buildPerModelStructuredFromGroup(grp: PickRecord): ResearchAlgorithmPerModelStructured | null {
+  const home = pickPrimitiveText(grp.homeTeam);
+  const away = pickPrimitiveText(grp.awayTeam);
+  if (!home || !away) return null;
+
+  const fixtureLine = `${home} v ${away}`;
+  const country = pickPrimitiveText(grp.country);
+  const league = pickPrimitiveText(grp.league);
+  const kick = formatKickoffFromPickRecord(grp);
+  const metaLine = [country, league, kick].filter(Boolean).join(' · ') || null;
+
+  const bandRaw = pickPrimitiveText(grp.predictedBand);
+  const bandDisplay = bandRaw ? formatBandAsGoalsPhrase(bandRaw) : null;
+
+  const labelStr = Array.isArray(grp.modelLabels)
+    ? grp.modelLabels.filter((x): x is string => typeof x === 'string').join(' · ')
+    : null;
+  const modelTag = labelStr && labelStr.trim() ? labelStr.trim() : null;
+
+  const score = pickScoreSummaryLine(grp);
+  const oc = pickPrimitiveText(grp.outcome);
+  const outcome = oc ? oc.toLowerCase() : 'pending';
+
+  return {
+    fixtureLine,
+    metaLine,
+    bandDisplay,
+    bandRaw,
+    modelTag,
+    score,
+    outcome,
+    mergedDetailLines: null,
+  };
 }
 
 /** Subtitle for `ArchivedServedPick`-shaped objects from All Models macOS uploads. */
@@ -763,6 +890,14 @@ export function researchAlgorithmFeedRows(val: unknown, dateKey: string): Resear
       const filteredGroups = groupCandidates.filter((grp) => groupPassesResearchAlgorithmPanelFilter(grp, dateKey));
       const sortedGroups = sortPicksByKickoffEarliestFirst(filteredGroups);
       const groupRows: ResearchAlgorithmFeedRow[] = sortedGroups.map((grp) => {
+        const perModel = buildPerModelStructuredFromGroup(grp);
+        if (perModel) {
+          return {
+            primary: perModel.fixtureLine,
+            secondary: null,
+            perModel,
+          };
+        }
         const home = pickPrimitiveText(grp.homeTeam) ?? '';
         const away = pickPrimitiveText(grp.awayTeam) ?? '';
         const labelStr = Array.isArray(grp.modelLabels)
@@ -779,7 +914,7 @@ export function researchAlgorithmFeedRows(val: unknown, dateKey: string): Resear
           formatKickoffFromPickRecord(grp),
         ].filter(Boolean);
         return {
-          primary: `${home} vs ${away}`,
+          primary: `${home} v ${away}`,
           secondary: parts.length ? parts.join(' · ') : null,
         };
       });
