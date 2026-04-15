@@ -1,5 +1,5 @@
 /**
- * Shared outer shell for Best Picks tiles (full-width research header + 3×2: App/Video | research | Coming/ProphIt).
+ * Shared outer shell for the Best Picks grid tiles (five cells: 3 + 2 on md+).
  *
  * Row heights come from the parent grid (`grid-template-rows` on mobile and md+).
  * Tiles always `h-full min-h-0` so inner `flex-1 overflow-y-auto` regions scroll.

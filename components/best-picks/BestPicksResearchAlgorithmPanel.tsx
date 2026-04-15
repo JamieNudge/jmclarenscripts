@@ -1,15 +1,19 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+import { onValue, ref } from 'firebase/database';
 import { bestPicksGridTileClassName } from '@/lib/best-picks-panel-shell';
-import type { DailyConsensusPickParsed } from '@/lib/best-picks-firebase';
-import type { BestPicksResearchAlgorithmSnapshot } from '@/hooks/useBestPicksResearchAlgorithmState';
-import { useBestPicksResearchAlgorithmState } from '@/hooks/useBestPicksResearchAlgorithmState';
+import {
+  parseDailyConsensusSelections,
+  researchAlgorithmFeedRows,
+  statStrikeRtdbPathsFromEnv,
+  type DailyConsensusFeedParsed,
+  type DailyConsensusPickParsed,
+  type ResearchAlgorithmFeedRow,
+} from '@/lib/best-picks-firebase';
+import { getFirebaseRealtimeDb, isFirebaseClientConfigured } from '@/lib/firebase-client';
 
 export const bestPicksResearchAlgorithmPanelTitle = "Latest Research Algorithm's Selections";
-
-/** Full-width band above the picks grid (matches tile chrome). */
-const researchHeaderBandClassName =
-  'rounded-2xl border border-amber-200/16 bg-white/[0.055] shadow-sm shadow-black/20 px-6 py-5 md:px-8 md:py-6';
 
 const scrollArea =
   'min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-1 -mr-0.5 [scrollbar-gutter:stable] scroll-smooth overscroll-y-contain';
@@ -49,6 +53,7 @@ function ConsensusPickRow({ pick }: { pick: DailyConsensusPickParsed }) {
 
   return (
     <li className="rounded-xl border border-white/10 bg-black/25 px-3 py-2 shrink-0">
+      {/* Grid: text column always gets remaining width (avoids flex-wrap squeezing meta to one word per line). */}
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:gap-x-3 sm:items-center">
         <div className="min-w-0">
           <p className="text-sm font-medium text-white leading-snug">
@@ -88,27 +93,100 @@ function ConsensusPickRow({ pick }: { pick: DailyConsensusPickParsed }) {
   );
 }
 
-export function BestPicksResearchAlgorithmHeader({
-  dateKey,
-  research,
-  layout = 'fullWidth',
-}: {
-  dateKey: string;
-  research: BestPicksResearchAlgorithmSnapshot;
-  /** `embedded`: no outer band — use inside an existing tile (see BestPicksResearchAlgorithmPanel). */
-  layout?: 'fullWidth' | 'embedded';
-}) {
-  const {
-    configured,
-    consensusError,
-    consensusLoading,
-    hasConsensusContent,
-    recordLine,
-    sourcesCapLine,
-  } = research;
+export function BestPicksResearchAlgorithmPanel({ dateKey }: { dateKey: string }) {
+  const [rows, setRows] = useState<ResearchAlgorithmFeedRow[]>([]);
+  const [researchLoading, setResearchLoading] = useState(true);
+  const [researchError, setResearchError] = useState<string | null>(null);
 
-  const inner = (
-    <div className="space-y-4">
+  const [consensus, setConsensus] = useState<DailyConsensusFeedParsed | null>(null);
+  const [consensusLoading, setConsensusLoading] = useState(true);
+  const [consensusError, setConsensusError] = useState<string | null>(null);
+
+  const { researchAlgorithmSelectionsPath, dailyConsensusSelectionsPath } = statStrikeRtdbPathsFromEnv(dateKey);
+
+  useEffect(() => {
+    if (!isFirebaseClientConfigured()) {
+      setResearchLoading(false);
+      setResearchError(null);
+      setRows([]);
+      setConsensusLoading(false);
+      setConsensusError(null);
+      setConsensus(null);
+      return;
+    }
+    const db = getFirebaseRealtimeDb();
+    if (!db) {
+      setResearchLoading(false);
+      setConsensusLoading(false);
+      return;
+    }
+
+    setResearchLoading(true);
+    const researchRef = ref(db, researchAlgorithmSelectionsPath);
+    const unsubResearch = onValue(
+      researchRef,
+      (snap) => {
+        setResearchError(null);
+        setResearchLoading(false);
+        setRows(researchAlgorithmFeedRows(snap.val(), dateKey));
+      },
+      (err) => {
+        setResearchError(err.message);
+        setResearchLoading(false);
+        setRows([]);
+      },
+    );
+
+    setConsensusLoading(true);
+    const consensusRef = ref(db, dailyConsensusSelectionsPath);
+    const unsubConsensus = onValue(
+      consensusRef,
+      (snap) => {
+        setConsensusError(null);
+        setConsensusLoading(false);
+        setConsensus(parseDailyConsensusSelections(snap.val()));
+      },
+      (err) => {
+        setConsensusError(err.message);
+        setConsensusLoading(false);
+        setConsensus(null);
+      },
+    );
+
+    return () => {
+      unsubResearch();
+      unsubConsensus();
+    };
+  }, [dateKey, researchAlgorithmSelectionsPath, dailyConsensusSelectionsPath]);
+
+  const configured = isFirebaseClientConfigured();
+  const consensusPicks = consensus?.picks ?? [];
+  const hasConsensusContent = consensusPicks.length > 0;
+  const hasResearchContent = rows.length > 0;
+
+  const recordLine =
+    consensus &&
+    `Consensus filter: ${consensus.record.wins}W-${consensus.record.losses}L${
+      consensus.record.pending > 0 || consensus.record.voids > 0
+        ? ` · ${consensus.record.pending} pending · ${consensus.record.voids} void`
+        : ''
+    }${consensus.record.rate > 0 ? ` (${consensus.record.rate.toFixed(1)}% settled)` : ''}`;
+
+  const showDivider = hasConsensusContent && hasResearchContent;
+
+  const sourcesCapLine =
+    consensus && (consensus.minSources != null || consensus.maxPicksPerDay != null)
+      ? [
+          consensus.minSources != null ? `≥${consensus.minSources} sources` : null,
+          consensus.maxPicksPerDay != null ? `top ${consensus.maxPicksPerDay}/day` : null,
+        ]
+          .filter(Boolean)
+          .join(' · ')
+      : null;
+
+  return (
+    <div className={`${bestPicksGridTileClassName} justify-start`}>
+      <div className="shrink-0 mb-3 space-y-4">
         <div>
           <h2 className="text-lg md:text-xl font-semibold text-white">{bestPicksResearchAlgorithmPanelTitle}</h2>
           <p className="text-sm text-white mt-2 leading-relaxed">
@@ -141,36 +219,8 @@ export function BestPicksResearchAlgorithmHeader({
           </div>
         ) : null}
       </div>
-  );
 
-  if (layout === 'embedded') {
-    return <div className="shrink-0">{inner}</div>;
-  }
-
-  return <div className={`${researchHeaderBandClassName} shrink-0`}>{inner}</div>;
-}
-
-export function BestPicksResearchAlgorithmScrollBody({
-  dateKey,
-  research,
-}: {
-  dateKey: string;
-  research: BestPicksResearchAlgorithmSnapshot;
-}) {
-  const {
-    configured,
-    consensusPicks,
-    hasConsensusContent,
-    hasResearchContent,
-    researchError,
-    researchLoading,
-    rows,
-    showDivider,
-  } = research;
-
-  return (
-    <div className="flex min-h-0 h-full flex-col justify-start">
-      <div className={`${scrollArea} flex-1 min-h-0`}>
+      <div className={scrollArea}>
         {!configured && (
           <p className="text-sm text-white leading-relaxed">
             Firebase is not configured — add keys in <code className="text-xs text-white/90">.env.local</code>.
@@ -224,21 +274,6 @@ export function BestPicksResearchAlgorithmScrollBody({
             </div>
           </>
         )}
-      </div>
-    </div>
-  );
-}
-
-/** Single-tile composition (header + body) for reuse or legacy layout. */
-export function BestPicksResearchAlgorithmPanel({ dateKey }: { dateKey: string }) {
-  const research = useBestPicksResearchAlgorithmState(dateKey);
-  return (
-    <div className={`${bestPicksGridTileClassName} min-h-0 flex flex-col justify-start`}>
-      <div className="shrink-0 mb-3">
-        <BestPicksResearchAlgorithmHeader dateKey={dateKey} research={research} layout="embedded" />
-      </div>
-      <div className="flex min-h-0 flex-1 flex-col">
-        <BestPicksResearchAlgorithmScrollBody dateKey={dateKey} research={research} />
       </div>
     </div>
   );
