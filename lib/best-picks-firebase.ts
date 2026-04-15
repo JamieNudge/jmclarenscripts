@@ -548,11 +548,11 @@ export type ResearchAlgorithmPerModelStructured = {
   bandDisplay: string | null;
   /** Raw `predictedBand` for pill colour logic */
   bandRaw: string | null;
-  /** Uploader / source app label only (no internal model tier — avoids “per model” reading as many models). */
+  /** Uploader(s): `sourceApp`, or every merged row’s uploader joined with ` · ` when one card combines several sources. */
   modelTag: string | null;
   score: string | null;
   outcome: string;
-  /** Merged model lines with confidence % stripped */
+  /** Unused when rows are merged (uploaders folded into `modelTag`); kept for optional future / legacy lines. */
   mergedDetailLines: string[] | null;
 };
 
@@ -728,6 +728,29 @@ function stripConfidencePctFromResearchModelLine(line: string): string {
     .trim();
 }
 
+/** Leading segment before the first ` · ` (All Models subtitle lines start with uploader / sourceApp). */
+function researchSubtitleUploaderSegment(line: string): string | null {
+  const t = line.trim();
+  if (!t) return null;
+  const seg = t.split(/\s*·\s*/)[0]?.trim();
+  return seg && seg.length > 0 ? seg : null;
+}
+
+/** Unique uploaders in subtitle line order (case-insensitive dedupe). */
+function uniqueResearchUploadersFromSubtitleLines(lines: string[]): string[] {
+  const out: string[] = [];
+  const seen = new Set<string>();
+  for (const line of lines) {
+    const u = researchSubtitleUploaderSegment(line);
+    if (!u) continue;
+    const k = u.toLowerCase();
+    if (seen.has(k)) continue;
+    seen.add(k);
+    out.push(u);
+  }
+  return out;
+}
+
 function buildPerModelStructuredFromPick(p: PickRecord): ResearchAlgorithmPerModelStructured | null {
   const teams = pickTeams(p);
   if (!teams) return null;
@@ -741,16 +764,27 @@ function buildPerModelStructuredFromPick(p: PickRecord): ResearchAlgorithmPerMod
   const bandRaw = pickPrimitiveText(p.predictedBand);
   const bandDisplay = bandRaw ? formatBandAsGoalsPhrase(bandRaw) : null;
 
-  const modelTag = pickPrimitiveText(p.sourceApp);
+  const anchorApp = pickPrimitiveText(p.sourceApp);
 
   const score = pickScoreSummaryLine(p);
   const oc = pickPrimitiveText(p.outcome);
   const outcome = oc ? oc.toLowerCase() : 'pending';
 
   const merged = p[RESEARCH_MERGED_SUBTITLE_LINES];
+  /** When several rows merge, fold uploaders into `modelTag` only — no repeated pick/league block under the card. */
   let mergedDetailLines: string[] | null = null;
+  let modelTag: string | null = anchorApp;
   if (Array.isArray(merged) && merged.length > 0 && merged.every((x) => typeof x === 'string')) {
-    mergedDetailLines = (merged as string[]).map(stripConfidencePctFromResearchModelLine).filter((s) => s.length > 0);
+    const cleaned = (merged as string[])
+      .map(stripConfidencePctFromResearchModelLine)
+      .filter((s) => s.length > 0);
+    const uploaders = uniqueResearchUploadersFromSubtitleLines(cleaned);
+    if (uploaders.length > 1) {
+      modelTag = uploaders.join(' · ');
+    } else if (uploaders.length === 1) {
+      modelTag = anchorApp || uploaders[0];
+    }
+    mergedDetailLines = null;
   }
 
   return {
