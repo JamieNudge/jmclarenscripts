@@ -47,36 +47,43 @@ function ConsensusPickRow({ pick }: { pick: DailyConsensusPickParsed }) {
     pick.homeScore != null && pick.awayScore != null
       ? `${pick.homeScore}-${pick.awayScore}`
       : null;
+
+  const venue = [pick.country?.trim(), pick.league?.trim()].filter(Boolean).join(' · ');
+  const metaLine = [venue, pick.kickoff?.trim()].filter(Boolean).join(' · ');
+
   return (
-    <li className="rounded-xl border border-white/10 bg-black/25 px-3 py-2.5 shrink-0">
-      <div className="flex flex-wrap items-start gap-2 justify-between">
-        <div className="min-w-0 flex-1">
+    <li className="rounded-xl border border-white/10 bg-black/25 px-3 py-2 shrink-0">
+      {/* Grid: text column always gets remaining width (avoids flex-wrap squeezing meta to one word per line). */}
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:gap-x-3 sm:items-center">
+        <div className="min-w-0">
           <p className="text-sm font-medium text-white leading-snug">
-            {pick.home} <span className="text-white/40 font-normal">vs</span> {pick.away}
+            <span className="break-words">{pick.home}</span>
+            <span className="text-white/50 font-normal mx-1">v</span>
+            <span className="break-words">{pick.away}</span>
           </p>
-          <p className="text-xs text-white/90 mt-0.5 leading-snug">
-            {pick.country}
-            {pick.league ? ` · ${pick.league}` : ''}
-            {pick.kickoff ? ` · ${pick.kickoff}` : ''}
-          </p>
+          {metaLine ? (
+            <p className="text-xs text-white/90 mt-1 leading-snug line-clamp-2">{metaLine}</p>
+          ) : null}
         </div>
-        <div className="flex flex-wrap items-center gap-1.5 justify-end shrink-0">
+        <div className="flex min-w-0 flex-shrink-0 flex-row flex-wrap items-center gap-1.5 sm:flex-nowrap sm:justify-end">
           <span
             className={`text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-md border ${bandPillClass(pick.band)}`}
           >
             {pick.band.includes('2.5') ? (pick.band.toLowerCase().includes('under') ? 'U2.5' : 'O2.5') : pick.band}
           </span>
-          <span className="text-[10px] font-semibold text-purple-200/95 border border-purple-400/25 bg-purple-500/15 px-2 py-0.5 rounded-md">
+          <span className="text-[10px] font-semibold text-purple-200/95 border border-purple-400/25 bg-purple-500/15 px-2 py-0.5 rounded-md whitespace-nowrap">
             {pick.sources} models
           </span>
           {pick.confidence > 0 ? (
-            <span className="text-[10px] tabular-nums text-white">{Math.round(pick.confidence)}%</span>
+            <span className="text-[10px] tabular-nums text-white whitespace-nowrap">
+              {Math.round(pick.confidence)}%
+            </span>
           ) : null}
           {score ? (
-            <span className="text-xs font-bold tabular-nums text-white/90">{score}</span>
+            <span className="text-xs font-bold tabular-nums text-white whitespace-nowrap">{score}</span>
           ) : null}
           <span
-            className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-md border ${outcomeClass(pick.outcome)}`}
+            className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-md border whitespace-nowrap ${outcomeClass(pick.outcome)}`}
           >
             {pick.outcome}
           </span>
@@ -179,12 +186,38 @@ export function BestPicksResearchAlgorithmPanel({ dateKey }: { dateKey: string }
 
   return (
     <div className={`${bestPicksGridTileClassName} justify-start`}>
-      <div className="shrink-0 mb-3">
-        <h2 className="text-lg md:text-xl font-semibold text-white">{bestPicksResearchAlgorithmPanelTitle}</h2>
-        <p className="text-sm text-white mt-2 leading-relaxed">
-          Selections are driven by multi-model consensus in an attempt to determine a highly reliable list for every
-          day.
-        </p>
+      <div className="shrink-0 mb-3 space-y-4">
+        <div>
+          <h2 className="text-lg md:text-xl font-semibold text-white">{bestPicksResearchAlgorithmPanelTitle}</h2>
+          <p className="text-sm text-white mt-2 leading-relaxed">
+            Selections are driven by multi-model consensus in an attempt to determine a highly reliable list every day.
+          </p>
+        </div>
+
+        {configured ? (
+          <div className="space-y-2 border-t border-white/10 pt-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-white">Daily consensus</p>
+            {consensusError ? (
+              <p className="text-sm text-red-300 leading-relaxed" role="alert">
+                {consensusError}
+              </p>
+            ) : null}
+            {!consensusError && consensusLoading ? (
+              <p className="text-sm text-white leading-relaxed">Loading consensus…</p>
+            ) : null}
+            {!consensusError && !consensusLoading && sourcesCapLine ? (
+              <p className="text-sm text-white tabular-nums leading-snug">{sourcesCapLine}</p>
+            ) : null}
+            {!consensusError && !consensusLoading && recordLine ? (
+              <p className="text-sm text-white leading-snug">{recordLine}</p>
+            ) : null}
+            {!consensusError && !consensusLoading && !hasConsensusContent ? (
+              <p className="text-sm text-white leading-relaxed">
+                No consensus picks for <span className="tabular-nums">{dateKey}</span> yet.
+              </p>
+            ) : null}
+          </div>
+        ) : null}
       </div>
 
       <div className={scrollArea}>
@@ -196,35 +229,13 @@ export function BestPicksResearchAlgorithmPanel({ dateKey }: { dateKey: string }
 
         {configured && (
           <>
-            <div className="mb-1">
-              <p className="text-xs font-semibold uppercase tracking-wide text-white mb-2">Daily consensus</p>
-              {consensusError ? (
-                <p className="text-sm text-red-300 leading-relaxed mb-2" role="alert">
-                  {consensusError}
-                </p>
-              ) : null}
-              {!consensusError && consensusLoading && (
-                <p className="text-sm text-white leading-relaxed">Loading…</p>
-              )}
-              {!consensusError && !consensusLoading && sourcesCapLine ? (
-                <p className="text-sm text-white tabular-nums mb-2 leading-snug">{sourcesCapLine}</p>
-              ) : null}
-              {!consensusError && !consensusLoading && recordLine ? (
-                <p className="text-sm text-white mb-3 leading-snug">{recordLine}</p>
-              ) : null}
-              {!consensusError && !consensusLoading && !hasConsensusContent && (
-                <p className="text-sm text-white leading-relaxed">
-                  No consensus for <span className="tabular-nums text-white">{dateKey}</span> yet.
-                </p>
-              )}
-              {hasConsensusContent && (
-                <ul className="space-y-2 pb-1">
-                  {consensusPicks.map((pick) => (
-                    <ConsensusPickRow key={`${pick.fixtureID}-${pick.band}`} pick={pick} />
-                  ))}
-                </ul>
-              )}
-            </div>
+            {hasConsensusContent ? (
+              <ul className="space-y-2 pb-1">
+                {consensusPicks.map((pick) => (
+                  <ConsensusPickRow key={`${pick.fixtureID}-${pick.band}`} pick={pick} />
+                ))}
+              </ul>
+            ) : null}
 
             {showDivider && <div className="border-t border-white/10 my-3 shrink-0" aria-hidden />}
 
