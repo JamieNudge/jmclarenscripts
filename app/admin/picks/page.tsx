@@ -9,6 +9,7 @@ import {
   picksTimeZoneFromEnv,
   rtdbValueToPickList,
 } from '@/lib/best-picks-firebase';
+import { AdminBlogSection } from '@/components/admin/AdminBlogSection';
 import { AdminPredictionEmailBlocklist } from '@/components/admin/AdminPredictionEmailBlocklist';
 import { AdminPredictionSubmissions } from '@/components/admin/AdminPredictionSubmissions';
 import { parseYoutubeIdFromInput } from '@/lib/youtube-embed';
@@ -602,6 +603,8 @@ export default function AdminPicksPage() {
             />
           </div>
         </section>
+
+        <AdminBlogSection adminKey={adminKey} />
 
         <div className="flex flex-wrap gap-3">
           <button

@@ -1,13 +1,14 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { BlogIndexClient } from '@/components/blog/BlogIndexClient';
+import { BlogPostClient } from '@/components/blog/BlogPostClient';
 
 export const metadata: Metadata = {
-  title: 'Blog',
-  description: 'Articles and notes from Jamie McLaren — portfolio, apps, and related topics.',
+  title: 'Blog post',
+  description: 'Article from the blog.',
 };
 
-export default function BlogIndexPage() {
+export default function BlogPostPage({ params }: { params: { slug: string } }) {
+  const slug = params.slug?.trim() ?? '';
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#111827] to-[#1f2937] text-white">
       <div className="max-w-3xl mx-auto px-4 py-10 md:py-14">
@@ -21,18 +22,15 @@ export default function BlogIndexPage() {
           <Link href="/best-picks" className="hover:text-white underline-offset-4 hover:underline">
             Today&apos;s Best Picks
           </Link>
+          <span className="text-white/30" aria-hidden>
+            ·
+          </span>
+          <Link href="/blog" className="hover:text-white underline-offset-4 hover:underline">
+            Blog
+          </Link>
         </nav>
 
-        <h1 className="text-3xl md:text-4xl font-bold mb-3">Blog</h1>
-        <p className="text-sm text-white/65 mb-8 leading-relaxed">
-          Original articles and updates. For the picks dashboard and methodology, use{' '}
-          <Link href="/best-picks" className="text-amber-200/85 underline underline-offset-2 hover:text-amber-50/95">
-            Today&apos;s Best Picks
-          </Link>
-          .
-        </p>
-
-        <BlogIndexClient />
+        <BlogPostClient slug={slug} />
       </div>
     </main>
   );

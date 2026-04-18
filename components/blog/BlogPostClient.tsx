@@ -1,0 +1,115 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { get, ref } from 'firebase/database';
+import {
+  BLOG_POSTS_RTDB_ROOT,
+  parseBlogPostFromRtdb,
+  type BlogPostRecord,
+} from '@/lib/blog-post';
+import { getFirebaseRealtimeDb, isFirebaseClientConfigured } from '@/lib/firebase-client';
+import { MarkdownBody } from '@/components/blog/MarkdownBody';
+
+export function BlogPostClient({ slug }: { slug: string }) {
+  const [loading, setLoading] = useState(true);
+  const [post, setPost] = useState<BlogPostRecord | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isFirebaseClientConfigured()) {
+      setLoading(false);
+      setPost(null);
+      setErr(null);
+      return;
+    }
+    const db = getFirebaseRealtimeDb();
+    if (!db) {
+      setLoading(false);
+      setPost(null);
+      return;
+    }
+    setLoading(true);
+    setErr(null);
+    let cancelled = false;
+    void (async () => {
+      try {
+        const snap = await get(ref(db, `${BLOG_POSTS_RTDB_ROOT}/${slug}`));
+        if (cancelled) return;
+        const p = parseBlogPostFromRtdb(snap.val());
+        if (!p || !p.published) {
+          setPost(null);
+          setErr(null);
+        } else {
+          setPost(p);
+          setErr(null);
+          if (typeof document !== 'undefined') {
+            document.title = `${p.title} — Blog`;
+          }
+        }
+      } catch (e) {
+        if (!cancelled) {
+          setPost(null);
+          setErr(e instanceof Error ? e.message : 'Failed to load');
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [slug]);
+
+  if (!isFirebaseClientConfigured()) {
+    return (
+      <p className="text-sm text-white/55">
+        Firebase is not configured — this post cannot be loaded here.
+      </p>
+    );
+  }
+
+  if (loading) {
+    return <p className="text-sm text-white/60">Loading…</p>;
+  }
+
+  if (err) {
+    return (
+      <p className="text-sm text-red-300/90" role="alert">
+        {err}
+      </p>
+    );
+  }
+
+  if (!post) {
+    return (
+      <div className="space-y-4">
+        <p className="text-sm text-white/70">This post is not available or is still a draft.</p>
+        <Link href="/blog" className="text-sm text-amber-200/85 underline underline-offset-2 hover:text-amber-50/95">
+          ← Back to blog
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <article>
+      <Link href="/blog" className="text-sm text-white/60 hover:text-white underline-offset-2 mb-6 inline-block">
+        ← All posts
+      </Link>
+      <header className="mb-8">
+        <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">{post.title}</h1>
+        <p className="text-xs text-white/45 tabular-nums">
+          {post.publishedAt?.slice(0, 10) ?? post.updatedAt.slice(0, 10)}
+        </p>
+      </header>
+      {post.headerImageUrl ? (
+        <div className="mb-8 rounded-xl overflow-hidden border border-white/10">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={post.headerImageUrl} alt="" className="w-full max-h-[min(420px,50vh)] object-cover" />
+        </div>
+      ) : null}
+      <MarkdownBody markdown={post.bodyMarkdown} />
+    </article>
+  );
+}
