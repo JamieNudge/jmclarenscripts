@@ -5,18 +5,39 @@ import { BestPicksNewProductPanel } from '@/components/best-picks/BestPicksExtra
 import { BestPicksResearchAlgorithmPanel } from '@/components/best-picks/BestPicksResearchAlgorithmPanel';
 import { BestPicksVideo } from '@/components/best-picks/BestPicksVideo';
 import { bestPicksGridTileClassName } from '@/lib/best-picks-panel-shell';
+import { bestPicksPopgoalsComingSoonMeta } from '@/lib/best-picks-popgoals-coming-soon-meta';
 import { isFirebaseClientConfigured } from '@/lib/firebase-client';
 
-/** Placeholder tile (former Under 2.5 slot); replace body when beta app copy is ready. */
-function BestPicksComingSoonPanel() {
+/** Right column: PopGoals (PoPBeT) teaser + ProphIt in one tile (md: spans both rows). */
+function BestPicksComingSoonAndProphitPanel() {
+  const m = bestPicksPopgoalsComingSoonMeta;
   return (
-    <div className={bestPicksGridTileClassName}>
-      <h2 className="text-lg md:text-xl font-semibold text-white mb-2 shrink-0">Coming Soon!</h2>
-      <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden overscroll-y-contain pr-1 -mr-0.5 [scrollbar-gutter:stable] scroll-smooth">
-        <p className="text-sm text-white/55 leading-relaxed">
-          A beta app preview will live here — details to follow.
+    <div className={`${bestPicksGridTileClassName} gap-0`}>
+      <section className="shrink-0 space-y-3 pb-4 border-b border-white/10">
+        <div className="flex flex-wrap items-center gap-2 gap-y-1">
+          <h2 className="text-lg md:text-xl font-semibold text-white tracking-tight min-w-0">
+            {m.displayName}
+          </h2>
+          <span className="shrink-0 rounded-full border border-amber-400/35 bg-amber-500/12 px-2.5 py-1 text-[11px] font-bold tracking-wide text-amber-100/95">
+            Coming soon
+          </span>
+        </div>
+        <p className="text-sm text-white/60 leading-relaxed">
+          iOS app in development ({m.xcodeTarget} target). Store listing and preview copy will follow.
         </p>
-      </div>
+        <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs text-white/45 max-w-md">
+          <dt className="font-medium text-white/50">Display name</dt>
+          <dd>{m.displayName}</dd>
+          <dt className="font-medium text-white/50">Bundle ID</dt>
+          <dd className="font-mono tabular-nums">{m.bundleId}</dd>
+          <dt className="font-medium text-white/50">Marketing version</dt>
+          <dd className="tabular-nums">{m.marketingVersion}</dd>
+        </dl>
+      </section>
+
+      <section className="flex min-h-0 min-w-0 flex-1 flex-col pt-5 -mx-1 px-1">
+        <BestPicksNewProductPanel embedded />
+      </section>
     </div>
   );
 }
@@ -43,9 +64,9 @@ export function FirebasePicksPanels({
       )}
       {/*
         md: 3×2 with explicit placement — left: App / Video; centre: Latest Research (row-span 2);
-        right: Coming Soon / ProphIt. Mobile: same stack top-to-bottom.
+        right: PopGoals (coming soon) + ProphIt in one cell (row-span 2). Mobile: four stacked rows.
       */}
-      <div className="grid grid-cols-1 gap-4 max-md:[grid-template-rows:repeat(5,minmax(0,26rem))] md:grid-cols-3 md:gap-5 md:[grid-template-rows:repeat(2,minmax(0,26rem))] [&>*]:min-h-0 [&>*]:min-w-0">
+      <div className="grid grid-cols-1 gap-4 max-md:[grid-template-rows:repeat(4,minmax(0,26rem))] md:grid-cols-3 md:gap-5 md:[grid-template-rows:repeat(2,minmax(0,26rem))] [&>*]:min-h-0 [&>*]:min-w-0">
         <div className="min-h-0 md:col-start-1 md:row-start-1">{children}</div>
         <div className="min-h-0 md:col-start-1 md:row-start-2">
           <BestPicksVideo />
@@ -53,11 +74,8 @@ export function FirebasePicksPanels({
         <div className="flex min-h-0 flex-col md:col-start-2 md:row-start-1 md:row-span-2 md:h-full md:min-h-0">
           <BestPicksResearchAlgorithmPanel dateKey={dateKey} />
         </div>
-        <div className="min-h-0 md:col-start-3 md:row-start-1">
-          <BestPicksComingSoonPanel />
-        </div>
-        <div className="min-h-0 md:col-start-3 md:row-start-2">
-          <BestPicksNewProductPanel />
+        <div className="flex min-h-0 min-w-0 flex-col md:col-start-3 md:row-start-1 md:row-span-2 md:h-full md:min-h-0">
+          <BestPicksComingSoonAndProphitPanel />
         </div>
       </div>
     </div>

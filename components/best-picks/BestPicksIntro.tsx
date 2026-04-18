@@ -50,8 +50,9 @@ export function BestPicksIntro({ dateKey }: { dateKey: string }) {
             <li>
               <span className="font-semibold text-amber-100/90">This page</span> —{' '}
               <strong className="font-medium text-white/85">Latest Research Selections</strong> (daily consensus and
-              per-model lines from Firebase), App Store tiles, optional video, ProphIt, and a{' '}
-              <strong className="font-medium text-white/85">Coming Soon</strong> slot for an upcoming beta app.
+              per-model lines from Firebase), App Store tiles, optional video, and a right-hand column with{' '}
+              <strong className="font-medium text-white/85">PopGoals</strong> (beta) plus{' '}
+              <strong className="font-medium text-white/85">ProphIt</strong>.
             </li>
           </ul>
 

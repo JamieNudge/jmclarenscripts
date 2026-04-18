@@ -6,9 +6,9 @@ const scrollArea =
 
 const hr = 'border-0 border-t border-white/15 my-5';
 
-export function BestPicksNewProductPanel() {
+function BestPicksProphitPanelBody() {
   return (
-    <div className={`${bestPicksGridTileClassName} min-h-0`}>
+    <>
       <div className="flex flex-wrap items-center gap-2 mb-2 shrink-0 pr-2">
         <h2 className="text-lg md:text-xl font-bold text-white tracking-tight min-w-0 flex-1">
           ProphIt — Test Your Own Prediction Ideas in a living app!
@@ -134,6 +134,25 @@ export function BestPicksNewProductPanel() {
           </details>
         </div>
       </div>
+    </>
+  );
+}
+
+/**
+ * @param embedded When true, omits the outer tile shell so this can sit inside a combined grid cell
+ * (e.g. with PopGoals / PoPBeT above it). Parent must be a flex column with `min-h-0` + `flex-1` for the scroll region.
+ */
+export function BestPicksNewProductPanel({ embedded = false }: { embedded?: boolean }) {
+  if (embedded) {
+    return (
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+        <BestPicksProphitPanelBody />
+      </div>
+    );
+  }
+  return (
+    <div className={`${bestPicksGridTileClassName} min-h-0`}>
+      <BestPicksProphitPanelBody />
     </div>
   );
 }
