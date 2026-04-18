@@ -8,7 +8,7 @@ export interface App {
   screenshots: string[]; // Paths to phone mockup images
   features: string[];
   appStoreUrl?: string;
-  /** Short trial promo next to App Store (e.g. subscription free week). */
+  /** Short promo pill next to App Store (trial, pricing model, etc.). */
   appStoreTrialNote?: string;
   /** Bluesky profile URL, e.g. https://bsky.app/profile/handle.bsky.social */
   blueskyUrl?: string;

@@ -61,7 +61,7 @@ export const apps: App[] = [
     status: 'live',
     googlePlayStatus: 'in-review',
     appStoreUrl: 'https://apps.apple.com/gb/app/goallab/id6759168029',
-    appStoreTrialNote: 'First week free!',
+    appStoreTrialNote: 'Free with ads · ad-free subscription',
     contentRatingUrl: '/goallab/content-rating',
     privacyUrl: '/privacy/goallab',
     termsUrl: '/terms/goallab',
