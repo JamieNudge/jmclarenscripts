@@ -27,7 +27,7 @@ export function BestPicksSiteNav({ variant }: { variant: 'header' | 'footer' }) 
       aria-label={variant === 'header' ? 'Best picks sections' : 'Best picks and site links'}
       className={
         variant === 'header'
-          ? 'flex flex-wrap items-center gap-x-2 gap-y-1.5 pb-3 border-b border-amber-200/15'
+          ? 'flex flex-wrap items-center gap-x-2 gap-y-1.5 pb-2'
           : 'flex flex-wrap items-center gap-x-2 gap-y-2 pt-1'
       }
     >
