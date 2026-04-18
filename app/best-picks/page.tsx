@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BlueskyLink } from '@/components/BlueskyLink';
 import { BestPicksHeadAndPanels } from '@/components/best-picks/BestPicksHeadAndPanels';
+import { BEST_PICKS_EXTENDED_SITE_NAV } from '@/components/best-picks/best-picks-site-nav-config';
+import { BestPicksSiteNav } from '@/components/best-picks/BestPicksSiteNav';
 import { apps } from '@/lib/apps-data';
 import { bestPicksGridTileClassName } from '@/lib/best-picks-panel-shell';
 import type { App } from '@/types/app';
@@ -173,6 +175,11 @@ export default function BestPicksPage() {
 
       <footer className="w-full border-t border-white/10 bg-slate-900/30 mt-auto">
         <div className="max-w-6xl mx-auto px-4 py-6 lg:px-6 space-y-4 pb-[max(6rem,env(safe-area-inset-bottom))]">
+          {BEST_PICKS_EXTENDED_SITE_NAV ? (
+            <div className="w-full min-w-0">
+              <BestPicksSiteNav variant="footer" />
+            </div>
+          ) : null}
           <AdLayoutPlaceholder orientation="horizontal" className="w-full min-h-[90px]" />
           <div className="flex flex-row flex-wrap items-start justify-between gap-x-6 gap-y-2">
             <p

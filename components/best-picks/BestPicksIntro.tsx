@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import { BEST_PICKS_EXTENDED_SITE_NAV } from '@/components/best-picks/best-picks-site-nav-config';
+import { BestPicksSiteNav } from '@/components/best-picks/BestPicksSiteNav';
 
 /**
  * Compact hero + one collapsible block so the picks grid stays high on the viewport.
@@ -9,6 +11,7 @@ import Link from 'next/link';
 export function BestPicksIntro({ dateKey }: { dateKey: string }) {
   return (
     <header className="max-w-4xl mb-5 md:mb-6 space-y-3">
+      {BEST_PICKS_EXTENDED_SITE_NAV ? <BestPicksSiteNav variant="header" /> : null}
       <div>
         <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight leading-tight text-white flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
           <span>Today&apos;s Best Picks</span>
@@ -74,6 +77,18 @@ export function BestPicksIntro({ dateKey }: { dateKey: string }) {
               site privacy policy
             </Link>
             .
+            {BEST_PICKS_EXTENDED_SITE_NAV ? (
+              <>
+                {' '}
+                <Link
+                  href="/best-picks/how-it-works"
+                  className="text-amber-200/70 underline underline-offset-2 hover:text-amber-100/90"
+                >
+                  How it works (full page)
+                </Link>
+                .
+              </>
+            ) : null}
           </p>
         </div>
       </details>
