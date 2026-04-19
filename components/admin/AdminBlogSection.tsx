@@ -38,6 +38,44 @@ export function AdminBlogSection({ adminKey }: Props) {
   const [headerImageUrl, setHeaderImageUrl] = useState('');
   const [bodyMarkdown, setBodyMarkdown] = useState('');
   const bodyRef = useRef<HTMLTextAreaElement>(null);
+  /** Latest body for async handlers (e.g. image upload) and undo/redo. */
+  const bodyMarkdownRef = useRef(bodyMarkdown);
+  bodyMarkdownRef.current = bodyMarkdown;
+
+  const [bodyPast, setBodyPast] = useState<string[]>([]);
+  const [bodyFuture, setBodyFuture] = useState<string[]>([]);
+
+  const clearBodyHistory = useCallback(() => {
+    setBodyPast([]);
+    setBodyFuture([]);
+  }, []);
+
+  const pushBodySnapshot = useCallback(() => {
+    setBodyPast((p) => [...p.slice(-49), bodyMarkdownRef.current]);
+    setBodyFuture([]);
+  }, []);
+
+  const undoBody = useCallback(() => {
+    setBodyPast((past) => {
+      if (past.length === 0) return past;
+      const restore = past[past.length - 1]!;
+      const current = bodyMarkdownRef.current;
+      setBodyFuture((f) => [current, ...f]);
+      setBodyMarkdown(restore);
+      return past.slice(0, -1);
+    });
+  }, []);
+
+  const redoBody = useCallback(() => {
+    setBodyFuture((future) => {
+      if (future.length === 0) return future;
+      const next = future[0]!;
+      const current = bodyMarkdownRef.current;
+      setBodyPast((p) => [...p, current]);
+      setBodyMarkdown(next);
+      return future.slice(1);
+    });
+  }, []);
 
   const canUse = adminKey.trim().length > 0;
 
@@ -76,6 +114,7 @@ export function AdminBlogSection({ adminKey }: Props) {
     setPublished(false);
     setHeaderImageUrl('');
     setBodyMarkdown('');
+    clearBodyHistory();
   };
 
   const loadOne = async (s: string) => {
@@ -103,6 +142,7 @@ export function AdminBlogSection({ adminKey }: Props) {
       setPublished(p.published);
       setHeaderImageUrl(p.headerImageUrl ?? '');
       setBodyMarkdown(p.bodyMarkdown);
+      clearBodyHistory();
       setBlogStatus(`Editing “${p.title}”.`);
     } catch (e) {
       setBlogStatus(e instanceof Error ? e.message : 'Load post failed');
@@ -154,6 +194,7 @@ export function AdminBlogSection({ adminKey }: Props) {
       }
       setEditingSlug(json.post?.slug ?? slugTrim);
       setSlug(json.post?.slug ?? slugTrim);
+      clearBodyHistory();
       setBlogStatus(`Saved — ${json.path ?? 'blogPosts'}.`);
       await loadList();
     } catch (e) {
@@ -232,6 +273,7 @@ export function AdminBlogSection({ adminKey }: Props) {
         } else {
           const alt = file.name.replace(/\.[^.]+$/, '') || 'Image';
           const snippet = `![${alt}](${url})\n`;
+          pushBodySnapshot();
           const ta = bodyRef.current;
           if (ta) {
             const start = ta.selectionStart ?? ta.value.length;
@@ -415,6 +457,11 @@ export function AdminBlogSection({ adminKey }: Props) {
           value={bodyMarkdown}
           onChange={setBodyMarkdown}
           disabled={!canUse || blogLoading}
+          onBeforeMutate={pushBodySnapshot}
+          canUndo={bodyPast.length > 0}
+          canRedo={bodyFuture.length > 0}
+          onUndo={undoBody}
+          onRedo={redoBody}
         />
         <textarea
           ref={bodyRef}
@@ -422,6 +469,19 @@ export function AdminBlogSection({ adminKey }: Props) {
           style={{ fontFamily: blogMarkdownComposerFontFamily }}
           value={bodyMarkdown}
           onChange={(e) => setBodyMarkdown(e.target.value)}
+          onKeyDown={(e) => {
+            const mod = e.metaKey || e.ctrlKey;
+            if (mod && e.key === 'z' && !e.shiftKey && bodyPast.length > 0) {
+              e.preventDefault();
+              undoBody();
+              return;
+            }
+            if (mod && (e.key === 'y' || (e.key === 'z' && e.shiftKey)) && bodyFuture.length > 0) {
+              e.preventDefault();
+              redoBody();
+              return;
+            }
+          }}
           placeholder="Write in Markdown…"
         />
       </div>

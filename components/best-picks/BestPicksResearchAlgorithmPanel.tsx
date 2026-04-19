@@ -54,7 +54,7 @@ function ConsensusPickRow({ pick }: { pick: DailyConsensusPickParsed }) {
   const metaLine = [venue, pick.kickoff?.trim()].filter(Boolean).join(' · ');
 
   return (
-    <li className="rounded-xl border border-white/10 bg-black/25 px-3 py-2.5 shrink-0">
+    <li className="rounded-xl border border-white/15 bg-white/[0.06] px-3 py-2.5 shrink-0">
       {/* Stacked: full-width fixture + context first; model / outcome chips on a second row (no side-by-side squeeze). */}
       <div className="flex w-full min-w-0 flex-col gap-2.5">
         <div className="w-full min-w-0">
@@ -105,7 +105,7 @@ function PerModelPickRow({ row }: { row: ResearchAlgorithmPerModelStructured }) 
   const { home, away } = splitPerModelFixtureLine(row.fixtureLine);
 
   return (
-    <li className="rounded-xl border border-white/10 bg-black/25 px-3 py-2.5 shrink-0">
+    <li className="rounded-xl border border-white/15 bg-white/[0.06] px-3 py-2.5 shrink-0">
       <div className="flex w-full min-w-0 flex-col gap-2.5">
         <div className="w-full min-w-0">
           <p className="text-sm font-medium text-white leading-relaxed text-pretty">
@@ -144,7 +144,7 @@ function PerModelPickRow({ row }: { row: ResearchAlgorithmPerModelStructured }) 
           </span>
         </div>
         {row.mergedDetailLines && row.mergedDetailLines.length > 0 ? (
-          <div className="space-y-1 pt-0.5 border-t border-white/5">
+          <div className="space-y-1 pt-0.5 border-t border-white/12">
             {row.mergedDetailLines.map((line, j) => (
               <p key={j} className="text-[11px] text-white/75 leading-relaxed text-pretty">
                 {line}
@@ -259,7 +259,7 @@ export function BestPicksResearchAlgorithmPanel({ dateKey }: { dateKey: string }
         </div>
 
         {configured ? (
-          <div className="space-y-2 border-t border-white/10 pt-3">
+          <div className="space-y-2 border-t border-white/15 pt-3">
             <p className="text-xs font-semibold uppercase tracking-wide text-white">Daily consensus</p>
             {consensusError ? (
               <p className="text-sm text-red-300 leading-relaxed" role="alert">
@@ -301,7 +301,7 @@ export function BestPicksResearchAlgorithmPanel({ dateKey }: { dateKey: string }
               </ul>
             ) : null}
 
-            {showDivider && <div className="border-t border-white/10 my-3 shrink-0" aria-hidden />}
+            {showDivider && <div className="border-t border-white/15 my-3 shrink-0" aria-hidden />}
 
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-white mb-2">Per-model selections</p>
@@ -326,7 +326,7 @@ export function BestPicksResearchAlgorithmPanel({ dateKey }: { dateKey: string }
                     ) : (
                       <li
                         key={`${row.primary.slice(0, 80)}-${i}`}
-                        className="rounded-xl border border-white/10 bg-black/20 px-3 py-2.5 shrink-0"
+                        className="rounded-xl border border-white/15 bg-white/[0.05] px-3 py-2.5 shrink-0"
                       >
                         <p className="text-sm font-medium text-white leading-snug">{row.primary}</p>
                         {row.secondary ? (

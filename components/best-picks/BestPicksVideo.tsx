@@ -46,17 +46,17 @@ export function BestPicksVideo() {
       ) : null}
       <div className="flex-1 min-h-0 flex flex-col justify-center">
         {!configured && (
-          <div className="aspect-video w-full max-h-full rounded-xl bg-black/30 border border-white/10 flex items-center justify-center text-white/35 text-sm">
+          <div className="aspect-video w-full max-h-full rounded-xl bg-zinc-900/90 border border-white/15 flex items-center justify-center text-white/50 text-sm">
             Firebase not configured
           </div>
         )}
         {configured && !youtubeId && (
-          <div className="aspect-video w-full max-h-full rounded-xl bg-black/30 border border-white/10 flex items-center justify-center text-white/35 text-sm">
+          <div className="aspect-video w-full max-h-full rounded-xl bg-zinc-900/90 border border-white/15 flex items-center justify-center text-white/50 text-sm">
             No video for today yet
           </div>
         )}
         {configured && youtubeId && (
-          <div className="aspect-video w-full max-h-full rounded-xl overflow-hidden border border-white/10 bg-black">
+          <div className="aspect-video w-full max-h-full rounded-xl overflow-hidden border border-white/15 bg-zinc-950">
             <iframe
               title={videoTitle || 'YouTube video'}
               src={youtubeEmbedSrc(youtubeId)}

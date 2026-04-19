@@ -7,6 +7,12 @@ type Props = {
   value: string;
   onChange: (next: string) => void;
   disabled?: boolean;
+  /** Called immediately before each toolbar-driven edit (push current value to undo stack first). */
+  onBeforeMutate?: () => void;
+  canUndo?: boolean;
+  canRedo?: boolean;
+  onUndo?: () => void;
+  onRedo?: () => void;
 };
 
 function focusSelect(ta: HTMLTextAreaElement, start: number, end: number) {
@@ -115,11 +121,22 @@ function insertLink(ta: HTMLTextAreaElement, full: string, set: (s: string) => v
 const btnCls =
   'rounded-md border border-white/15 bg-white/[0.07] px-2 py-1 text-[11px] font-medium text-white/85 hover:bg-white/15 disabled:opacity-40 disabled:pointer-events-none';
 
-export function BlogMarkdownToolbar({ textareaRef, value, onChange, disabled }: Props) {
+export function BlogMarkdownToolbar({
+  textareaRef,
+  value,
+  onChange,
+  disabled,
+  onBeforeMutate,
+  canUndo = false,
+  canRedo = false,
+  onUndo,
+  onRedo,
+}: Props) {
   const withTa = (fn: (ta: HTMLTextAreaElement) => void) => {
     if (disabled) return;
     const ta = textareaRef.current;
     if (!ta) return;
+    onBeforeMutate?.();
     fn(ta);
   };
 
@@ -129,7 +146,29 @@ export function BlogMarkdownToolbar({ textareaRef, value, onChange, disabled }: 
       role="toolbar"
       aria-label="Markdown formatting"
     >
-      <span className="w-full text-[10px] text-white/40 uppercase tracking-wide mb-0.5">Markdown</span>
+      <div className="w-full flex flex-wrap items-center justify-between gap-2 mb-0.5">
+        <span className="text-[10px] text-white/40 uppercase tracking-wide">Markdown</span>
+        <span className="flex gap-1 shrink-0">
+          <button
+            type="button"
+            className={btnCls}
+            disabled={disabled || !canUndo || !onUndo}
+            title="Undo last toolbar or image insert (⌘Z / Ctrl+Z)"
+            onClick={() => onUndo?.()}
+          >
+            Undo
+          </button>
+          <button
+            type="button"
+            className={btnCls}
+            disabled={disabled || !canRedo || !onRedo}
+            title="Redo (⌘⇧Z / Ctrl+Shift+Z or Ctrl+Y)"
+            onClick={() => onRedo?.()}
+          >
+            Redo
+          </button>
+        </span>
+      </div>
       <button
         type="button"
         className={btnCls}

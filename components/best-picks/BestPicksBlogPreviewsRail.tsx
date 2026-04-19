@@ -24,7 +24,7 @@ export function BestPicksBlogPreviewsRail() {
 
   return (
     <aside
-      className="rounded-2xl border border-amber-200/15 bg-black/20 p-4 space-y-3 2xl:sticky 2xl:top-24"
+      className="rounded-2xl border border-zinc-600/50 bg-zinc-950/95 ring-1 ring-white/[0.06] p-4 space-y-3 2xl:sticky 2xl:top-24"
       style={{ fontFamily: blogTextFontFamily }}
       aria-label="Recent blog posts"
     >
@@ -49,7 +49,7 @@ export function BestPicksBlogPreviewsRail() {
             <li key={p.slug}>
               <Link
                 href={`/blog/${encodeURIComponent(p.slug)}`}
-                className="group block rounded-xl border border-white/10 bg-white/[0.03] p-3 hover:border-amber-200/25 hover:bg-white/[0.06] transition-colors"
+                className="group block rounded-xl border border-white/15 bg-zinc-900/70 p-3 hover:border-amber-200/35 hover:bg-zinc-800/70 transition-colors"
               >
                 {p.headerImageUrl ? (
                   <div className="mb-2.5 rounded-lg overflow-hidden border border-white/10 aspect-[16/9] max-h-[88px]">

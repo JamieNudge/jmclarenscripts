@@ -33,7 +33,7 @@ export function BestPicksIntro({ dateKey }: { dateKey: string }) {
       <div>
         <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight leading-tight text-white flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
           <span>Today&apos;s Best Picks</span>
-          <span className="text-lg md:text-2xl lg:text-3xl font-semibold text-amber-200/75 tabular-nums tracking-wide shrink-0">
+          <span className="text-lg md:text-2xl lg:text-3xl font-semibold text-amber-200/90 tabular-nums tracking-wide shrink-0">
             {dateKey}
           </span>
         </h1>
@@ -43,7 +43,7 @@ export function BestPicksIntro({ dateKey }: { dateKey: string }) {
       </div>
 
       {!BEST_PICKS_EXTENDED_SITE_NAV ? (
-        <details className="group rounded-xl border border-amber-200/15 bg-black/25 px-3 py-2.5 md:px-4 md:py-3">
+        <details className="group rounded-xl border border-amber-200/30 bg-zinc-950/90 px-3 py-2.5 md:px-4 md:py-3">
           <summary className="cursor-pointer list-none flex items-center justify-between gap-2 text-xs md:text-sm font-semibold text-amber-50/95 hover:text-amber-50 [&::-webkit-details-marker]:hidden">
             <span>Apps, this page &amp; where to read more</span>
             <svg
@@ -56,7 +56,7 @@ export function BestPicksIntro({ dateKey }: { dateKey: string }) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </summary>
-          <div className="mt-3 pt-3 border-t border-white/10 space-y-4 text-sm text-white/70 leading-relaxed">
+          <div className="mt-3 pt-3 border-t border-white/15 space-y-4 text-sm text-white/75 leading-relaxed">
             <ul className="space-y-2.5 list-none pl-0 border-l-2 border-amber-400/20 pl-3">
               <li>
                 {appStoreLink(statStrike?.appStoreUrl, 'StatStrike')} — In-app daily selection with criteria-style

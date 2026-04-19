@@ -93,16 +93,13 @@ iframe[src*='fundingchoicesmessages.google.com'] {
   }
 }
 
-/* /best-picks: lighter blue-slate base + layered radials for depth (not flat mid-gray). */
+/* /best-picks home: true black + soft gold wash at top so panels (zinc) read clearly above the field. */
 html.best-picks-route .bp-best-picks-surface,
 body.best-picks-route .bp-best-picks-surface {
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.055) 0%, transparent 32%),
-    radial-gradient(ellipse 92% 56% at 50% -14%, rgba(251, 191, 36, 0.11), transparent 52%),
-    radial-gradient(ellipse 115% 72% at 50% 108%, rgba(15, 23, 42, 0.42), transparent 55%),
-    radial-gradient(ellipse 65% 95% at -8% 45%, rgba(17, 24, 39, 0.22), transparent 48%),
-    radial-gradient(ellipse 65% 95% at 108% 55%, rgba(17, 24, 39, 0.2), transparent 48%),
-    linear-gradient(185deg, #5f6d82 0%, #515f75 26%, #434f63 58%, #353f50 100%);
+    radial-gradient(ellipse 120% 55% at 50% -18%, rgba(251, 191, 36, 0.09), transparent 52%),
+    radial-gradient(ellipse 90% 45% at 50% 108%, rgba(255, 255, 255, 0.03), transparent 48%),
+    #000000;
 }
 
 /* Blog markdown: UA `monospace` on <code> lacks emoji glyphs; append system color emoji fonts. */

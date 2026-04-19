@@ -17,9 +17,9 @@ function BestPicksComingSoonAndProphitPanel() {
       <h2 className="text-lg md:text-xl font-semibold text-white tracking-tight shrink-0 mb-3">
         Coming Soon!
       </h2>
-      <section className="shrink-0 space-y-3 pb-4 border-b border-white/10">
+      <section className="shrink-0 space-y-3 pb-4 border-b border-white/15">
         <div className="flex gap-3 min-w-0">
-          <div className="shrink-0 rounded-2xl overflow-hidden border border-amber-200/20 bg-black/30 w-14 h-14 md:w-16 md:h-16">
+          <div className="shrink-0 rounded-2xl overflow-hidden border border-amber-200/30 bg-zinc-900/90 w-14 h-14 md:w-16 md:h-16">
             <Image
               src={m.iconSrc}
               alt={`${m.displayName} app icon`}
@@ -63,7 +63,7 @@ export function FirebasePicksPanels({
   return (
     <div className="grid grid-cols-1 gap-4 md:gap-5">
       {configHint && (
-        <div className="rounded-xl border border-amber-400/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100/95 leading-relaxed">
+        <div className="rounded-xl border border-amber-400/40 bg-amber-500/15 px-4 py-3 text-sm text-amber-50/95 leading-relaxed">
           Firebase is not configured. Copy{' '}
           <code className="text-xs bg-black/30 px-1.5 py-0.5 rounded">.env.example</code> to{' '}
           <code className="text-xs bg-black/30 px-1.5 py-0.5 rounded">.env.local</code>, add your

@@ -82,7 +82,7 @@ export default function BestPicksPage() {
                           href={app.appStoreUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-4 rounded-xl border border-amber-200/12 bg-black/25 p-3 hover:border-amber-200/22 hover:bg-white/[0.04] transition-all group"
+                          className="flex items-center gap-4 rounded-xl border border-amber-200/25 bg-zinc-900/80 p-3 hover:border-amber-200/40 hover:bg-zinc-800/80 transition-all group"
                         >
                           <div className="w-16 h-16 sm:w-[4.5rem] sm:h-[4.5rem] rounded-2xl overflow-hidden bg-white/10 backdrop-blur-sm border-2 border-amber-200/15 group-hover:border-amber-200/35 flex-shrink-0 transition-all duration-300">
                             {app.icon ? (
@@ -143,35 +143,38 @@ export default function BestPicksPage() {
           </div>
         </div>
 
-        <aside className="hidden lg:flex w-[150px] xl:w-[170px] flex-shrink-0 flex-col border-l border-amber-200/12 bg-slate-900/25">
+        <aside className="hidden lg:flex w-[150px] xl:w-[170px] flex-shrink-0 flex-col border-l border-zinc-700/70 bg-zinc-950/90">
           <AdSenseAutoPlaceholder
             orientation="vertical"
-            className="flex-1 w-full min-h-[min(360px,45vh)] lg:min-h-[min(560px,72vh)] rounded-l-lg border-y-0 border-r-0 border-l-0"
+            className="flex-1 w-full min-h-[min(360px,45vh)] lg:min-h-[min(560px,72vh)] rounded-l-lg border-y-0 border-r-0 border-l-0 !border-dashed !border-white/30 !bg-zinc-900/50 !text-white/50"
           />
         </aside>
       </div>
 
-      <footer className="w-full border-t border-white/10 bg-slate-900/30 mt-auto">
+      <footer className="w-full border-t border-zinc-700/60 bg-black mt-auto">
         <div className="max-w-6xl mx-auto px-4 py-6 lg:px-6 space-y-4 pb-[max(6rem,env(safe-area-inset-bottom))]">
           {BEST_PICKS_EXTENDED_SITE_NAV ? (
             <div className="w-full min-w-0">
               <BestPicksSiteNav variant="footer" />
             </div>
           ) : null}
-          <AdSenseAutoPlaceholder orientation="horizontal" className="w-full min-h-[90px]" />
+          <AdSenseAutoPlaceholder
+            orientation="horizontal"
+            className="w-full min-h-[90px] !border-white/30 !bg-zinc-950/70 !text-white/50"
+          />
           <div className="flex flex-row flex-wrap items-start justify-between gap-x-6 gap-y-2">
             <p
-              className="text-left text-[11px] md:text-xs text-white/45 leading-relaxed max-w-[min(100%,42rem)] flex-1 min-w-[12rem]"
+              className="text-left text-[11px] md:text-xs text-white/55 leading-relaxed max-w-[min(100%,42rem)] flex-1 min-w-[12rem]"
               role="note"
             >
-              <span className="font-medium text-white/60">Disclaimer.</span>{' '}
+              <span className="font-medium text-white/75">Disclaimer.</span>{' '}
               Statistical views of past match patterns are{' '}
-              <span className="text-white/55">not</span> guarantees of future results. This website does not offer
+              <span className="text-white/65">not</span> guarantees of future results. This website does not offer
               real money gambling, prizes, or simulated gambling. Content on this page is for informational purposes
               only.
             </p>
-            <p className="text-right text-[11px] md:text-xs text-white/35 leading-relaxed shrink-0 min-w-[10rem] max-w-sm">
-              <Link href="/privacy" className="underline hover:text-white/55 underline-offset-2">
+            <p className="text-right text-[11px] md:text-xs text-white/50 leading-relaxed shrink-0 min-w-[10rem] max-w-sm">
+              <Link href="/privacy" className="underline hover:text-white/70 underline-offset-2">
                 Privacy policy
               </Link>
               <span className="text-white/25"> · </span>

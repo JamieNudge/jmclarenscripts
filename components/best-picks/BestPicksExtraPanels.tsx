@@ -112,8 +112,8 @@ function BestPicksProphitPanelBody({ headingLevel = 'h2' }: { headingLevel?: 'h2
 
           <hr className={hr} />
 
-          <details className="group rounded-xl border border-white/12 bg-black/20 overflow-hidden -mx-1">
-            <summary className="cursor-pointer list-none flex items-center justify-between gap-3 px-3 py-3 text-sm font-semibold text-white hover:bg-white/5 [&::-webkit-details-marker]:hidden">
+          <details className="group rounded-xl border border-white/18 bg-zinc-950/80 overflow-hidden -mx-1">
+            <summary className="cursor-pointer list-none flex items-center justify-between gap-3 px-3 py-3 text-sm font-semibold text-white hover:bg-white/[0.07] [&::-webkit-details-marker]:hidden">
               <span>Submit your idea</span>
               <span className="flex items-center gap-2 text-xs font-medium text-sky-300/90 shrink-0">
                 <span className="max-sm:hidden">Click to expand</span>
