@@ -844,6 +844,11 @@ function pickBestReconciledInResearchGroup(group: PickRecord[]): PickRecord {
   });
 }
 
+/** Structural base for merged card: prefer the row your publisher last touched (timestamps), not Map order. */
+function pickFreshestResearchRowByTimestamp(group: PickRecord[]): PickRecord {
+  return group.reduce((a, b) => (researchPickUpdatedAtMs(b) > researchPickUpdatedAtMs(a) ? b : a));
+}
+
 /** Copy settled score/outcome from donor when present (used after picking best row in a merge group). */
 function overlayResearchResultFields(base: PickRecord, donor: PickRecord): PickRecord {
   const out: PickRecord = { ...base };
@@ -872,7 +877,7 @@ function mergeResearchPicksSameFixtureBand(picks: PickRecord[]): PickRecord[] {
       out.push(group[0]);
       continue;
     }
-    const anchorBase: PickRecord = { ...group[0] };
+    const anchorBase: PickRecord = { ...pickFreshestResearchRowByTimestamp(group) };
     const best = pickBestReconciledInResearchGroup(group);
     const anchor = overlayResearchResultFields(anchorBase, best);
     const lines = group
@@ -897,7 +902,9 @@ function researchAlgorithmRowsFromPicks(
   secondaryFor: (p: PickRecord) => string | null,
 ): ResearchAlgorithmFeedRow[] {
   const filtered = filterResearchPicksForAlgorithmPanel(picks, dateKey);
-  return sortPicksByKickoffEarliestFirst(filtered).map((p) => {
+  /** Same as `groups[]` exports: collapse duplicate fixture+band rows so one stale copy cannot sit beside a fresh one. */
+  const merged = mergeResearchPicksSameFixtureBand(filtered);
+  return sortPicksByKickoffEarliestFirst(merged).map((p) => {
     const perModel = buildPerModelStructuredFromPick(p);
     if (perModel) {
       return {
@@ -1093,6 +1100,10 @@ function stringArrayField(v: unknown): string[] | null {
  * Pick-like rows are ordered by kickoff (several field names + group-inherited times), earliest UTC first within the day; unparseable last.
  * Rows are limited to kickoffs on `dateKey` (same calendar day as the panel, in `NEXT_PUBLIC_PICKS_DATE_TIMEZONE`) and exclude
  * postponed/abandoned/cancelled-style statuses (PP, ABN, …). Plain string arrays (`lines`, etc.) are unchanged.
+ *
+ * After filtering, **all** pick arrays are passed through the same fixture+band merge as `groups[]` exports so duplicate
+ * RTDB rows (e.g. append without delete) do not leave stale cards beside fresher ones. Prefer publisher `updatedAt` (etc.)
+ * when merging; see `mergeResearchPicksSameFixtureBand`.
  */
 export function researchAlgorithmFeedRows(val: unknown, dateKey: string): ResearchAlgorithmFeedRow[] {
   if (val == null) return [];

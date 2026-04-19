@@ -1,6 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
+import Image from 'next/image';
 import { BestPicksNewProductPanel } from '@/components/best-picks/BestPicksExtraPanels';
 import { BestPicksResearchAlgorithmPanel } from '@/components/best-picks/BestPicksResearchAlgorithmPanel';
 import { BestPicksVideo } from '@/components/best-picks/BestPicksVideo';
@@ -14,25 +15,34 @@ function BestPicksComingSoonAndProphitPanel() {
   return (
     <div className={`${bestPicksGridTileClassName} gap-0`}>
       <section className="shrink-0 space-y-3 pb-4 border-b border-white/10">
-        <div className="flex flex-wrap items-center gap-2 gap-y-1">
-          <h2 className="text-lg md:text-xl font-semibold text-white tracking-tight min-w-0">
-            {m.displayName}
-          </h2>
-          <span className="shrink-0 rounded-full border border-amber-400/35 bg-amber-500/12 px-2.5 py-1 text-[11px] font-bold tracking-wide text-amber-100/95">
-            Coming soon
-          </span>
+        <div className="flex gap-3 min-w-0">
+          <div className="shrink-0 rounded-2xl overflow-hidden border border-amber-200/20 bg-black/30 w-14 h-14 md:w-16 md:h-16">
+            <Image
+              src={m.iconSrc}
+              alt={`${m.displayName} app icon`}
+              width={144}
+              height={144}
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div className="min-w-0 flex-1 space-y-2">
+            <div className="flex flex-wrap items-center gap-2 gap-y-1">
+              <h2 className="text-lg md:text-xl font-semibold text-white tracking-tight min-w-0">
+                {m.displayName}
+              </h2>
+              <span className="shrink-0 rounded-full border border-amber-400/35 bg-amber-500/12 px-2.5 py-1 text-[11px] font-bold tracking-wide text-amber-100/95">
+                Coming soon
+              </span>
+            </div>
+            <p className="text-sm text-white/60 leading-relaxed">
+              iOS app in development ({m.xcodeTarget} target). Store listing and preview copy will follow.
+            </p>
+            <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs text-white/45 max-w-md">
+              <dt className="font-medium text-white/50">Marketing version</dt>
+              <dd className="tabular-nums">{m.marketingVersion}</dd>
+            </dl>
+          </div>
         </div>
-        <p className="text-sm text-white/60 leading-relaxed">
-          iOS app in development ({m.xcodeTarget} target). Store listing and preview copy will follow.
-        </p>
-        <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs text-white/45 max-w-md">
-          <dt className="font-medium text-white/50">Display name</dt>
-          <dd>{m.displayName}</dd>
-          <dt className="font-medium text-white/50">Bundle ID</dt>
-          <dd className="font-mono tabular-nums">{m.bundleId}</dd>
-          <dt className="font-medium text-white/50">Marketing version</dt>
-          <dd className="tabular-nums">{m.marketingVersion}</dd>
-        </dl>
       </section>
 
       <section className="flex min-h-0 min-w-0 flex-1 flex-col pt-5 -mx-1 px-1">
