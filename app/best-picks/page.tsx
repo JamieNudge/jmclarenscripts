@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { AdSenseAutoPlaceholder } from '@/components/AdSenseAutoPlaceholder';
 import { BlueskyLink } from '@/components/BlueskyLink';
+import { BestPicksBlogPreviewsRail } from '@/components/best-picks/BestPicksBlogPreviewsRail';
 import { BestPicksHeadAndPanels } from '@/components/best-picks/BestPicksHeadAndPanels';
 import { BEST_PICKS_EXTENDED_SITE_NAV } from '@/components/best-picks/best-picks-site-nav-config';
 import { BestPicksSiteNav } from '@/components/best-picks/BestPicksSiteNav';
@@ -64,9 +65,10 @@ export default function BestPicksPage() {
   return (
     <main className="min-h-screen bp-best-picks-surface text-white flex flex-col">
       <div className="flex flex-1 flex-col lg:flex-row lg:min-h-0 w-full min-h-0">
-        <div className="flex-1 min-w-0 min-h-0 px-4 py-10 md:py-14 lg:px-6 lg:pr-8">
-          <div className="max-w-6xl mx-auto w-full">
-            <BestPicksHeadAndPanels>
+        <div className="flex-1 min-w-0 min-h-0 px-4 py-10 md:py-14 lg:px-6 lg:pr-4">
+          <div className="mx-auto w-full max-w-6xl 2xl:max-w-[min(100%,calc(72rem+1.5rem+14rem))] 2xl:flex 2xl:flex-row 2xl:items-start 2xl:gap-6">
+            <div className="min-w-0 w-full max-w-6xl 2xl:max-w-[72rem] 2xl:shrink-0">
+              <BestPicksHeadAndPanels>
               <div className={`${bestPicksGridTileClassName} gap-3`}>
                 <h2 className="text-lg md:text-xl font-semibold text-white mb-1 shrink-0">App Store links</h2>
                 <p className="text-sm text-white/60 leading-relaxed shrink-0">
@@ -133,7 +135,11 @@ export default function BestPicksPage() {
                   ) : null}
                 </div>
               </div>
-            </BestPicksHeadAndPanels>
+              </BestPicksHeadAndPanels>
+            </div>
+            <div className="hidden 2xl:block w-56 shrink-0 pt-0">
+              <BestPicksBlogPreviewsRail />
+            </div>
           </div>
         </div>
 

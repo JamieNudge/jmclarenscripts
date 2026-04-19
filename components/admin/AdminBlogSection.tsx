@@ -5,6 +5,7 @@ import Link from 'next/link';
 import type { BlogPostRecord } from '@/lib/blog-post';
 import { blogMarkdownComposerFontFamily } from '@/lib/fonts';
 import { suggestBlogExcerptFromMarkdown } from '@/lib/suggest-blog-excerpt';
+import { BlogMarkdownToolbar } from '@/components/admin/BlogMarkdownToolbar';
 
 type Props = {
   adminKey: string;
@@ -409,6 +410,12 @@ export function AdminBlogSection({ adminKey }: Props) {
             Upload image → insert markdown
           </button>
         </div>
+        <BlogMarkdownToolbar
+          textareaRef={bodyRef}
+          value={bodyMarkdown}
+          onChange={setBodyMarkdown}
+          disabled={!canUse || blogLoading}
+        />
         <textarea
           ref={bodyRef}
           className={`${inputCls} min-h-[12rem] font-mono text-xs`}
@@ -446,7 +453,12 @@ export function AdminBlogSection({ adminKey }: Props) {
         <p className="text-[10px] text-white/35 mt-1 leading-snug">
           Heuristic only — strips common Markdown, takes the opening sentence or two (up to the excerpt length limit), then you edit.
         </p>
-        <textarea className={`${inputCls} mt-1 min-h-[4rem]`} value={excerpt} onChange={(e) => setExcerpt(e.target.value)} placeholder="Short summary for the blog index (optional but recommended)" />
+        <textarea
+          className={`${inputCls} mt-1 min-h-[4rem]`}
+          value={excerpt}
+          onChange={(e) => setExcerpt(e.target.value)}
+          placeholder="Short summary for the blog index (plain text; optional but recommended)"
+        />
       </div>
 
       <div className="flex flex-wrap items-center gap-3">

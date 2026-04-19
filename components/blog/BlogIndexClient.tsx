@@ -1,59 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { onValue, ref } from 'firebase/database';
-import {
-  BLOG_POSTS_RTDB_ROOT,
-  parseBlogPostFromRtdb,
-  type BlogPostRecord,
-} from '@/lib/blog-post';
-import { getFirebaseRealtimeDb, isFirebaseClientConfigured } from '@/lib/firebase-client';
+import { usePublishedBlogPosts } from '@/hooks/usePublishedBlogPosts';
 import { blogTextFontFamily } from '@/lib/fonts';
 
 export function BlogIndexClient() {
-  const [posts, setPosts] = useState<BlogPostRecord[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [err, setErr] = useState<string | null>(null);
+  const { posts, loading, err, configured } = usePublishedBlogPosts();
 
-  useEffect(() => {
-    if (!isFirebaseClientConfigured()) {
-      setLoading(false);
-      setErr(null);
-      setPosts([]);
-      return;
-    }
-    const db = getFirebaseRealtimeDb();
-    if (!db) {
-      setLoading(false);
-      return;
-    }
-    const r = ref(db, BLOG_POSTS_RTDB_ROOT);
-    const unsub = onValue(
-      r,
-      (snap) => {
-        setLoading(false);
-        setErr(null);
-        const v = snap.val();
-        const list: BlogPostRecord[] = [];
-        if (v && typeof v === 'object' && !Array.isArray(v)) {
-          for (const k of Object.keys(v)) {
-            const p = parseBlogPostFromRtdb(v[k]);
-            if (p && p.published) list.push(p);
-          }
-        }
-        list.sort((a, b) => (b.publishedAt ?? b.updatedAt).localeCompare(a.publishedAt ?? a.updatedAt));
-        setPosts(list);
-      },
-      (e) => {
-        setLoading(false);
-        setErr(e.message);
-      },
-    );
-    return () => unsub();
-  }, []);
-
-  if (!isFirebaseClientConfigured()) {
+  if (!configured) {
     return (
       <p className="text-sm text-white/55 leading-relaxed">
         Firebase is not configured — add keys in <code className="text-xs text-white/70">.env.local</code> to load
