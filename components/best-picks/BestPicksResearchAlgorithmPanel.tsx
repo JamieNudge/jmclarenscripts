@@ -208,7 +208,7 @@ export function BestPicksResearchAlgorithmPanel({ dateKey }: { dateKey: string }
       (snap) => {
         setConsensusError(null);
         setConsensusLoading(false);
-        setConsensus(parseDailyConsensusSelections(snap.val()));
+        setConsensus(parseDailyConsensusSelections(snap.val(), dateKey));
       },
       (err) => {
         setConsensusError(err.message);

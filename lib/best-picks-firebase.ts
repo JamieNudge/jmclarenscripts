@@ -332,6 +332,158 @@ function formatKickoffFromPickRecord(p: PickRecord): string | null {
   return null;
 }
 
+/** Extra keys sometimes present on `dailyConsensusSelections` picks but not on generic pick rows. */
+const CONSENSUS_EXTRA_DATETIME_KEYS = [
+  'scheduledStart',
+  'scheduledStartTime',
+  'fixtureKickoff',
+  'matchKickoff',
+  'eventKickoff',
+  'isoDate',
+  'isoKickoff',
+  'fixture_date',
+  'kickOffTime',
+  'kickoffTime',
+  'startTimeUtc',
+  'fixtureTime',
+  'matchTime',
+  'localKickoff',
+  'scheduledDate',
+] as const;
+
+const CONSENSUS_DATE_PART_KEYS = [
+  'fixtureDate',
+  'matchDate',
+  'date',
+  'eventDate',
+  'fixture_date',
+  'scheduledDate',
+] as const;
+
+const CONSENSUS_TIME_PART_KEYS = [
+  'kickoffTime',
+  'kickOffTime',
+  'localTime',
+  'startTime',
+  'fixtureTime',
+  'matchTime',
+  'time',
+] as const;
+
+function formatUkDateFromYmd(ymd: string): string | null {
+  const m = ymd.trim().match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return null;
+  return `${m[3]}/${m[2]}/${m[1]}`;
+}
+
+/** Merge separate date + clock fields (common in consensus JSON) before generic pick parsing. */
+function tryConsensusMergedDateTime(p: PickRecord): string | null {
+  for (const k of CONSENSUS_DATE_PART_KEYS) {
+    const full = str(p[k]).trim();
+    if (!full) continue;
+    if (full.includes('T') || full.endsWith('Z')) {
+      const ms = timeUnknownToSortMs(full);
+      if (ms != null) {
+        const u = formatKickoffUtc(ms);
+        if (u) return u;
+      }
+    }
+  }
+
+  let dRaw = '';
+  for (const k of CONSENSUS_DATE_PART_KEYS) {
+    const s = str(p[k]).trim();
+    if (!s) continue;
+    dRaw = s.split('T')[0] ?? s;
+    break;
+  }
+  if (!dRaw) return null;
+
+  let tRaw = '';
+  for (const k of CONSENSUS_TIME_PART_KEYS) {
+    const v = p[k];
+    if (isEmptyKickoffSlot(v)) continue;
+    const s = str(v).trim();
+    if (!s || !/\d/.test(s)) continue;
+    if (s.includes('T') || s.endsWith('Z')) {
+      const ms = timeUnknownToSortMs(s);
+      if (ms != null) {
+        const u = formatKickoffUtc(ms);
+        if (u) return u;
+      }
+      continue;
+    }
+    tRaw = s;
+    break;
+  }
+
+  if (tRaw) {
+    const combined = `${dRaw} ${tRaw}`.replace(/\s+/g, ' ').trim();
+    const ms = timeUnknownToSortMs(combined);
+    if (ms != null) {
+      const u = formatKickoffUtc(ms);
+      if (u) return u;
+    }
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dRaw)) {
+      const iso = `${dRaw}T${tRaw}`;
+      const ms2 = timeUnknownToSortMs(iso);
+      if (ms2 != null) {
+        const u = formatKickoffUtc(ms2);
+        if (u) return u;
+      }
+    }
+  }
+
+  const msOnly = timeUnknownToSortMs(dRaw);
+  if (msOnly != null) {
+    const u = formatKickoffUtc(msOnly);
+    if (u) return u;
+  }
+  return formatUkDateFromYmd(dRaw) ?? dRaw;
+}
+
+/**
+ * Best-effort datetime line for daily consensus cards (extra keys + merged date/time + calendar fallback).
+ */
+function formatKickoffFromConsensusPick(p: PickRecord, calendarDateKey?: string): string {
+  const merged = tryConsensusMergedDateTime(p);
+  if (merged) return merged;
+
+  const primary = formatKickoffFromPickRecord(p);
+  if (primary && primary.trim()) return primary.trim();
+
+  const extended: PickRecord = { ...p };
+  for (const k of CONSENSUS_EXTRA_DATETIME_KEYS) {
+    const v = p[k];
+    if (isEmptyKickoffSlot(v)) continue;
+    extended.kickoff = v;
+    const s = formatKickoffFromPickRecord(extended);
+    if (s && s.trim()) return s.trim();
+  }
+
+  for (const k of CONSENSUS_DATE_PART_KEYS) {
+    const raw = str(p[k]).trim();
+    if (!raw) continue;
+    const ms = timeUnknownToSortMs(raw);
+    if (ms != null) {
+      const u = formatKickoffUtc(ms);
+      if (u) return u;
+    }
+    const uk = formatUkDateFromYmd(raw.split('T')[0]);
+    if (uk) return uk;
+    return raw;
+  }
+
+  const tail = str(p.kickoff).trim();
+  if (tail) return tail;
+
+  const cal = calendarDateKey?.trim();
+  if (cal && /^\d{4}-\d{2}-\d{2}$/.test(cal)) {
+    return formatUkDateFromYmd(cal) ?? cal;
+  }
+  return '';
+}
+
 /** Status-like fields copied from parent `groups[]` onto selections (filtering / subtitles). */
 const GROUP_STATUS_INHERIT_KEYS = ['displayStatus', 'status', 'fixtureStatus', 'matchStatus'] as const;
 
@@ -489,8 +641,11 @@ function str(v: unknown): string {
   return '';
 }
 
-/** Parses RTDB payload from All Models Best Forecaster `dailyConsensusSelections/{date}`. */
-export function parseDailyConsensusSelections(val: unknown): DailyConsensusFeedParsed | null {
+/**
+ * Parses RTDB payload from All Models Best Forecaster `dailyConsensusSelections/{date}`.
+ * @param calendarDateKey London `YYYY-MM-DD` for this fetch; used only when a pick has no parseable kickoff so the card still shows a date.
+ */
+export function parseDailyConsensusSelections(val: unknown, calendarDateKey?: string): DailyConsensusFeedParsed | null {
   if (val == null || typeof val !== 'object' || Array.isArray(val)) return null;
   const o = val as Record<string, unknown>;
   const rawPicks = o.picks;
@@ -503,7 +658,7 @@ export function parseDailyConsensusSelections(val: unknown): DailyConsensusFeedP
     const fid = num(p.fixtureID ?? p.fixtureId);
     if (fid == null) continue;
     const kickoffDisplay =
-      formatKickoffFromPickRecord(p as PickRecord) ?? str(p.kickoff).trim();
+      formatKickoffFromConsensusPick(p as PickRecord, calendarDateKey) || str(p.kickoff).trim();
     picks.push({
       fixtureID: fid,
       home: str(p.home),
