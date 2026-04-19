@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { AdSenseAutoPlaceholder } from '@/components/AdSenseAutoPlaceholder';
 import { BlueskyLink } from '@/components/BlueskyLink';
 import { BestPicksHeadAndPanels } from '@/components/best-picks/BestPicksHeadAndPanels';
 import { BEST_PICKS_EXTENDED_SITE_NAV } from '@/components/best-picks/best-picks-site-nav-config';
@@ -57,33 +58,6 @@ function trialNotePillClass(appId: string) {
     return 'bg-amber-500/15 text-amber-100/95 border border-amber-400/35';
   }
   return 'bg-white/10 text-white/85 border border-white/20';
-}
-
-/** Reserved regions; Google Auto ads may fill these when enabled. */
-function AdLayoutPlaceholder({
-  orientation,
-  className = '',
-}: {
-  orientation: 'vertical' | 'horizontal';
-  className?: string;
-}) {
-  return (
-    <div
-      className={`rounded-xl border border-dashed border-white/25 bg-black/20 flex items-center justify-center text-white/35 text-[10px] md:text-xs font-medium uppercase tracking-wider text-center px-2 ${className}`}
-      aria-hidden
-    >
-      {orientation === 'vertical' ? (
-        <span
-          className="inline-block [writing-mode:vertical-rl] rotate-180 py-4"
-          style={{ letterSpacing: '0.2em' }}
-        >
-          Auto ads area
-        </span>
-      ) : (
-        <span className="px-4 py-3">Auto ads may also appear in-page via Google</span>
-      )}
-    </div>
-  );
 }
 
 export default function BestPicksPage() {
@@ -164,7 +138,7 @@ export default function BestPicksPage() {
         </div>
 
         <aside className="hidden lg:flex w-[150px] xl:w-[170px] flex-shrink-0 flex-col border-l border-amber-200/12 bg-slate-900/25">
-          <AdLayoutPlaceholder
+          <AdSenseAutoPlaceholder
             orientation="vertical"
             className="flex-1 w-full min-h-[min(360px,45vh)] lg:min-h-[min(560px,72vh)] rounded-l-lg border-y-0 border-r-0 border-l-0"
           />
@@ -178,7 +152,7 @@ export default function BestPicksPage() {
               <BestPicksSiteNav variant="footer" />
             </div>
           ) : null}
-          <AdLayoutPlaceholder orientation="horizontal" className="w-full min-h-[90px]" />
+          <AdSenseAutoPlaceholder orientation="horizontal" className="w-full min-h-[90px]" />
           <div className="flex flex-row flex-wrap items-start justify-between gap-x-6 gap-y-2">
             <p
               className="text-left text-[11px] md:text-xs text-white/45 leading-relaxed max-w-[min(100%,42rem)] flex-1 min-w-[12rem]"

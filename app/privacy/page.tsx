@@ -4,7 +4,7 @@ import Link from 'next/link';
 export const metadata: Metadata = {
   title: 'Privacy Policy — Website',
   description:
-    'Privacy policy for Jamie McLaren’s portfolio website, including Today’s Best Picks, cookies, and Google AdSense.',
+    'Privacy policy for Jamie McLaren’s portfolio website, including Today’s Best Picks, the blog, cookies, and Google AdSense.',
 };
 
 export default function WebsitePrivacyPage() {
@@ -80,12 +80,13 @@ export default function WebsitePrivacyPage() {
 
           <h2 className="text-xl font-semibold text-white mt-8">4. Cookies and Google AdSense</h2>
           <p>
-            <span className="font-semibold">Today&apos;s Best Picks</span> page only: we may use{' '}
-            <span className="font-semibold">Google AdSense</span> to show advertisements there. The
-            rest of this website (for example the portfolio home page) does not load the AdSense
-            script. Google and its partners may use cookies or similar technologies when you visit
-            that page, to serve ads based on your prior visits to this or other websites, and to
-            measure ad effectiveness.
+            <span className="font-semibold">Today&apos;s Best Picks</span> and the{' '}
+            <span className="font-semibold">Blog</span> sections: we may use{' '}
+            <span className="font-semibold">Google AdSense</span> to show advertisements there when
+            enabled for this site. The rest of this website (for example the portfolio home page) does
+            not load the AdSense script. Google and its partners may use cookies or similar
+            technologies when you visit those sections, to serve ads based on your prior visits to
+            this or other websites, and to measure ad effectiveness.
           </p>
           <p>
             You can learn how Google uses data when you use our site or partners&apos; sites in

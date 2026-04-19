@@ -1,18 +1,19 @@
 'use client';
 
 import { stripAdSenseAndCmpArtifacts } from '@/lib/adsense-cleanup';
+import { pathUsesAdSenseClient } from '@/lib/adsense-client-routes';
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 
 /**
- * After client navigation away from `/best-picks`, remove AdSense + Google CMP artifacts
- * so the rest of the site (e.g. portfolio home) does not keep the consent banner.
+ * After client navigation away from ad-enabled sections (`/best-picks`, `/blog`), remove AdSense +
+ * Google CMP artifacts so the portfolio home and other routes stay clean.
  */
 export function AdSenseRouteCleanup() {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (pathname?.startsWith('/best-picks')) return;
+    if (pathUsesAdSenseClient(pathname)) return;
     stripAdSenseAndCmpArtifacts();
   }, [pathname]);
 

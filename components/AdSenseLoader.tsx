@@ -14,7 +14,8 @@ function adsenseScriptSrc(clientId: string) {
  * - preload / script crossOrigin mismatch (React Float preload omits crossOrigin)
  * - `data-nscript` on the tag (AdSense warns about that)
  *
- * On unmount (leaving `/best-picks`), strips script + Google CMP UI so other routes stay clean.
+ * On unmount (leaving an ad-enabled layout such as `/best-picks` or `/blog`), strips script + CMP
+ * so other routes stay clean (see `pathUsesAdSenseClient`).
  */
 export function AdSenseLoader() {
   useEffect(() => {

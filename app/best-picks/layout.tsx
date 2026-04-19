@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   },
 };
 
-/** AdSense Auto ads: script loads only under `/best-picks` (see `AdSenseLoader`). */
+/** AdSense Auto ads: script loads under `/best-picks` (see `app/blog/layout.tsx` for `/blog`). */
 export default function BestPicksLayout({ children }: { children: ReactNode }) {
   return (
     <>

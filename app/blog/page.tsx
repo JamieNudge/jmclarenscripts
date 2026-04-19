@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { AdSenseAutoPlaceholder } from '@/components/AdSenseAutoPlaceholder';
 import { BlogIndexClient } from '@/components/blog/BlogIndexClient';
 
 export const metadata: Metadata = {
@@ -23,6 +24,11 @@ export default function BlogIndexPage() {
           </Link>
         </nav>
 
+        <AdSenseAutoPlaceholder orientation="horizontal" className="w-full min-h-[72px] mb-8" />
+        <p className="text-[10px] text-white/35 -mt-6 mb-8 leading-snug">
+          Reserved regions for Google AdSense Auto ads when your account and site are enabled.
+        </p>
+
         <h1 className="text-3xl md:text-4xl font-bold mb-3">Blog</h1>
         <p className="text-sm text-white/65 mb-8 leading-relaxed">
           Original articles and updates. For the picks dashboard and methodology, use{' '}
@@ -33,6 +39,10 @@ export default function BlogIndexPage() {
         </p>
 
         <BlogIndexClient />
+
+        <div className="mt-12 pt-8 border-t border-white/10 space-y-2">
+          <AdSenseAutoPlaceholder orientation="horizontal" className="w-full min-h-[90px]" />
+        </div>
       </div>
     </main>
   );

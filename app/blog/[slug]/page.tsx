@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { AdSenseAutoPlaceholder } from '@/components/AdSenseAutoPlaceholder';
 import { BlogPostClient } from '@/components/blog/BlogPostClient';
 
 export const metadata: Metadata = {
@@ -30,7 +31,16 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
           </Link>
         </nav>
 
+        <AdSenseAutoPlaceholder orientation="horizontal" className="w-full min-h-[72px] mb-8" />
+        <p className="text-[10px] text-white/35 -mt-6 mb-8 leading-snug">
+          Reserved regions for Google AdSense Auto ads when your account and site are enabled.
+        </p>
+
         <BlogPostClient slug={slug} />
+
+        <div className="mt-12 pt-8 border-t border-white/10">
+          <AdSenseAutoPlaceholder orientation="horizontal" className="w-full min-h-[90px]" />
+        </div>
       </div>
     </main>
   );
