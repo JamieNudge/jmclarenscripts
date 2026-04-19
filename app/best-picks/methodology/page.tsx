@@ -32,12 +32,12 @@ export default function BestPicksMethodologyPage() {
           upload time versus kickoff. The page does not offer real-money gambling, prizes, or simulated gambling.
         </p>
         <p className="text-xs text-white/55">
-          For step-by-step visitor copy, see{' '}
+          For how each app is described for visitors, see{' '}
           <Link
             href="/best-picks/how-it-works"
             className="text-amber-200/80 underline underline-offset-2 hover:text-amber-100/90"
           >
-            How it works
+            How apps work
           </Link>
           .
         </p>

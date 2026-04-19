@@ -1,6 +1,6 @@
 export const bestPicksSiteNavPrimary = [
   { href: '/best-picks', label: 'Home' },
-  { href: '/best-picks/how-it-works', label: 'How it works' },
+  { href: '/best-picks/how-it-works', label: 'How apps work' },
   { href: '/best-picks/methodology', label: 'Methodology' },
   { href: '/best-picks/about', label: 'About' },
   { href: '/blog', label: 'Blogs' },

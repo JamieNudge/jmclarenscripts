@@ -30,7 +30,7 @@ function BestPicksProphitPanelBody() {
 
           <hr className={hr} />
 
-          <h3 className="text-base font-semibold text-white/95">How it works</h3>
+          <h3 className="text-base font-semibold text-white/95">How the research service works</h3>
           <ol className="list-decimal list-outside pl-5 space-y-4 marker:text-white/45">
             <li>
               <span className="font-semibold text-white/90">You define your idea</span>

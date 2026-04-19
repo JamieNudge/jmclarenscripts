@@ -3,6 +3,24 @@
 import Link from 'next/link';
 import { BEST_PICKS_EXTENDED_SITE_NAV } from '@/components/best-picks/best-picks-site-nav-config';
 import { BestPicksSiteNav } from '@/components/best-picks/BestPicksSiteNav';
+import { apps } from '@/lib/apps-data';
+
+const statStrike = apps.find((a) => a.id === 'stat-strike');
+const goalLab = apps.find((a) => a.id === 'goallab');
+
+function appStoreLink(href: string | undefined, label: string) {
+  if (!href) return <span className="font-semibold text-amber-100/90">{label}</span>;
+  return (
+    <Link
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="font-semibold text-amber-100/90 underline underline-offset-2 hover:text-amber-50/95"
+    >
+      {label}
+    </Link>
+  );
+}
 
 /**
  * Hero for Best Picks. With extended site nav on, header/footer carry the links — no duplicate line here.
@@ -27,7 +45,7 @@ export function BestPicksIntro({ dateKey }: { dateKey: string }) {
       {!BEST_PICKS_EXTENDED_SITE_NAV ? (
         <details className="group rounded-xl border border-amber-200/15 bg-black/25 px-3 py-2.5 md:px-4 md:py-3">
           <summary className="cursor-pointer list-none flex items-center justify-between gap-2 text-xs md:text-sm font-semibold text-amber-50/95 hover:text-amber-50 [&::-webkit-details-marker]:hidden">
-            <span>About data sources, how it works &amp; stat labels</span>
+            <span>Apps, this page &amp; where to read more</span>
             <svg
               className="w-4 h-4 text-amber-200/50 shrink-0 transition-transform duration-200 group-open:rotate-180"
               fill="none"
@@ -41,20 +59,12 @@ export function BestPicksIntro({ dateKey }: { dateKey: string }) {
           <div className="mt-3 pt-3 border-t border-white/10 space-y-4 text-sm text-white/70 leading-relaxed">
             <ul className="space-y-2.5 list-none pl-0 border-l-2 border-amber-400/20 pl-3">
               <li>
-                <span className="font-semibold text-amber-100/90">StatStrike</span> — In-app daily selection with
-                criteria-style confidence on goal bands (App Store link in the first grid tile).
+                {appStoreLink(statStrike?.appStoreUrl, 'StatStrike')} — In-app daily selection with criteria-style
+                confidence on goal bands.
               </li>
               <li>
-                <span className="font-semibold text-amber-100/90">GoalLab</span> — An 11-criteria algorithm forecasting
-                Over 2.5 and Under 2.5 goal bands with forecaster confidence, full track history and transparent track
-                record.
-              </li>
-              <li>
-                <span className="font-semibold text-amber-100/90">This page</span> —{' '}
-                <strong className="font-medium text-white/85">Latest Research Selections</strong> (daily consensus and
-                per-model lines from Firebase), App Store tiles, optional video, and a right-hand column with{' '}
-                <strong className="font-medium text-white/85">PopGoals</strong> (beta) plus{' '}
-                <strong className="font-medium text-white/85">ProphIt</strong>.
+                {appStoreLink(goalLab?.appStoreUrl, 'GoalLab')} — An 11-criteria algorithm forecasting Over 2.5 and
+                Under 2.5 goal bands with forecaster confidence, full track history and transparent track record.
               </li>
             </ul>
 
@@ -63,28 +73,37 @@ export function BestPicksIntro({ dateKey }: { dateKey: string }) {
               promises, or financial advice.
             </p>
             <p>
-              <strong className="font-medium text-white/85">Latest Research Selections</strong> reads{' '}
-              <code className="text-[10px] text-white/60">dailyConsensusSelections</code> and{' '}
-              <code className="text-[10px] text-white/60">researchAlgorithmSelections</code> for the London calendar date
-              shown in the headline. Over and Under 2.5 style bands can both appear in that panel when your upload
-              includes them.
-            </p>
-            <p>
-              <strong className="font-medium text-white/85">Stat labels</strong> on model lines use whatever match
-              window the forecasting pipeline attached; it can differ by statistic—not always a fixed &quot;last
-              six&quot; sample unless the label says so.
+              What this screen contains (feeds, blog, in-development teasers) is summarised on{' '}
+              <Link
+                href="/best-picks/about"
+                className="text-amber-200/80 underline underline-offset-2 hover:text-amber-100/90"
+              >
+                About Today&apos;s Best Picks
+              </Link>
+              . Technical detail on feeds is on{' '}
+              <Link
+                href="/best-picks/methodology"
+                className="text-amber-200/80 underline underline-offset-2 hover:text-amber-100/90"
+              >
+                Methodology
+              </Link>
+              .
             </p>
             <p className="text-xs text-white/50">
               App terms &amp; privacy: App Store listings and{' '}
               <Link href="/privacy" className="text-amber-200/70 underline underline-offset-2 hover:text-amber-100/90">
                 site privacy policy
               </Link>
-              . Pages:{' '}
+              .{' '}
               <Link
                 href="/best-picks/how-it-works"
                 className="text-amber-200/70 underline underline-offset-2 hover:text-amber-100/90"
               >
-                How it works
+                How apps work
+              </Link>
+              {' · '}
+              <Link href="/best-picks/about" className="text-amber-200/70 underline underline-offset-2 hover:text-amber-100/90">
+                About
               </Link>
               {' · '}
               <Link
