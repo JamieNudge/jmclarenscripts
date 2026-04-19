@@ -105,3 +105,10 @@ body.best-picks-route .bp-best-picks-surface {
     linear-gradient(185deg, #5f6d82 0%, #515f75 26%, #434f63 58%, #353f50 100%);
 }
 
+/* Blog markdown: UA `monospace` on <code> lacks emoji glyphs; append system color emoji fonts. */
+.blog-markdown-body :is(code, pre) {
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', 'Noto Color Emoji', monospace;
+}
+

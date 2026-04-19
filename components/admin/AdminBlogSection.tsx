@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import type { BlogPostRecord } from '@/lib/blog-post';
+import { blogMarkdownComposerFontFamily } from '@/lib/fonts';
 
 type Props = {
   adminKey: string;
@@ -14,6 +15,13 @@ function authHeader(key: string): HeadersInit {
 
 const inputCls =
   'w-full rounded-lg bg-white/10 border border-white/20 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-500/60';
+
+/** Words for composer stats (whitespace-separated tokens; empty input → 0). */
+function countWords(s: string): number {
+  const t = s.trim();
+  if (!t) return 0;
+  return t.split(/\s+/).length;
+}
 
 export function AdminBlogSection({ adminKey }: Props) {
   const [posts, setPosts] = useState<BlogPostRecord[]>([]);
@@ -341,7 +349,10 @@ export function AdminBlogSection({ adminKey }: Props) {
         <input className={`${inputCls} mt-1`} value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Post title" />
       </div>
       <div>
-        <label className="text-xs text-white/45">Excerpt (list view)</label>
+        <div className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-0.5">
+          <label className="text-xs text-white/45">Excerpt (list view)</label>
+          <span className="text-[11px] text-white/40 tabular-nums shrink-0">{countWords(excerpt)} words</span>
+        </div>
         <textarea className={`${inputCls} mt-1 min-h-[4rem]`} value={excerpt} onChange={(e) => setExcerpt(e.target.value)} placeholder="Short summary" />
       </div>
 
@@ -369,12 +380,15 @@ export function AdminBlogSection({ adminKey }: Props) {
 
       <div>
         <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
-          <label className="text-xs text-white/45">Body (Markdown)</label>
+          <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 min-w-0">
+            <label className="text-xs text-white/45 shrink-0">Body (Markdown)</label>
+            <span className="text-[11px] text-white/40 tabular-nums">{countWords(bodyMarkdown)} words</span>
+          </div>
           <button
             type="button"
             disabled={!canUse || blogLoading}
             onClick={() => void uploadImage('body')}
-            className="rounded-lg bg-violet-600/80 hover:bg-violet-600 px-3 py-1.5 text-xs font-medium disabled:opacity-50"
+            className="rounded-lg bg-violet-600/80 hover:bg-violet-600 px-3 py-1.5 text-xs font-medium disabled:opacity-50 shrink-0"
           >
             Upload image → insert markdown
           </button>
@@ -382,6 +396,7 @@ export function AdminBlogSection({ adminKey }: Props) {
         <textarea
           ref={bodyRef}
           className={`${inputCls} min-h-[12rem] font-mono text-xs`}
+          style={{ fontFamily: blogMarkdownComposerFontFamily }}
           value={bodyMarkdown}
           onChange={(e) => setBodyMarkdown(e.target.value)}
           placeholder="Write in Markdown…"

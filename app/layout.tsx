@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import { AdSenseRouteCleanup } from "@/components/AdSenseRouteCleanup";
 import { BestPicksDocumentRouteClass } from "@/components/best-picks/BestPicksDocumentRouteClass";
-import { Inter } from "next/font/google";
+import { inter } from "@/lib/fonts";
 import "./globals.css";
-
-const inter = Inter({ subsets: ["latin"] });
 
 function siteMetadataBase(): URL {
   const explicit = process.env.NEXT_PUBLIC_SITE_URL?.trim();

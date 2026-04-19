@@ -9,6 +9,7 @@ import {
   type BlogPostRecord,
 } from '@/lib/blog-post';
 import { getFirebaseRealtimeDb, isFirebaseClientConfigured } from '@/lib/firebase-client';
+import { blogTextFontFamily } from '@/lib/fonts';
 
 export function BlogIndexClient() {
   const [posts, setPosts] = useState<BlogPostRecord[]>([]);
@@ -78,7 +79,7 @@ export function BlogIndexClient() {
   }
 
   return (
-    <ul className="space-y-6">
+    <ul className="space-y-6" style={{ fontFamily: blogTextFontFamily }}>
       {posts.map((p) => (
         <li key={p.slug} className="border-b border-white/10 pb-6 last:border-0 last:pb-0">
           <Link href={`/blog/${p.slug}`} className="group block">

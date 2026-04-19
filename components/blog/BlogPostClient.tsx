@@ -9,6 +9,7 @@ import {
   type BlogPostRecord,
 } from '@/lib/blog-post';
 import { getFirebaseRealtimeDb, isFirebaseClientConfigured } from '@/lib/firebase-client';
+import { blogTextFontFamily } from '@/lib/fonts';
 import { MarkdownBody } from '@/components/blog/MarkdownBody';
 
 export function BlogPostClient({ slug }: { slug: string }) {
@@ -93,7 +94,7 @@ export function BlogPostClient({ slug }: { slug: string }) {
   }
 
   return (
-    <article>
+    <article style={{ fontFamily: blogTextFontFamily }}>
       <Link href="/blog" className="text-sm text-white/60 hover:text-white underline-offset-2 mb-6 inline-block">
         ← All posts
       </Link>
