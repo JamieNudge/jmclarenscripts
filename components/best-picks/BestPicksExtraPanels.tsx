@@ -6,13 +6,14 @@ const scrollArea =
 
 const hr = 'border-0 border-t border-white/15 my-5';
 
-function BestPicksProphitPanelBody() {
+function BestPicksProphitPanelBody({ headingLevel = 'h2' }: { headingLevel?: 'h2' | 'h3' }) {
+  const TitleTag = headingLevel;
   return (
     <>
       <div className="flex flex-wrap items-center gap-2 mb-2 shrink-0 pr-2">
-        <h2 className="text-lg md:text-xl font-bold text-white tracking-tight min-w-0 flex-1">
+        <TitleTag className="text-lg md:text-xl font-bold text-white tracking-tight min-w-0 flex-1">
           ProphIt — Test Your Own Prediction Ideas in a living app!
-        </h2>
+        </TitleTag>
         <span
           className="shrink-0 rounded-full border border-amber-400/40 bg-amber-500/15 px-2.5 py-1 text-[11px] font-bold tracking-wide text-amber-100/95 shadow-sm shadow-amber-900/20"
           title="This project is in the research stage"
@@ -146,13 +147,13 @@ export function BestPicksNewProductPanel({ embedded = false }: { embedded?: bool
   if (embedded) {
     return (
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-        <BestPicksProphitPanelBody />
+        <BestPicksProphitPanelBody headingLevel="h3" />
       </div>
     );
   }
   return (
     <div className={`${bestPicksGridTileClassName} min-h-0`}>
-      <BestPicksProphitPanelBody />
+      <BestPicksProphitPanelBody headingLevel="h2" />
     </div>
   );
 }

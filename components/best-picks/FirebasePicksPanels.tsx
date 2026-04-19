@@ -14,6 +14,9 @@ function BestPicksComingSoonAndProphitPanel() {
   const m = bestPicksPopgoalsComingSoonMeta;
   return (
     <div className={`${bestPicksGridTileClassName} gap-0`}>
+      <h2 className="text-lg md:text-xl font-semibold text-white tracking-tight shrink-0 mb-3">
+        Coming Soon!
+      </h2>
       <section className="shrink-0 space-y-3 pb-4 border-b border-white/10">
         <div className="flex gap-3 min-w-0">
           <div className="shrink-0 rounded-2xl overflow-hidden border border-amber-200/20 bg-black/30 w-14 h-14 md:w-16 md:h-16">
@@ -27,9 +30,9 @@ function BestPicksComingSoonAndProphitPanel() {
           </div>
           <div className="min-w-0 flex-1 space-y-2">
             <div className="flex flex-wrap items-center gap-2 gap-y-1">
-              <h2 className="text-lg md:text-xl font-semibold text-white tracking-tight min-w-0">
+              <h3 className="text-base md:text-lg font-semibold text-white tracking-tight min-w-0">
                 {m.displayName}
-              </h2>
+              </h3>
               <span className="shrink-0 rounded-full border border-amber-400/35 bg-amber-500/12 px-2.5 py-1 text-[11px] font-bold tracking-wide text-amber-100/95">
                 Coming soon
               </span>

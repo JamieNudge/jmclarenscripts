@@ -264,6 +264,63 @@ function isEmptyKickoffSlot(v: unknown): boolean {
   return v == null || v === '';
 }
 
+function picksDateTimeZoneId(): string {
+  return process.env.NEXT_PUBLIC_PICKS_DATE_TIMEZONE?.trim() || 'Europe/London';
+}
+
+/**
+ * Interpret calendar date + clock as wall time in `timeZone` (e.g. Europe/London) and return UTC epoch ms.
+ * Used for UK `dd/mm/yyyy` strings from publishers; avoids treating those components as UTC (wrong in BST
+ * and near midnight when filtering with {@link picksDateStringInTimeZone}).
+ */
+export function wallClockInTimeZoneToUtcMs(
+  timeZone: string,
+  year: number,
+  month1To12: number,
+  day: number,
+  hour: number,
+  minute: number,
+): number | null {
+  if (
+    month1To12 < 1 ||
+    month1To12 > 12 ||
+    day < 1 ||
+    day > 31 ||
+    hour < 0 ||
+    hour > 23 ||
+    minute < 0 ||
+    minute > 59
+  ) {
+    return null;
+  }
+  const fmt = new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
+  const read = (utcMs: number) => {
+    const parts = fmt.formatToParts(new Date(utcMs));
+    const g = (tp: Intl.DateTimeFormatPartTypes) => Number(parts.find((p) => p.type === tp)?.value ?? NaN);
+    return { y: g('year'), mo: g('month'), d: g('day'), h: g('hour'), mi: g('minute') };
+  };
+  const matches = (utcMs: number) => {
+    const p = read(utcMs);
+    return p.y === year && p.mo === month1To12 && p.d === day && p.h === hour && p.mi === minute;
+  };
+
+  const anchor = Date.UTC(year, month1To12 - 1, day, hour, minute);
+  const radius = 30 * 60 * 60 * 1000; // ±30h: DST + anchor skew
+  for (let off = 0; off <= radius; off += 60 * 1000) {
+    if (matches(anchor + off)) return anchor + off;
+    if (off > 0 && matches(anchor - off)) return anchor - off;
+  }
+  return null;
+}
+
 /**
  * Epoch ms for sorting. Supports unix seconds/ms, ISO strings, UK-style dd/mm/yyyy (day first),
  * and Firestore-style `{ _seconds, _nanoseconds }` / `{ seconds, nanoseconds }`.
@@ -283,12 +340,15 @@ function timeUnknownToSortMs(v: unknown): number | null {
     const m = t.match(/^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})(?:[ T]+(\d{1,2}):(\d{2}))?/);
     if (m) {
       const day = Number(m[1]);
-      const month = Number(m[2]) - 1;
+      const month0 = Number(m[2]) - 1;
       const year = Number(m[3]);
       const hh = m[4] != null ? Number(m[4]) : 12;
       const min = m[5] != null ? Number(m[5]) : 0;
-      if (day >= 1 && day <= 31 && month >= 0 && month <= 11 && year >= 1900) {
-        parsed = Date.UTC(year, month, day, hh, min, 0, 0);
+      if (day >= 1 && day <= 31 && month0 >= 0 && month0 <= 11 && year >= 1900) {
+        const tz = picksDateTimeZoneId();
+        const asZoned = wallClockInTimeZoneToUtcMs(tz, year, month0 + 1, day, hh, min);
+        if (asZoned != null) return asZoned;
+        parsed = Date.UTC(year, month0, day, hh, min, 0, 0);
         if (!Number.isNaN(parsed)) return parsed;
       }
     }
@@ -574,6 +634,29 @@ export function picksDateStringInTimeZone(timeZone: string, when: Date = new Dat
   const d = parts.find((x) => x.type === 'day')?.value;
   if (y && m && d) return `${y}-${m}-${d}`;
   return when.toISOString().slice(0, 10);
+}
+
+/**
+ * Milliseconds until `picksDateStringInTimeZone(timeZone, date)` first differs from its value at `from`.
+ * Used to refresh RTDB `{dateKey}` listeners right after local calendar midnight (instead of only on a 60s tick).
+ */
+export function msUntilNextPicksCalendarDateKeyChange(
+  timeZone: string,
+  from: Date = new Date(),
+): number {
+  const cur = picksDateStringInTimeZone(timeZone, from);
+  let hi = from.getTime() + 2 * 60 * 60 * 1000;
+  let guard = 0;
+  while (guard++ < 40 && picksDateStringInTimeZone(timeZone, new Date(hi)) === cur) {
+    hi += 12 * 60 * 60 * 1000;
+  }
+  let lo = from.getTime();
+  while (hi - lo > 2000) {
+    const mid = Math.floor((lo + hi) / 2);
+    if (picksDateStringInTimeZone(timeZone, new Date(mid)) === cur) lo = mid;
+    else hi = mid;
+  }
+  return Math.max(500, hi - from.getTime());
 }
 
 export function statStrikeRtdbPathsFromEnv(dateKey: string): {
@@ -1224,7 +1307,7 @@ export function mergeUnanimousAndManual(
 }
 
 export function picksTimeZoneFromEnv(): string {
-  return process.env.NEXT_PUBLIC_PICKS_DATE_TIMEZONE?.trim() || 'Europe/London';
+  return picksDateTimeZoneId();
 }
 
 function numOrNull(v: unknown): number | null {
