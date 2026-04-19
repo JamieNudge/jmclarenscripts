@@ -502,6 +502,8 @@ export function parseDailyConsensusSelections(val: unknown): DailyConsensusFeedP
     const p = item as Record<string, unknown>;
     const fid = num(p.fixtureID ?? p.fixtureId);
     if (fid == null) continue;
+    const kickoffDisplay =
+      formatKickoffFromPickRecord(p as PickRecord) ?? str(p.kickoff).trim();
     picks.push({
       fixtureID: fid,
       home: str(p.home),
@@ -509,7 +511,7 @@ export function parseDailyConsensusSelections(val: unknown): DailyConsensusFeedP
       league: str(p.league),
       country: str(p.country),
       band: str(p.band),
-      kickoff: str(p.kickoff),
+      kickoff: kickoffDisplay,
       sources: num(p.sources) ?? 0,
       confidence: num(p.confidence) ?? 0,
       compositeScore: num(p.compositeScore) ?? 0,

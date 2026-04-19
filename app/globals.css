@@ -49,31 +49,55 @@ body {
 }
 
 /*
- * Best Picks only (`body.best-picks-route`): Google AdSense / Funding Choices CMP is injected
- * at the top by default. Pin common containers to the viewport bottom so it sits near the footer
- * (disclaimer / privacy). Selectors may need extending if Google changes markup.
+ * Best Picks only (`html.best-picks-route` / `body.best-picks-route`): Google AdSense / Funding
+ * Choices CMP (“Privacy and cookie settings”, consent UI) is often injected toward the top by
+ * default. Pin common roots and the message iframe to the viewport bottom so visitors see content
+ * first; the control stays available (Google cares that choices are accessible, not top vs bottom).
+ * Selectors may need extending if Google changes markup.
  */
+html.best-picks-route .fc-consent-root,
 body.best-picks-route .fc-consent-root {
   position: fixed !important;
-  top: auto !important;
-  bottom: 0 !important;
+  inset: auto 0 0 0 !important;
   left: 0 !important;
   right: 0 !important;
+  top: auto !important;
+  bottom: 0 !important;
   z-index: 2147483000 !important;
   margin: 0 !important;
 }
 
+html.best-picks-route iframe[src*='fundingchoicesmessages.google.com'],
 body.best-picks-route iframe[src*='fundingchoicesmessages.google.com'] {
   position: fixed !important;
+  inset: auto 0 0 0 !important;
+  left: 0 !important;
   top: auto !important;
   bottom: 0 !important;
-  left: 0 !important;
   width: 100vw !important;
   max-width: 100% !important;
   z-index: 2147482999 !important;
 }
 
+/* Direct wrapper around Funding Choices iframe (markup varies). */
+@supports selector(:has(> iframe)) {
+  html.best-picks-route body > div:has(> iframe[src*='fundingchoicesmessages.google.com']),
+  body.best-picks-route > div:has(> iframe[src*='fundingchoicesmessages.google.com']) {
+    position: fixed !important;
+    inset: auto 0 0 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: auto !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    z-index: 2147482998 !important;
+    margin: 0 !important;
+  }
+}
+
 /* /best-picks: lighter blue-slate base + layered radials for depth (not flat mid-gray). */
+html.best-picks-route .bp-best-picks-surface,
 body.best-picks-route .bp-best-picks-surface {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.055) 0%, transparent 32%),

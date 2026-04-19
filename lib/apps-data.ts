@@ -40,8 +40,9 @@ export const apps: App[] = [
   {
     id: 'goallab',
     name: 'GoalLab',
-    tagline: 'AI-Powered Football Forecast Lab',
-    description: 'A multi-model football prediction app that analyses Over and Under 2.5 Goals markets using four independent statistical models. GoalLab curates high-confidence Best Picks based on model agreement and historical win rates, with transparent confidence bands, a cloud-synced track record, and an ad-supported free tier.',
+    tagline: 'Over / Under 2.5 forecast lab',
+    description:
+      'A football prediction app for Over and Under 2.5 Goals markets, built around an 11-criteria algorithm with forecaster confidence, full track history, and a transparent track record. GoalLab surfaces curated Best Picks and performance insights, with an ad-supported free tier and optional ad-free subscription.',
     color: '#0891B2',
     icon: '/images/goallab-icon.png',
     screenshots: [
@@ -50,12 +51,12 @@ export const apps: App[] = [
       '/images/goallab-3.png',
     ],
     features: [
-      'Multi-model Over & Under 2.5 Goals forecasting',
-      'Curated Best Picks with model agreement filtering',
-      'Confidence bands with historical win rate tracking',
+      '11-criteria algorithm for Over & Under 2.5 goal bands',
+      'Forecaster confidence, full track history, transparent track record',
+      'Curated Best Picks when strict quality thresholds are met',
       'Firebase cloud-synced track record across devices',
       'Best Performing Leagues & Top Criteria insights',
-      'Ad-supported with premium ad-free option',
+      'Ad-supported free tier; optional ad-free subscription',
     ],
     platform: 'iOS',
     status: 'live',

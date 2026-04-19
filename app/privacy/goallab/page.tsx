@@ -4,7 +4,7 @@ import Link from 'next/link';
 export const metadata: Metadata = {
   title: 'GoalLab — Privacy Policy & Support',
   description:
-    'Privacy policy and support information for GoalLab, a multi-model football prediction app for Over and Under 2.5 Goals markets.',
+    'Privacy policy and support information for GoalLab, a football prediction app for Over and Under 2.5 Goals markets.',
 };
 
 export default function GoalLabPrivacySupportPage() {
@@ -34,9 +34,10 @@ export default function GoalLabPrivacySupportPage() {
           <h2 className="text-2xl font-semibold text-white mb-4">Privacy Policy</h2>
 
           <p>
-            GoalLab is a multi-model football prediction app that analyses Over and Under 2.5
-            Goals markets using multiple independent statistical models. This privacy policy
-            explains what data the app processes, how it is stored, and how it is used.
+            GoalLab is a football prediction app for Over and Under 2.5 Goals markets, built around
+            an 11-criteria algorithm with forecaster confidence, full track history, and a
+            transparent track record. This privacy policy explains what data the app processes,
+            how it is stored, and how it is used.
           </p>
 
           <h3 className="text-xl font-semibold mt-6">1. Data We Collect and Process</h3>
@@ -66,7 +67,7 @@ export default function GoalLabPrivacySupportPage() {
           <p>
             This information is stored locally on your device using iOS&apos;s standard storage
             mechanisms and synced via Firebase for cloud backup. It is used only to provide the
-            core features of GoalLab — displaying multi-model predictions, curating Best Picks,
+            core features of GoalLab — displaying forecasts and confidence, curating Best Picks,
             tracking performance, and managing your subscription status.
           </p>
 
@@ -180,10 +181,10 @@ export default function GoalLabPrivacySupportPage() {
 
           <h4 className="text-lg font-semibold mt-4">Why are no Best Picks showing?</h4>
           <p>
-            GoalLab curates Best Picks based on strict criteria — fixtures must have at least
-            three out of four model agreement and a historical win rate above the overall baseline.
-            If no picks appear, it may mean that today&apos;s fixtures don&apos;t meet the
-            quality threshold, or all picks have already kicked off and been cleared from the list.
+            GoalLab curates Best Picks based on strict criteria across the 11-criteria algorithm
+            (including forecaster confidence and historical context). If no picks appear, it may
+            mean that today&apos;s fixtures don&apos;t meet the quality threshold, or all picks
+            have already kicked off and been cleared from the list.
           </p>
 
           <h4 className="text-lg font-semibold mt-4">How often are predictions updated?</h4>
@@ -194,10 +195,10 @@ export default function GoalLabPrivacySupportPage() {
 
           <h4 className="text-lg font-semibold mt-4">What do the confidence bands mean?</h4>
           <p>
-            Each prediction is assigned a confidence percentage based on the strength of model
-            agreement and historical data. Higher confidence bands have historically correlated
-            with better win rates. You can view detailed performance by confidence band in the
-            Performance and Track Record sections.
+            Each prediction is assigned a confidence percentage based on forecaster confidence
+            and historical context. Higher confidence bands have historically correlated with better
+            win rates. You can view detailed performance by confidence band in the Performance and
+            Track Record sections.
           </p>
 
           <h4 className="text-lg font-semibold mt-4">How do I remove ads?</h4>
@@ -210,8 +211,8 @@ export default function GoalLabPrivacySupportPage() {
           <h4 className="text-lg font-semibold mt-4">Are predictions guaranteed?</h4>
           <p>
             No. GoalLab provides statistical analysis and predictions based on historical data
-            and multi-model pattern recognition. Predictions are not guarantees of outcomes.
-            Always gamble responsibly and within your means.
+            and the algorithm&apos;s criteria. Predictions are not guarantees of outcomes. Always
+            gamble responsibly and within your means.
           </p>
 
           <h3 className="text-xl font-semibold mt-6">Contact</h3>

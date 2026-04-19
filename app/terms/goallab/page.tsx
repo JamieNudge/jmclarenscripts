@@ -4,7 +4,7 @@ import Link from 'next/link';
 export const metadata: Metadata = {
   title: 'GoalLab — Terms of Use',
   description:
-    'Terms of Use for GoalLab, a multi-model football prediction app for Over and Under 2.5 Goals markets.',
+    'Terms of Use for GoalLab, a football prediction app for Over and Under 2.5 Goals markets using an 11-criteria algorithm.',
 };
 
 export default function GoalLabTermsPage() {
@@ -38,10 +38,11 @@ export default function GoalLabTermsPage() {
 
           <h2 className="text-xl font-semibold mt-8">1. Nature of the Service</h2>
           <p>
-            GoalLab is a multi-model football prediction application. It analyses Over and Under
-            2.5 Goals markets using four independent statistical models, curating high-confidence
-            Best Picks based on model agreement and historical win rates. The app provides
-            confidence bands, transparent track records, and performance insights.
+            GoalLab is a football prediction application for Over and Under 2.5 Goals markets. It
+            uses an 11-criteria algorithm with forecaster confidence, full track history, and a
+            transparent track record, and it surfaces curated Best Picks when fixtures meet strict
+            quality thresholds. The app provides confidence bands, performance insights, and
+            historical tracking.
           </p>
           <p className="font-semibold text-yellow-400">
             GoalLab is for informational and entertainment purposes only. Predictions are not

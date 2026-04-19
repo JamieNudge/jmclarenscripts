@@ -45,8 +45,9 @@ export function BestPicksIntro({ dateKey }: { dateKey: string }) {
                 criteria-style confidence on goal bands (App Store link in the first grid tile).
               </li>
               <li>
-                <span className="font-semibold text-amber-100/90">GoalLab</span> — Four independent models on Over /
-                Under 2.5; curated picks when models align.
+                <span className="font-semibold text-amber-100/90">GoalLab</span> — An 11-criteria algorithm forecasting
+                Over 2.5 and Under 2.5 goal bands with forecaster confidence, full track history and transparent track
+                record.
               </li>
               <li>
                 <span className="font-semibold text-amber-100/90">This page</span> —{' '}

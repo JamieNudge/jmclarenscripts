@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { AdSenseLoader } from '@/components/AdSenseLoader';
-import { BestPicksRouteBodyClass } from '@/components/best-picks/BestPicksRouteBodyClass';
 
 /**
  * Tab / bookmark icon for `/best-picks` only (not the same as `og:image` for link previews).
@@ -18,7 +17,6 @@ export const metadata: Metadata = {
 export default function BestPicksLayout({ children }: { children: ReactNode }) {
   return (
     <>
-      <BestPicksRouteBodyClass />
       <AdSenseLoader />
       {children}
     </>

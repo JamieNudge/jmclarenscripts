@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'GoalLab — Age & Content Rating',
   description:
-    'Age suitability and content rating information for GoalLab, a multi-model football prediction app for Over and Under 2.5 Goals markets.',
+    'Age suitability and content rating information for GoalLab, a football prediction app for Over and Under 2.5 Goals markets.',
 };
 
 export default function GoalLabContentRatingPage() {
@@ -39,14 +39,15 @@ export default function GoalLabContentRatingPage() {
 
           <h2 className="text-xl font-semibold mt-4">Gambling &amp; Betting Content</h2>
           <p>
-            GoalLab provides multi-model statistical analysis and predictions for Over and Under
-            2.5 Goals betting markets. The app includes:
+            GoalLab provides statistical analysis and predictions for Over and Under 2.5 Goals
+            betting markets using an 11-criteria algorithm with forecaster confidence. The app
+            includes:
           </p>
           <ul className="list-disc list-inside space-y-1 ml-4">
-            <li>Multi-model statistical analysis of football fixtures</li>
-            <li>Over and Under 2.5 Goals prediction forecasts</li>
-            <li>Confidence scoring with historical win rate bands</li>
-            <li>Curated Best Picks based on model agreement</li>
+            <li>11-criteria forecasting for Over and Under 2.5 goal bands</li>
+            <li>Forecaster confidence and historical win-rate context</li>
+            <li>Transparent track record and full track history</li>
+            <li>Curated Best Picks when strict quality thresholds are met</li>
             <li>Historical performance tracking and match statistics</li>
           </ul>
           <p className="mt-4">
@@ -137,10 +138,10 @@ export default function GoalLabContentRatingPage() {
 
           <h2 className="text-xl font-semibold mt-4">Legal Disclaimer</h2>
           <p>
-            This application provides statistical football data and predictive analysis for
-            Over and Under 2.5 Goals markets using multiple independent models. The content is
-            supplied for information and entertainment purposes only and does not constitute
-            betting advice, financial advice, or a recommendation to place wagers.
+            This application provides statistical football data and predictive analysis for Over
+            and Under 2.5 Goals markets using an 11-criteria algorithm. The content is supplied for
+            information and entertainment purposes only and does not constitute betting advice,
+            financial advice, or a recommendation to place wagers.
           </p>
           <p>
             No guarantee is made, express or implied, as to the accuracy, performance, or outcome of
@@ -161,11 +162,11 @@ export default function GoalLabContentRatingPage() {
 
           <h2 className="text-xl font-semibold mt-4">Summary</h2>
           <p>
-            GoalLab is a <span className="font-semibold">multi-model football prediction
-            lab</span> for Over and Under 2.5 Goals markets, intended for adults who are interested
-            in data-driven betting insights. The app contains no violent, sexual, or graphic
-            content, but does provide betting-related advice that is restricted to users 18 years
-            and older.
+            GoalLab is a <span className="font-semibold">football prediction lab</span> for Over
+            and Under 2.5 Goals markets (11-criteria algorithm, forecaster confidence, transparent
+            track record), intended for adults who are interested in data-driven betting insights.
+            The app contains no violent, sexual, or graphic content, but does provide
+            betting-related advice that is restricted to users 18 years and older.
           </p>
 
           <h2 className="text-xl font-semibold mt-4">Questions</h2>

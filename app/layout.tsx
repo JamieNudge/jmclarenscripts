@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AdSenseRouteCleanup } from "@/components/AdSenseRouteCleanup";
+import { BestPicksDocumentRouteClass } from "@/components/best-picks/BestPicksDocumentRouteClass";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
@@ -38,6 +39,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} antialiased`}>
+        <BestPicksDocumentRouteClass />
         <AdSenseRouteCleanup />
         {children}
       </body>

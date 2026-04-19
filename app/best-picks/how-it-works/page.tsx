@@ -21,8 +21,9 @@ export default function BestPicksHowItWorksPage() {
             criteria-style confidence on goal bands (App Store link on the main Best Picks page).
           </li>
           <li>
-            <span className="font-semibold text-amber-100/90">GoalLab</span> — Four independent models on Over /
-            Under 2.5; curated picks when models align.
+            <span className="font-semibold text-amber-100/90">GoalLab</span> — An 11-criteria algorithm forecasting
+            Over 2.5 and Under 2.5 goal bands with forecaster confidence, full track history and transparent track
+            record.
           </li>
           <li>
             <span className="font-semibold text-amber-100/90">This page</span> —{' '}
@@ -36,18 +37,6 @@ export default function BestPicksHowItWorksPage() {
         <p>
           Picks are <strong className="font-medium text-white">informational</strong> only — not betting tips,
           promises, or financial advice.
-        </p>
-        <p>
-          <strong className="font-medium text-white">Latest Research Selections</strong> reads{' '}
-          <code className="text-xs text-white/65 bg-black/30 px-1.5 py-0.5 rounded">dailyConsensusSelections</code> and{' '}
-          <code className="text-xs text-white/65 bg-black/30 px-1.5 py-0.5 rounded">researchAlgorithmSelections</code>{' '}
-          for the London calendar date shown on the Best Picks headline. Over and Under 2.5 style bands can both
-          appear when your upload includes them.
-        </p>
-        <p>
-          <strong className="font-medium text-white">Stat labels</strong> on model lines use whatever match window the
-          forecasting pipeline attached; it can differ by statistic — not always a fixed &quot;last six&quot; sample
-          unless the label says so.
         </p>
         <p className="text-xs text-white/55">
           App terms and privacy: see App Store listings and the{' '}

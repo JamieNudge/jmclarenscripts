@@ -124,22 +124,20 @@ export default function BestPicksPage() {
                               </div>
                             )}
                           </div>
-                          <div className="min-w-0 flex-1">
-                            <div className="flex flex-wrap items-center gap-2">
+                          <div className="min-w-0 flex-1 flex flex-col gap-1.5">
+                            <span
+                              className={`text-sm font-semibold underline underline-offset-2 ${storeLinkAccentClass(app.id)}`}
+                            >
+                              {app.name}
+                            </span>
+                            {app.appStoreTrialNote ? (
                               <span
-                                className={`text-sm font-semibold underline underline-offset-2 ${storeLinkAccentClass(app.id)}`}
+                                className={`self-start max-w-full text-[10px] sm:text-xs font-semibold leading-snug normal-case tracking-normal rounded-lg px-2 py-1 ${trialNotePillClass(app.id)}`}
                               >
-                                {app.name}
+                                {app.appStoreTrialNote}
                               </span>
-                              {app.appStoreTrialNote ? (
-                                <span
-                                  className={`shrink-0 text-[10px] sm:text-xs font-bold uppercase tracking-wide rounded-full px-2 py-0.5 ${trialNotePillClass(app.id)}`}
-                                >
-                                  {app.appStoreTrialNote}
-                                </span>
-                              ) : null}
-                            </div>
-                            <span className="block text-xs text-white/45 mt-0.5">App Store</span>
+                            ) : null}
+                            <span className="block text-xs text-white/45">App Store</span>
                           </div>
                         </a>
                       </li>
