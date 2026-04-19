@@ -9,8 +9,7 @@ import {
   type BlogPostRecord,
 } from '@/lib/blog-post';
 import { getFirebaseRealtimeDb, isFirebaseClientConfigured } from '@/lib/firebase-client';
-import { blogTextFontFamily } from '@/lib/fonts';
-import { MarkdownBody } from '@/components/blog/MarkdownBody';
+import { BlogPostArticleView } from '@/components/blog/BlogPostArticleView';
 
 export function BlogPostClient({ slug }: { slug: string }) {
   const [loading, setLoading] = useState(true);
@@ -86,6 +85,14 @@ export function BlogPostClient({ slug }: { slug: string }) {
     return (
       <div className="space-y-4">
         <p className="text-sm text-white/70">This post is not available or is still a draft.</p>
+        <p className="text-xs text-white/50 leading-relaxed max-w-xl">
+          To preview a <strong className="text-white/65">draft</strong> before publishing, open{' '}
+          <Link href="/admin/picks" className="text-amber-200/85 underline underline-offset-2 hover:text-amber-50/95">
+            Admin picks
+          </Link>
+          , paste your admin key, find the post in the list, and use <strong className="text-white/65">Preview</strong>{' '}
+          (opens <code className="text-[11px] text-white/45">/admin/blog-preview/…</code>).
+        </p>
         <Link href="/blog" className="text-sm text-amber-200/85 underline underline-offset-2 hover:text-amber-50/95">
           ← Back to blog
         </Link>
@@ -93,24 +100,5 @@ export function BlogPostClient({ slug }: { slug: string }) {
     );
   }
 
-  return (
-    <article style={{ fontFamily: blogTextFontFamily }}>
-      <Link href="/blog" className="text-sm text-white/60 hover:text-white underline-offset-2 mb-6 inline-block">
-        ← All posts
-      </Link>
-      <header className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">{post.title}</h1>
-        <p className="text-xs text-white/45 tabular-nums">
-          {post.publishedAt?.slice(0, 10) ?? post.updatedAt.slice(0, 10)}
-        </p>
-      </header>
-      {post.headerImageUrl ? (
-        <div className="mb-8 rounded-xl overflow-hidden border border-white/10">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={post.headerImageUrl} alt="" className="w-full max-h-[min(420px,50vh)] object-cover" />
-        </div>
-      ) : null}
-      <MarkdownBody markdown={post.bodyMarkdown} />
-    </article>
-  );
+  return <BlogPostArticleView post={post} />;
 }

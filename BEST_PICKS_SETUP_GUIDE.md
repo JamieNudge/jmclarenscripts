@@ -187,6 +187,20 @@ You will paste that **one line** into Vercel as **`FIREBASE_SERVICE_ACCOUNT_JSON
    | **`FIREBASE_SERVICE_ACCOUNT_JSON`** | The **one-line** JSON from **D3** | Same |
    | **`FIREBASE_DATABASE_URL`** (optional) | Same as **`NEXT_PUBLIC_FIREBASE_DATABASE_URL`** | Only if the server complains it can’t find the DB URL |
 
+### D4b — Blog images: “The specified bucket does not exist” (Storage)
+
+Uploading a header image on **`/admin/picks`** calls **`POST /api/admin/blog-media`**, which writes to **Google Cloud Storage** using the bucket name from:
+
+- **`FIREBASE_STORAGE_BUCKET`** or **`NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`**, or  
+- if neither is set, **`{project_id}.appspot.com`** derived from the service account JSON.
+
+**Fix:**
+
+1. In **[Firebase Console](https://console.firebase.google.com)** → your project → **Build** → **Storage** — if Storage was never enabled, go through **Get started** once (creates the default bucket).
+2. Confirm the bucket name: **Project settings** (gear) → **Your apps** → Web app’s **`storageBucket`** value, or the **`gs://…`** name shown in Storage. It is often **`something.appspot.com`** or, on newer projects, **`something.firebasestorage.app`**.
+3. On **Vercel**, add **`FIREBASE_STORAGE_BUCKET`** with that **exact** string (no `gs://` prefix), **Save**, then **Redeploy**.  
+   If your **`NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`** already matches the console but uploads still 404, set **`FIREBASE_STORAGE_BUCKET`** to the same value explicitly so the server is not guessing from `project_id` alone.
+
 3. **Save**, then **Redeploy** the project (Deployments → ⋯ → Redeploy).  
    Server-side env vars are read at **runtime** for the API route, but a redeploy avoids confusion.
 

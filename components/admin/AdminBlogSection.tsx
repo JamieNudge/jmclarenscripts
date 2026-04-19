@@ -301,13 +301,28 @@ export function AdminBlogSection({ adminKey }: Props) {
                   <span className="text-white/40 text-xs">draft</span>
                 )}
               </span>
-              <span className="flex gap-2 shrink-0">
+              <span className="flex flex-wrap gap-2 shrink-0">
                 <button type="button" className="text-cyan-300 text-xs hover:underline" onClick={() => void loadOne(p.slug)}>
                   Edit
                 </button>
-                <Link href={`/blog/${p.slug}`} className="text-amber-200/80 text-xs hover:underline" target="_blank" rel="noopener noreferrer">
-                  View
+                <Link
+                  href={`/admin/blog-preview/${encodeURIComponent(p.slug)}`}
+                  className="text-violet-200/90 text-xs hover:underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Preview
                 </Link>
+                {p.published ? (
+                  <Link
+                    href={`/blog/${encodeURIComponent(p.slug)}`}
+                    className="text-amber-200/80 text-xs hover:underline"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Live
+                  </Link>
+                ) : null}
                 <button type="button" className="text-red-300 text-xs hover:underline" onClick={() => void deletePost(p.slug)}>
                   Delete
                 </button>
@@ -344,8 +359,9 @@ export function AdminBlogSection({ adminKey }: Props) {
           </label>
           <p className="text-[10px] text-white/40 leading-snug text-left sm:text-right max-w-md sm:ml-auto">
             Drafts: leave this off and choose <span className="text-white/55">Create post</span> or{' '}
-            <span className="text-white/55">Update post</span> — work is saved under your slug. Later,{' '}
-            <span className="text-white/55">Refresh list</span> → <span className="text-white/55">Edit</span>. Public{' '}
+            <span className="text-white/55">Update post</span> — work is saved under your slug. Use{' '}
+            <span className="text-white/55">Preview</span> in the list (after save) to open{' '}
+            <code className="text-white/50">/admin/blog-preview/…</code> with your admin key. Public{' '}
             <code className="text-white/50">/blog</code> only lists published posts.
           </p>
         </div>
@@ -433,7 +449,7 @@ export function AdminBlogSection({ adminKey }: Props) {
         <textarea className={`${inputCls} mt-1 min-h-[4rem]`} value={excerpt} onChange={(e) => setExcerpt(e.target.value)} placeholder="Short summary for the blog index (optional but recommended)" />
       </div>
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap items-center gap-3">
         <button
           type="button"
           disabled={!canUse || blogLoading}
@@ -442,6 +458,19 @@ export function AdminBlogSection({ adminKey }: Props) {
         >
           {editingSlug ? 'Update post' : 'Create post'}
         </button>
+        {slug.trim() ? (
+          <span className="text-[11px] text-white/45">
+            <Link
+              href={`/admin/blog-preview/${encodeURIComponent(slug.trim().toLowerCase())}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-violet-200/90 hover:underline"
+            >
+              Preview this slug
+            </Link>{' '}
+            — loads the <strong className="text-white/55">saved</strong> post; save first if you edited copy.
+          </span>
+        ) : null}
       </div>
 
       {blogStatus ? (

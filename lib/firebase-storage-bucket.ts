@@ -1,5 +1,8 @@
 /**
- * Storage bucket for Admin uploads (blog images). Prefer explicit env; else `{project_id}.appspot.com`.
+ * Storage bucket for Admin uploads (blog images).
+ * Prefer **`FIREBASE_STORAGE_BUCKET`** (or `NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET`) with the exact name from Firebase.
+ * If unset, falls back to **`{project_id}.appspot.com`** from the service account JSON — that default is wrong for some
+ * newer Firebase projects, which use **`{project_id}.firebasestorage.app`** until you set the env explicitly.
  */
 export function firebaseAdminStorageBucket(): string | null {
   const fromEnv =

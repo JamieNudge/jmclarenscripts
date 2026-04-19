@@ -99,7 +99,23 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ url, path: objectPath });
   } catch (e) {
-    const msg = e instanceof Error ? e.message : 'Upload failed';
-    return NextResponse.json({ error: msg }, { status: 500 });
+    const raw = e instanceof Error ? e.message : String(e);
+    const bucketMissing =
+      raw.includes('does not exist') ||
+      raw.includes('"code": 404') ||
+      raw.includes('notFound') ||
+      raw.includes('No such bucket');
+
+    if (bucketMissing) {
+      return NextResponse.json(
+        {
+          error:
+            'Firebase Storage bucket was not found. In Firebase Console open Storage and complete setup if you have not already, then copy the bucket name from Project settings (Web app storageBucket) or from the Storage files page (gs://…). Set it on the server as FIREBASE_STORAGE_BUCKET (recommended) or ensure NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET matches exactly. New projects sometimes use YOUR_PROJECT.firebasestorage.app instead of YOUR_PROJECT.appspot.com.',
+        },
+        { status: 503 },
+      );
+    }
+
+    return NextResponse.json({ error: raw }, { status: 500 });
   }
 }
