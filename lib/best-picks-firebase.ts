@@ -808,6 +808,53 @@ function researchFixtureBandKey(p: PickRecord): string {
 }
 
 /**
+ * When several model lines merge into one card, the row that becomes `group[0]` is arbitrary (Map iteration order).
+ * Apps often reconcile one selection object last; chips were reading only `group[0]` and could stay pending while
+ * another merged row already had scores/outcome. Prefer the most-reconciled row for result fields.
+ */
+function researchPickUpdatedAtMs(p: PickRecord): number {
+  const raw = p.updatedAt ?? p.lastUpdated ?? p.reconciledAt ?? p.timestamp ?? p.serverTimestamp;
+  const n = num(raw);
+  if (n == null) return 0;
+  return n < 10_000_000_000 ? n * 1000 : n;
+}
+
+function researchPickReconciliationRank(p: PickRecord): number {
+  let r = 0;
+  const hs = num(p.homeScore ?? p.homeGoals);
+  const aws = num(p.awayScore ?? p.awayGoals);
+  if (hs != null && aws != null) r += 20;
+  else if (pickScoreSummaryLine(p)) r += 8;
+  const oc = (pickPrimitiveText(p.outcome) ?? '').toLowerCase();
+  if (oc === 'win' || oc === 'loss') r += 12;
+  else if (oc === 'void') r += 6;
+  else if (oc && oc !== 'pending') r += 3;
+  return r;
+}
+
+function pickBestReconciledInResearchGroup(group: PickRecord[]): PickRecord {
+  return group.reduce((best, cur) => {
+    const rb = researchPickReconciliationRank(best);
+    const rc = researchPickReconciliationRank(cur);
+    if (rc > rb) return cur;
+    if (rc < rb) return best;
+    const tb = researchPickUpdatedAtMs(best);
+    const tc = researchPickUpdatedAtMs(cur);
+    return tc >= tb ? cur : best;
+  });
+}
+
+/** Copy settled score/outcome from donor when present (used after picking best row in a merge group). */
+function overlayResearchResultFields(base: PickRecord, donor: PickRecord): PickRecord {
+  const out: PickRecord = { ...base };
+  for (const k of GROUP_RESULT_INHERIT_KEYS) {
+    const v = donor[k];
+    if (!isEmptyResultInheritSlot(v)) out[k] = v;
+  }
+  return out;
+}
+
+/**
  * All Models uploads one `selections[]` entry per source app line; same fixture can repeat.
  * Collapse to one row per fixture+band with stacked subtitle lines.
  */
@@ -825,7 +872,9 @@ function mergeResearchPicksSameFixtureBand(picks: PickRecord[]): PickRecord[] {
       out.push(group[0]);
       continue;
     }
-    const anchor: PickRecord = { ...group[0] };
+    const anchorBase: PickRecord = { ...group[0] };
+    const best = pickBestReconciledInResearchGroup(group);
+    const anchor = overlayResearchResultFields(anchorBase, best);
     const lines = group
       .map((p) => researchAlgorithmPickSubtitleFromAllModels(p))
       .filter((s): s is string => s != null && s.length > 0);
