@@ -32,7 +32,8 @@ export const BLOG_POSTS_RTDB_ROOT = 'blogPosts';
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 const MAX_TITLE = 200;
-const MAX_EXCERPT = 800;
+/** Matches API trimming for list-view excerpts. */
+export const BLOG_POST_EXCERPT_MAX_CHARS = 800;
 const MAX_BODY = 500_000;
 const MAX_URL = 2000;
 
@@ -75,7 +76,7 @@ export function normalizeBlogPostInput(
   const title = trimStr(body.title ?? existing?.title, MAX_TITLE);
   if (!title) return { ok: false, error: 'Title is required.' };
 
-  const excerpt = trimStr(body.excerpt ?? existing?.excerpt ?? '', MAX_EXCERPT);
+  const excerpt = trimStr(body.excerpt ?? existing?.excerpt ?? '', BLOG_POST_EXCERPT_MAX_CHARS);
   const bodyMarkdown = trimStr(body.bodyMarkdown ?? existing?.bodyMarkdown ?? '', MAX_BODY);
 
   let headerImageUrl: string | null =
@@ -123,7 +124,7 @@ export function parseBlogPostFromRtdb(val: unknown): BlogPostRecord | null {
   if (!slug) return null;
   const title = trimStr(o.title, MAX_TITLE);
   if (!title) return null;
-  const excerpt = trimStr(o.excerpt, MAX_EXCERPT);
+  const excerpt = trimStr(o.excerpt, BLOG_POST_EXCERPT_MAX_CHARS);
   const bodyMarkdown = trimStr(o.bodyMarkdown, MAX_BODY);
   const published = Boolean(o.published);
   const publishedAt = typeof o.publishedAt === 'string' && o.publishedAt.trim() ? o.publishedAt.trim() : null;

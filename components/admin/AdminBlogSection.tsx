@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import type { BlogPostRecord } from '@/lib/blog-post';
 import { blogMarkdownComposerFontFamily } from '@/lib/fonts';
+import { suggestBlogExcerptFromMarkdown } from '@/lib/suggest-blog-excerpt';
 
 type Props = {
   adminKey: string;
@@ -331,8 +332,8 @@ export function AdminBlogSection({ adminKey }: Props) {
           />
           {editingSlug ? <p className="text-[10px] text-white/35 mt-1">Slug is fixed while editing. New post to pick a new slug.</p> : null}
         </div>
-        <div className="flex items-end">
-          <label className="flex items-center gap-2 text-sm text-white/70 cursor-pointer">
+        <div className="flex flex-col items-stretch sm:items-end gap-1.5">
+          <label className="flex items-center gap-2 text-sm text-white/70 cursor-pointer sm:justify-end">
             <input
               type="checkbox"
               checked={published}
@@ -341,19 +342,18 @@ export function AdminBlogSection({ adminKey }: Props) {
             />
             Published (visible on /blog)
           </label>
+          <p className="text-[10px] text-white/40 leading-snug text-left sm:text-right max-w-md sm:ml-auto">
+            Drafts: leave this off and choose <span className="text-white/55">Create post</span> or{' '}
+            <span className="text-white/55">Update post</span> — work is saved under your slug. Later,{' '}
+            <span className="text-white/55">Refresh list</span> → <span className="text-white/55">Edit</span>. Public{' '}
+            <code className="text-white/50">/blog</code> only lists published posts.
+          </p>
         </div>
       </div>
 
       <div>
         <label className="text-xs text-white/45">Title</label>
         <input className={`${inputCls} mt-1`} value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Post title" />
-      </div>
-      <div>
-        <div className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-0.5">
-          <label className="text-xs text-white/45">Excerpt (list view)</label>
-          <span className="text-[11px] text-white/40 tabular-nums shrink-0">{countWords(excerpt)} words</span>
-        </div>
-        <textarea className={`${inputCls} mt-1 min-h-[4rem]`} value={excerpt} onChange={(e) => setExcerpt(e.target.value)} placeholder="Short summary" />
       </div>
 
       <div>
@@ -401,6 +401,36 @@ export function AdminBlogSection({ adminKey }: Props) {
           onChange={(e) => setBodyMarkdown(e.target.value)}
           placeholder="Write in Markdown…"
         />
+      </div>
+
+      <div>
+        <div className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-1">
+          <label className="text-xs text-white/45">Excerpt (list view)</label>
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
+            <span className="text-[11px] text-white/40 tabular-nums">{countWords(excerpt)} words</span>
+            <button
+              type="button"
+              disabled={!bodyMarkdown.trim()}
+              title={!bodyMarkdown.trim() ? 'Add body text first' : 'Fill excerpt from body (you can edit after)'}
+              onClick={() => {
+                const s = suggestBlogExcerptFromMarkdown(bodyMarkdown);
+                if (!s) {
+                  setBlogStatus('Nothing to summarise — add readable text to the body first.');
+                  return;
+                }
+                setExcerpt(s);
+                setBlogStatus('Excerpt suggested from body — edit if you like, then save.');
+              }}
+              className="rounded-md border border-white/20 bg-white/10 px-2.5 py-1 text-[11px] font-medium text-amber-100/90 hover:bg-white/15 disabled:opacity-40 disabled:pointer-events-none"
+            >
+              Suggest from body
+            </button>
+          </div>
+        </div>
+        <p className="text-[10px] text-white/35 mt-1 leading-snug">
+          Heuristic only — strips common Markdown, takes the opening sentence or two (up to the excerpt length limit), then you edit.
+        </p>
+        <textarea className={`${inputCls} mt-1 min-h-[4rem]`} value={excerpt} onChange={(e) => setExcerpt(e.target.value)} placeholder="Short summary for the blog index (optional but recommended)" />
       </div>
 
       <div className="flex flex-wrap gap-2">
