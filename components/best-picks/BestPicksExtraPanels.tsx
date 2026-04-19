@@ -140,7 +140,7 @@ function BestPicksProphitPanelBody() {
 
 /**
  * @param embedded When true, omits the outer tile shell so this can sit inside a combined grid cell
- * (e.g. with PopGoals / PoPBeT above it). Parent must be a flex column with `min-h-0` + `flex-1` for the scroll region.
+ * (e.g. with PopGoals above it). Parent must be a flex column with `min-h-0` + `flex-1` for the scroll region.
  */
 export function BestPicksNewProductPanel({ embedded = false }: { embedded?: boolean }) {
   if (embedded) {

@@ -9,7 +9,7 @@ import { bestPicksGridTileClassName } from '@/lib/best-picks-panel-shell';
 import { bestPicksPopgoalsComingSoonMeta } from '@/lib/best-picks-popgoals-coming-soon-meta';
 import { isFirebaseClientConfigured } from '@/lib/firebase-client';
 
-/** Right column: PopGoals (PoPBeT) teaser + ProphIt in one tile (md: spans both rows). */
+/** Right column: PopGoals teaser + ProphIt in one tile (md: spans both rows). */
 function BestPicksComingSoonAndProphitPanel() {
   const m = bestPicksPopgoalsComingSoonMeta;
   return (
@@ -35,12 +35,8 @@ function BestPicksComingSoonAndProphitPanel() {
               </span>
             </div>
             <p className="text-sm text-white/60 leading-relaxed">
-              iOS app in development ({m.xcodeTarget} target). Store listing and preview copy will follow.
+              iOS app in development. App Store listing and preview copy will follow.
             </p>
-            <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs text-white/45 max-w-md">
-              <dt className="font-medium text-white/50">Marketing version</dt>
-              <dd className="tabular-nums">{m.marketingVersion}</dd>
-            </dl>
           </div>
         </div>
       </section>
