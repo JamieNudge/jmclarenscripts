@@ -143,12 +143,12 @@ export default function AppCarousel({ apps, onAppSelect }: AppCarouselProps) {
                         }}
                       >
                         <div className="text-center">
-                          <div className="relative w-24 h-24 bg-white rounded-3xl shadow-lg flex items-center justify-center mb-6 mx-auto overflow-visible">
+                          <div className="relative w-24 h-24 bg-white rounded-3xl shadow-lg mb-6 mx-auto overflow-hidden">
                             {app.icon ? (
                               <img
                                 src={app.icon}
                                 alt=""
-                                className="w-[88%] h-[88%] object-contain rounded-2xl"
+                                className="h-full w-full object-cover"
                                 style={betaMarketingIconClipStyle(app)}
                               />
                             ) : (

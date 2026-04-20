@@ -24,8 +24,8 @@ export interface App {
   platform: 'iOS' | 'macOS' | 'Web' | 'Cross-platform';
   status: 'live' | 'beta' | 'coming-soon' | 'in-review';
   /**
-   * When `false`, skip clip-path that hides an embedded “BETA” chip on the PNG.
-   * Omit for beta apps whose marketing icon still includes that chip.
+   * When `true`, clip the bottom-right of the icon image to hide a baked-in “BETA” chip (the site
+   * already shows a BETA pill). Leave unset/false for normal square marketing icons.
    */
   iconHasEmbeddedBetaBadge?: boolean;
   /** When set, show a second badge for Android/Google Play (e.g. app is Live on iOS but in review on Google Play). */

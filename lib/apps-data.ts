@@ -85,7 +85,6 @@ export const apps: App[] = [
     ],
     platform: 'iOS',
     status: 'beta',
-    iconHasEmbeddedBetaBadge: false,
     privacyUrl: '/privacy/popgoals',
     termsUrl: '/terms/popgoals',
     supportUrl: '/support/popgoals',
@@ -126,11 +125,7 @@ export const apps: App[] = [
       'Contact Care is a cross-platform app for managing and caring for your contacts. Placeholder — full description and features to be added.',
     color: '#14B8A6',
     icon: '/images/contact-care-icon.png',
-    screenshots: [
-      '/images/contact-care-1.png',
-      '/images/contact-care-2.png',
-      '/images/contact-care-3.png',
-    ],
+    screenshots: [],
     features: [
       'Cross-platform (iOS & Android)',
       'Placeholder — features to be added',
@@ -253,7 +248,6 @@ export const apps: App[] = [
     ],
     platform: 'macOS',
     status: 'beta',
-    iconHasEmbeddedBetaBadge: false,
     websiteUrl: 'https://github.com/JamieNudge/IconResizerAppleApps',
     privacyUrl: '/privacy/icon-resizer',
     supportUrl: '/support/icon-resizer',
