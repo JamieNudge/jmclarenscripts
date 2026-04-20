@@ -153,6 +153,11 @@ export default function WebsitePrivacyPage() {
                 PopGoals — privacy policy
               </Link>
             </li>
+            <li>
+              <Link href="/privacy/icon-resizer" className="underline hover:text-blue-300">
+                Icon Resizer — privacy policy
+              </Link>
+            </li>
           </ul>
           <p>
             Other apps linked from the portfolio have policies under{' '}

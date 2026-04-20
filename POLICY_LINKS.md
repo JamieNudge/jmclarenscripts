@@ -41,6 +41,13 @@ Use these full URLs in app store listings (e.g. Google Play, App Store) and in-a
 
 ---
 
+## Icon Resizer (macOS)
+- Privacy: https://jmclarenscripts.vercel.app/privacy/icon-resizer
+- Support: https://jmclarenscripts.vercel.app/support/icon-resizer
+- Accessibility: https://jmclarenscripts.vercel.app/accessibility/icon-resizer
+
+---
+
 ## Other apps
 - Nudgetronic: `/privacy/nudgetronic`, `/support/nudgetronic`
 - Recipe Saviour: `/privacy/recipe-saviour`, `/support/recipe-saviour`
