@@ -87,12 +87,28 @@ export default function StatStrikePrivacySupportPage() {
             access. The app does not modify or share this data with other services.
           </p>
 
-          <h3 className="text-xl font-semibold mt-6">3. No Accounts, Analytics or Ads</h3>
+          <h3 className="text-xl font-semibold mt-6">3. Advertising and Third-Party Services</h3>
           <p>
-            StatStrike does not use in-app analytics SDKs (such as Google Analytics or Firebase),
-            does not track you across other apps or websites, and does not include third-party
-            advertising. The app does not collect your name, email address, payment details, or any
-            other personal profile information.
+            StatStrike may display banner advertisements through Google AdMob while you are using
+            the free tier of the app. If you purchase an eligible subscription, those ads are
+            removed while the subscription remains active.
+          </p>
+          <ul className="list-disc list-inside space-y-1 ml-4">
+            <li>
+              <span className="font-semibold">Google AdMob:</span> Used to show banner ads to users
+              on the free tier. AdMob may process device identifiers and ad-related data to deliver
+              personalised or non-personalised ads, subject to your device settings and Google&apos;s
+              policies.
+            </li>
+            <li>
+              <span className="font-semibold">Apple App Store:</span> Used to process subscriptions
+              and purchases that unlock premium or ad-free access.
+            </li>
+          </ul>
+          <p>
+            StatStrike does not require an account and does not add separate social tracking SDKs.
+            Aside from ad delivery on the free tier, the app does not collect your name, email
+            address, or other personal profile information directly.
           </p>
 
           <h3 className="text-xl font-semibold mt-6">4. Network and Cloud Services</h3>
@@ -129,6 +145,8 @@ export default function StatStrikePrivacySupportPage() {
           <p>You remain in control of your data on your device. You can:</p>
           <ul className="list-disc list-inside space-y-1 ml-4">
             <li>Uninstall StatStrike at any time, which removes the application and its data.</li>
+            <li>Purchase an eligible subscription to remove in-app banner ads.</li>
+            <li>Opt out of personalised advertising in your device settings where supported.</li>
             <li>
               Clear cached fixture data through the app settings (if this feature is available).
             </li>
@@ -192,6 +210,13 @@ export default function StatStrikePrivacySupportPage() {
             StatStrike fetches fixture data from third-party APIs. The app caches this data
             locally to reduce API calls. You can manually refresh the data through the app&apos;s
             refresh function.
+          </p>
+
+          <h4 className="text-lg font-semibold mt-4">How do I remove ads?</h4>
+          <p>
+            Banner ads are shown on the free tier. If you purchase an eligible subscription, those
+            ads are removed while the subscription is active. If ads continue to appear after
+            subscribing, contact support and include your device details and purchase status.
           </p>
 
           <h4 className="text-lg font-semibold mt-4">What is the pattern database?</h4>

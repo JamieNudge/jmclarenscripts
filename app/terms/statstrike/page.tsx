@@ -102,6 +102,10 @@ export default function StatStrikeTermsPage() {
             For subscription pricing and terms, please refer to the in-app purchase information
             displayed before purchase.
           </p>
+          <p>
+            The free tier of StatStrike may display Google AdMob banner advertisements. An eligible
+            subscription removes those ads while the subscription remains active.
+          </p>
 
           <h2 className="text-xl font-semibold mt-8">6. Data Accuracy</h2>
           <p>

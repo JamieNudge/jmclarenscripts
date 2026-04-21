@@ -72,7 +72,7 @@ export default function StatStrikeContentRatingPage() {
             <li>No sexual content or nudity</li>
             <li>No drugs, alcohol, or tobacco promotion</li>
             <li>No user-generated public content or online chat</li>
-            <li>No in-app purchases or advertising</li>
+            <li>Includes subscriptions and Google AdMob banner advertising on the free tier</li>
           </ul>
           <p className="mt-4">
             The app displays football match statistics, team data, and prediction results in a
@@ -153,6 +153,8 @@ export default function StatStrikeContentRatingPage() {
             tool</span> for football matches, intended for adults who are interested in
             data-driven betting insights. The app contains no violent, sexual, or graphic content,
             but does provide betting-related advice that is restricted to users 18 years and older.
+            The free tier may include banner advertising, which can be removed with an eligible
+            subscription.
           </p>
 
           <h2 className="text-xl font-semibold mt-4">Questions</h2>

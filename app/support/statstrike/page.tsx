@@ -37,8 +37,8 @@ export default function StatStrikeSupportPage() {
           <h2 className="text-xl font-semibold mt-6">Getting Help</h2>
           <p>
             If you&apos;re having trouble — for example, predictions or track record not loading,
-            subscription or free trial issues, or the app crashing — please reach out with as
-            much detail as you can:
+            subscription, ad removal, or free trial issues, or the app crashing — please reach out
+            with as much detail as you can:
           </p>
           <ul className="list-disc list-inside space-y-1 ml-4">
             <li>Your device (iPhone/Android), model and OS version.</li>
