@@ -38,13 +38,17 @@ function applyToConsentRoot(el: HTMLElement) {
 function applyToFundingIframe(el: HTMLIFrameElement) {
   const s = el.style;
   s.setProperty('position', 'fixed', 'important');
+  s.setProperty('inset', 'auto 0 0 0', 'important');
   s.setProperty('left', '0', 'important');
   s.setProperty('right', '0', 'important');
   s.setProperty('bottom', '0', 'important');
   s.setProperty('top', 'auto', 'important');
   s.setProperty('width', '100%', 'important');
   s.setProperty('max-width', '100vw', 'important');
-  s.setProperty('z-index', '2147482999', 'important');
+  s.setProperty('height', 'auto', 'important');
+  s.setProperty('margin', '0', 'important');
+  s.setProperty('transform', 'none', 'important');
+  s.setProperty('z-index', '2147483646', 'important');
 }
 
 function applyFixedOrStickyBarToBottom(el: HTMLElement) {
@@ -58,7 +62,29 @@ function applyFixedOrStickyBarToBottom(el: HTMLElement) {
   s.setProperty('max-width', '100vw', 'important');
   s.setProperty('margin', '0', 'important');
   s.setProperty('box-sizing', 'border-box', 'important');
-  s.setProperty('z-index', '2147483000', 'important');
+  s.setProperty('z-index', '2147483645', 'important');
+}
+
+/**
+ * Google often uses `z-index` in the 2147… range. Narrow full-width layers at the very top
+ * (not full-viewport) are good candidates; avoids fighting full-screen `fc-` backdrops.
+ */
+function pinNarrowTop2147ZLayers() {
+  if (typeof window === 'undefined' || !document.body) return;
+  const vh = window.innerHeight;
+  const vw = window.innerWidth;
+  for (const el of Array.from(document.querySelectorAll<HTMLElement>('*'))) {
+    const st = getComputedStyle(el);
+    if (st.position !== 'fixed') continue;
+    const r = el.getBoundingClientRect();
+    if (r.top > 22) continue;
+    if (r.width < vw * 0.75) continue;
+    if (r.height < 18) continue;
+    if (r.height > Math.min(400, vh * 0.5)) continue;
+    const z = parseInt(st.zIndex, 10) || 0;
+    if (z < 2145000000) continue;
+    applyFixedOrStickyBarToBottom(el);
+  }
 }
 
 /** IAB TCF / Privacy Settings link is often in the doc (not in iframe); the fixed top bar is an ancestor. */
@@ -127,7 +153,10 @@ function pinInOpenShadowRoots() {
   }
 }
 
-function pin() {
+let pinCallCount = 0;
+
+/** Fast path: only fc roots + CMP iframes + shadow. Safe to run every animation frame. */
+function pinCore() {
   const vw = typeof window !== 'undefined' ? window.innerWidth : 0;
   const vh = typeof window !== 'undefined' ? window.innerHeight : 0;
 
@@ -136,16 +165,32 @@ function pin() {
   applyToEveryCmpIframe(document, applyToFundingIframe, vw, vh);
 
   try {
-    pinByPrivacyOrCmpText();
-  } catch {
-    /* ignore */
-  }
-
-  try {
     pinInOpenShadowRoots();
   } catch {
     /* ignore */
   }
+}
+
+/** Full scan: text/ancestor walk + 2147z strip sweep. Keep off the per-frame rAF path. */
+function pinHeavy() {
+  pinCallCount += 1;
+  try {
+    pinByPrivacyOrCmpText();
+  } catch {
+    /* ignore */
+  }
+  if (pinCallCount % 3 === 0) {
+    try {
+      pinNarrowTop2147ZLayers();
+    } catch {
+      /* ignore */
+    }
+  }
+}
+
+function pin() {
+  pinCore();
+  pinHeavy();
 }
 
 function schedulePin() {
@@ -165,6 +210,29 @@ function schedulePin() {
 
 let intervalId: number | null = null;
 let onAdsenseLoaded: (() => void) | null = null;
+let burstRaf: number = 0;
+const BURST_FRAMES = 180;
+
+function startPinBurst() {
+  let n = 0;
+  const step = () => {
+    try {
+      pinCore();
+    } catch {
+      /* ignore */
+    }
+    n += 1;
+    if (n < BURST_FRAMES) {
+      burstRaf = requestAnimationFrame(step);
+    } else {
+      burstRaf = 0;
+    }
+  };
+  if (burstRaf) {
+    cancelAnimationFrame(burstRaf);
+  }
+  burstRaf = requestAnimationFrame(step);
+}
 
 export function initFundingChoicesBottomPin(): () => void {
   try {
@@ -172,6 +240,7 @@ export function initFundingChoicesBottomPin(): () => void {
   } catch {
     /* ignore */
   }
+  startPinBurst();
   schedulePin();
   if (typeof window === 'undefined' || !document.body) {
     return () => {};
@@ -185,10 +254,13 @@ export function initFundingChoicesBottomPin(): () => void {
     attributes: true,
     attributeFilter: ['style', 'class', 'id', 'src'],
   });
-  onAdsenseLoaded = () => schedulePin();
+  onAdsenseLoaded = () => {
+    startPinBurst();
+    schedulePin();
+  };
   window.addEventListener(ADSENSE_SCRIPT_LOADED_EVENT, onAdsenseLoaded);
-  /* Re-apply: AdSense often rewrites inline styles on the same tick as paint. */
-  intervalId = window.setInterval(schedulePin, 1500);
+  /* Re-apply: Google rewrites inline styles in tight loops. */
+  intervalId = window.setInterval(schedulePin, 350);
   return stopFundingChoicesBottomPin;
 }
 
@@ -205,8 +277,13 @@ export function stopFundingChoicesBottomPin() {
     clearInterval(intervalId);
     intervalId = null;
   }
+  if (burstRaf) {
+    cancelAnimationFrame(burstRaf);
+    burstRaf = 0;
+  }
   if (raf) {
     cancelAnimationFrame(raf);
     raf = 0;
   }
+  pinCallCount = 0;
 }

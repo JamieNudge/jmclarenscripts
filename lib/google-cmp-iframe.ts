@@ -31,13 +31,25 @@ export function isGoogleCmpByIframeSrc(iframe: HTMLIFrameElement): boolean {
  * Top-of-viewport, near–full width, modest height, Google-serving `src` only. Avoids moving
  * narrow/side iframes (e.g. vertical ad rail).
  */
+/**
+ * True when Google’s usual overlay `z-index` (2147…) and the iframe is pinned to the top — common
+ * for the TCF / consent message even when `src` doesn’t match the regex list yet.
+ */
+export function isExtremeZIndexTopGoogleIframe(iframe: HTMLIFrameElement): boolean {
+  const src = iframeSrc(iframe);
+  if (!src || !GOOGLE_NET.test(src)) return false;
+  const z = parseInt(getComputedStyle(iframe).zIndex, 10) || 0;
+  if (z < 2146000000) return false;
+  return iframe.getBoundingClientRect().top < 36;
+}
+
 export function isLikelyGoogleTopCmpStrip(iframe: HTMLIFrameElement, vw = 0, vh = 0): boolean {
   if (typeof window === 'undefined') return false;
   const w = vw || window.innerWidth;
   const h = vh || window.innerHeight;
   const src = iframeSrc(iframe);
   if (!src || !GOOGLE_NET.test(src)) return false;
-  if (isGoogleCmpByIframeSrc(iframe)) return true;
+  if (isGoogleCmpByIframeSrc(iframe) || isExtremeZIndexTopGoogleIframe(iframe)) return true;
   const r = iframe.getBoundingClientRect();
   if (r.top > 14) return false;
   if (r.width < w * 0.88) return false;
@@ -55,7 +67,11 @@ export function applyToEveryCmpIframe(
   root
     .querySelectorAll<HTMLIFrameElement>('iframe')
     .forEach((iframe) => {
-      if (isGoogleCmpByIframeSrc(iframe) || isLikelyGoogleTopCmpStrip(iframe, vw, vh)) {
+      if (
+        isGoogleCmpByIframeSrc(iframe) ||
+        isExtremeZIndexTopGoogleIframe(iframe) ||
+        isLikelyGoogleTopCmpStrip(iframe, vw, vh)
+      ) {
         apply(iframe);
       }
     });
