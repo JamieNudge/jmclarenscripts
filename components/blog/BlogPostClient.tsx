@@ -44,7 +44,7 @@ export function BlogPostClient({ slug }: { slug: string }) {
           setPost(p);
           setErr(null);
           if (typeof document !== 'undefined') {
-            document.title = `${p.title} — Blog`;
+            document.title = `${p.title} — Blogs`;
           }
         }
       } catch (e) {
@@ -94,7 +94,7 @@ export function BlogPostClient({ slug }: { slug: string }) {
           (opens <code className="text-[11px] text-white/45">/admin/blog-preview/…</code>).
         </p>
         <Link href="/blog" className="text-sm text-amber-200/85 underline underline-offset-2 hover:text-amber-50/95">
-          ← Back to blog
+          ← Back to blogs
         </Link>
       </div>
     );

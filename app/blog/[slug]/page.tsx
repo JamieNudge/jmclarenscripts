@@ -4,8 +4,8 @@ import { AdSenseAutoPlaceholder } from '@/components/AdSenseAutoPlaceholder';
 import { BlogPostClient } from '@/components/blog/BlogPostClient';
 
 export const metadata: Metadata = {
-  title: 'Blog post',
-  description: 'Article from the blog.',
+  title: 'Blogs',
+  description: 'Article from the blogs.',
 };
 
 export default function BlogPostPage({ params }: { params: { slug: string } }) {
@@ -24,7 +24,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
             ·
           </span>
           <Link href="/blog" className="hover:text-white underline-offset-4 hover:underline">
-            Blog
+            Blogs
           </Link>
         </nav>
 

@@ -4,7 +4,7 @@ import { AdSenseAutoPlaceholder } from '@/components/AdSenseAutoPlaceholder';
 import { BlogIndexClient } from '@/components/blog/BlogIndexClient';
 
 export const metadata: Metadata = {
-  title: 'Blog',
+  title: 'Blogs',
   description:
     'Articles and notes from Jamie McLaren — Today’s Best Picks, apps, and related topics.',
 };
@@ -19,7 +19,7 @@ export default function BlogIndexPage() {
           </Link>
         </nav>
 
-        <h1 className="text-3xl md:text-4xl font-bold mb-3">Blog</h1>
+        <h1 className="text-3xl md:text-4xl font-bold mb-3">Blogs</h1>
         <p className="text-sm text-white/65 mb-8 leading-relaxed">
           Original articles and updates. For the picks dashboard and methodology, use{' '}
           <Link href="/best-picks" className="text-amber-200/85 underline underline-offset-2 hover:text-amber-50/95">
