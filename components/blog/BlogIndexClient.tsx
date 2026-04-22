@@ -37,6 +37,16 @@ export function BlogIndexClient() {
       {posts.map((p) => (
         <li key={p.slug} className="border-b border-white/10 pb-6 last:border-0 last:pb-0">
           <Link href={`/blog/${p.slug}`} className="group block">
+            {p.headerImageUrl ? (
+              <div className="mb-3 rounded-xl overflow-hidden border border-white/10 aspect-[16/9] max-h-[min(220px,40vh)] bg-black/30">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={p.headerImageUrl}
+                  alt=""
+                  className="w-full h-full object-cover group-hover:opacity-95 transition-opacity"
+                />
+              </div>
+            ) : null}
             <h2 className="text-xl font-semibold text-white group-hover:text-amber-100/95 transition-colors">
               {p.title}
             </h2>
