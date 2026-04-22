@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import type { ReactNode } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { BestPicksSubpageShell } from '@/components/best-picks/BestPicksSubpageShell';
@@ -13,17 +14,52 @@ export const metadata: Metadata = {
 const statStrike = apps.find((a) => a.id === 'stat-strike');
 const goalLab = apps.find((a) => a.id === 'goallab');
 
-function storeLink(href: string | undefined, label: string) {
-  if (!href) return <span className="font-semibold text-amber-100/90">{label}</span>;
+const iconBoxClass =
+  'shrink-0 rounded-2xl overflow-hidden border border-amber-200/20 bg-black/30 w-16 h-16 sm:w-[4.5rem] sm:h-[4.5rem]';
+
+function storeAppLink(
+  href: string | undefined,
+  label: string,
+  iconSrc: string | undefined,
+  description: ReactNode,
+) {
   return (
-    <Link
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="font-semibold text-amber-100/90 underline underline-offset-2 hover:text-amber-50/95"
-    >
-      {label}
-    </Link>
+    <li className="flex flex-col sm:flex-row gap-4 sm:items-start">
+      {href && iconSrc ? (
+        <Link
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`${iconBoxClass} block focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/50`}
+          aria-label={`${label} on the App Store`}
+        >
+          <Image src={iconSrc} alt="" width={144} height={144} className="w-full h-full object-cover" />
+        </Link>
+      ) : (
+        <div className={iconBoxClass} aria-hidden>
+          {iconSrc ? (
+            <Image src={iconSrc} alt="" width={144} height={144} className="w-full h-full object-cover" />
+          ) : null}
+        </div>
+      )}
+      <div className="min-w-0 space-y-2">
+        <p className="font-semibold text-amber-100/90">
+          {href ? (
+            <Link
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-2 hover:text-amber-50/95"
+            >
+              {label}
+            </Link>
+          ) : (
+            <span>{label}</span>
+          )}
+        </p>
+        <div className="text-sm md:text-base leading-relaxed text-white/90">{description}</div>
+      </div>
+    </li>
   );
 }
 
@@ -52,15 +88,33 @@ export default function BestPicksHowAppsWorkPage() {
       <section className="space-y-8">
         <div>
           <h2 className="text-lg font-semibold text-white mb-3">Live on the App Store</h2>
-          <ul className="space-y-3 list-none pl-0 border-l-2 border-amber-400/25 pl-4">
-            <li>
-              {storeLink(statStrike?.appStoreUrl, 'StatStrike')} — In-app daily selection with criteria-style
-              confidence on goal bands.
-            </li>
-            <li>
-              {storeLink(goalLab?.appStoreUrl, 'GoalLab')} — An 11-criteria algorithm forecasting Over 2.5 and Under 2.5
-              goal bands with forecaster confidence, full track history and transparent track record.
-            </li>
+          <ul className="space-y-8 list-none pl-0">
+            {storeAppLink(
+              statStrike?.appStoreUrl,
+              'StatStrike',
+              statStrike?.icon,
+              <>
+                A daily selection of Over 2.5 and Under 2.5 football forecasts. The statistical criteria used is
+                listed with most forecasts and the algorithm&apos;s confidence in its work. App includes Track Record
+                for performance transparency, filters to tighten focus on big fixture list days, aggregate market odds
+                when available before KO, and a Best Performing category that only includes forecasts where the model
+                has a minimum of 70% league accuracy historically.
+              </>,
+            )}
+            {storeAppLink(
+              goalLab?.appStoreUrl,
+              'GoalLab',
+              goalLab?.icon,
+              <>
+                GoalLab forecasts the majority of published global fixtures daily. The algorithm uses an 11 criteria
+                model to forecast Over 2.5 and Under 2.5 football goal bands. It will forecast with all 11 criteria, if
+                available for the fixture, or whatever it can get - forecast confidence is reflected in the volume of
+                criteria available for any given fixture. This doesn&apos;t mean a lower confidence forecast is
+                necessarily less accurate than one with more criteria - it depends on the criteria mix and how they
+                interact. Historical win rates of every confidence level is listed as tracked by a rich and growing
+                archive.
+              </>,
+            )}
           </ul>
         </div>
 
