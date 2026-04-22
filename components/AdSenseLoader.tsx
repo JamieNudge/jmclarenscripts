@@ -1,6 +1,5 @@
 'use client';
 
-import { ADSENSE_SCRIPT_LOADED_EVENT } from '@/lib/adsense-script-events';
 import { stripAdSenseAndCmpArtifacts } from '@/lib/adsense-cleanup';
 import { useEffect } from 'react';
 
@@ -16,7 +15,8 @@ function adsenseScriptSrc(clientId: string) {
  * - `data-nscript` on the tag (AdSense warns about that)
  *
  * On unmount (leaving an ad-enabled layout such as `/best-picks` or `/blog`), strips script + CMP
- * so other routes stay clean (see `pathUsesAdSenseClient`).
+ * so other routes stay clean (see `pathUsesAdSenseClient`). Consent UI: configure in AdSense
+ * Privacy & messaging — not in app CSS/JS.
  */
 export function AdSenseLoader() {
   useEffect(() => {
@@ -29,14 +29,7 @@ export function AdSenseLoader() {
       el.async = true;
       el.src = src;
       el.crossOrigin = 'anonymous';
-      el.addEventListener('load', () => {
-        window.dispatchEvent(new Event(ADSENSE_SCRIPT_LOADED_EVENT));
-      });
       document.head.appendChild(el);
-    } else {
-      queueMicrotask(() => {
-        window.dispatchEvent(new Event(ADSENSE_SCRIPT_LOADED_EVENT));
-      });
     }
 
     return () => {

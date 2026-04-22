@@ -14,7 +14,7 @@ function syncBestPicksRouteClass(pathname: string | null) {
 /**
  * Keeps `best-picks-route` on `<html>` and `<body>` whenever the URL is under `/best-picks` so
  * global CSS can style that section (e.g. `bp-best-picks-surface` background in globals.css).
- * Funding Choices / cookie CMP is pinned to the viewport bottom site-wide in globals.css.
+ * Consent / CMP placement: configure in AdSense Privacy & messaging (not layout CSS here).
  * Lives in the root layout so it runs on client navigations, with `useLayoutEffect` before paint.
  */
 export function BestPicksDocumentRouteClass() {

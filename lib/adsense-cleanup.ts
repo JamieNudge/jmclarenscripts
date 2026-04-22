@@ -1,7 +1,7 @@
 /**
- * Removes AdSense script tags and common Google consent / CMP UI from the document.
- * Used when leaving `/best-picks` so the portfolio home and other routes stay ad- and CMP-free
- * after client-side navigation (the AdSense script otherwise persists in `document.head`).
+ * Removes AdSense script tags and common Google consent / CMP nodes from the document.
+ * Used when leaving ad-enabled routes so the portfolio home stays clean after client navigation.
+ * Ongoing consent UI placement: AdSense → Privacy & messaging.
  */
 export function stripAdSenseAndCmpArtifacts(): void {
   if (typeof document === 'undefined') return;

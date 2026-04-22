@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { AdSenseRouteCleanup } from "@/components/AdSenseRouteCleanup";
 import { BestPicksDocumentRouteClass } from "@/components/best-picks/BestPicksDocumentRouteClass";
-import { FundingChoicesBottomPin } from "@/components/FundingChoicesBottomPin";
 import { inter } from "@/lib/fonts";
 import "./globals.css";
 
@@ -40,7 +39,6 @@ export default function RootLayout({
       <body className={`${inter.className} antialiased`}>
         <BestPicksDocumentRouteClass />
         <AdSenseRouteCleanup />
-        <FundingChoicesBottomPin />
         {children}
       </body>
     </html>
