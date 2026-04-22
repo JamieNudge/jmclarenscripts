@@ -17,19 +17,21 @@ export default function BestPicksMethodologyPage() {
       <section className="space-y-4">
         <p>
           Today&apos;s Best Picks brings together outputs from separate forecasting pipelines (for example StatStrike
-          and GoalLab) and, where configured, live Firebase feeds for research-style selections. Each source applies
-          its own modelling and thresholds; this site surfaces those outputs for the calendar day shown on the page.
+          and GoalLab) and, where configured, live feeds for research-style selections. Each source applies its own
+          modelling and thresholds; this site surfaces those outputs for the calendar day shown on the page.
         </p>
         <p>
           <strong className="font-medium text-white">Consensus vs per-model lines.</strong> Where a daily consensus
-          feed exists, it reflects agreement rules and filters defined in your upload tooling (for example minimum
-          sources or caps). Per-model lines list individual contributing sources for the same day so readers can see
-          alignment or disagreement at a glance.
+          feed exists, it reflects agreement rules and filters defined in upload tooling (for example minimum sources
+          or caps). Per-model lines list individual contributing sources for the same day so readers can see alignment
+          or disagreement at a glance.
         </p>
         <p>
           <strong className="font-medium text-white">Limitations.</strong> Past patterns and model outputs are not
-          guarantees of future results. Match status, data quality, and late changes can affect what was true at
-          upload time versus kickoff. The page does not offer real-money gambling, prizes, or simulated gambling.
+          guarantees of future results. Match status, data quality, and late changes can affect what was true at upload
+          time versus kickoff. The page does not offer financial advice, real-money gambling, prizes, or simulated
+          gambling. Past performance is no guarantee of future results. All fixture forecasts, blog content, and other
+          site material on this page are for informational purposes only.
         </p>
         <p className="text-xs text-white/55">
           For how each app is described for visitors, see{' '}

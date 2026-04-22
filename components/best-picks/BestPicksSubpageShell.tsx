@@ -27,13 +27,7 @@ export function BestPicksSubpageShell({
   const showHeaderNav = alwaysShowHeaderNav || BEST_PICKS_EXTENDED_SITE_NAV;
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#111827] to-[#1f2937] text-white flex flex-col">
-      <div
-        className={
-          footer
-            ? 'max-w-3xl mx-auto px-4 py-10 md:py-14 w-full flex-1 flex flex-col min-h-0'
-            : 'max-w-3xl mx-auto px-4 py-10 md:py-14 w-full'
-        }
-      >
+      <div className="max-w-3xl mx-auto px-4 py-10 md:py-14 w-full flex-1 flex flex-col min-h-0">
         {showHeaderNav ? <BestPicksSiteNav variant="header" /> : null}
         {showBackToHub ? (
           <div className={showHeaderNav ? 'mt-6' : ''}>
@@ -71,13 +65,17 @@ export function BestPicksSubpageShell({
           </>
         ) : (
           <>
-            <div className={bodyProse}>{children}</div>
-            <div className="mt-8 w-full">
+            <div className={`${bodyProse} flex-1 min-h-0`}>{children}</div>
+            <footer
+              className="shrink-0 w-full border-t border-white/10 pt-6 mt-10 pb-[max(0.5rem,env(safe-area-inset-bottom))]"
+              role="contentinfo"
+              aria-label="Advertising"
+            >
               <AdSenseAutoPlaceholder
                 orientation="horizontal"
                 className="w-full min-h-[90px] !border-white/30 !bg-zinc-900/50 !text-white/50"
               />
-            </div>
+            </footer>
           </>
         )}
       </div>
