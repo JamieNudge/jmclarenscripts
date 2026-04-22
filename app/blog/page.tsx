@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { AdSenseAutoPlaceholder } from '@/components/AdSenseAutoPlaceholder';
+import { BestPicksSiteNav } from '@/components/best-picks/BestPicksSiteNav';
 import { BlogIndexClient } from '@/components/blog/BlogIndexClient';
 
 export const metadata: Metadata = {
@@ -13,11 +14,9 @@ export default function BlogIndexPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#111827] to-[#1f2937] text-white">
       <div className="max-w-3xl mx-auto px-4 py-10 md:py-14">
-        <nav aria-label="Today's Best Picks section" className="mb-10">
-          <Link href="/best-picks" className="text-sm text-white/80 hover:text-white underline-offset-4 hover:underline">
-            Today&apos;s Best Picks
-          </Link>
-        </nav>
+        <div className="mb-10">
+          <BestPicksSiteNav variant="footer" />
+        </div>
 
         <h1 className="text-3xl md:text-4xl font-bold mb-3">Blogs</h1>
         <p className="text-sm text-white/65 mb-8 leading-relaxed">
