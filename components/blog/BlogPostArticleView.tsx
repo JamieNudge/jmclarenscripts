@@ -1,7 +1,9 @@
 import Link from 'next/link';
+import { AdSenseAutoPlaceholder } from '@/components/AdSenseAutoPlaceholder';
+import { MarkdownBody } from '@/components/blog/MarkdownBody';
+import { splitBlogMarkdownForAdPlaceholders } from '@/lib/blog-body-ad-slots';
 import type { BlogPostRecord } from '@/lib/blog-post';
 import { blogTextFontFamily } from '@/lib/fonts';
-import { MarkdownBody } from '@/components/blog/MarkdownBody';
 
 type Props = {
   post: BlogPostRecord;
@@ -11,6 +13,8 @@ type Props = {
 };
 
 export function BlogPostArticleView({ post, backHref = '/blog', backLabel = '← All posts' }: Props) {
+  const bodySegments = splitBlogMarkdownForAdPlaceholders(post.bodyMarkdown);
+
   return (
     <article style={{ fontFamily: blogTextFontFamily }}>
       <Link
@@ -31,7 +35,22 @@ export function BlogPostArticleView({ post, backHref = '/blog', backLabel = '←
           <img src={post.headerImageUrl} alt="" className="w-full max-h-[min(420px,50vh)] object-cover" />
         </div>
       ) : null}
-      <MarkdownBody markdown={post.bodyMarkdown} />
+      {bodySegments.map((seg, i) => {
+        if (seg.type === 'markdown') {
+          return <MarkdownBody key={`md-${i}`} markdown={seg.markdown} />;
+        }
+        return (
+          <div
+            key={`ad-${i}`}
+            className="my-8 w-full"
+          >
+            <AdSenseAutoPlaceholder
+              orientation="horizontal"
+              className="w-full min-h-[90px] !border-white/30 !bg-zinc-900/50 !text-white/50"
+            />
+          </div>
+        );
+      })}
     </article>
   );
 }

@@ -16,9 +16,8 @@ export default function BestPicksAboutPage() {
     >
       <section className="space-y-4">
         <p>
-          This page is part of Jamie McLaren&apos;s public app portfolio. It pulls together a few things in one place:
-          App Store links to shipped products, a live feed of the latest research algorithm selections for the London
-          calendar date in the headline, links to{' '}
+          This page pulls together a few things in one place: App Store links to shipped products, a live feed of the
+          latest research algorithm selections for the London calendar date in the headline, links to{' '}
           <Link href="/blog" className="text-amber-200/85 underline underline-offset-2 hover:text-amber-100/90">
             blog posts
           </Link>
