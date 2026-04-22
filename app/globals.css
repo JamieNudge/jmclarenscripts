@@ -74,7 +74,9 @@ body {
   pointer-events: auto !important;
 }
 
-iframe[src*='fundingchoices'] {
+iframe[src*='fundingchoices'],
+iframe[src*='fundingchoicesmessages'],
+iframe[src*='consent.google'] {
   position: fixed !important;
   left: 0 !important;
   right: 0 !important;
@@ -85,10 +87,12 @@ iframe[src*='fundingchoices'] {
   z-index: 2147482999 !important;
 }
 
-/* Direct wrapper around Funding Choices iframe (markup varies by region / A/B). */
+/* Direct wrapper around Funding Choices / consent iframes (markup varies). */
 @supports selector(:has(> iframe)) {
   html body > div:has(> iframe[src*='fundingchoices']),
-  body > div:has(> iframe[src*='fundingchoices']) {
+  html body > div:has(> iframe[src*='consent.google']),
+  body > div:has(> iframe[src*='fundingchoices']),
+  body > div:has(> iframe[src*='consent.google']) {
     position: fixed !important;
     left: 0 !important;
     right: 0 !important;

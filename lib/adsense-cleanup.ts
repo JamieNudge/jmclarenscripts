@@ -14,7 +14,7 @@ export function stripAdSenseAndCmpArtifacts(): void {
 
   document
     .querySelectorAll(
-      'iframe[src*="fundingchoices"], iframe[src*="googlesyndication.com/pagead/js/adsbygoogle"]',
+      'iframe[src*="fundingchoices"], iframe[src*="consent.google"], iframe[src*="googlesyndication.com/pagead/js/adsbygoogle"]',
     )
     .forEach((el) => {
       el.parentElement?.remove();

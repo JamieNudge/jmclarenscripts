@@ -1,10 +1,10 @@
+import { ADSENSE_SCRIPT_LOADED_EVENT } from '@/lib/adsense-script-events';
+import { applyToEveryCmpIframe } from '@/lib/google-cmp-iframe';
+
 /**
- * Google Funding Choices / IAB TCF UIs are injected after AdSense loads. The CMP may render:
- * - `.fc-consent-root` (flex layout) or iframes under `fundingchoices`, and/or
- * - a separate **fixed top** white bar (“Privacy and cookie settings”, “Managed by Google. IAB TCF”)
- *   that is *not* covered by `.fc-consent-root` alone, so it keeps reappearing at the top until
- *   we relocate that specific fixed layer.
- * Not a Vercel “cache” issue: AdSense re-applies inline styles; we re-run on mutations + timer.
+ * Google Funding Choices / IAB TCF. The TCF bar text is usually **inside a cross-origin iframe**;
+ * see `google-cmp-iframe` for `src` + layout matching. This module also handles `.fc-consent-root`,
+ * in-document text when present, open shadow trees, and re-pins on mutations / timers.
  */
 
 const THROTTLE_MS = 80;
@@ -111,9 +111,7 @@ function walkShadowTree(sr: ShadowRoot) {
   sr
     .querySelectorAll<HTMLElement>('.fc-consent-root')
     .forEach((n) => applyToConsentRoot(n));
-  sr
-    .querySelectorAll<HTMLIFrameElement>('iframe[src*="fundingchoices"]')
-    .forEach((n) => applyToFundingIframe(n));
+  applyToEveryCmpIframe(sr, applyToFundingIframe);
   for (const el of Array.from(sr.querySelectorAll<HTMLElement>('*'))) {
     if (el.shadowRoot) {
       walkShadowTree(el.shadowRoot);
@@ -130,13 +128,12 @@ function pinInOpenShadowRoots() {
 }
 
 function pin() {
+  const vw = typeof window !== 'undefined' ? window.innerWidth : 0;
+  const vh = typeof window !== 'undefined' ? window.innerHeight : 0;
+
   document.querySelectorAll<HTMLElement>('.fc-consent-root').forEach(applyToConsentRoot);
 
-  document
-    .querySelectorAll<HTMLIFrameElement>('iframe[src*="fundingchoices"]')
-    .forEach((el) => {
-      applyToFundingIframe(el);
-    });
+  applyToEveryCmpIframe(document, applyToFundingIframe, vw, vh);
 
   try {
     pinByPrivacyOrCmpText();
@@ -167,8 +164,14 @@ function schedulePin() {
 }
 
 let intervalId: number | null = null;
+let onAdsenseLoaded: (() => void) | null = null;
 
 export function initFundingChoicesBottomPin(): () => void {
+  try {
+    pin();
+  } catch {
+    /* ignore */
+  }
   schedulePin();
   if (typeof window === 'undefined' || !document.body) {
     return () => {};
@@ -182,12 +185,18 @@ export function initFundingChoicesBottomPin(): () => void {
     attributes: true,
     attributeFilter: ['style', 'class', 'id', 'src'],
   });
+  onAdsenseLoaded = () => schedulePin();
+  window.addEventListener(ADSENSE_SCRIPT_LOADED_EVENT, onAdsenseLoaded);
   /* Re-apply: AdSense often rewrites inline styles on the same tick as paint. */
   intervalId = window.setInterval(schedulePin, 1500);
   return stopFundingChoicesBottomPin;
 }
 
 export function stopFundingChoicesBottomPin() {
+  if (onAdsenseLoaded) {
+    window.removeEventListener(ADSENSE_SCRIPT_LOADED_EVENT, onAdsenseLoaded);
+    onAdsenseLoaded = null;
+  }
   if (observer) {
     observer.disconnect();
     observer = null;

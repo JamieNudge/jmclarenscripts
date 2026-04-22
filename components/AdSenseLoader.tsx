@@ -1,5 +1,6 @@
 'use client';
 
+import { ADSENSE_SCRIPT_LOADED_EVENT } from '@/lib/adsense-script-events';
 import { stripAdSenseAndCmpArtifacts } from '@/lib/adsense-cleanup';
 import { useEffect } from 'react';
 
@@ -28,7 +29,14 @@ export function AdSenseLoader() {
       el.async = true;
       el.src = src;
       el.crossOrigin = 'anonymous';
+      el.addEventListener('load', () => {
+        window.dispatchEvent(new Event(ADSENSE_SCRIPT_LOADED_EVENT));
+      });
       document.head.appendChild(el);
+    } else {
+      queueMicrotask(() => {
+        window.dispatchEvent(new Event(ADSENSE_SCRIPT_LOADED_EVENT));
+      });
     }
 
     return () => {
