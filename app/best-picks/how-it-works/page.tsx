@@ -32,6 +32,22 @@ export default function BestPicksHowAppsWorkPage() {
     <BestPicksSubpageShell
       title="How apps work"
       description="What each product does. Live apps link to the App Store; coming-soon items are described here only."
+      footer={
+        <>
+          For what appears on Today&apos;s Best Picks (feeds, blog, layout), see{' '}
+          <Link
+            href="/best-picks/about"
+            className="text-amber-200/80 underline underline-offset-2 hover:text-amber-100/90"
+          >
+            About Today&apos;s Best Picks
+          </Link>
+          . App terms and privacy: App Store listings and the{' '}
+          <Link href="/privacy" className="text-amber-200/80 underline underline-offset-2 hover:text-amber-100/90">
+            site privacy policy
+          </Link>
+          .
+        </>
+      }
     >
       <section className="space-y-8">
         <div>
@@ -79,18 +95,6 @@ export default function BestPicksHowAppsWorkPage() {
             </li>
           </ul>
         </div>
-
-        <p className="text-xs text-white/55">
-          For what appears on Today&apos;s Best Picks (feeds, blog, layout), see{' '}
-          <Link href="/best-picks/about" className="text-amber-200/80 underline underline-offset-2 hover:text-amber-100/90">
-            About Today&apos;s Best Picks
-          </Link>
-          . App terms and privacy: App Store listings and the{' '}
-          <Link href="/privacy" className="text-amber-200/80 underline underline-offset-2 hover:text-amber-100/90">
-            site privacy policy
-          </Link>
-          .
-        </p>
       </section>
     </BestPicksSubpageShell>
   );
