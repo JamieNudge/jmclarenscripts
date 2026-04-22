@@ -91,7 +91,10 @@ export function BestPicksIntro({ dateKey }: { dateKey: string }) {
             </p>
             <p className="text-xs text-white/50">
               App terms &amp; privacy: App Store listings and{' '}
-              <Link href="/privacy" className="text-amber-200/70 underline underline-offset-2 hover:text-amber-100/90">
+              <Link
+                href="/best-picks/privacy"
+                className="text-amber-200/70 underline underline-offset-2 hover:text-amber-100/90"
+              >
                 site privacy policy
               </Link>
               .{' '}

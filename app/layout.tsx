@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { AdSenseGlobalPlaceholder } from "@/components/AdSenseGlobalPlaceholder";
 import { AdSenseRouteCleanup } from "@/components/AdSenseRouteCleanup";
+import { AdSenseScriptGate } from "@/components/AdSenseScriptGate";
 import { BestPicksDocumentRouteClass } from "@/components/best-picks/BestPicksDocumentRouteClass";
 import { inter } from "@/lib/fonts";
 import "./globals.css";
@@ -38,8 +40,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} antialiased`}>
         <BestPicksDocumentRouteClass />
+        <AdSenseScriptGate />
         <AdSenseRouteCleanup />
         {children}
+        <AdSenseGlobalPlaceholder />
       </body>
     </html>
   );

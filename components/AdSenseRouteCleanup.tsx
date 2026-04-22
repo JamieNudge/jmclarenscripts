@@ -6,8 +6,8 @@ import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 
 /**
- * After client navigation away from ad-enabled sections (`/best-picks`, `/blog`), remove AdSense +
- * Google CMP artifacts so the portfolio home and other routes stay clean.
+ * On the portfolio home (`/`) and admin, strip AdSense + CMP DOM/script artifacts after navigation
+ * so those routes stay clean. All other paths keep the ad client; see `pathUsesAdSenseClient`.
  */
 export function AdSenseRouteCleanup() {
   const pathname = usePathname();

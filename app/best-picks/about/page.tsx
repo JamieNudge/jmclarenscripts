@@ -50,7 +50,10 @@ export default function BestPicksAboutPage() {
             Contact
           </Link>
           . Privacy and cookies:{' '}
-          <Link href="/privacy" className="text-amber-200/80 underline underline-offset-2 hover:text-amber-100/90">
+          <Link
+            href="/best-picks/privacy"
+            className="text-amber-200/80 underline underline-offset-2 hover:text-amber-100/90"
+          >
             Privacy policy
           </Link>
           .

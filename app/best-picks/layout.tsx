@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
-import { AdSenseLoader } from '@/components/AdSenseLoader';
 
 /**
  * Tab / bookmark icon for `/best-picks` only (not the same as `og:image` for link previews).
  * Root `app/icon.png` stays the portfolio favicon elsewhere.
+ * AdSense script: {@link AdSenseScriptGate} in root layout.
  */
 export const metadata: Metadata = {
   icons: {
@@ -13,12 +13,6 @@ export const metadata: Metadata = {
   },
 };
 
-/** AdSense Auto ads: script loads under `/best-picks` (see `app/blog/layout.tsx` for `/blog`). */
 export default function BestPicksLayout({ children }: { children: ReactNode }) {
-  return (
-    <>
-      <AdSenseLoader />
-      {children}
-    </>
-  );
+  return children;
 }

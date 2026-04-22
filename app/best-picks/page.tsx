@@ -174,7 +174,7 @@ export default function BestPicksPage() {
               only.
             </p>
             <p className="text-right text-[11px] md:text-xs text-white/50 leading-relaxed shrink-0 min-w-[10rem] max-w-sm">
-              <Link href="/privacy" className="underline hover:text-white/70 underline-offset-2">
+              <Link href="/best-picks/privacy" className="underline hover:text-white/70 underline-offset-2">
                 Privacy policy
               </Link>
               <span className="text-white/25"> · </span>

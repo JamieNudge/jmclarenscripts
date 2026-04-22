@@ -8,5 +8,5 @@ export const bestPicksSiteNavPrimary = [
 
 export const bestPicksSiteNavFooterExtra = [
   { href: '/best-picks/contact', label: 'Contact' },
-  { href: '/privacy', label: 'Privacy policy' },
+  { href: '/best-picks/privacy', label: 'Privacy policy' },
 ] as const;

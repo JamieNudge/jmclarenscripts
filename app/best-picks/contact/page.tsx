@@ -20,7 +20,10 @@ export default function BestPicksContactPage() {
         <p>
           For privacy questions about this site (including Today&apos;s Best Picks, cookies, and Google ads), use the
           same contact channel referenced in the{' '}
-          <Link href="/privacy" className="text-amber-200/80 underline underline-offset-2 hover:text-amber-100/90">
+          <Link
+            href="/best-picks/privacy"
+            className="text-amber-200/80 underline underline-offset-2 hover:text-amber-100/90"
+          >
             privacy policy
           </Link>
           .

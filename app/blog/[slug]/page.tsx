@@ -33,7 +33,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
         <footer className="mt-12 pt-8 border-t border-white/10 space-y-4 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
           <AdSenseAutoPlaceholder orientation="horizontal" className="w-full min-h-[90px]" />
           <p className="text-left text-[11px] md:text-xs text-white/50 leading-relaxed max-w-[min(100%,42rem)]">
-            <Link href="/privacy" className="underline hover:text-white/70 underline-offset-2">
+            <Link href="/best-picks/privacy" className="underline hover:text-white/70 underline-offset-2">
               Privacy policy
             </Link>
             <span className="text-white/25"> · </span>

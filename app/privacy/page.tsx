@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy — Website',
+  title: 'Privacy Policy — Portfolio & app showcase',
   description:
-    'Privacy policy for Jamie McLaren’s portfolio website, including Today’s Best Picks, the blog, cookies, and Google AdSense.',
+    'Privacy policy for the app portfolio home and related static pages. Today’s Best Picks and the blog have a separate policy.',
 };
 
 export default function WebsitePrivacyPage() {
@@ -26,7 +26,7 @@ export default function WebsitePrivacyPage() {
           Back to portfolio
         </Link>
 
-        <h1 className="text-3xl md:text-4xl font-bold mb-4">Privacy Policy — Website</h1>
+        <h1 className="text-3xl md:text-4xl font-bold mb-4">Privacy Policy — Portfolio &amp; app showcase</h1>
         <p className="text-sm text-white/60 mb-8">
           Last updated:{' '}
           {new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}
@@ -34,19 +34,23 @@ export default function WebsitePrivacyPage() {
 
         <section className="space-y-6 text-sm md:text-base leading-relaxed text-white/90">
           <p>
-            This policy describes how information is handled when you visit Jamie McLaren&apos;s
-            public portfolio website (including pages such as the home page and &quot;Today&apos;s
-            Best Picks&quot;). It is separate from the privacy policies that apply to individual
-            mobile or desktop apps listed on the site; those apps have their own policies linked
-            from the portfolio.
+            <span className="font-semibold text-white">Today’s Best Picks</span> and the{' '}
+            <span className="font-semibold text-white">blog</span> (feeds, posts, and Google AdSense in those
+            areas) are covered in a{' '}
+            <Link href="/best-picks/privacy" className="underline hover:text-blue-300">
+              separate policy for that publication
+            </Link>
+            . This page covers the <strong className="font-medium text-white">portfolio home</strong> and other
+            app showcase or legal pages you open from it (for example app terms, support, and policies linked
+            for individual products), except where a page already states otherwise.
           </p>
 
           <h2 className="text-xl font-semibold text-white mt-8">1. Who we are</h2>
           <p>
-            This website is operated by Jamie McLaren as a showcase of apps and related
-            information. For privacy questions about this site, contact:{' '}
+            The portfolio home and related information are published by Jamie McLaren. For questions about
+            this part of the site, contact:{' '}
             <a
-              href="mailto:jmclarenscripts@gmail.com?subject=Website%20privacy"
+              href="mailto:jmclarenscripts@gmail.com?subject=Website%20privacy%20%28portfolio%29"
               className="underline hover:text-blue-300"
             >
               jmclarenscripts@gmail.com
@@ -54,14 +58,15 @@ export default function WebsitePrivacyPage() {
             .
           </p>
 
-          <h2 className="text-xl font-semibold text-white mt-8">2. What this website does</h2>
+          <h2 className="text-xl font-semibold text-white mt-8">2. What this part of the site does</h2>
           <p>
-            The site presents app information, links (for example to the App Store or Google
-            Play), and optional content such as daily best picks and embedded video. You do not need
-            an account to browse this website.
+            The portfolio home presents app listings, modals, links to store pages, and optional static legal or
+            support text. The main portfolio home <strong className="font-medium text-white">does not</strong>{' '}
+            load the same Google AdSense script used on Today’s Best Picks and the blog. You do not need
+            an account to browse the showcase.
           </p>
 
-          <h2 className="text-xl font-semibold text-white mt-8">3. Information collected on this site</h2>
+          <h2 className="text-xl font-semibold text-white mt-8">3. Information collected on this part of the site</h2>
           <p>
             <span className="font-semibold">Information you provide:</span> If you email the
             address above, we receive whatever you choose to send (typically your email address and
@@ -74,55 +79,25 @@ export default function WebsitePrivacyPage() {
             governed by the hosting provider&apos;s policies.
           </p>
           <p>
-            This public site is not designed to collect special categories of personal data. Please
+            This site is not designed to collect special categories of personal data. Please
             do not send sensitive personal information by email unless necessary.
           </p>
 
-          <h2 className="text-xl font-semibold text-white mt-8">4. Cookies and Google AdSense</h2>
+          <h2 className="text-xl font-semibold text-white mt-8">4. Today’s Best Picks, blog, and cookies</h2>
           <p>
-            <span className="font-semibold">Today&apos;s Best Picks</span> and the{' '}
-            <span className="font-semibold">Blog</span> sections: we may use{' '}
-            <span className="font-semibold">Google AdSense</span> to show advertisements there when
-            enabled for this site. The rest of this website (for example the portfolio home page) does
-            not load the AdSense script. Google and its partners may use cookies or similar
-            technologies when you visit those sections, to serve ads based on your prior visits to
-            this or other websites, and to measure ad effectiveness.
-          </p>
-          <p>
-            You can learn how Google uses data when you use our site or partners&apos; sites in
-            Google&apos;s documentation:{' '}
-            <a
-              href="https://policies.google.com/technologies/partner-sites"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline hover:text-blue-300"
-            >
-              How Google uses information from sites or apps that use our services
-            </a>
-            . You can manage ad personalization through{' '}
-            <a
-              href="https://www.google.com/settings/ads"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline hover:text-blue-300"
-            >
-              Google Ads Settings
-            </a>{' '}
-            and learn more about cookies at{' '}
-            <a
-              href="https://policies.google.com/technologies/cookies"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline hover:text-blue-300"
-            >
-              Google&apos;s Privacy &amp; Terms
-            </a>
-            .
-          </p>
-          <p>
-            Where required, we rely on appropriate legal bases for processing (such as consent for
-            non-essential cookies, where applicable). You can adjust cookie choices through your
-            browser settings and, where offered, any consent tool we add to the site.
+            If you follow a link to{' '}
+            <Link href="/best-picks" className="underline hover:text-blue-300">
+              Today’s Best Picks
+            </Link>
+            ,{' '}
+            <Link href="/blog" className="underline hover:text-blue-300">
+              the blog
+            </Link>
+            , or a blog post, Google AdSense and cookie behaviour there are described in the{' '}
+            <Link href="/best-picks/privacy" className="underline hover:text-blue-300">
+              Best Picks &amp; blog privacy policy
+            </Link>
+            . You do not need to read both documents if you only use the portfolio home.
           </p>
 
           <h2 className="text-xl font-semibold text-white mt-8">5. Links to third parties</h2>
@@ -132,36 +107,47 @@ export default function WebsitePrivacyPage() {
             practices.
           </p>
 
-          <h2 className="text-xl font-semibold text-white mt-8">6. App-specific privacy policies</h2>
-          <p>
-            Each listed app may collect and use data according to its own policy. Examples on this
-            site include:
-          </p>
+          <h2 className="text-xl font-semibold text-white mt-8">6. App-specific privacy policies (portfolio and other products)</h2>
+          <p>Examples of per-app pages on this domain (including tools and cross-promoted apps) include:</p>
           <ul className="list-disc list-inside space-y-1 ml-4">
-            <li>
-              <Link href="/privacy/statstrike" className="underline hover:text-blue-300">
-                StatStrike — privacy policy
-              </Link>
-            </li>
-            <li>
-              <Link href="/privacy/goallab" className="underline hover:text-blue-300">
-                GoalLab — privacy policy
-              </Link>
-            </li>
-            <li>
-              <Link href="/privacy/popgoals" className="underline hover:text-blue-300">
-                PopGoals — privacy policy
-              </Link>
-            </li>
             <li>
               <Link href="/privacy/icon-resizer" className="underline hover:text-blue-300">
                 Icon Resizer — privacy policy
               </Link>
             </li>
+            <li>
+              <Link href="/privacy/maincode" className="underline hover:text-blue-300">
+                MainCode — privacy policy
+              </Link>
+            </li>
+            <li>
+              <Link href="/privacy/nudgetronic" className="underline hover:text-blue-300">
+                Nudgetronic — privacy policy
+              </Link>
+            </li>
+            <li>
+              <span className="text-white/90">
+                <Link href="/privacy/aikido-vocabulary" className="underline hover:text-blue-300">
+                  Aikido Vocabulary
+                </Link>
+                ,{' '}
+                <Link href="/privacy/desktop-totem" className="underline hover:text-blue-300">
+                  Desktop Totem
+                </Link>
+                , and other titles — see{' '}
+              </span>
+              <code className="text-white/80">/privacy/…</code> where available from the app&apos;s own card or
+              support link.
+            </li>
           </ul>
           <p>
-            Other apps linked from the portfolio have policies under{' '}
-            <code className="text-white/80">/privacy/…</code> where available.
+            Football products featured on Today’s Best Picks (StatStrike, GoalLab, PopGoals, ProphIt) are listed
+            in the{' '}
+            <Link href="/best-picks/privacy" className="underline hover:text-blue-300">
+              Best Picks &amp; blog
+            </Link>{' '}
+            policy. Their <code className="text-white/80">/privacy/…</code> pages on this domain still apply
+            to the native apps.
           </p>
 
           <h2 className="text-xl font-semibold text-white mt-8">7. Children&apos;s privacy</h2>
@@ -182,7 +168,7 @@ export default function WebsitePrivacyPage() {
           <p>
             Depending on where you live, you may have rights to access, correct, delete, or restrict
             processing of personal data, or to object to certain processing. To exercise these
-            rights in connection with this website, contact us at the email above.
+            rights in connection with this part of the website, contact us at the email above.
           </p>
 
           <h2 className="text-xl font-semibold text-white mt-8">10. Changes</h2>

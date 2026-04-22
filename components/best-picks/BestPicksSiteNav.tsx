@@ -7,6 +7,7 @@ import { bestPicksSiteNavFooterExtra, bestPicksSiteNavPrimary } from '@/componen
 function linkActive(pathname: string, href: string): boolean {
   if (href === '/best-picks') return pathname === '/best-picks';
   if (href === '/blog') return pathname === '/blog' || pathname.startsWith('/blog/');
+  if (href === '/best-picks/privacy') return pathname === '/best-picks/privacy';
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 

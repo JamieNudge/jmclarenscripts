@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
+import { AdSenseAutoPlaceholder } from '@/components/AdSenseAutoPlaceholder';
 import { BEST_PICKS_EXTENDED_SITE_NAV } from '@/components/best-picks/best-picks-site-nav-config';
 import { BestPicksSiteNav } from '@/components/best-picks/BestPicksSiteNav';
 
@@ -10,13 +11,20 @@ export function BestPicksSubpageShell({
   description,
   children,
   footer,
+  showBackToHub = true,
+  alwaysShowHeaderNav = false,
 }: {
   title: string;
   description?: string;
   children: ReactNode;
   /** Renders in `<footer>`, with a top border. When set, main column grows so the footer can sit at the bottom on short pages. */
   footer?: ReactNode;
+  /** If false, hides the “Back to Today’s Best Picks” row (e.g. hub home-style pages like the publication privacy policy). */
+  showBackToHub?: boolean;
+  /** Show the main section nav even when `NEXT_PUBLIC_BEST_PICKS_EXTENDED_SITE_NAV=0` (e.g. privacy so visitors can always move within this publication). */
+  alwaysShowHeaderNav?: boolean;
 }) {
+  const showHeaderNav = alwaysShowHeaderNav || BEST_PICKS_EXTENDED_SITE_NAV;
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#111827] to-[#1f2937] text-white flex flex-col">
       <div
@@ -26,24 +34,34 @@ export function BestPicksSubpageShell({
             : 'max-w-3xl mx-auto px-4 py-10 md:py-14 w-full'
         }
       >
-        {BEST_PICKS_EXTENDED_SITE_NAV ? <BestPicksSiteNav variant="header" /> : null}
-        <div className={BEST_PICKS_EXTENDED_SITE_NAV ? 'mt-6' : ''}>
-          <Link
-            href="/best-picks"
-            className="inline-flex items-center gap-2 text-white/80 hover:text-white transition-colors mb-8 text-sm"
-          >
-            <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden>
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Back to Today&apos;s Best Picks
-          </Link>
-        </div>
+        {showHeaderNav ? <BestPicksSiteNav variant="header" /> : null}
+        {showBackToHub ? (
+          <div className={showHeaderNav ? 'mt-6' : ''}>
+            <Link
+              href="/best-picks"
+              className="inline-flex items-center gap-2 text-white/80 hover:text-white transition-colors mb-8 text-sm"
+            >
+              <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              Back to Today&apos;s Best Picks
+            </Link>
+          </div>
+        ) : showHeaderNav ? (
+          <div className="mt-8" aria-hidden />
+        ) : null}
 
         <h1 className="text-3xl md:text-4xl font-bold mb-3">{title}</h1>
         {description ? <p className="text-sm text-white/60 mb-8 leading-relaxed">{description}</p> : null}
         {footer ? (
           <>
             <div className={`${bodyProse} flex-1 min-h-0`}>{children}</div>
+            <div className="shrink-0 mt-8 w-full">
+              <AdSenseAutoPlaceholder
+                orientation="horizontal"
+                className="w-full min-h-[90px] !border-white/30 !bg-zinc-900/50 !text-white/50"
+              />
+            </div>
             <footer
               className="shrink-0 mt-10 border-t border-white/10 pt-6 text-xs text-white/55 leading-relaxed pb-[max(0.5rem,env(safe-area-inset-bottom))]"
               role="contentinfo"
@@ -52,7 +70,15 @@ export function BestPicksSubpageShell({
             </footer>
           </>
         ) : (
-          <div className={bodyProse}>{children}</div>
+          <>
+            <div className={bodyProse}>{children}</div>
+            <div className="mt-8 w-full">
+              <AdSenseAutoPlaceholder
+                orientation="horizontal"
+                className="w-full min-h-[90px] !border-white/30 !bg-zinc-900/50 !text-white/50"
+              />
+            </div>
+          </>
         )}
       </div>
     </main>

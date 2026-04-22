@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { AdSenseAutoPlaceholder } from '@/components/AdSenseAutoPlaceholder';
 import { BestPicksSubpageShell } from '@/components/best-picks/BestPicksSubpageShell';
 import { apps } from '@/lib/apps-data';
 
@@ -78,7 +79,10 @@ export default function BestPicksHowAppsWorkPage() {
             About Today&apos;s Best Picks
           </Link>
           . App terms and privacy: App Store listings and the{' '}
-          <Link href="/privacy" className="text-amber-200/80 underline underline-offset-2 hover:text-amber-100/90">
+          <Link
+            href="/best-picks/privacy"
+            className="text-amber-200/80 underline underline-offset-2 hover:text-amber-100/90"
+          >
             site privacy policy
           </Link>
           .
@@ -118,6 +122,13 @@ export default function BestPicksHowAppsWorkPage() {
           </ul>
         </div>
 
+        <div className="w-full">
+          <AdSenseAutoPlaceholder
+            orientation="horizontal"
+            className="w-full min-h-[90px] !border-white/30 !bg-zinc-900/50 !text-white/50"
+          />
+        </div>
+
         <div>
           <h2 className="text-lg font-semibold text-white mb-4">Coming soon</h2>
           <ul className="space-y-6 list-none pl-0">
@@ -140,7 +151,10 @@ export default function BestPicksHowAppsWorkPage() {
               </div>
             </li>
             <li className="space-y-1.5">
-              <p className="font-semibold text-amber-100/90">ProphIt</p>
+              <p className="font-semibold text-amber-100/90">
+                ProphIt{' '}
+                <span className="font-medium text-amber-200/75 text-base normal-case">Coming Soon!</span>
+              </p>
               <p>A new service! Have a theory for predicting goal band outcomes?</p>
               <p>
                 This service lets you test your approach using real data, live execution, and transparent tracking — so
