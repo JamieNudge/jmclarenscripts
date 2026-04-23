@@ -7,7 +7,7 @@ import { BlogIndexClient } from '@/components/blog/BlogIndexClient';
 export const metadata: Metadata = {
   title: 'Blogs',
   description:
-    'Articles and notes from Jamie McLaren — Today’s Best Picks, apps, and related topics.',
+    'Original articles and methodology behind the prediction system. Daily picks on Today’s Best Picks.',
 };
 
 export default function BlogIndexPage() {
@@ -20,9 +20,9 @@ export default function BlogIndexPage() {
 
         <h1 className="text-3xl md:text-4xl font-bold mb-3">Blogs</h1>
         <p className="text-sm text-white/65 mb-8 leading-relaxed">
-          Original articles and updates. For the picks dashboard and methodology, use{' '}
+          Original articles and methodology behind the prediction system. Daily picks are available{' '}
           <Link href="/best-picks" className="text-amber-200/85 underline underline-offset-2 hover:text-amber-50/95">
-            Today&apos;s Best Picks
+            here
           </Link>
           .
         </p>
