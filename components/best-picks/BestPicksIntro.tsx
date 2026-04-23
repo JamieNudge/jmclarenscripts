@@ -38,7 +38,14 @@ export function BestPicksIntro({ dateKey }: { dateKey: string }) {
           </span>
         </h1>
         <p className="mt-2 md:mt-3 text-lg md:text-xl lg:text-2xl font-semibold text-amber-50/90 leading-snug">
-          Selected by filtering the work of four different algorithms and what each does best!
+          Daily selections based on a four-algorithm system (
+          <Link
+            href="/best-picks/how-it-works"
+            className="text-amber-100/95 underline underline-offset-2 hover:text-amber-50/95"
+          >
+            see How Apps Work
+          </Link>
+          ), combining different modelling approaches to identify more reliable outcomes.
         </p>
       </div>
 
