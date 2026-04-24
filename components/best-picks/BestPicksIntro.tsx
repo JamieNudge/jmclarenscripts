@@ -33,7 +33,7 @@ function appStoreLink(href: string | undefined, label: string) {
  */
 export function BestPicksIntro({ dateKey }: { dateKey: string }) {
   return (
-    <header className="max-w-4xl mb-5 md:mb-6 space-y-3">
+    <header className="w-full max-w-6xl mb-5 md:mb-6 space-y-3">
       {BEST_PICKS_EXTENDED_SITE_NAV ? <BestPicksSiteNav variant="header" /> : null}
       <div>
         <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight leading-tight text-white flex flex-col gap-1 sm:flex-row sm:flex-wrap sm:items-baseline sm:gap-x-2 sm:gap-y-0.5">
@@ -42,11 +42,11 @@ export function BestPicksIntro({ dateKey }: { dateKey: string }) {
             {dateKey}
           </span>
         </h1>
-        <p className="mt-2 md:mt-3 text-lg md:text-xl lg:text-2xl font-semibold text-amber-50/90 leading-snug">
+        <p className="mt-2 md:mt-3 text-lg md:text-xl lg:text-2xl font-semibold text-amber-50/90 leading-snug text-pretty">
           Daily selections based on a four-algorithm system (
           <Link
             href={FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_PATH}
-            className="text-amber-100/95 underline underline-offset-2 hover:text-amber-50/95"
+            className="text-amber-100/95 underline underline-offset-2 hover:text-amber-50/95 sm:whitespace-nowrap"
           >
             {FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_TITLE}
           </Link>
