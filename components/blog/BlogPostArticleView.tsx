@@ -23,18 +23,18 @@ export function BlogPostArticleView({ post, backHref = '/blog', backLabel = '←
       >
         {backLabel}
       </Link>
+      {post.headerImageUrl ? (
+        <div className="mb-6 rounded-xl overflow-hidden border border-white/10">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={post.headerImageUrl} alt="" className="w-full max-h-[min(420px,50vh)] object-cover" />
+        </div>
+      ) : null}
       <header className="mb-8">
         <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">{post.title}</h1>
         <p className="text-xs text-white/45 tabular-nums">
           {post.publishedAt?.slice(0, 10) ?? post.updatedAt.slice(0, 10)}
         </p>
       </header>
-      {post.headerImageUrl ? (
-        <div className="mb-8 rounded-xl overflow-hidden border border-white/10">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={post.headerImageUrl} alt="" className="w-full max-h-[min(420px,50vh)] object-cover" />
-        </div>
-      ) : null}
       {bodySegments.map((seg, i) => {
         if (seg.type === 'markdown') {
           return <MarkdownBody key={`md-${i}`} markdown={seg.markdown} />;
