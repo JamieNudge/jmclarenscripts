@@ -68,7 +68,7 @@ export function AdminPredictionSubmissions({
   const [entries, setEntries] = useState<PredictionSubmissionEntry[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [autoRefresh, setAutoRefresh] = useState(true);
+  const [autoRefresh, setAutoRefresh] = useState(false);
   const [actingIds, setActingIds] = useState<Set<string>>(() => new Set());
   const [blockingEmail, setBlockingEmail] = useState<string | null>(null);
 
