@@ -18,6 +18,15 @@ function authHeader(key: string): HeadersInit {
 const inputCls =
   'w-full rounded-lg bg-white/10 border border-white/20 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-500/60';
 
+/** Matches {@link app/api/admin/blog-media/route.ts} client-side checks. */
+const BLOG_IMAGE_MAX_BYTES = 5 * 1024 * 1024;
+const BLOG_IMAGE_MIMES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
+
+function isBlogImageFile(file: File): boolean {
+  if (file.type && BLOG_IMAGE_MIMES.has(file.type)) return true;
+  return /\.(jpe?g|png|gif|webp)$/i.test(file.name);
+}
+
 /** Words for composer stats (whitespace-separated tokens; empty input → 0). */
 function countWords(s: string): number {
   const t = s.trim();
@@ -44,6 +53,8 @@ export function AdminBlogSection({ adminKey }: Props) {
 
   const [bodyPast, setBodyPast] = useState<string[]>([]);
   const [bodyFuture, setBodyFuture] = useState<string[]>([]);
+  const [headerImageDropOver, setHeaderImageDropOver] = useState(false);
+  const [bodyImageDropOver, setBodyImageDropOver] = useState(false);
 
   const clearBodyHistory = useCallback(() => {
     setBodyPast([]);
@@ -229,22 +240,25 @@ export function AdminBlogSection({ adminKey }: Props) {
     }
   };
 
-  const uploadImage = async (which: 'header' | 'body') => {
-    if (!canUse) {
-      setBlogStatus('Paste your admin key first.');
-      return;
-    }
-    const slugForPath = (editingSlug ?? slug).trim().toLowerCase();
-    if (!slugForPath) {
-      setBlogStatus('Set slug (save draft with POST first, or type slug) before uploading images.');
-      return;
-    }
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/jpeg,image/png,image/webp,image/gif';
-    input.onchange = async () => {
-      const file = input.files?.[0];
-      if (!file) return;
+  const processImageFile = useCallback(
+    async (file: File, which: 'header' | 'body') => {
+      if (!canUse) {
+        setBlogStatus('Paste your admin key first.');
+        return;
+      }
+      const slugForPath = (editingSlug ?? slug).trim().toLowerCase();
+      if (!slugForPath) {
+        setBlogStatus('Set slug (save draft with POST first, or type slug) before uploading images.');
+        return;
+      }
+      if (!isBlogImageFile(file)) {
+        setBlogStatus('Use a JPEG, PNG, WebP, or GIF image.');
+        return;
+      }
+      if (file.size > BLOG_IMAGE_MAX_BYTES) {
+        setBlogStatus('Image is too large (max 5 MB).');
+        return;
+      }
       setBlogLoading(true);
       setBlogStatus(null);
       try {
@@ -296,6 +310,17 @@ export function AdminBlogSection({ adminKey }: Props) {
       } finally {
         setBlogLoading(false);
       }
+    },
+    [adminKey, canUse, editingSlug, slug, pushBodySnapshot],
+  );
+
+  const uploadImage = (which: 'header' | 'body') => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/jpeg,image/png,image/webp,image/gif';
+    input.onchange = () => {
+      const file = input.files?.[0];
+      if (file) void processImageFile(file, which);
     };
     input.click();
   };
@@ -306,7 +331,9 @@ export function AdminBlogSection({ adminKey }: Props) {
       <p className="text-xs text-white/50 leading-relaxed">
         Posts live in Realtime Database at <code className="text-white/70">blogPosts/&#123;slug&#125;</code>. Images go
         to Storage under <code className="text-white/70">blog/&#123;slug&#125;/…</code>. Same Bearer key as manual
-        picks. Enable Storage and rules (see <code className="text-white/70">lib/blog-post.ts</code> comments).
+        picks. Enable Storage and rules (see <code className="text-white/70">lib/blog-post.ts</code> comments). The
+        &quot;Upload image&quot; button opens your OS file dialog — it may <strong className="text-white/60">not</strong>{' '}
+        list files in the same order as Finder; drag-and-drop from Finder (below) avoids that.
       </p>
 
       <div className="flex flex-wrap gap-2">
@@ -429,11 +456,45 @@ export function AdminBlogSection({ adminKey }: Props) {
           <button
             type="button"
             disabled={!canUse || blogLoading}
-            onClick={() => void uploadImage('header')}
+            onClick={() => uploadImage('header')}
             className="rounded-lg bg-violet-600/80 hover:bg-violet-600 px-3 py-2 text-xs font-medium disabled:opacity-50 shrink-0"
           >
             Upload header image
           </button>
+        </div>
+        <div
+          role="group"
+          aria-label="Drop a header image file"
+          onDragOver={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (e.dataTransfer?.types?.includes('Files')) {
+              e.dataTransfer.dropEffect = 'copy';
+            }
+            setHeaderImageDropOver(true);
+          }}
+          onDragEnter={(e) => {
+            e.preventDefault();
+            setHeaderImageDropOver(true);
+          }}
+          onDragLeave={() => {
+            setHeaderImageDropOver(false);
+          }}
+          onDrop={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setHeaderImageDropOver(false);
+            const f = e.dataTransfer?.files?.[0];
+            if (f) void processImageFile(f, 'header');
+          }}
+          className={`mt-2 rounded-lg border border-dashed px-3 py-2.5 text-center text-[11px] text-white/50 leading-snug transition-colors ${
+            headerImageDropOver
+              ? 'border-violet-400/80 bg-violet-500/15 text-violet-100/80'
+              : 'border-white/20 bg-black/20 hover:border-white/28'
+          } ${!canUse || blogLoading ? 'pointer-events-none opacity-50' : 'cursor-default'}`}
+        >
+          Or <strong className="text-white/60">drop</strong> a header image here (e.g. drag from Finder so order matches
+          your folder).
         </div>
       </div>
 
@@ -446,11 +507,44 @@ export function AdminBlogSection({ adminKey }: Props) {
           <button
             type="button"
             disabled={!canUse || blogLoading}
-            onClick={() => void uploadImage('body')}
+            onClick={() => uploadImage('body')}
             className="rounded-lg bg-violet-600/80 hover:bg-violet-600 px-3 py-1.5 text-xs font-medium disabled:opacity-50 shrink-0"
           >
             Upload image → insert markdown
           </button>
+        </div>
+        <div
+          role="group"
+          aria-label="Drop an image to insert in body"
+          onDragOver={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (e.dataTransfer?.types?.includes('Files')) {
+              e.dataTransfer.dropEffect = 'copy';
+            }
+            setBodyImageDropOver(true);
+          }}
+          onDragEnter={(e) => {
+            e.preventDefault();
+            setBodyImageDropOver(true);
+          }}
+          onDragLeave={() => {
+            setBodyImageDropOver(false);
+          }}
+          onDrop={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setBodyImageDropOver(false);
+            const f = e.dataTransfer?.files?.[0];
+            if (f) void processImageFile(f, 'body');
+          }}
+          className={`mb-2 rounded-lg border border-dashed px-2.5 py-1.5 text-center text-[10px] text-white/45 leading-snug transition-colors ${
+            bodyImageDropOver
+              ? 'border-violet-400/80 bg-violet-500/15 text-violet-100/80'
+              : 'border-white/15 bg-black/15 hover:border-white/25'
+          } ${!canUse || blogLoading ? 'pointer-events-none opacity-50' : 'cursor-default'}`}
+        >
+          Or drop an image here to insert — same as header (Finder order preserved).
         </div>
         <BlogMarkdownToolbar
           textareaRef={bodyRef}
