@@ -3,9 +3,9 @@ import Link from 'next/link';
 import { BestPicksSubpageShell } from '@/components/best-picks/BestPicksSubpageShell';
 
 export const metadata: Metadata = {
-  title: 'Methodology — Today’s Best Picks',
+  title: 'Methodology — Football Predictions & Data-Driven Picks',
   description:
-    'Methodology for Today’s Best Picks: multi-model inputs, selection logic at a high level, and limitations.',
+    'Methodology for this hub: multi-model inputs, selection logic at a high level, and limitations.',
 };
 
 export default function BestPicksMethodologyPage() {
@@ -16,7 +16,7 @@ export default function BestPicksMethodologyPage() {
     >
       <section className="space-y-4">
         <p>
-          Today&apos;s Best Picks brings together outputs from separate forecasting pipelines (for example StatStrike
+          This hub brings together outputs from separate forecasting pipelines (for example StatStrike
           and GoalLab) and, where configured, live feeds for research-style selections. Each source applies its own
           modelling and thresholds; this site surfaces those outputs for the calendar day shown on the page.
         </p>
@@ -36,7 +36,7 @@ export default function BestPicksMethodologyPage() {
         <p className="text-xs text-white/55">
           For how each app is described for visitors, see{' '}
           <Link
-            href="/best-picks/how-it-works"
+            href="/football-predictions#how-apps-work"
             className="text-amber-200/80 underline underline-offset-2 hover:text-amber-100/90"
           >
             How apps work

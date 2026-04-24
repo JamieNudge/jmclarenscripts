@@ -8,33 +8,34 @@ import { BEST_PICKS_EXTENDED_SITE_NAV } from '@/components/best-picks/best-picks
 import { BestPicksSiteNav } from '@/components/best-picks/BestPicksSiteNav';
 import { apps } from '@/lib/apps-data';
 import { bestPicksGridTileClassName } from '@/lib/best-picks-panel-shell';
+import { FOOTBALL_PREDICTIONS_PAGE_TITLE } from '@/lib/football-predictions-brand';
 import type { App } from '@/types/app';
 
-const bestPicksDescription =
-  "Today's Best Picks — statistical patterns from multiple forecasting pipelines (StatStrike, GoalLab, Firebase). Latest research selections, video, App Store links, and a coming-soon beta slot. Live data from Firebase when configured; informational only.";
+const hubDescription =
+  'Football Predictions & Data-Driven Picks — how each app works (on the page), App Store links, video, research algorithm picks on a dedicated page, and a coming-soon beta slot. Live data from Firebase when configured; informational only.';
 
-const bestPicksOgImage = {
-  url: '/best-picks/opengraph-image',
+const hubOgImage = {
+  url: '/football-predictions/opengraph-image',
   width: 1200,
   height: 630,
-  alt: "Today's Best Picks — GoalLab",
+  alt: `${FOOTBALL_PREDICTIONS_PAGE_TITLE} — GoalLab`,
 } as const;
 
 export const metadata: Metadata = {
-  title: "Today's Best Picks",
-  description: bestPicksDescription,
+  title: FOOTBALL_PREDICTIONS_PAGE_TITLE,
+  description: hubDescription,
   openGraph: {
-    title: "Today's Best Picks",
-    description: bestPicksDescription,
+    title: FOOTBALL_PREDICTIONS_PAGE_TITLE,
+    description: hubDescription,
     type: 'website',
     // Explicit URLs so crawlers (e.g. WhatsApp) don’t fall back to the first on-page <img> (headshot).
-    images: [bestPicksOgImage],
+    images: [hubOgImage],
   },
   twitter: {
     card: 'summary_large_image',
-    title: "Today's Best Picks",
-    description: bestPicksDescription,
-    images: [bestPicksOgImage.url],
+    title: FOOTBALL_PREDICTIONS_PAGE_TITLE,
+    description: hubDescription,
+    images: [hubOgImage.url],
   },
 };
 
@@ -174,7 +175,7 @@ export default function BestPicksPage() {
               only.
             </p>
             <p className="text-right text-[11px] md:text-xs text-white/50 leading-relaxed shrink-0 min-w-[10rem] max-w-sm">
-              <Link href="/best-picks/privacy" className="underline hover:text-white/70 underline-offset-2">
+              <Link href="/football-predictions/privacy" className="underline hover:text-white/70 underline-offset-2">
                 Privacy policy
               </Link>
               <span className="text-white/25"> · </span>

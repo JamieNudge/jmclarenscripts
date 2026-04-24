@@ -663,7 +663,7 @@ export function statStrikeRtdbPathsFromEnv(dateKey: string): {
   unanimousPath: string;
   selectionPath: string;
   manualExportsPath: string;
-  /** Latest research-algorithm feed for the Best Picks grid (same date key as other exports). */
+  /** Latest research-algorithm feed (hub page: `/football-predictions/research-algorithm-selections`; same date key as other exports). */
   researchAlgorithmSelectionsPath: string;
   /** All Models Best Forecaster: consensus-filtered daily top-N (same London date key). */
   dailyConsensusSelectionsPath: string;

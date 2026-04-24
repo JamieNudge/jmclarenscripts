@@ -1,6 +1,6 @@
 # Best Picks page: simple setup guide
 
-This walks you from zero to a live `/best-picks` page that reads **Firebase Realtime Database** (same project as your Stat Strike Mac uploader). Take it in order; skip steps you’ve already done.
+This walks you from zero to a live `/football-predictions` page that reads **Firebase Realtime Database** (same project as your Stat Strike Mac uploader). Take it in order; skip steps you’ve already done.
 
 ---
 
@@ -106,7 +106,7 @@ npm install
 npm run dev
 ```
 
-6. In the browser open **`http://localhost:3000/best-picks`**.
+6. In the browser open **`http://localhost:3000/football-predictions`**.
 
    - If you see a **yellow “Firebase is not configured”** box, the `NEXT_PUBLIC_*` lines are missing, wrong, or the dev server wasn’t restarted after editing `.env.local`.
    - After a successful upload from the Mac for **today’s date** (UK), you should see picks or a clear empty message — not a permission error.
@@ -127,7 +127,7 @@ npm run dev
 
    `NEXT_PUBLIC_*` values are baked in at **build** time — changing env vars without redeploying won’t update the live site.
 
-5. Open **`https://YOUR_DOMAIN/best-picks`** and check again.
+5. Open **`https://YOUR_DOMAIN/football-predictions`** and check again.
 
 ---
 
@@ -135,7 +135,7 @@ npm run dev
 
 This is **optional**. Skip until you want picks or a video that **you** type in, instead of only what the Mac forecaster uploads.
 
-**Idea in one sentence:** You open a **secret URL** on your site, paste a **password** you invented, fill a form, click **Save**. The server writes to Firebase; **`/best-picks`** updates automatically (no redeploy).
+**Idea in one sentence:** You open a **secret URL** on your site, paste a **password** you invented, fill a form, click **Save**. The server writes to Firebase; **`/football-predictions`** updates automatically (no redeploy).
 
 ### D1 — What gets stored where
 
@@ -149,7 +149,7 @@ This is **optional**. Skip until you want picks or a video that **you** type in,
 
 The public page **merges** manual picks **on top of** (before) forecaster picks. Manual rows show **“Editor pick”** in the subtitle and always appear (they don’t need the “best performing league” filter).
 
-The **Video** box on `/best-picks` reads **`youtubeId`** and **`videoTitle`** from the **same** `manualExports/{date}` object.
+The **Video** box on `/football-predictions` reads **`youtubeId`** and **`videoTitle`** from the **same** `manualExports/{date}` object.
 
 ### D2 — One-time: create the admin password (you invent it)
 
@@ -257,12 +257,12 @@ FIREBASE_SERVICE_ACCOUNT_JSON={"type":"service_account",...one line...}
 
 5. **Section “4. Video (YouTube)”**  
    - Paste a full **YouTube watch URL**, a **`youtu.be/...`** link, or the **11-character video ID**.  
-   - Optional **Title** shows above the player on `/best-picks`.  
+   - Optional **Title** shows above the player on `/football-predictions`.  
    - Leave the URL **empty** and Save to **remove** the video for that date.
 
 6. Click **Save everything to Firebase**.  
    - You should see **Saved to manualExports/…**.  
-   - Open **`/best-picks`** in another tab: your picks and video should show (may take a second).
+   - Open **`/football-predictions`** in another tab: your picks and video should show (may take a second).
 
 ### D8 — If something goes wrong
 
@@ -271,7 +271,7 @@ FIREBASE_SERVICE_ACCOUNT_JSON={"type":"service_account",...one line...}
 | **401 Unauthorized** | Admin key wrong, or missing **`Authorization`** (typo in key on Vercel). |
 | **503 / Server misconfigured** | **`ADMIN_MANUAL_PICKS_KEY`** or **`FIREBASE_SERVICE_ACCOUNT_JSON`** missing on Vercel. |
 | **500 with JSON error** | Service account JSON invalid (not one valid JSON object); or wrong **`FIREBASE_DATABASE_URL`**. |
-| **Save works but nothing on /best-picks** | **Date** on admin form ≠ date the page uses (timezone). Compare with Part F. |
+| **Save works but nothing on /football-predictions** | **Date** on admin form ≠ date the page uses (timezone). Compare with Part F. |
 | **Permission denied** on public page | Rules must **allow read** on **`manualExports`**, **`dailyConsensusSelections`**, and any other paths the page reads (see Part E). |
 
 ---
@@ -287,11 +287,11 @@ FIREBASE_SERVICE_ACCOUNT_JSON={"type":"service_account",...one line...}
    - **`researchAlgorithmSelections/{date}`** and **`dailyConsensusSelections/{date}`** (All Models Best Forecaster uploads)
    - **`manualExports/{date}`** (if you use the owner admin — Part D)
 
-3. **Example** — if your tree is split by feature, ensure each branch used by `/best-picks` has **`.read": true`** (and **`.write": false`** for clients where uploads are server/Mac-only). Copy-paste fragments: **`docs/FIREBASE_RTDB_RULES_MANUAL_EXPORTS.md`** (`manualExports`), **`docs/FIREBASE_RTDB_RULES_DAILY_CONSENSUS.md`** (`dailyConsensusSelections`).
+3. **Example** — if your tree is split by feature, ensure each branch used by `/football-predictions` has **`.read": true`** (and **`.write": false`** for clients where uploads are server/Mac-only). Copy-paste fragments: **`docs/FIREBASE_RTDB_RULES_MANUAL_EXPORTS.md`** (`manualExports`), **`docs/FIREBASE_RTDB_RULES_DAILY_CONSENSUS.md`** (`dailyConsensusSelections`).
 
 4. **Do not** leave wide-open read/write on production long-term. Tighten rules once you’re happy (e.g. read-only on those branches only). **Writes** to **`manualExports`** should stay **false** for clients if you use Part D (server writes only).
 
-5. **“Submit Your Idea” form** (`/best-picks`): submissions are written by the **server** (same **`FIREBASE_SERVICE_ACCOUNT_JSON`** as the admin API) to **`predictionIdeaSubmissions/{pushId}`** by default. You do **not** need to allow browser read/write on that path; review entries in the Firebase console. Optional env: **`FIREBASE_PREDICTION_IDEA_SUBMISSIONS_ROOT`**.
+5. **“Submit Your Idea” form** (`/football-predictions`): submissions are written by the **server** (same **`FIREBASE_SERVICE_ACCOUNT_JSON`** as the admin API) to **`predictionIdeaSubmissions/{pushId}`** by default. You do **not** need to allow browser read/write on that path; review entries in the Firebase console. Optional env: **`FIREBASE_PREDICTION_IDEA_SUBMISSIONS_ROOT`**.
 
 If rules block reads, the page may show an error or stay empty.
 

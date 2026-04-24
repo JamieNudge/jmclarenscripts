@@ -15,7 +15,7 @@ async function readHeadshotDataUrl(): Promise<string | null> {
   }
 }
 
-/** 1200×630 for `/` — you + portfolio copy (not GoalLab; that stays on /best-picks). */
+/** 1200×630 for `/` — you + portfolio copy (not GoalLab; that stays on /football-predictions). */
 export async function portfolioOpenGraphImageResponse() {
   const photoSrc = await readHeadshotDataUrl();
 

@@ -15,11 +15,11 @@ export function BestPicksSubpageShell({
   alwaysShowHeaderNav = false,
 }: {
   title: string;
-  description?: string;
+  description?: ReactNode;
   children: ReactNode;
   /** Renders in `<footer>`, with a top border. When set, main column grows so the footer can sit at the bottom on short pages. */
   footer?: ReactNode;
-  /** If false, hides the “Back to Today’s Best Picks” row (e.g. hub home-style pages like the publication privacy policy). */
+  /** If false, hides the “Back to [hub]” row (e.g. publication privacy). */
   showBackToHub?: boolean;
   /** Show the main section nav even when `NEXT_PUBLIC_BEST_PICKS_EXTENDED_SITE_NAV=0` (e.g. privacy so visitors can always move within this publication). */
   alwaysShowHeaderNav?: boolean;
@@ -32,13 +32,13 @@ export function BestPicksSubpageShell({
         {showBackToHub ? (
           <div className={showHeaderNav ? 'mt-6' : ''}>
             <Link
-              href="/best-picks"
+              href="/football-predictions"
               className="inline-flex items-center gap-2 text-white/80 hover:text-white transition-colors mb-8 text-sm"
             >
               <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
-              Back to Today&apos;s Best Picks
+              Back to Football Predictions
             </Link>
           </div>
         ) : showHeaderNav ? (
@@ -46,7 +46,9 @@ export function BestPicksSubpageShell({
         ) : null}
 
         <h1 className="text-3xl md:text-4xl font-bold mb-3">{title}</h1>
-        {description ? <p className="text-sm text-white/60 mb-8 leading-relaxed">{description}</p> : null}
+        {description ? (
+          <div className="text-sm text-white/60 mb-8 leading-relaxed">{description}</div>
+        ) : null}
         {footer ? (
           <>
             <div className={`${bodyProse} flex-1 min-h-0`}>{children}</div>

@@ -1,12 +1,14 @@
+import { FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_PATH } from '@/lib/football-predictions-brand';
+
 export const bestPicksSiteNavPrimary = [
-  { href: '/best-picks', label: 'Home' },
-  { href: '/best-picks/how-it-works', label: 'How Apps Work' },
-  { href: '/best-picks/methodology', label: 'Methodology' },
-  { href: '/best-picks/about', label: 'About' },
+  { href: '/football-predictions', label: 'Home' },
+  { href: FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_PATH, label: 'Research selections' },
+  { href: '/football-predictions/methodology', label: 'Methodology' },
+  { href: '/football-predictions/about', label: 'About' },
   { href: '/blog', label: 'Blogs' },
 ] as const;
 
 export const bestPicksSiteNavFooterExtra = [
-  { href: '/best-picks/contact', label: 'Contact' },
-  { href: '/best-picks/privacy', label: 'Privacy policy' },
+  { href: '/football-predictions/contact', label: 'Contact' },
+  { href: '/football-predictions/privacy', label: 'Privacy policy' },
 ] as const;

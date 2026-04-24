@@ -39,13 +39,13 @@ Until you have real images, the site will show:
 
 ## Open Graph / WhatsApp / iMessage link previews
 
-Messengers read **`og:image`** when unfurling a link (that can differ from large images on the page itself). This project generates images with Next.js **`opengraph-image.tsx`** files: **portfolio home** (`/`) uses **`headshot.png`** + portfolio copy; **Today’s Best Picks** (`/best-picks`) uses **`goallab-icon.png`** + that page’s title.
+Messengers read **`og:image`** when unfurling a link (that can differ from large images on the page itself). This project generates images with Next.js **`opengraph-image.tsx`** files: **portfolio home** (`/`) uses **`headshot.png`** + portfolio copy; **Today’s Best Picks** (`/football-predictions`) uses **`goallab-icon.png`** + that page’s title.
 
 ### Step 1 — Images used for link previews
 
 **Portfolio homepage (`/`):** uses **`public/images/headshot.png`**. If it’s missing, the generator falls back to a **“JM”** monogram.
 
-**Best Picks (`/best-picks`):** uses **`public/images/goallab-icon.png`**.
+**Best Picks (`/football-predictions`):** uses **`public/images/goallab-icon.png`**.
 
 For GoalLab (Best Picks preview):
 
@@ -69,12 +69,12 @@ After deploy, Next.js serves generated images at:
 | You share this URL | Preview image comes from |
 |--------------------|---------------------------|
 | `https://yoursite.com/` | `app/opengraph-image.tsx` → **Jamie’s Portfolio** + **`headshot.png`** |
-| `https://yoursite.com/best-picks` | `app/best-picks/opengraph-image.tsx` → **Today’s Best Picks** + **`goallab-icon.png`** |
+| `https://yoursite.com/football-predictions` | `app/football-predictions/opengraph-image.tsx` → **Today’s Best Picks** + **`goallab-icon.png`** |
 
 ### Step 4 — Confirm in a browser
 
 1. Open: `https://YOUR_DOMAIN/opengraph-image` — should show **headshot + portfolio** copy.  
-2. Open: `https://YOUR_DOMAIN/best-picks/opengraph-image` — should show **GoalLab icon + Today’s Best Picks**.
+2. Open: `https://YOUR_DOMAIN/football-predictions/opengraph-image` — should show **GoalLab icon + Today’s Best Picks**.
 
 If you get an error page, check deploy logs and that **`headshot.png`** / **`goallab-icon.png`** are committed as needed.
 
@@ -83,13 +83,13 @@ If you get an error page, check deploy logs and that **`headshot.png`** / **`goa
 WhatsApp uses Meta’s crawler cache. Old images can stick until refreshed.
 
 1. Open **[Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/)**.
-2. Paste the **exact** URL you share (e.g. `https://yoursite.com/best-picks`).
+2. Paste the **exact** URL you share (e.g. `https://yoursite.com/football-predictions`).
 3. Click **Debug**, then **Scrape Again** (may need a few tries).
 4. Share the link again in WhatsApp; if it’s still old, wait a bit or try from another chat/thread.
 
 ### Step 6 — Optional: static image instead of generated
 
-If you prefer a single PNG for previews, you can add **`app/opengraph-image.png`** (or **`app/best-picks/opengraph-image.png`**) at the right size (**1200×630** recommended) and remove or rename the `.tsx` file for that route so Next.js picks the static file. The dynamic `.tsx` approach avoids maintaining a separate composite image.
+If you prefer a single PNG for previews, you can add **`app/opengraph-image.png`** (or **`app/football-predictions/opengraph-image.png`**) at the right size (**1200×630** recommended) and remove or rename the `.tsx` file for that route so Next.js picks the static file. The dynamic `.tsx` approach avoids maintaining a separate composite image.
 
 ---
 

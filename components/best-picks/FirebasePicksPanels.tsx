@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react';
 import Image from 'next/image';
 import { BestPicksNewProductPanel } from '@/components/best-picks/BestPicksExtraPanels';
-import { BestPicksResearchAlgorithmPanel } from '@/components/best-picks/BestPicksResearchAlgorithmPanel';
+import { BestPicksHowAppsWorkPanel } from '@/components/best-picks/BestPicksHowAppsWorkPanel';
 import { BestPicksVideo } from '@/components/best-picks/BestPicksVideo';
 import { bestPicksGridTileClassName } from '@/lib/best-picks-panel-shell';
 import { bestPicksPopgoalsComingSoonMeta } from '@/lib/best-picks-popgoals-coming-soon-meta';
@@ -51,13 +51,7 @@ function BestPicksComingSoonAndProphitPanel() {
   );
 }
 
-export function FirebasePicksPanels({
-  dateKey,
-  children,
-}: {
-  dateKey: string;
-  children: ReactNode;
-}) {
+export function FirebasePicksPanels({ children }: { children: ReactNode }) {
   const configHint = !isFirebaseClientConfigured();
 
   return (
@@ -72,7 +66,7 @@ export function FirebasePicksPanels({
         </div>
       )}
       {/*
-        md: 3×2 with explicit placement — left: App / Video; centre: Latest Research (row-span 2);
+        md: 3×2 with explicit placement — left: App / Video; centre: How apps work (row-span 2);
         right: PopGoals (coming soon) + ProphIt in one cell (row-span 2). Mobile: four stacked rows.
       */}
       <div className="grid grid-cols-1 gap-4 max-md:[grid-template-rows:repeat(4,minmax(0,26rem))] md:grid-cols-3 md:gap-5 md:[grid-template-rows:repeat(2,minmax(0,26rem))] [&>*]:min-h-0 [&>*]:min-w-0">
@@ -81,7 +75,7 @@ export function FirebasePicksPanels({
           <BestPicksVideo />
         </div>
         <div className="flex min-h-0 flex-col md:col-start-2 md:row-start-1 md:row-span-2 md:h-full md:min-h-0">
-          <BestPicksResearchAlgorithmPanel dateKey={dateKey} />
+          <BestPicksHowAppsWorkPanel />
         </div>
         <div className="flex min-h-0 min-w-0 flex-col md:col-start-3 md:row-start-1 md:row-span-2 md:h-full md:min-h-0">
           <BestPicksComingSoonAndProphitPanel />

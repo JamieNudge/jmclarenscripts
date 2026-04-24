@@ -352,8 +352,8 @@ export default function AdminPicksPage() {
         <div className="flex flex-col xl:flex-row xl:gap-10 xl:items-start">
           <div className="flex-1 min-w-0 max-w-2xl xl:max-w-none space-y-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <Link href="/best-picks" className="text-sm text-white/70 hover:text-white underline-offset-2">
-            ← Back to Best Picks
+          <Link href="/football-predictions" className="text-sm text-white/70 hover:text-white underline-offset-2">
+            ← Back to Football Predictions
           </Link>
           <Link href="/" className="text-sm text-white/70 hover:text-white underline-offset-2">
             Home
@@ -361,10 +361,10 @@ export default function AdminPicksPage() {
         </div>
 
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Best picks — owner tools</h1>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Football predictions — owner tools</h1>
           <p className="text-sm text-white/55 mt-2 leading-relaxed">
             This page is not linked from the public site. Save your admin key in a password manager. Never commit
-            keys to git. After changing data, the live Best Picks page updates automatically (Firebase subscription).
+            keys to git. After changing data, the live hub page updates automatically (Firebase subscription).
           </p>
         </div>
 

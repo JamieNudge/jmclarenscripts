@@ -14,7 +14,7 @@ function adsenseScriptSrc(clientId: string) {
  * - preload / script crossOrigin mismatch (React Float preload omits crossOrigin)
  * - `data-nscript` on the tag (AdSense warns about that)
  *
- * On unmount (leaving an ad-enabled layout such as `/best-picks` or `/blog`), strips script + CMP
+ * On unmount (leaving an ad-enabled layout such as `/football-predictions` or `/blog`), strips script + CMP
  * so other routes stay clean (see `pathUsesAdSenseClient`). Consent UI: configure in AdSense
  * Privacy & messaging — not in app CSS/JS.
  */

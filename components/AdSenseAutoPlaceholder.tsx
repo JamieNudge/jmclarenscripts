@@ -1,6 +1,6 @@
 /**
  * Dashed regions hinting where Google AdSense Auto ads may inject when enabled (site + account ready).
- * Used on Today’s Best Picks and Blog.
+ * Used on the predictions hub and Blog.
  */
 export function AdSenseAutoPlaceholder({
   orientation,

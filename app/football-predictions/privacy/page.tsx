@@ -3,9 +3,9 @@ import Link from 'next/link';
 import { BestPicksSubpageShell } from '@/components/best-picks/BestPicksSubpageShell';
 
 export const metadata: Metadata = {
-  title: 'Privacy — Today’s Best Picks & blog',
+  title: 'Privacy — Football Predictions & Data-Driven Picks & blog',
   description:
-    'Privacy policy for the Today’s Best Picks hub, related pages, and the blog: cookies, Google AdSense, and how to get in touch.',
+    'Privacy policy for the Football Predictions & Data-Driven Picks hub, related pages, and the blog: cookies, Google AdSense, and how to get in touch.',
 };
 
 export default function BestPicksPrivacyPage() {
@@ -14,19 +14,19 @@ export default function BestPicksPrivacyPage() {
       alwaysShowHeaderNav
       showBackToHub={false}
       title="Privacy policy"
-      description="This policy covers Today’s Best Picks (all pages under /best-picks), the blog (index and posts under /blog), and how data is used there. It does not describe the separate app showcase home page."
+      description="This policy covers Football Predictions & Data-Driven Picks (all pages under /football-predictions), the blog (index and posts under /blog), and how data is used there. It does not describe the separate app showcase home page."
     >
       <section className="space-y-6 text-sm md:text-base leading-relaxed text-white/90">
         <p>
-          This site section is operated by Jamie McLaren as the publisher of Today’s Best Picks and the
-          blog. It is separate from the <Link href="/privacy" className="text-amber-200/80 underline underline-offset-2 hover:text-amber-100/90">main portfolio and app showcase privacy policy</Link> (for
-          the home page and other non–Best Picks pages) and from privacy policies for individual
+          This site section is operated by Jamie McLaren as the publisher of Football Predictions &amp; Data-Driven
+          Picks and the blog. It is separate from the <Link href="/privacy" className="text-amber-200/80 underline underline-offset-2 hover:text-amber-100/90">main portfolio and app showcase privacy policy</Link> (for
+          the home page and other non–hub pages) and from privacy policies for individual
           iPhone or iPad apps, which are linked below.
         </p>
         <p>
           For privacy questions about <strong className="font-medium text-white">this publication only</strong>, contact:{' '}
           <a
-            href="mailto:jmclarenscripts@gmail.com?subject=Today%27s%20Best%20Picks%20%2F%20blog%20privacy"
+            href="mailto:jmclarenscripts@gmail.com?subject=Football%20Predictions%20%26%20Data-Driven%20Picks%20%2F%20blog%20privacy"
             className="text-amber-200/80 underline hover:text-amber-100/90"
           >
             jmclarenscripts@gmail.com
@@ -36,8 +36,9 @@ export default function BestPicksPrivacyPage() {
 
         <h2 className="text-xl font-semibold text-white mt-8">1. What these pages are</h2>
         <p>
-          <strong className="font-medium text-white">Today’s Best Picks</strong> (for example the hub, How apps work,
-          Methodology, About, and Contact) and the <strong className="font-medium text-white">blog</strong> present
+          <strong className="font-medium text-white">Football Predictions &amp; Data-Driven Picks</strong> (for example
+          the hub, How apps work, Methodology, About, and Contact) and the{' '}
+          <strong className="font-medium text-white">blog</strong> present
           editorial and informational content, links to the App Store or social profiles, optional embedded
           video, and may show daily or research-style pick summaries when configured. You do not need
           an account to read this material.
@@ -46,8 +47,8 @@ export default function BestPicksPrivacyPage() {
         <h2 className="text-xl font-semibold text-white mt-8">2. Information collected in this section</h2>
         <p>
           <span className="font-semibold text-white/95">What you send:</span> If you use an email
-          address given on a Best Picks or contact page, we receive what you include (for example
-          your address and the message). Use the <Link href="/best-picks/contact" className="text-amber-200/80 underline underline-offset-2 hover:text-amber-100/90">contact</Link> page
+          address given on this hub or a contact page, we receive what you include (for example
+          your address and the message). Use the <Link href="/football-predictions/contact" className="text-amber-200/80 underline underline-offset-2 hover:text-amber-100/90">contact</Link> page
           for publication-related questions.
         </p>
         <p>
@@ -62,7 +63,7 @@ export default function BestPicksPrivacyPage() {
 
         <h2 className="text-xl font-semibold text-white mt-8">3. Cookies and Google AdSense</h2>
         <p>
-          On <span className="font-semibold text-white">Today’s Best Picks</span> and the <span className="font-semibold text-white">blog</span> we
+          On <span className="font-semibold text-white">this hub</span> and the <span className="font-semibold text-white">blog</span> we
           may use <span className="font-semibold text-white">Google AdSense</span> when that is
           enabled for the site. Google and partners may use cookies or similar technologies to serve
           and measure ads, including based on your visits to this or other sites.
@@ -106,7 +107,7 @@ export default function BestPicksPrivacyPage() {
         </p>
 
         <h2 className="text-xl font-semibold text-white mt-8">5. App-specific privacy policies (football apps in this section)</h2>
-        <p>These native apps are discussed on Today’s Best Picks. Each has its own policy on this site:</p>
+        <p>These native apps are discussed on this site. Each has its own policy:</p>
         <ul className="list-disc list-inside space-y-1 ml-4">
           <li>
             <Link href="/privacy/statstrike" className="text-amber-200/80 underline hover:text-amber-100/90">

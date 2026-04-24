@@ -7,7 +7,7 @@ import { BlogIndexClient } from '@/components/blog/BlogIndexClient';
 export const metadata: Metadata = {
   title: 'Blogs',
   description:
-    'Original articles and methodology behind the prediction system. Daily picks on Today’s Best Picks.',
+    'Original articles and methodology behind the prediction system. Daily picks: Football Predictions & Data-Driven Picks.',
 };
 
 export default function BlogIndexPage() {
@@ -21,7 +21,7 @@ export default function BlogIndexPage() {
         <h1 className="text-3xl md:text-4xl font-bold mb-3">Blogs</h1>
         <p className="text-sm text-white/65 mb-8 leading-relaxed">
           Original articles and methodology behind the prediction system. Daily picks are available{' '}
-          <Link href="/best-picks" className="text-amber-200/85 underline underline-offset-2 hover:text-amber-50/95">
+          <Link href="/football-predictions" className="text-amber-200/85 underline underline-offset-2 hover:text-amber-50/95">
             here
           </Link>
           .
@@ -32,7 +32,7 @@ export default function BlogIndexPage() {
         <footer className="mt-12 pt-8 border-t border-white/10 space-y-4 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
           <AdSenseAutoPlaceholder orientation="horizontal" className="w-full min-h-[90px]" />
           <p className="text-left text-[11px] md:text-xs text-white/50 leading-relaxed max-w-[min(100%,42rem)]">
-            <Link href="/best-picks/privacy" className="underline hover:text-white/70 underline-offset-2">
+            <Link href="/football-predictions/privacy" className="underline hover:text-white/70 underline-offset-2">
               Privacy policy
             </Link>
             <span className="text-white/25"> · </span>

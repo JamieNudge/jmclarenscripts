@@ -11,7 +11,7 @@ export function BestPicksHeadAndPanels({ children }: { children: ReactNode }) {
   return (
     <>
       <BestPicksIntro dateKey={dateKey} />
-      <FirebasePicksPanels dateKey={dateKey}>{children}</FirebasePicksPanels>
+      <FirebasePicksPanels>{children}</FirebasePicksPanels>
     </>
   );
 }

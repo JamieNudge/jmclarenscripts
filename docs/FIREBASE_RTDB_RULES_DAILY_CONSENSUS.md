@@ -1,6 +1,6 @@
 # Realtime Database rules: `dailyConsensusSelections`
 
-The public **`/best-picks`** page reads **`dailyConsensusSelections/{YYYY-MM-DD}`** in the browser (same Firebase project as `unanimousExports` / `researchAlgorithmSelections`). If rules omit this path, the Daily consensus panel shows:
+The public **`/football-predictions`** page reads **`dailyConsensusSelections/{YYYY-MM-DD}`** in the browser (same Firebase project as `unanimousExports` / `researchAlgorithmSelections`). If rules omit this path, the Daily consensus panel shows:
 
 `permission_denied at /dailyConsensusSelections/…`
 

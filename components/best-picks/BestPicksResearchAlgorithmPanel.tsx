@@ -14,8 +14,9 @@ import {
   type ResearchAlgorithmPerModelStructured,
 } from '@/lib/best-picks-firebase';
 import { getFirebaseRealtimeDb, isFirebaseClientConfigured } from '@/lib/firebase-client';
+import { FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_TITLE } from '@/lib/football-predictions-brand';
 
-export const bestPicksResearchAlgorithmPanelTitle = "Latest Research Algorithm's Selections";
+export const bestPicksResearchAlgorithmPanelTitle = FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_TITLE;
 
 const scrollArea =
   'min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-1 -mr-0.5 [scrollbar-gutter:stable] scroll-smooth overscroll-y-contain';
@@ -157,7 +158,14 @@ function PerModelPickRow({ row }: { row: ResearchAlgorithmPerModelStructured }) 
   );
 }
 
-export function BestPicksResearchAlgorithmPanel({ dateKey }: { dateKey: string }) {
+export function BestPicksResearchAlgorithmPanel({
+  dateKey,
+  showPanelHeading = true,
+}: {
+  dateKey: string;
+  /** When false (e.g. full subpage with its own `h1`), skip the duplicate `h2` title. */
+  showPanelHeading?: boolean;
+}) {
   const [rows, setRows] = useState<ResearchAlgorithmFeedRow[]>([]);
   const [researchLoading, setResearchLoading] = useState(true);
   const [researchError, setResearchError] = useState<string | null>(null);
@@ -252,8 +260,12 @@ export function BestPicksResearchAlgorithmPanel({ dateKey }: { dateKey: string }
     <div className={`${bestPicksGridTileClassName} min-h-0 h-full justify-start`}>
       <div className="shrink-0 mb-3 space-y-4">
         <div>
-          <h2 className="text-lg md:text-xl font-semibold text-white">{bestPicksResearchAlgorithmPanelTitle}</h2>
-          <p className="text-sm text-white mt-2 leading-relaxed">
+          {showPanelHeading ? (
+            <h2 className="text-lg md:text-xl font-semibold text-white">{bestPicksResearchAlgorithmPanelTitle}</h2>
+          ) : null}
+          <p
+            className={`text-sm text-white leading-relaxed ${showPanelHeading ? 'mt-2' : ''}`}
+          >
             Selections are driven by multi-model consensus in an attempt to determine a highly reliable list every day.
           </p>
         </div>

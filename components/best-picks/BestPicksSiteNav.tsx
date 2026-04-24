@@ -5,9 +5,9 @@ import { usePathname } from 'next/navigation';
 import { bestPicksSiteNavFooterExtra, bestPicksSiteNavPrimary } from '@/components/best-picks/best-picks-site-nav-links';
 
 function linkActive(pathname: string, href: string): boolean {
-  if (href === '/best-picks') return pathname === '/best-picks';
+  if (href === '/football-predictions') return pathname === '/football-predictions';
   if (href === '/blog') return pathname === '/blog' || pathname.startsWith('/blog/');
-  if (href === '/best-picks/privacy') return pathname === '/best-picks/privacy';
+  if (href === '/football-predictions/privacy') return pathname === '/football-predictions/privacy';
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
@@ -25,7 +25,9 @@ export function BestPicksSiteNav({ variant }: { variant: 'header' | 'footer' }) 
 
   return (
     <nav
-      aria-label={variant === 'header' ? 'Best picks sections' : 'Best picks and site links'}
+      aria-label={
+        variant === 'header' ? 'Football predictions sections' : 'Football predictions and site links'
+      }
       className={
         variant === 'header'
           ? 'flex flex-wrap items-center gap-x-2 gap-y-1.5 pb-2'

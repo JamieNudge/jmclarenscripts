@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { BEST_PICKS_EXTENDED_SITE_NAV } from '@/components/best-picks/best-picks-site-nav-config';
 import { BestPicksSiteNav } from '@/components/best-picks/BestPicksSiteNav';
 import { apps } from '@/lib/apps-data';
+import { FOOTBALL_PREDICTIONS_PAGE_TITLE } from '@/lib/football-predictions-brand';
 
 const statStrike = apps.find((a) => a.id === 'stat-strike');
 const goalLab = apps.find((a) => a.id === 'goallab');
@@ -23,7 +24,7 @@ function appStoreLink(href: string | undefined, label: string) {
 }
 
 /**
- * Hero for Best Picks. With extended site nav on, header/footer carry the links — no duplicate line here.
+ * Hero for the predictions hub. With extended site nav on, header/footer carry the links — no duplicate line here.
  * When nav is off (`NEXT_PUBLIC_BEST_PICKS_EXTENDED_SITE_NAV=0`), the collapsible block is kept so nothing is lost.
  */
 export function BestPicksIntro({ dateKey }: { dateKey: string }) {
@@ -31,8 +32,8 @@ export function BestPicksIntro({ dateKey }: { dateKey: string }) {
     <header className="max-w-4xl mb-5 md:mb-6 space-y-3">
       {BEST_PICKS_EXTENDED_SITE_NAV ? <BestPicksSiteNav variant="header" /> : null}
       <div>
-        <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight leading-tight text-white flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-          <span>Today&apos;s Best Picks</span>
+        <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight leading-tight text-white flex flex-col gap-1 sm:flex-row sm:flex-wrap sm:items-baseline sm:gap-x-2 sm:gap-y-0.5">
+          <span className="max-w-[22ch] sm:max-w-none">{FOOTBALL_PREDICTIONS_PAGE_TITLE}</span>
           <span className="text-lg md:text-2xl lg:text-3xl font-semibold text-amber-200/90 tabular-nums tracking-wide shrink-0">
             {dateKey}
           </span>
@@ -40,10 +41,10 @@ export function BestPicksIntro({ dateKey }: { dateKey: string }) {
         <p className="mt-2 md:mt-3 text-lg md:text-xl lg:text-2xl font-semibold text-amber-50/90 leading-snug">
           Daily selections based on a four-algorithm system (
           <Link
-            href="/best-picks/how-it-works"
+            href="/football-predictions#how-apps-work"
             className="text-amber-100/95 underline underline-offset-2 hover:text-amber-50/95"
           >
-            see How Apps Work
+            see how the apps work
           </Link>
           ), combining different modelling approaches to identify more reliable outcomes.
         </p>
@@ -82,14 +83,14 @@ export function BestPicksIntro({ dateKey }: { dateKey: string }) {
             <p>
               What this screen contains (feeds, blog, in-development teasers) is summarised on{' '}
               <Link
-                href="/best-picks/about"
+                href="/football-predictions/about"
                 className="text-amber-200/80 underline underline-offset-2 hover:text-amber-100/90"
               >
-                About Today&apos;s Best Picks
+                About this publication
               </Link>
               . Technical detail on feeds is on{' '}
               <Link
-                href="/best-picks/methodology"
+                href="/football-predictions/methodology"
                 className="text-amber-200/80 underline underline-offset-2 hover:text-amber-100/90"
               >
                 Methodology
@@ -99,25 +100,25 @@ export function BestPicksIntro({ dateKey }: { dateKey: string }) {
             <p className="text-xs text-white/50">
               App terms &amp; privacy: App Store listings and{' '}
               <Link
-                href="/best-picks/privacy"
+                href="/football-predictions/privacy"
                 className="text-amber-200/70 underline underline-offset-2 hover:text-amber-100/90"
               >
                 site privacy policy
               </Link>
               .{' '}
               <Link
-                href="/best-picks/how-it-works"
+                href="/football-predictions#how-apps-work"
                 className="text-amber-200/70 underline underline-offset-2 hover:text-amber-100/90"
               >
                 How apps work
               </Link>
               {' · '}
-              <Link href="/best-picks/about" className="text-amber-200/70 underline underline-offset-2 hover:text-amber-100/90">
+              <Link href="/football-predictions/about" className="text-amber-200/70 underline underline-offset-2 hover:text-amber-100/90">
                 About
               </Link>
               {' · '}
               <Link
-                href="/best-picks/methodology"
+                href="/football-predictions/methodology"
                 className="text-amber-200/70 underline underline-offset-2 hover:text-amber-100/90"
               >
                 Methodology

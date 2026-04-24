@@ -4,7 +4,7 @@ import Link from 'next/link';
 export const metadata: Metadata = {
   title: 'Privacy Policy — Portfolio & app showcase',
   description:
-    'Privacy policy for the app portfolio home and related static pages. Today’s Best Picks and the blog have a separate policy.',
+    'Privacy policy for the app portfolio home and related static pages. Football Predictions & Data-Driven Picks and the blog have a separate policy.',
 };
 
 export default function WebsitePrivacyPage() {
@@ -34,10 +34,10 @@ export default function WebsitePrivacyPage() {
 
         <section className="space-y-6 text-sm md:text-base leading-relaxed text-white/90">
           <p>
-            <span className="font-semibold text-white">Today’s Best Picks</span> and the{' '}
+            <span className="font-semibold text-white">Football Predictions &amp; Data-Driven Picks</span> and the{' '}
             <span className="font-semibold text-white">blog</span> (feeds, posts, and Google AdSense in those
             areas) are covered in a{' '}
-            <Link href="/best-picks/privacy" className="underline hover:text-blue-300">
+            <Link href="/football-predictions/privacy" className="underline hover:text-blue-300">
               separate policy for that publication
             </Link>
             . This page covers the <strong className="font-medium text-white">portfolio home</strong> and other
@@ -62,7 +62,7 @@ export default function WebsitePrivacyPage() {
           <p>
             The portfolio home presents app listings, modals, links to store pages, and optional static legal or
             support text. The main portfolio home <strong className="font-medium text-white">does not</strong>{' '}
-            load the same Google AdSense script used on Today’s Best Picks and the blog. You do not need
+            load the same Google AdSense script used on the predictions hub and the blog. You do not need
             an account to browse the showcase.
           </p>
 
@@ -83,19 +83,19 @@ export default function WebsitePrivacyPage() {
             do not send sensitive personal information by email unless necessary.
           </p>
 
-          <h2 className="text-xl font-semibold text-white mt-8">4. Today’s Best Picks, blog, and cookies</h2>
+          <h2 className="text-xl font-semibold text-white mt-8">4. Football predictions hub, blog, and cookies</h2>
           <p>
             If you follow a link to{' '}
-            <Link href="/best-picks" className="underline hover:text-blue-300">
-              Today’s Best Picks
+            <Link href="/football-predictions" className="underline hover:text-blue-300">
+              Football Predictions &amp; Data-Driven Picks
             </Link>
             ,{' '}
             <Link href="/blog" className="underline hover:text-blue-300">
               the blog
             </Link>
             , or a blog post, Google AdSense and cookie behaviour there are described in the{' '}
-            <Link href="/best-picks/privacy" className="underline hover:text-blue-300">
-              Best Picks &amp; blog privacy policy
+            <Link href="/football-predictions/privacy" className="underline hover:text-blue-300">
+              Predictions hub &amp; blog privacy policy
             </Link>
             . You do not need to read both documents if you only use the portfolio home.
           </p>
@@ -141,10 +141,10 @@ export default function WebsitePrivacyPage() {
             </li>
           </ul>
           <p>
-            Football products featured on Today’s Best Picks (StatStrike, GoalLab, PopGoals, ProphIt) are listed
+            Football products featured on the predictions hub (StatStrike, GoalLab, PopGoals, ProphIt) are listed
             in the{' '}
-            <Link href="/best-picks/privacy" className="underline hover:text-blue-300">
-              Best Picks &amp; blog
+            <Link href="/football-predictions/privacy" className="underline hover:text-blue-300">
+              Predictions hub &amp; blog
             </Link>{' '}
             policy. Their <code className="text-white/80">/privacy/…</code> pages on this domain still apply
             to the native apps.

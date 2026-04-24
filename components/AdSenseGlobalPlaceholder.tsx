@@ -5,12 +5,12 @@ import { usePathname } from 'next/navigation';
 
 /**
  * One reserved horizontal Auto ads region for pages that don’t already include placeholders
- * (blog and best-picks define their own). Skips portfolio home, admin, and blog/best-picks trees.
+ * (blog and best-picks define their own). Skips portfolio home, admin, and blog/football-predictions trees.
  */
 function showGlobalPlaceholder(pathname: string): boolean {
   if (pathname === '/' || pathname.startsWith('/admin')) return false;
   if (pathname === '/blog' || pathname.startsWith('/blog/')) return false;
-  if (pathname.startsWith('/best-picks')) return false;
+  if (pathname.startsWith('/football-predictions')) return false;
   return true;
 }
 

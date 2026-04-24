@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 
 /**
- * Tab / bookmark icon for `/best-picks` only (not the same as `og:image` for link previews).
+ * Tab / bookmark icon for `/football-predictions` only (not the same as `og:image` for link previews).
  * Root `app/icon.png` stays the portfolio favicon elsewhere.
  * AdSense script: {@link AdSenseScriptGate} in root layout.
  */

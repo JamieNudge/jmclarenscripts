@@ -3,15 +3,15 @@ import Link from 'next/link';
 import { BestPicksSubpageShell } from '@/components/best-picks/BestPicksSubpageShell';
 
 export const metadata: Metadata = {
-  title: 'About — Today’s Best Picks',
+  title: 'About — Football Predictions & Data-Driven Picks',
   description:
-    'What Today’s Best Picks is: App Store links, live research selections, blog, in-development teasers, and disclaimers.',
+    'What this hub is: App Store links, live research selections, blog, in-development teasers, and disclaimers.',
 };
 
 export default function BestPicksAboutPage() {
   return (
     <BestPicksSubpageShell
-      title="About Today’s Best Picks"
+      title="About Football Predictions & Data-Driven Picks"
       description="What this page is for, what you’ll find on it, and how it relates to the apps."
     >
       <section className="space-y-4">
@@ -33,7 +33,7 @@ export default function BestPicksAboutPage() {
           Individual apps have their own branding, terms, and App Store listings; those apply when you use the apps
           themselves. For how each app is meant to work, see{' '}
           <Link
-            href="/best-picks/how-it-works"
+            href="/football-predictions#how-apps-work"
             className="text-amber-200/85 underline underline-offset-2 hover:text-amber-100/90"
           >
             How apps work
@@ -43,14 +43,14 @@ export default function BestPicksAboutPage() {
         <p className="text-xs text-white/55">
           Questions about this website: see{' '}
           <Link
-            href="/best-picks/contact"
+            href="/football-predictions/contact"
             className="text-amber-200/80 underline underline-offset-2 hover:text-amber-100/90"
           >
             Contact
           </Link>
           . Privacy and cookies:{' '}
           <Link
-            href="/best-picks/privacy"
+            href="/football-predictions/privacy"
             className="text-amber-200/80 underline underline-offset-2 hover:text-amber-100/90"
           >
             Privacy policy

@@ -52,7 +52,7 @@ export async function sendPredictionIdeaNotifyEmail(payload: PredictionIdeaEmail
   await transporter.sendMail({
     from: user,
     to,
-    subject: `[Best Picks] Prediction idea — ${subjectName}`,
+    subject: `[Football Predictions] Prediction idea — ${subjectName}`,
     text: formatPredictionIdeaEmailBody(payload),
   });
 }

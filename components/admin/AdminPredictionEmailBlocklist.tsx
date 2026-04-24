@@ -130,7 +130,7 @@ export function AdminPredictionEmailBlocklist({
         <div>
           <h2 className="text-lg font-semibold text-white">Blocked submitter emails</h2>
           <p className="text-xs text-white/45 mt-1 leading-relaxed">
-            Addresses here cannot use the Best Picks idea form: the API returns success but does{' '}
+            Addresses here cannot use the predictions idea form: the API returns success but does{' '}
             <strong className="text-white/55">not</strong> save to Firebase or send you mail. Matching is case-insensitive.
           </p>
         </div>

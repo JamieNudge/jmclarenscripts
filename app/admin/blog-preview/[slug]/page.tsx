@@ -43,7 +43,7 @@ export default function AdminBlogPreviewSlugPage() {
     }
     const key = (keyOverride ?? adminKey).trim();
     if (!key) {
-      setErr('Paste your admin key (same as Best Picks admin).');
+      setErr('Paste your admin key (same as predictions admin).');
       return;
     }
     setLoading(true);
@@ -94,7 +94,7 @@ export default function AdminBlogPreviewSlugPage() {
             This page is for <strong className="text-white/80">draft and published</strong> previews. It uses your
             admin Bearer token; it is not indexed for search engines.
           </p>
-          <label className="block text-xs text-white/45">Admin key (Best Picks / blog API)</label>
+          <label className="block text-xs text-white/45">Admin key (predictions / blog API)</label>
           <input
             type="password"
             autoComplete="off"

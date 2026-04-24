@@ -32,7 +32,7 @@ export default function ProphitPrivacyPage() {
             is intended to help you test prediction approaches against real goal-band outcomes, with
             transparent tracking — see{' '}
             <Link
-              href="/best-picks/how-it-works"
+              href="/football-predictions#how-apps-work"
               className="underline hover:text-blue-300"
             >
               How apps work
@@ -47,15 +47,14 @@ export default function ProphitPrivacyPage() {
             and in the app when those features are final.
           </p>
           <p>
-            The Today’s Best Picks and blog area is covered by the{' '}
-            <Link href="/best-picks/privacy" className="underline hover:text-blue-300">
-              Best Picks &amp; blog privacy policy
+            The Football Predictions &amp; Data-Driven Picks and blog area is covered by the{' '}
+            <Link href="/football-predictions/privacy" className="underline hover:text-blue-300">
+              Predictions hub &amp; blog privacy policy
             </Link>
             . The portfolio home has a separate{' '}
             <Link href="/privacy" className="underline hover:text-blue-300">
               portfolio privacy policy
             </Link>
-            .
             . For questions about ProphIt specifically, you can still reach the developer at:
           </p>
           <p>
