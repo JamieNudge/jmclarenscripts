@@ -4,7 +4,11 @@ import Link from 'next/link';
 import { BEST_PICKS_EXTENDED_SITE_NAV } from '@/components/best-picks/best-picks-site-nav-config';
 import { BestPicksSiteNav } from '@/components/best-picks/BestPicksSiteNav';
 import { apps } from '@/lib/apps-data';
-import { FOOTBALL_PREDICTIONS_PAGE_TITLE } from '@/lib/football-predictions-brand';
+import {
+  FOOTBALL_PREDICTIONS_PAGE_TITLE,
+  FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_PATH,
+  FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_TITLE,
+} from '@/lib/football-predictions-brand';
 
 const statStrike = apps.find((a) => a.id === 'stat-strike');
 const goalLab = apps.find((a) => a.id === 'goallab');
@@ -41,10 +45,10 @@ export function BestPicksIntro({ dateKey }: { dateKey: string }) {
         <p className="mt-2 md:mt-3 text-lg md:text-xl lg:text-2xl font-semibold text-amber-50/90 leading-snug">
           Daily selections based on a four-algorithm system (
           <Link
-            href="/football-predictions#how-apps-work"
+            href={FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_PATH}
             className="text-amber-100/95 underline underline-offset-2 hover:text-amber-50/95"
           >
-            see how the apps work
+            {FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_TITLE}
           </Link>
           ), combining different modelling approaches to identify more reliable outcomes.
         </p>

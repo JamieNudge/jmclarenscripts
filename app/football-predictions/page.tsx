@@ -12,7 +12,7 @@ import { FOOTBALL_PREDICTIONS_PAGE_TITLE } from '@/lib/football-predictions-bran
 import type { App } from '@/types/app';
 
 const hubDescription =
-  'Football Predictions & Data-Driven Picks — how each app works (on the page), App Store links, video, research algorithm picks on a dedicated page, and a coming-soon beta slot. Live data from Firebase when configured; informational only.';
+  "Football Predictions & Data-Driven Picks — how each app works (on the page), App Store links, video, Today's Research Selections on a dedicated page, and a coming-soon beta slot. Live data from Firebase when configured; informational only.";
 
 const hubOgImage = {
   url: '/football-predictions/opengraph-image',

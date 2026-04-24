@@ -1,8 +1,11 @@
-import { FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_PATH } from '@/lib/football-predictions-brand';
+import {
+  FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_PATH,
+  FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_TITLE,
+} from '@/lib/football-predictions-brand';
 
 export const bestPicksSiteNavPrimary = [
   { href: '/football-predictions', label: 'Home' },
-  { href: FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_PATH, label: 'Research selections' },
+  { href: FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_PATH, label: FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_TITLE },
   { href: '/football-predictions/methodology', label: 'Methodology' },
   { href: '/football-predictions/about', label: 'About' },
   { href: '/blog', label: 'Blogs' },

@@ -8,5 +8,5 @@ export const FOOTBALL_PREDICTIONS_PAGE_TITLE = 'Football Predictions & Data-Driv
 export const FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_PATH =
   '/football-predictions/research-algorithm-selections' as const;
 
-/** Section title: research page `h1`, and (when `showPanelHeading`) the in-panel `h2` on that page. */
-export const FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_TITLE = "Latest Research Algorithm's Selections" as const;
+/** Research page `h1`, in-panel `h2` when shown, main nav label, and hero parenthetical link text. */
+export const FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_TITLE = "Today's Research Selections" as const;
