@@ -42,16 +42,16 @@ export function BestPicksVideo() {
     <div className={bestPicksGridTileClassName}>
       <h2 className="text-lg md:text-xl font-semibold text-white mb-2 shrink-0">Video</h2>
       {videoTitle ? (
-        <p className="text-sm text-white/75 leading-relaxed mb-3 shrink-0">{videoTitle}</p>
+        <p className="text-sm text-white/88 leading-relaxed mb-3 shrink-0">{videoTitle}</p>
       ) : null}
       <div className="flex-1 min-h-0 flex flex-col justify-center">
         {!configured && (
-          <div className="aspect-video w-full max-h-full rounded-xl bg-zinc-900/90 border border-white/15 flex items-center justify-center text-white/50 text-sm">
+          <div className="aspect-video w-full max-h-full rounded-xl bg-zinc-900/90 border border-white/15 flex items-center justify-center text-white/72 text-sm">
             Firebase not configured
           </div>
         )}
         {configured && !youtubeId && (
-          <div className="aspect-video w-full max-h-full rounded-xl bg-zinc-900/90 border border-white/15 flex items-center justify-center text-white/50 text-sm">
+          <div className="aspect-video w-full max-h-full rounded-xl bg-zinc-900/90 border border-white/15 flex items-center justify-center text-white/72 text-sm">
             No video for today yet
           </div>
         )}

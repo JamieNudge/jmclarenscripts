@@ -9,7 +9,7 @@ export function BlogIndexClient() {
 
   if (!configured) {
     return (
-      <p className="text-sm text-white/55 leading-relaxed">
+      <p className="text-sm text-white/80 leading-relaxed">
         Firebase is not configured — add keys in <code className="text-xs text-white/70">.env.local</code> to load
         posts here.
       </p>
@@ -17,7 +17,7 @@ export function BlogIndexClient() {
   }
 
   if (loading) {
-    return <p className="text-sm text-white/60">Loading posts…</p>;
+    return <p className="text-sm text-white/78">Loading posts…</p>;
   }
 
   if (err) {
@@ -29,7 +29,7 @@ export function BlogIndexClient() {
   }
 
   if (posts.length === 0) {
-    return <p className="text-sm text-white/50 italic">No posts yet — check back soon.</p>;
+    return <p className="text-sm text-white/72 italic">No posts yet — check back soon.</p>;
   }
 
   return (
@@ -50,8 +50,8 @@ export function BlogIndexClient() {
             <h2 className="text-xl font-semibold text-white group-hover:text-amber-100/95 transition-colors">
               {p.title}
             </h2>
-            {p.excerpt ? <p className="text-sm text-white/65 mt-2 leading-relaxed">{p.excerpt}</p> : null}
-            <p className="text-xs text-white/40 mt-2 tabular-nums">
+            {p.excerpt ? <p className="text-sm text-white/75 mt-2 leading-relaxed">{p.excerpt}</p> : null}
+            <p className="text-xs text-white/65 mt-2 tabular-nums">
               {(p.publishedAt ?? p.updatedAt).slice(0, 10)}
             </p>
           </Link>

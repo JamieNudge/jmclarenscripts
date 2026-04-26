@@ -9,8 +9,8 @@ function resultPillClass(r: BplCompactFixture['result']): string {
   if (r === 'win') return 'text-emerald-200/95 border-emerald-400/35 bg-emerald-500/10';
   if (r === 'loss') return 'text-red-200/95 border-red-400/35 bg-red-500/10';
   if (r === 'void' || r === 'push') return 'text-amber-200/90 border-amber-400/30 bg-amber-500/10';
-  if (r === 'dropped' || r === 'pending' || r === null) return 'text-white/55 border-white/15 bg-white/5';
-  return 'text-white/50 border-white/10 bg-white/5';
+  if (r === 'dropped' || r === 'pending' || r === null) return 'text-white/70 border-white/15 bg-white/5';
+  return 'text-white/65 border-white/10 bg-white/5';
 }
 
 function formatYmdForDisplay(ymd: string): string {
@@ -75,14 +75,14 @@ export function BplHubCell() {
         <h2 className="text-lg md:text-xl font-semibold text-white tracking-tight">
           StatStrike - Best Performing - As seen in iOS app
         </h2>
-        <p className="text-sm text-white/70 font-medium">1u Flat Stake</p>
+        <p className="text-sm text-white/80 font-medium">1u Flat Stake</p>
         {data?.allTimeDateRange && (
-          <p className="text-xs text-white/45 tabular-nums">
+          <p className="text-xs text-white/65 tabular-nums">
             All Time: {formatYmdForDisplay(data.allTimeDateRange.startYyyyMmDd)} –{' '}
             {formatYmdForDisplay(data.allTimeDateRange.endYyyyMmDd)} (London)
           </p>
         )}
-        {loading && <p className="text-sm text-white/50">Loading…</p>}
+        {loading && <p className="text-sm text-white/70">Loading…</p>}
         {err && (
           <p className="text-sm text-amber-200/90" role="alert">
             {err}
@@ -98,15 +98,15 @@ export function BplHubCell() {
       {data && (
         <>
           <div className="shrink-0 rounded-xl border border-amber-200/25 bg-zinc-900/70 p-3 space-y-1">
-            <p className="text-[10px] font-bold uppercase tracking-wide text-white/45">
+            <p className="text-[10px] font-bold uppercase tracking-wide text-white/60">
               All time · BPL, bookmaker odds on the hub (FT)
             </p>
             <p className="text-sm tabular-nums text-white/95">
               <span className="text-emerald-200/90">{data.allTime.wins}W</span>
-              <span className="text-white/30"> — </span>
+              <span className="text-white/50"> — </span>
               <span className="text-red-200/90">{data.allTime.losses}L</span>
               {data.allTime.voids > 0 ? (
-                <span className="text-white/50">
+                <span className="text-white/65">
                   {' '}
                   · {data.allTime.voids} void/push
                 </span>
@@ -118,17 +118,17 @@ export function BplHubCell() {
                 ? '—'
                 : `${data.allTime.roiPercent >= 0 ? '+' : ''}${data.allTime.roiPercent.toFixed(1)}%`}
             </p>
-            <p className="text-[10px] text-white/40">
+            <p className="text-[10px] text-white/60">
               {data.settledPickCount} settled line{data.settledPickCount === 1 ? '' : 's'} in ledger
             </p>
             {data.allTimeWithPreKoOdds ? (
               <div className="pt-2 mt-2 border-t border-white/10 space-y-0.5">
-                <p className="text-[10px] font-bold uppercase tracking-wide text-white/40">
+                <p className="text-[10px] font-bold uppercase tracking-wide text-white/60">
                   All time · pre-KO odds (provable on the row)
                 </p>
                 <p className="text-sm tabular-nums text-white/90">
                   <span className="text-emerald-200/90">{data.allTimeWithPreKoOdds.wins}W</span>
-                  <span className="text-white/30"> — </span>
+                  <span className="text-white/50"> — </span>
                   <span className="text-red-200/90">{data.allTimeWithPreKoOdds.losses}L</span>
                 </p>
                 <p className="text-lg font-semibold text-cyan-100/90 tabular-nums">
@@ -142,11 +142,11 @@ export function BplHubCell() {
           </div>
 
           <div className="flex-1 min-h-0 min-w-0 flex flex-col overflow-y-auto [scrollbar-gutter:stable]">
-            <p className="text-xs font-bold uppercase tracking-wide text-white/45 mb-1">
+            <p className="text-xs font-bold uppercase tracking-wide text-white/65 mb-1">
               Selection day (London){' '}
               <span className="tabular-nums text-amber-200/80">{data.current.dateKey}</span>
             </p>
-            <p className="text-[10px] text-white/40 mb-2">
+            <p className="text-[10px] text-white/60 mb-2">
               {data.current.bestPerformingFixtureCount} best (BPL) line
               {data.current.bestPerformingFixtureCount === 1 ? '' : 's'}
               {data.current.bestPerformingFixtureCount !== data.current.withBookmakerOddsFixtureCount
@@ -156,7 +156,7 @@ export function BplHubCell() {
                   : ''}
             </p>
             {data.current.fixtures.length === 0 ? (
-              <p className="text-sm text-white/50">No BPL lines with bookmaker odds for this date (or not uploaded yet).</p>
+              <p className="text-sm text-white/70">No BPL lines with bookmaker odds for this date (or not uploaded yet).</p>
             ) : (
               <ul className="space-y-2 pb-1">
                 {data.current.fixtures.map((f) => (

@@ -4,10 +4,10 @@ import { useState } from 'react';
 
 const hr = 'border-0 border-t border-white/15 my-5';
 
-const labelClass = 'block text-sm font-semibold text-white/90 mb-1.5';
-const hintClass = 'text-xs text-white/45 mb-2';
+const labelClass = 'block text-sm font-semibold text-white/92 mb-1.5';
+const hintClass = 'text-xs text-white/65 mb-2';
 const inputClass =
-  'w-full rounded-xl border border-white/15 bg-black/25 px-3 py-2.5 text-sm text-white placeholder:text-white/35 outline-none focus:border-sky-400/50 focus:ring-1 focus:ring-sky-400/30';
+  'w-full rounded-xl border border-white/15 bg-black/25 px-3 py-2.5 text-sm text-white placeholder:text-white/55 outline-none focus:border-sky-400/50 focus:ring-1 focus:ring-sky-400/30';
 const textareaClass = `${inputClass} min-h-[100px] resize-y`;
 
 type PredictionIdeaFormProps = {
@@ -86,7 +86,7 @@ export function PredictionIdeaForm({ collapsibleTrigger = false }: PredictionIde
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5 text-sm text-white/75 leading-relaxed">
+    <form onSubmit={handleSubmit} className="space-y-5 text-sm text-white/88 leading-relaxed">
       {!collapsibleTrigger && (
         <>
           <h3 className="text-base font-semibold text-white/95">Submit Your Idea</h3>
@@ -98,14 +98,14 @@ export function PredictionIdeaForm({ collapsibleTrigger = false }: PredictionIde
         </>
       )}
       {collapsibleTrigger && (
-        <p className="text-white/70 -mt-1">
+        <p className="text-white/82 -mt-1">
           Please provide a clear outline of your approach. The more specific you are, the faster I can assess
           whether it&apos;s suitable for testing.
         </p>
       )}
 
       <div>
-        <p className="text-sm font-semibold text-white/90 mb-3">Your details</p>
+        <p className="text-sm font-semibold text-white/92 mb-3">Your details</p>
         <div className="space-y-4">
           <div>
             <label htmlFor="pi-name" className={labelClass}>
@@ -143,7 +143,7 @@ export function PredictionIdeaForm({ collapsibleTrigger = false }: PredictionIde
       <hr className={hr} />
 
       <div>
-        <p className="text-sm font-semibold text-white/90 mb-3">Your idea</p>
+        <p className="text-sm font-semibold text-white/92 mb-3">Your idea</p>
         <div className="space-y-5">
           <div>
             <label htmlFor="pi-idea" className={labelClass}>
@@ -264,7 +264,7 @@ export function PredictionIdeaForm({ collapsibleTrigger = false }: PredictionIde
       <hr className={hr} />
 
       <div>
-        <p className="text-sm font-semibold text-white/90 mb-3">Practical details</p>
+        <p className="text-sm font-semibold text-white/92 mb-3">Practical details</p>
         <fieldset className="space-y-2 mb-5">
           <legend className={labelClass}>6. Do you already have an API for match data?</legend>
           {(
@@ -315,7 +315,7 @@ export function PredictionIdeaForm({ collapsibleTrigger = false }: PredictionIde
       <hr className={hr} />
 
       <div>
-        <p className="text-sm font-semibold text-white/90 mb-3">Expectations</p>
+        <p className="text-sm font-semibold text-white/92 mb-3">Expectations</p>
         <div className="space-y-5">
           <div>
             <label htmlFor="pi-learn" className={labelClass}>
@@ -371,7 +371,7 @@ export function PredictionIdeaForm({ collapsibleTrigger = false }: PredictionIde
       <hr className={hr} />
 
       <div>
-        <p className="text-sm font-semibold text-white/90 mb-3">Final step</p>
+        <p className="text-sm font-semibold text-white/92 mb-3">Final step</p>
         <div>
           <label htmlFor="pi-extra" className={labelClass}>
             Anything else to add?
@@ -418,12 +418,12 @@ export function PredictionIdeaForm({ collapsibleTrigger = false }: PredictionIde
 
       <hr className={hr} />
 
-      <p className="text-xs text-white/50 italic leading-relaxed">
+      <p className="text-xs text-white/70 italic leading-relaxed">
         I will review your submission and confirm whether your idea is suitable for implementation, along with
         next steps and pricing.
       </p>
 
-      <p className="text-xs text-white/45">
+      <p className="text-xs text-white/70">
         Prefer email?{' '}
         <a
           href="mailto:jmclarenscripts@gmail.com?subject=Prediction%20model%20idea"

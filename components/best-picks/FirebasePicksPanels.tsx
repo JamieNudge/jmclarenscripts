@@ -37,7 +37,7 @@ function BestPicksComingSoonAndProphitPanel() {
                 Coming soon
               </span>
             </div>
-            <p className="text-sm text-white/60 leading-relaxed">
+            <p className="text-sm text-white/80 leading-relaxed">
               iOS app in development. App Store listing and preview copy will follow.
             </p>
           </div>

@@ -40,7 +40,7 @@ export default function BestPicksContactPage() {
             {CONTACT_EMAIL}
           </a>
         </p>
-        <p className="text-xs text-white/55">
+        <p className="text-xs text-white/75">
           App-specific support may live on per-app pages from the portfolio; this address is for the public website
           and this publication unless you are directed otherwise.
         </p>

@@ -68,7 +68,7 @@ export function BestPicksIntro({ dateKey }: { dateKey: string }) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </summary>
-          <div className="mt-3 pt-3 border-t border-white/15 space-y-4 text-sm text-white/75 leading-relaxed">
+          <div className="mt-3 pt-3 border-t border-white/15 space-y-4 text-sm text-white/88 leading-relaxed">
             <ul className="space-y-2.5 list-none pl-0 border-l-2 border-amber-400/20 pl-3">
               <li>
                 {appStoreLink(statStrike?.appStoreUrl, 'StatStrike')} — In-app daily selection with criteria-style
@@ -81,7 +81,7 @@ export function BestPicksIntro({ dateKey }: { dateKey: string }) {
             </ul>
 
             <p>
-              Picks are <strong className="font-medium text-white/85">informational</strong> only—not betting tips,
+              Picks are <strong className="font-medium text-white/92">informational</strong> only—not betting tips,
               promises, or financial advice.
             </p>
             <p>
@@ -101,7 +101,7 @@ export function BestPicksIntro({ dateKey }: { dateKey: string }) {
               </Link>
               .
             </p>
-            <p className="text-xs text-white/50">
+            <p className="text-xs text-white/72">
               App terms &amp; privacy: App Store listings and{' '}
               <Link
                 href="/football-predictions/privacy"

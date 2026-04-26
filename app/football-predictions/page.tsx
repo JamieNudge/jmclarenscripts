@@ -55,7 +55,7 @@ export default function BestPicksPage() {
         <aside className="hidden lg:flex w-[150px] xl:w-[170px] flex-shrink-0 flex-col border-l border-zinc-700/70 bg-zinc-950/90">
           <AdSenseAutoPlaceholder
             orientation="vertical"
-            className="flex-1 w-full min-h-[min(360px,45vh)] lg:min-h-[min(560px,72vh)] rounded-l-lg border-y-0 border-r-0 border-l-0 !border-dashed !border-white/30 !bg-zinc-900/50 !text-white/50"
+            className="flex-1 w-full min-h-[min(360px,45vh)] lg:min-h-[min(560px,72vh)] rounded-l-lg border-y-0 border-r-0 border-l-0 !border-dashed !border-white/30 !bg-zinc-900/50 !text-white/70"
           />
         </aside>
       </div>
@@ -69,24 +69,24 @@ export default function BestPicksPage() {
           ) : null}
           <AdSenseAutoPlaceholder
             orientation="horizontal"
-            className="w-full min-h-[90px] !border-white/30 !bg-zinc-950/70 !text-white/50"
+            className="w-full min-h-[90px] !border-white/30 !bg-zinc-950/70 !text-white/70"
           />
           <div className="flex flex-row flex-wrap items-start justify-between gap-x-6 gap-y-2">
             <p
-              className="text-left text-[11px] md:text-xs text-white/55 leading-relaxed max-w-[min(100%,42rem)] flex-1 min-w-[12rem]"
+              className="text-left text-[11px] md:text-xs text-white/78 leading-relaxed max-w-[min(100%,42rem)] flex-1 min-w-[12rem]"
               role="note"
             >
-              <span className="font-medium text-white/75">Disclaimer.</span>{' '}
+              <span className="font-medium text-white/90">Disclaimer.</span>{' '}
               Statistical views of past match patterns are{' '}
-              <span className="text-white/65">not</span> guarantees of future results. This website does not offer
+              <span className="text-white/85">not</span> guarantees of future results. This website does not offer
               real money gambling, prizes, or simulated gambling. Content on this page is for informational purposes
               only.
             </p>
-            <p className="text-right text-[11px] md:text-xs text-white/50 leading-relaxed shrink-0 min-w-[10rem] max-w-sm">
-              <Link href="/football-predictions/privacy" className="underline hover:text-white/70 underline-offset-2">
+            <p className="text-right text-[11px] md:text-xs text-white/75 leading-relaxed shrink-0 min-w-[10rem] max-w-sm">
+              <Link href="/football-predictions/privacy" className="underline hover:text-white/90 underline-offset-2">
                 Privacy policy
               </Link>
-              <span className="text-white/25"> · </span>
+              <span className="text-white/45"> · </span>
               Google ads may appear on this page; the privacy policy covers cookies and how ads work.
             </p>
           </div>

@@ -160,7 +160,7 @@ export default function BestPicksPrivacyPage() {
           This policy can change. The &quot;Last updated&quot; date here will be refreshed when it does.
         </p>
 
-        <p className="text-xs text-white/50 pt-4 border-t border-white/10">
+        <p className="text-xs text-white/72 pt-4 border-t border-white/10">
           Last updated: {new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}. For
           transparency only; not legal advice.
         </p>

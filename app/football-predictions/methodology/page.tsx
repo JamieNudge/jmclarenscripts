@@ -33,7 +33,7 @@ export default function BestPicksMethodologyPage() {
           gambling. Past performance is no guarantee of future results. All fixture forecasts, blog content, and other
           site material on this page are for informational purposes only.
         </p>
-        <p className="text-xs text-white/55">
+        <p className="text-xs text-white/75">
           For how each app is described for visitors, see{' '}
           <Link
             href="/football-predictions#how-apps-work"

@@ -55,7 +55,7 @@ function storeAppLink(
             <span>{label}</span>
           )}
         </p>
-        <div className="text-xs sm:text-sm leading-relaxed text-white/90">{description}</div>
+        <div className="text-xs sm:text-sm leading-relaxed text-white/92">{description}</div>
       </div>
     </li>
   );
@@ -73,7 +73,7 @@ export function BestPicksHowAppsWorkPanel() {
     >
       <div className="shrink-0 mb-2 space-y-1.5">
         <h2 className="text-lg md:text-xl font-semibold text-white">How apps work</h2>
-        <p className="text-sm text-white/75 leading-relaxed">
+        <p className="text-sm text-white/88 leading-relaxed">
           What each product does. Live apps link to the App Store; coming-soon items are described here only.
         </p>
       </div>
@@ -127,13 +127,13 @@ export function BestPicksHowAppsWorkPanel() {
                 </div>
                 <div className="min-w-0 space-y-1">
                   <p className="font-semibold text-amber-100/90 text-sm sm:text-base">PopGoals</p>
-                  <p className="text-xs sm:text-sm text-white/90">
+                  <p className="text-xs sm:text-sm text-white/92">
                     Three golden balls every day with the top slice of Over and Under 2.5 selections. Not on the App
                     Store yet.
                   </p>
                 </div>
               </li>
-              <li className="space-y-1.5 text-xs sm:text-sm text-white/90">
+              <li className="space-y-1.5 text-xs sm:text-sm text-white/92">
                 <p>
                   <span className="font-semibold text-amber-100/90">ProphIt </span>
                   <span className="font-medium text-amber-200/75 text-sm normal-case">Coming Soon!</span>

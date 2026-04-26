@@ -4,7 +4,7 @@ import { AdSenseAutoPlaceholder } from '@/components/AdSenseAutoPlaceholder';
 import { BEST_PICKS_EXTENDED_SITE_NAV } from '@/components/best-picks/best-picks-site-nav-config';
 import { BestPicksSiteNav } from '@/components/best-picks/BestPicksSiteNav';
 
-const bodyProse = 'space-y-6 text-sm md:text-base leading-relaxed text-white/90';
+const bodyProse = 'space-y-6 text-sm md:text-base leading-relaxed text-white/92';
 
 export function BestPicksSubpageShell({
   title,
@@ -47,7 +47,7 @@ export function BestPicksSubpageShell({
 
         <h1 className="text-3xl md:text-4xl font-bold mb-3">{title}</h1>
         {description ? (
-          <div className="text-sm text-white/60 mb-8 leading-relaxed">{description}</div>
+          <div className="text-sm text-white/80 mb-8 leading-relaxed">{description}</div>
         ) : null}
         {footer ? (
           <>
@@ -55,11 +55,11 @@ export function BestPicksSubpageShell({
             <div className="shrink-0 mt-8 w-full">
               <AdSenseAutoPlaceholder
                 orientation="horizontal"
-                className="w-full min-h-[90px] !border-white/30 !bg-zinc-900/50 !text-white/50"
+                className="w-full min-h-[90px] !border-white/30 !bg-zinc-900/50 !text-white/70"
               />
             </div>
             <footer
-              className="shrink-0 mt-10 border-t border-white/10 pt-6 text-xs text-white/55 leading-relaxed pb-[max(0.5rem,env(safe-area-inset-bottom))]"
+              className="shrink-0 mt-10 border-t border-white/10 pt-6 text-xs text-white/75 leading-relaxed pb-[max(0.5rem,env(safe-area-inset-bottom))]"
               role="contentinfo"
             >
               {footer}
@@ -75,7 +75,7 @@ export function BestPicksSubpageShell({
             >
               <AdSenseAutoPlaceholder
                 orientation="horizontal"
-                className="w-full min-h-[90px] !border-white/30 !bg-zinc-900/50 !text-white/50"
+                className="w-full min-h-[90px] !border-white/30 !bg-zinc-900/50 !text-white/70"
               />
             </footer>
           </>

@@ -63,7 +63,7 @@ export function BlogPostClient({ slug }: { slug: string }) {
 
   if (!isFirebaseClientConfigured()) {
     return (
-      <p className="text-sm text-white/55">
+      <p className="text-sm text-white/78">
         Firebase is not configured — this post cannot be loaded here.
       </p>
     );
@@ -85,13 +85,13 @@ export function BlogPostClient({ slug }: { slug: string }) {
     return (
       <div className="space-y-4">
         <p className="text-sm text-white/70">This post is not available or is still a draft.</p>
-        <p className="text-xs text-white/50 leading-relaxed max-w-xl">
+        <p className="text-xs text-white/72 leading-relaxed max-w-xl">
           To preview a <strong className="text-white/65">draft</strong> before publishing, open{' '}
           <Link href="/admin/picks" className="text-amber-200/85 underline underline-offset-2 hover:text-amber-50/95">
             Admin picks
           </Link>
           , paste your admin key, find the post in the list, and use <strong className="text-white/65">Preview</strong>{' '}
-          (opens <code className="text-[11px] text-white/45">/admin/blog-preview/…</code>).
+          (opens <code className="text-[11px] text-white/70">/admin/blog-preview/…</code>).
         </p>
         <Link href="/blog" className="text-sm text-amber-200/85 underline underline-offset-2 hover:text-amber-50/95">
           ← Back to blogs

@@ -41,7 +41,7 @@ function outcomeClass(outcome: string): string {
     case 'void':
       return 'text-amber-200 border-amber-400/35 bg-amber-500/15';
     default:
-      return 'text-white/55 border-white/20 bg-white/10';
+      return 'text-white/72 border-white/20 bg-white/10';
   }
 }
 
@@ -61,7 +61,7 @@ function ConsensusPickRow({ pick }: { pick: DailyConsensusPickParsed }) {
         <div className="w-full min-w-0">
           <p className="text-sm font-medium text-white leading-relaxed text-pretty">
             {pick.home}
-            <span className="text-white/50 font-normal mx-1">v</span>
+            <span className="text-white/65 font-normal mx-1">v</span>
             {pick.away}
           </p>
           {metaLine ? (
@@ -113,7 +113,7 @@ function PerModelPickRow({ row }: { row: ResearchAlgorithmPerModelStructured }) 
             {home}
             {away ? (
               <>
-                <span className="text-white/50 font-normal mx-1">v</span>
+                <span className="text-white/65 font-normal mx-1">v</span>
                 {away}
               </>
             ) : null}
@@ -147,7 +147,7 @@ function PerModelPickRow({ row }: { row: ResearchAlgorithmPerModelStructured }) 
         {row.mergedDetailLines && row.mergedDetailLines.length > 0 ? (
           <div className="space-y-1 pt-0.5 border-t border-white/12">
             {row.mergedDetailLines.map((line, j) => (
-              <p key={j} className="text-[11px] text-white/75 leading-relaxed text-pretty">
+              <p key={j} className="text-[11px] text-white/85 leading-relaxed text-pretty">
                 {line}
               </p>
             ))}

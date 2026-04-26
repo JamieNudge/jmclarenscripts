@@ -31,7 +31,7 @@ export function BlogPostArticleView({ post, backHref = '/blog', backLabel = '←
       ) : null}
       <header className="mb-8">
         <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">{post.title}</h1>
-        <p className="text-xs text-white/45 tabular-nums">
+        <p className="text-xs text-white/70 tabular-nums">
           {post.publishedAt?.slice(0, 10) ?? post.updatedAt.slice(0, 10)}
         </p>
       </header>
@@ -46,7 +46,7 @@ export function BlogPostArticleView({ post, backHref = '/blog', backLabel = '←
           >
             <AdSenseAutoPlaceholder
               orientation="horizontal"
-              className="w-full min-h-[90px] !border-white/30 !bg-zinc-900/50 !text-white/50"
+              className="w-full min-h-[90px] !border-white/30 !bg-zinc-900/50 !text-white/70"
             />
           </div>
         );

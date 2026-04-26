@@ -39,7 +39,7 @@ export function BestPicksSiteNav({ variant }: { variant: 'header' | 'footer' }) 
         return (
           <span key={href} className="inline-flex items-center gap-x-2">
             {i > 0 ? (
-              <span className="text-white/25 select-none text-[10px] tabular-nums" aria-hidden>
+              <span className="text-white/45 select-none text-[10px] tabular-nums" aria-hidden>
                 ·
               </span>
             ) : null}
