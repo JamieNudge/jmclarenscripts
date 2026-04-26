@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { AdSenseAutoPlaceholder } from '@/components/AdSenseAutoPlaceholder';
 import { BlueskyLink } from '@/components/BlueskyLink';
 import { BestPicksBlogPreviewsRail } from '@/components/best-picks/BestPicksBlogPreviewsRail';
+import { BplHubCell } from '@/components/best-picks/BplHubCell';
 import { BestPicksHeadAndPanels } from '@/components/best-picks/BestPicksHeadAndPanels';
 import { BEST_PICKS_EXTENDED_SITE_NAV } from '@/components/best-picks/best-picks-site-nav-config';
 import { BestPicksSiteNav } from '@/components/best-picks/BestPicksSiteNav';
@@ -70,7 +71,9 @@ export default function BestPicksPage() {
           <div className="mx-auto w-full max-w-6xl 2xl:max-w-[min(100%,calc(72rem+1.5rem+14rem))] 2xl:flex 2xl:flex-row 2xl:items-start 2xl:gap-6">
             <div className="min-w-0 w-full max-w-6xl 2xl:max-w-[72rem] 2xl:shrink-0">
               <BestPicksHeadAndPanels>
-              <div className={`${bestPicksGridTileClassName} gap-3`}>
+              <div className="flex flex-col gap-4 min-w-0">
+                <BplHubCell />
+                <div className={`${bestPicksGridTileClassName} gap-3`}>
                 <h2 className="text-lg md:text-xl font-semibold text-white mb-1 shrink-0">App Store links</h2>
                 <p className="text-sm text-white/60 leading-relaxed shrink-0">
                   App Store links and official Bluesky where available.
@@ -134,6 +137,7 @@ export default function BestPicksPage() {
                         ))}
                     </div>
                   ) : null}
+                </div>
                 </div>
               </div>
               </BestPicksHeadAndPanels>

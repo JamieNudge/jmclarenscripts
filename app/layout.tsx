@@ -25,10 +25,17 @@ function siteMetadataBase(): URL {
   return new URL("http://localhost:3000");
 }
 
+/** Same client as {@link AdSenseLoader} and `public/ads.txt` (AdSense / meta verification). */
+const ADSENSE_CLIENT_ID =
+  process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID?.trim() || "ca-pub-6299348707363839";
+
 export const metadata: Metadata = {
   metadataBase: siteMetadataBase(),
   title: "Jamie's App Portfolio",
   description: "Showcase of innovative mobile and desktop applications",
+  other: {
+    "google-adsense-account": ADSENSE_CLIENT_ID,
+  },
 };
 
 export default function RootLayout({

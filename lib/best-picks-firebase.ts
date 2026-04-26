@@ -852,6 +852,11 @@ function pickResearchFeedStatusExcluded(p: PickRecord): boolean {
   return false;
 }
 
+/** Postponed / abandoned / void-style fixture — not used for BPL ROI. */
+export function pickHasResearchExcludedStatus(p: PickRecord): boolean {
+  return pickResearchFeedStatusExcluded(p);
+}
+
 function pickKickoffMatchesCalendarDateKey(p: PickRecord, dateKey: string, timeZone: string): boolean {
   const ms = pickKickoffSortTimeMs(p);
   if (ms == null) return false;
@@ -970,6 +975,14 @@ function mergeResearchPicksSameFixtureBand(picks: PickRecord[]): PickRecord[] {
     out.push(anchor);
   }
   return out;
+}
+
+/**
+ * Unanimous export `overForecasts` + `underForecasts`: same fixture can repeat; collapse to one row per
+ * fixture+band with the best-reconciled score/outcome (used for BPL hub display + settlement).
+ */
+export function mergeUnanimousPicksByFixtureBand(picks: PickRecord[]): PickRecord[] {
+  return mergeResearchPicksSameFixtureBand(picks);
 }
 
 function groupPassesResearchAlgorithmPanelFilter(grp: PickRecord, dateKey: string): boolean {
