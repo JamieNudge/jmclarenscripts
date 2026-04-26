@@ -59,8 +59,22 @@ export type BplAllTimePublic = {
   roiPercent: number | null;
 };
 
+/** All-time W/L for every BPL (best filter) line after merge, including rows without on-file bookmaker odds. */
+export type BplAllLinesWinLoss = {
+  wins: number;
+  losses: number;
+  voids: number;
+  settledLineCount: number;
+};
+
 export type BplHubPublicPayload = {
   allTime: BplAllTimePublic;
+  /**
+   * Merged BPL (best filter) W/L: same rows as the ROI/odds ledger, plus any extra BPL lines with no
+   * on-file odds in {@link BplHubState#pickLedgerBplAll}. Tallied from both ledgers at read time
+   * so the odds slice always matches the ROI block.
+   */
+  allTimeBplAllLines: BplAllLinesWinLoss;
   /**
    * All Time only for lines where we could confirm bookmaker odds were stored before kickoff
    * (odds + kickoff + an odds-related timestamp on the row). Omitted from this subtotal when unprovable.
@@ -94,11 +108,23 @@ type PickLedgerEntry = {
   oddsPreKick?: 'yes' | 'no' | 'unknown';
 };
 
+type PickLedgerBplAllEntry = {
+  dateKey: string;
+  result: 'win' | 'loss' | 'void' | 'push' | 'dropped';
+  profit1u: number;
+  recordedAt: number;
+};
+
 export type BplHubState = {
   v: 1;
   allTime: { wins: number; losses: number; voids: number; profit: number };
   allTimeWithPreKoOdds: { wins: number; losses: number; voids: number; profit: number };
+  /**
+   * BPL (best filter) lines that do **not** have on-file bookmaker odds, once settled. Rows that
+   * also appear in {@link BplHubState#pickLedger} are not duplicated here (tally = union of ledgers).
+   */
   pickLedger: Record<string, PickLedgerEntry>;
+  pickLedgerBplAll: Record<string, PickLedgerBplAllEntry>;
   /** Set on first hub write: first day All Time is tracked (London yyyy-MM-dd). */
   allTimeTrackingStartYyyyMmDd?: string;
   current?: { dateKey: string; generatedAtMs: number; fixtures: BplCompactFixture[] };
@@ -113,6 +139,7 @@ export function newEmptyHub(): BplHubState {
     allTime: { wins: 0, losses: 0, voids: 0, profit: 0 },
     allTimeWithPreKoOdds: { wins: 0, losses: 0, voids: 0, profit: 0 },
     pickLedger: {},
+    pickLedgerBplAll: {},
     current: undefined,
     previous: null,
   };
@@ -143,6 +170,25 @@ function publicAllTimeWithPreKoOrNull(s: BplHubState['allTimeWithPreKoOdds']): B
     profit: s.profit,
     roiPercent: roi,
   };
+}
+
+/** W/L/void/line count from the union of odds and BPL-only ledgers (odds rows match the ROI). */
+function tallyBplAllLinesFromLedgers(hub: BplHubState): BplAllLinesWinLoss {
+  const a = hub.pickLedger;
+  const b = hub.pickLedgerBplAll ?? {};
+  const keys = Array.from(new Set([...Object.keys(a), ...Object.keys(b)]));
+  let wins = 0;
+  let losses = 0;
+  let voids = 0;
+  for (const k of keys) {
+    const e: PickLedgerEntry | PickLedgerBplAllEntry | undefined = a[k] ?? b[k];
+    if (!e) continue;
+    const { result } = e;
+    if (result === 'win') wins += 1;
+    else if (result === 'loss') losses += 1;
+    else if (result === 'void' || result === 'push') voids += 1;
+  }
+  return { wins, losses, voids, settledLineCount: keys.length };
 }
 
 export function inferListSideFromBand(p: PickRecord): 'over' | 'under' {
@@ -295,16 +341,12 @@ export function applyReconciliationForDate(
 ): { hub: BplHubState; processed: number } {
   const { over, under } = parseUnanimousExport(exportVal);
   const leagueWinRates = parseLeaguePerformanceFromSelection(selectionVal);
-  const pre: PickRecord[] = [
-    ...over,
-    ...under,
-  ].filter(
-    (p) => bookmakerOdds(p) != null && pickPassesBestFilter(p, leagueWinRates),
-  );
-  if (pre.length === 0) {
-    return { hub, processed: 0 };
-  }
-  const merged = mergeUnanimousPicksByFixtureBand(pre);
+  const all: PickRecord[] = [...over, ...under];
+  const best = all.filter((p) => pickPassesBestFilter(p, leagueWinRates));
+  const mergedBest = mergeUnanimousPicksByFixtureBand(best);
+  const pre: PickRecord[] = best.filter((p) => bookmakerOdds(p) != null);
+  const merged = pre.length === 0 ? [] : mergeUnanimousPicksByFixtureBand(pre);
+
   let processed = 0;
   const basePreKo = hub.allTimeWithPreKoOdds ?? { wins: 0, losses: 0, voids: 0, profit: 0 };
   const next: BplHubState = {
@@ -312,7 +354,9 @@ export function applyReconciliationForDate(
     allTime: { ...hub.allTime },
     allTimeWithPreKoOdds: { ...basePreKo },
     pickLedger: { ...hub.pickLedger },
+    pickLedgerBplAll: { ...(hub.pickLedgerBplAll ?? {}) },
   };
+
   for (const p of merged) {
     const key = bplPickLedgerKey(dateKey, p);
     if (next.pickLedger[key]) {
@@ -352,6 +396,32 @@ export function applyReconciliationForDate(
       processed += 1;
     }
   }
+
+  for (const p of mergedBest) {
+    const key = bplPickLedgerKey(dateKey, p);
+    if (next.pickLedger[key] || next.pickLedgerBplAll[key]) {
+      continue;
+    }
+    const { result, profit1u } = evaluateBplSettle(p, now);
+    if (result === 'pending') {
+      continue;
+    }
+    if (result === 'dropped') {
+      next.pickLedgerBplAll[key] = { dateKey, result: 'dropped', profit1u: 0, recordedAt: now };
+      processed += 1;
+      continue;
+    }
+    if (result === 'void' || result === 'push') {
+      next.pickLedgerBplAll[key] = { dateKey, result, profit1u: 0, recordedAt: now };
+      processed += 1;
+      continue;
+    }
+    if (result === 'win' || result === 'loss') {
+      next.pickLedgerBplAll[key] = { dateKey, result, profit1u, recordedAt: now };
+      processed += 1;
+    }
+  }
+
   return { hub: next, processed };
 }
 
@@ -362,16 +432,22 @@ function parseOptionalYyyyMmDd(v: unknown): string | undefined {
   return t;
 }
 
-/** Earliest selection day present in the pick ledger (from key prefix `bpl:yyyy-MM-dd|`). */
-export function minDateKeyFromPickLedger(pickLedger: Record<string, PickLedgerEntry>): string | null {
+/** Earliest selection day present in a BPL ledger (from key prefix `bpl:yyyy-MM-dd|`). */
+function minDateKeyFromBplKeyLedger(ledger: Record<string, unknown>): string | null {
   const dates: string[] = [];
-  for (const k of Object.keys(pickLedger)) {
+  for (const k of Object.keys(ledger)) {
     const m = k.match(/^bpl:(\d{4}-\d{2}-\d{2})\|/);
     if (m) dates.push(m[1]);
   }
   if (dates.length === 0) return null;
   return dates.sort()[0];
 }
+
+/** Earliest `YYYY-MM-dd` in the odds ledger; used for All Time range (matches ROI). */
+export function minDateKeyFromPickLedger(pickLedger: Record<string, PickLedgerEntry>): string | null {
+  return minDateKeyFromBplKeyLedger(pickLedger);
+}
+
 
 export function parseHub(val: unknown): BplHubState {
   if (val == null || typeof val !== 'object' || Array.isArray(val)) {
@@ -401,6 +477,10 @@ export function parseHub(val: unknown): BplHubState {
       typeof o.pickLedger === 'object' && o.pickLedger != null && !Array.isArray(o.pickLedger)
         ? (o.pickLedger as Record<string, PickLedgerEntry>)
         : {},
+    pickLedgerBplAll:
+      typeof o.pickLedgerBplAll === 'object' && o.pickLedgerBplAll != null && !Array.isArray(o.pickLedgerBplAll)
+        ? (o.pickLedgerBplAll as Record<string, PickLedgerBplAllEntry>)
+        : {},
     allTimeTrackingStartYyyyMmDd: parseOptionalYyyyMmDd(o.allTimeTrackingStartYyyyMmDd),
     current: o.current as BplHubState['current'],
     previous: (o.previous as BplHubState['previous']) ?? null,
@@ -427,8 +507,8 @@ export function previousDateKeyFrom(currentKey: string): string {
 
 function allTimeRangeForHub(hub: BplHubState, currentKey: string): { startYyyyMmDd: string; endYyyyMmDd: string } {
   const endYyyyMmDd = currentKey;
-  const startYyyyMmDd =
-    hub.allTimeTrackingStartYyyyMmDd ?? minDateKeyFromPickLedger(hub.pickLedger) ?? currentKey;
+  // Same start date as the ROI/odds ledger, not the BPL-only lines ledger
+  const startYyyyMmDd = hub.allTimeTrackingStartYyyyMmDd ?? minDateKeyFromPickLedger(hub.pickLedger) ?? currentKey;
   return { startYyyyMmDd, endYyyyMmDd };
 }
 
@@ -444,6 +524,7 @@ export function buildBplHubPublicPayload(
   const preKo = hub.allTimeWithPreKoOdds ?? { wins: 0, losses: 0, voids: 0, profit: 0 };
   return {
     allTime: publicAllTime(hub.allTime),
+    allTimeBplAllLines: tallyBplAllLinesFromLedgers(hub),
     allTimeWithPreKoOdds: publicAllTimeWithPreKoOrNull(preKo),
     allTimeDateRange: allTimeRangeForHub(hub, currentKey),
     settledPickCount: Object.keys(hub.pickLedger).length,
