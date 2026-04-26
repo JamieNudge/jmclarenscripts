@@ -19,9 +19,9 @@ export function BestPicksHubFooter() {
           orientation="horizontal"
           className="w-full min-h-[90px] !justify-start !text-left !text-white/70 !border-white/30 !bg-zinc-950/70 px-4 py-3"
         />
-        <div className="flex flex-row flex-wrap items-start justify-between gap-x-6 gap-y-2">
+        <div className="flex w-full min-w-0 flex-col items-stretch gap-3 md:flex-row md:flex-wrap md:items-start md:justify-between md:gap-x-6 md:gap-y-2">
           <p
-            className="text-left text-[11px] md:text-xs text-white/78 leading-relaxed max-w-[min(100%,42rem)] flex-1 min-w-[12rem]"
+            className="w-full min-w-0 break-words text-left text-[11px] leading-relaxed text-white/78 md:max-w-[min(100%,42rem)] md:flex-1 md:text-xs"
             role="note"
           >
             <span className="font-medium text-white/90">Disclaimer.</span> Statistical views of past match patterns
@@ -29,7 +29,7 @@ export function BestPicksHubFooter() {
             offer real money gambling, prizes, or simulated gambling. Content on this page is for informational
             purposes only.
           </p>
-          <p className="text-right text-[11px] md:text-xs text-white/75 leading-relaxed shrink-0 min-w-[10rem] max-w-sm">
+          <p className="w-full min-w-0 break-words text-left text-[11px] leading-relaxed text-white/75 md:max-w-sm md:text-right md:text-xs">
             <Link href="/football-predictions/privacy" className="underline hover:text-white/90 underline-offset-2">
               Privacy policy
             </Link>
