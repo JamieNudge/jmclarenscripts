@@ -9,6 +9,7 @@ import {
   picksTimeZoneFromEnv,
   rtdbValueToPickList,
 } from '@/lib/best-picks-firebase';
+import { AdminAndAnotherThingSection } from '@/components/admin/AdminAndAnotherThingSection';
 import { AdminBlogSection } from '@/components/admin/AdminBlogSection';
 import { AdminPredictionEmailBlocklist } from '@/components/admin/AdminPredictionEmailBlocklist';
 import { AdminPredictionSubmissions } from '@/components/admin/AdminPredictionSubmissions';
@@ -348,9 +349,9 @@ export default function AdminPicksPage() {
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#111827] to-[#1f2937] text-white px-4 py-10 md:py-14">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col xl:flex-row xl:gap-10 xl:items-start">
-          <div className="flex-1 min-w-0 max-w-2xl xl:max-w-none space-y-8">
+        <div className="max-w-7xl mx-auto">
+        <div className="flex flex-col gap-8 xl:gap-6 xl:flex-row xl:items-start">
+          <div className="min-w-0 flex-1 space-y-8 xl:min-w-0">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Link href="/football-predictions" className="text-sm text-white/70 hover:text-white underline-offset-2">
             ← Back to Football Predictions
@@ -631,7 +632,11 @@ export default function AdminPicksPage() {
         )}
           </div>
 
-          <aside className="w-full xl:w-[min(100%,22rem)] shrink-0 xl:sticky xl:top-6 space-y-4 mt-10 xl:mt-0">
+          <div className="w-full shrink-0 xl:max-w-sm xl:min-w-[20rem]">
+            <AdminAndAnotherThingSection adminKey={adminKey} />
+          </div>
+
+          <aside className="w-full shrink-0 space-y-4 xl:mt-0 xl:sticky xl:top-6 xl:max-w-[22rem] mt-0">
             <AdminPredictionEmailBlocklist
               adminKey={adminKey}
               refreshSignal={predictionBlocklistRefreshSignal}

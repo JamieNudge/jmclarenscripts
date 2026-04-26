@@ -10,3 +10,6 @@ export const FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_PATH =
 
 /** Research page `h1`, in-panel `h2` when shown, main nav label, and hero parenthetical link text. */
 export const FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_TITLE = "Today's Research Selections" as const;
+
+export const AND_ANOTHER_THING_PATH = '/football-predictions/and-another-thing' as const;
+export const AND_ANOTHER_THING_TITLE = 'And Another Thing...' as const;
