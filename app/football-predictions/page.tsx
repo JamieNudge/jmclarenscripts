@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { AdSenseAutoPlaceholder } from '@/components/AdSenseAutoPlaceholder';
-import { BestPicksBlogPreviewsRail } from '@/components/best-picks/BestPicksBlogPreviewsRail';
 import { BplHubCell } from '@/components/best-picks/BplHubCell';
 import { BestPicksHeadAndPanels } from '@/components/best-picks/BestPicksHeadAndPanels';
 import { BEST_PICKS_EXTENDED_SITE_NAV } from '@/components/best-picks/best-picks-site-nav-config';
@@ -39,8 +38,8 @@ export default function BestPicksPage() {
   return (
     <main className="min-h-screen bp-best-picks-surface text-white flex flex-col">
       {/*
-        Row: hub (flex-1) | blog 2xl only (w-56) | ad. Blog sits right next to the ad; hub + grid get all
-        space to the left so “How apps work” and Coming soon use the freed width.
+        Hub: intro + (grid + blog at 2xl) inside one flex-1; then the ad. Blog rail lives next to the grid, not
+        the hero, so it lines up with the card row and the ad is immediately right of the hub.
       */}
       <div className="flex flex-1 flex-col lg:flex-row lg:min-h-0 w-full min-h-0">
         <div className="flex-1 min-w-0 min-h-0 px-4 py-10 md:py-14 lg:px-6 lg:pr-4 2xl:pr-0">
@@ -49,10 +48,6 @@ export default function BestPicksPage() {
               <BplHubCell />
             </BestPicksHeadAndPanels>
           </div>
-        </div>
-
-        <div className="hidden 2xl:block w-56 shrink-0 self-start min-h-0 py-10 md:py-14 pl-5">
-          <BestPicksBlogPreviewsRail />
         </div>
 
         <aside className="hidden lg:flex w-[150px] xl:w-[170px] flex-shrink-0 flex-col border-l border-zinc-700/70 bg-zinc-950/90">
