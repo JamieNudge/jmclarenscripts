@@ -13,6 +13,7 @@ export default function BestPicksMethodologyPage() {
     <BestPicksSubpageShell
       title="Methodology"
       description="High-level view of how selections are produced and what the page is not claiming."
+      hubFooter
     >
       <section className="space-y-4">
         <p>

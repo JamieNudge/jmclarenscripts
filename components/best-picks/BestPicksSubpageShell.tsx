@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { AdSenseAutoPlaceholder } from '@/components/AdSenseAutoPlaceholder';
+import { BestPicksHubFooter } from '@/components/best-picks/BestPicksHubFooter';
 import { BEST_PICKS_EXTENDED_SITE_NAV } from '@/components/best-picks/best-picks-site-nav-config';
 import { BestPicksSiteNav } from '@/components/best-picks/BestPicksSiteNav';
 
@@ -11,14 +12,17 @@ export function BestPicksSubpageShell({
   description,
   children,
   footer,
+  hubFooter = false,
   showBackToHub = true,
   alwaysShowHeaderNav = false,
 }: {
   title: string;
   description?: ReactNode;
   children: ReactNode;
-  /** Renders in `<footer>`, with a top border. When set, main column grows so the footer can sit at the bottom on short pages. */
+  /** Renders in `<footer>`, with a top border. When set, main column grows so the footer can sit at the bottom on short pages. Ignored when `hubFooter` is true. */
   footer?: ReactNode;
+  /** If true, skip the in-column ad strip and use the full shared hub footer (nav + ad + disclaimer), full width. */
+  hubFooter?: boolean;
   /** If false, hides the “Back to [hub]” row (e.g. publication privacy). */
   showBackToHub?: boolean;
   /** Show the main section nav even when `NEXT_PUBLIC_BEST_PICKS_EXTENDED_SITE_NAV=0` (e.g. privacy so visitors can always move within this publication). */
@@ -49,7 +53,9 @@ export function BestPicksSubpageShell({
         {description ? (
           <div className="text-sm text-white/80 mb-8 leading-relaxed">{description}</div>
         ) : null}
-        {footer ? (
+        {hubFooter ? (
+          <div className={`${bodyProse} flex-1 min-h-0`}>{children}</div>
+        ) : footer ? (
           <>
             <div className={`${bodyProse} flex-1 min-h-0`}>{children}</div>
             <div className="shrink-0 mt-8 w-full">
@@ -81,6 +87,7 @@ export function BestPicksSubpageShell({
           </>
         )}
       </div>
+      {hubFooter ? <BestPicksHubFooter /> : null}
     </main>
   );
 }
