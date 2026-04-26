@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { BestPicksContentWithSideAdLayout } from '@/components/best-picks/BestPicksContentWithSideAdLayout';
 import { HowItWorksFromHubRedirect } from './HowItWorksFromHubRedirect';
 import { FOOTBALL_PREDICTIONS_PAGE_TITLE } from '@/lib/football-predictions-brand';
 
@@ -14,10 +15,10 @@ export const metadata: Metadata = {
 
 export default function HowItWorksPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#111827] to-[#1f2937] text-white">
-      <div className="max-w-3xl mx-auto px-4 py-10 md:py-14 w-full">
+    <BestPicksContentWithSideAdLayout>
+      <div className="mx-auto w-full max-w-3xl">
         <HowItWorksFromHubRedirect />
       </div>
-    </div>
+    </BestPicksContentWithSideAdLayout>
   );
 }
