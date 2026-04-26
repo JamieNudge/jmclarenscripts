@@ -9,8 +9,9 @@ import { bestPicksGridTileClassName } from '@/lib/best-picks-panel-shell';
 const statStrike = apps.find((a) => a.id === 'stat-strike');
 const goalLab = apps.find((a) => a.id === 'goallab');
 
-const iconBoxClass =
-  'shrink-0 rounded-2xl overflow-hidden border border-amber-200/20 bg-black/30 w-16 h-16 sm:w-[4.5rem] sm:h-[4.5rem]';
+/** Floated in copy so the first line sits beside the icon; later lines can run full width under it. */
+const iconFloatClass =
+  'shrink-0 float-left mt-0.5 mr-3 sm:mr-3.5 mb-1.5 rounded-2xl overflow-hidden border border-amber-200/20 bg-black/30 w-16 h-16 sm:w-[4.5rem] sm:h-[4.5rem]';
 
 const scrollArea =
   'min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-1 -mr-0.5 [scrollbar-gutter:stable] scroll-smooth overscroll-y-contain';
@@ -22,19 +23,19 @@ function storeAppLink(
   description: ReactNode,
 ) {
   return (
-    <li className="flex flex-col sm:flex-row gap-3 sm:items-start">
+    <li className="list-none pl-0 [&:after]:content-[''] [&:after]:block [&:after]:clear-both">
       {href && iconSrc ? (
         <Link
           href={href}
           target="_blank"
           rel="noopener noreferrer"
-          className={`${iconBoxClass} block focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/50`}
+          className={`${iconFloatClass} block focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/50`}
           aria-label={`${label} on the App Store`}
         >
           <Image src={iconSrc} alt="" width={144} height={144} className="w-full h-full object-cover" />
         </Link>
       ) : (
-        <div className={iconBoxClass} aria-hidden>
+        <div className={iconFloatClass} aria-hidden>
           {iconSrc ? (
             <Image src={iconSrc} alt="" width={144} height={144} className="w-full h-full object-cover" />
           ) : null}
@@ -115,8 +116,8 @@ export function BestPicksHowAppsWorkPanel() {
           <div>
             <h3 className="text-sm font-semibold text-amber-100/90 mb-2">Coming soon</h3>
             <ul className="space-y-4 list-none pl-0">
-              <li className="flex flex-col sm:flex-row gap-3 sm:items-start">
-                <div className="shrink-0 rounded-2xl overflow-hidden border border-amber-200/20 bg-black/30 w-16 h-16 sm:w-[4.5rem] sm:h-[4.5rem]">
+              <li className="list-none pl-0 [&:after]:content-[''] [&:after]:block [&:after]:clear-both">
+                <div className={iconFloatClass} aria-hidden>
                   <Image
                     src="/images/popgoals-icon.png"
                     alt="PopGoals app icon"
@@ -127,7 +128,7 @@ export function BestPicksHowAppsWorkPanel() {
                 </div>
                 <div className="min-w-0 space-y-1">
                   <p className="font-semibold text-amber-100/90 text-sm sm:text-base">PopGoals</p>
-                  <p className="text-xs sm:text-sm text-white/92">
+                  <p className="text-xs sm:text-sm text-white/92 leading-relaxed">
                     Three golden balls every day with the top slice of Over and Under 2.5 selections. Not on the App
                     Store yet.
                   </p>
