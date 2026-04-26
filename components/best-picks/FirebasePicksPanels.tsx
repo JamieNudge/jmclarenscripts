@@ -2,6 +2,7 @@
 
 import type { ReactNode } from 'react';
 import Image from 'next/image';
+import { BestPicksBlogPreviewsRail } from '@/components/best-picks/BestPicksBlogPreviewsRail';
 import { BestPicksNewProductPanel } from '@/components/best-picks/BestPicksExtraPanels';
 import { BestPicksHowAppsWorkPanel } from '@/components/best-picks/BestPicksHowAppsWorkPanel';
 import { BestPicksVideo } from '@/components/best-picks/BestPicksVideo';
@@ -67,17 +68,23 @@ export function FirebasePicksPanels({ children }: { children: ReactNode }) {
       )}
       {/*
         md: 3×2 with explicit placement — left: App / Video; centre: How apps work (row-span 2);
-        right: PopGoals (coming soon) + ProphIt in one cell (row-span 2). Mobile: four stacked rows.
+        right: PopGoals (coming soon) + ProphIt in one cell (row-span 2).
+        max-md: BPL → How apps → blog → Coming soon → Video (order-*); blog cell hidden md+ (sidebar rail 2xl).
       */}
-      <div className="grid grid-cols-1 gap-4 max-md:[grid-template-rows:repeat(4,minmax(0,26rem))] md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.3fr)_minmax(0,1.3fr)] md:gap-5 md:[grid-template-rows:repeat(2,minmax(0,26rem))] [&>*]:min-h-0 [&>*]:min-w-0">
-        <div className="min-h-0 h-full flex flex-col md:col-start-1 md:row-start-1">{children}</div>
-        <div className="min-h-0 md:col-start-1 md:row-start-2">
+      <div className="grid grid-cols-1 gap-4 max-md:[grid-template-rows:repeat(5,minmax(0,26rem))] md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.3fr)_minmax(0,1.3fr)] md:gap-5 md:[grid-template-rows:repeat(2,minmax(0,26rem))] [&>*]:min-h-0 [&>*]:min-w-0">
+        <div className="min-h-0 h-full flex flex-col max-md:order-1 md:order-none md:col-start-1 md:row-start-1">
+          {children}
+        </div>
+        <div className="min-h-0 max-md:order-5 md:order-none md:col-start-1 md:row-start-2">
           <BestPicksVideo />
         </div>
-        <div className="flex min-h-0 flex-col md:col-start-2 md:row-start-1 md:row-span-2 md:h-full md:min-h-0">
+        <div className="flex min-h-0 flex-col max-md:order-2 md:order-none md:col-start-2 md:row-start-1 md:row-span-2 md:h-full md:min-h-0">
           <BestPicksHowAppsWorkPanel />
         </div>
-        <div className="flex min-h-0 min-w-0 flex-col md:col-start-3 md:row-start-1 md:row-span-2 md:h-full md:min-h-0">
+        <div className="min-h-0 min-w-0 flex max-md:order-3 max-md:max-h-[min(32rem,70vh)] max-md:overflow-y-auto md:hidden">
+          <BestPicksBlogPreviewsRail />
+        </div>
+        <div className="flex min-h-0 min-w-0 flex-col max-md:order-4 md:order-none md:col-start-3 md:row-start-1 md:row-span-2 md:h-full md:min-h-0">
           <BestPicksComingSoonAndProphitPanel />
         </div>
       </div>
