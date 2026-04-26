@@ -69,7 +69,7 @@ export function FirebasePicksPanels({ children }: { children: ReactNode }) {
         md: 3×2 with explicit placement — left: App / Video; centre: How apps work (row-span 2);
         right: PopGoals (coming soon) + ProphIt in one cell (row-span 2). Mobile: four stacked rows.
       */}
-      <div className="grid grid-cols-1 gap-4 max-md:[grid-template-rows:repeat(4,minmax(0,26rem))] md:grid-cols-3 md:gap-5 md:[grid-template-rows:repeat(2,minmax(0,26rem))] [&>*]:min-h-0 [&>*]:min-w-0">
+      <div className="grid grid-cols-1 gap-4 max-md:[grid-template-rows:repeat(4,minmax(0,26rem))] md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.3fr)_minmax(0,1.3fr)] md:gap-5 md:[grid-template-rows:repeat(2,minmax(0,26rem))] [&>*]:min-h-0 [&>*]:min-w-0">
         <div className="min-h-0 h-full flex flex-col md:col-start-1 md:row-start-1">{children}</div>
         <div className="min-h-0 md:col-start-1 md:row-start-2">
           <BestPicksVideo />

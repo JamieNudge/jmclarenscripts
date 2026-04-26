@@ -38,18 +38,21 @@ export const metadata: Metadata = {
 export default function BestPicksPage() {
   return (
     <main className="min-h-screen bp-best-picks-surface text-white flex flex-col">
+      {/*
+        Row: hub (flex-1) | blog 2xl only (w-56) | ad. Blog sits right next to the ad; hub + grid get all
+        space to the left so “How apps work” and Coming soon use the freed width.
+      */}
       <div className="flex flex-1 flex-col lg:flex-row lg:min-h-0 w-full min-h-0">
-        <div className="flex-1 min-w-0 min-h-0 px-4 py-10 md:py-14 lg:px-6 lg:pr-4">
-          <div className="mx-auto w-full max-w-6xl 2xl:max-w-[min(100%,calc(72rem+1.5rem+14rem))] 2xl:flex 2xl:flex-row 2xl:items-start 2xl:gap-6">
-            <div className="min-w-0 w-full max-w-6xl 2xl:max-w-[72rem] 2xl:shrink-0">
-              <BestPicksHeadAndPanels>
-                <BplHubCell />
-              </BestPicksHeadAndPanels>
-            </div>
-            <div className="hidden 2xl:block w-56 shrink-0 pt-0">
-              <BestPicksBlogPreviewsRail />
-            </div>
+        <div className="flex-1 min-w-0 min-h-0 px-4 py-10 md:py-14 lg:px-6 lg:pr-4 2xl:pr-0">
+          <div className="mx-auto w-full max-w-6xl 2xl:mx-0 2xl:max-w-none">
+            <BestPicksHeadAndPanels>
+              <BplHubCell />
+            </BestPicksHeadAndPanels>
           </div>
+        </div>
+
+        <div className="hidden 2xl:block w-56 shrink-0 self-start min-h-0 py-10 md:py-14 pl-5">
+          <BestPicksBlogPreviewsRail />
         </div>
 
         <aside className="hidden lg:flex w-[150px] xl:w-[170px] flex-shrink-0 flex-col border-l border-zinc-700/70 bg-zinc-950/90">
