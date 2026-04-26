@@ -63,7 +63,7 @@ export function BplHubCell() {
   }, [displayDate]);
 
   return (
-    <div className={`${bestPicksGridTileClassName} gap-3`}>
+    <div className={`${bestPicksGridTileClassName} gap-3 !overflow-y-auto [scrollbar-gutter:stable]`}>
       <h2 className="text-lg md:text-xl font-semibold text-white tracking-tight shrink-0">Stat Strike — best performing (BPL)</h2>
       <p className="text-sm text-white/60 leading-relaxed shrink-0">
         1u flat stake · FT results only. All Time updates when the site next reconciles (often your first visit of
