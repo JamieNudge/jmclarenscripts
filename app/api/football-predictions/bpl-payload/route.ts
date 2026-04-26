@@ -9,6 +9,7 @@ import {
   newEmptyHub,
   parseHub,
   previousDateKeyFrom,
+  type BplDisplayDay,
   type BplHubState,
 } from '@/lib/bpl-hub';
 import { getFirebaseAdminApp } from '@/lib/firebase-admin';
@@ -37,14 +38,15 @@ function misconfiguredResponse() {
   const tz = picksTimeZoneFromEnv();
   const currentKey = picksDateStringInTimeZone(tz, new Date());
   const prev = previousDateKeyFrom(currentKey);
+  const emptyDay: BplDisplayDay = { fixtures: [], bestPerformingFixtureCount: 0, withBookmakerOddsFixtureCount: 0 };
   return NextResponse.json(
     buildBplHubPublicPayload(
       newEmptyHub(),
       now,
       currentKey,
       prev,
-      [],
-      [],
+      emptyDay,
+      emptyDay,
       'BPL metrics require server Firebase (FIREBASE_SERVICE_ACCOUNT_JSON).',
     ),
     { status: 200, headers: { 'Cache-Control': 'no-store' } },
@@ -108,12 +110,12 @@ export async function GET() {
     prEx = null;
   }
 
-  const currentFixtures = getBplDisplayRows(currentKey, curSel, curEx, now);
-  const previousFixtures = getBplDisplayRows(previousKey, prSel, prEx, now);
+  const currentDay = getBplDisplayRows(currentKey, curSel, curEx, now);
+  const previousDay = getBplDisplayRows(previousKey, prSel, prEx, now);
   const updated: BplHubState = {
     ...hub,
-    current: { dateKey: currentKey, generatedAtMs: now, fixtures: currentFixtures },
-    previous: { dateKey: previousKey, generatedAtMs: now, fixtures: previousFixtures },
+    current: { dateKey: currentKey, generatedAtMs: now, fixtures: currentDay.fixtures },
+    previous: { dateKey: previousKey, generatedAtMs: now, fixtures: previousDay.fixtures },
   };
 
   try {
@@ -122,6 +124,6 @@ export async function GET() {
     // read-only deploy or rules: still return JSON for UI
   }
 
-  const payload = buildBplHubPublicPayload(updated, now, currentKey, previousKey, currentFixtures, previousFixtures);
+  const payload = buildBplHubPublicPayload(updated, now, currentKey, previousKey, currentDay, previousDay);
   return NextResponse.json(payload, { headers: { 'Cache-Control': CACHE_HEADER } });
 }

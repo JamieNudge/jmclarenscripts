@@ -377,6 +377,47 @@ export function pickKickoffSortTimeMs(p: PickRecord): number | null {
   return null;
 }
 
+/** When the row includes bookmaker-odds metadata, compare to kickoff (BPL pre-KO ROI). */
+const BOOKMAKER_ODDS_EVENT_TIME_KEYS = [
+  'bookmakerOddsUpdatedAt',
+  'bookmakerOddsCapturedAt',
+  'oddsCapturedAt',
+  'bookmakerOddsTimestamp',
+  'bookmakerOddsSetAt',
+  'oddsSetAt',
+  'oddsUpdatedAt',
+] as const;
+
+/**
+ * First parseable time associated with the bookmaker odds on this row (if any), for comparison to kickoff.
+ */
+export function bookmakerOddsEventTimeMs(p: PickRecord): number | null {
+  for (const k of BOOKMAKER_ODDS_EVENT_TIME_KEYS) {
+    const ms = timeUnknownToSortMs(p[k]);
+    if (ms != null) return ms;
+  }
+  return null;
+}
+
+/**
+ * Whether on-row bookmaker odds (if present) were written before kickoff, when we have both times.
+ * App exports may add explicit odds timestamp fields; without them, returns 'unknown' (excluded from pre-KO BPL subtotals).
+ */
+export function bplOddsPreKickClass(p: PickRecord): 'yes' | 'no' | 'unknown' {
+  const o = ((): number | null => {
+    if (typeof p.bookmakerOdds === 'number' && Number.isFinite(p.bookmakerOdds)) return p.bookmakerOdds;
+    if (typeof p.bookmakerOdds === 'string' && p.bookmakerOdds.trim() !== '' && !Number.isNaN(Number(p.bookmakerOdds)))
+      return Number(p.bookmakerOdds);
+    return null;
+  })();
+  if (o == null || o <= 1) return 'unknown';
+  const kick = pickKickoffSortTimeMs(p);
+  if (kick == null) return 'unknown';
+  const te = bookmakerOddsEventTimeMs(p);
+  if (te == null) return 'unknown';
+  return te < kick ? 'yes' : 'no';
+}
+
 function formatKickoffFromPickRecord(p: PickRecord): string | null {
   for (const k of KICKOFF_SORT_FIELD_KEYS) {
     const v = p[k];

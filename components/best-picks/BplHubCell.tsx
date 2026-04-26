@@ -92,7 +92,9 @@ export function BplHubCell() {
       {data && (
         <div className="flex-1 min-h-0 space-y-4 min-w-0">
           <div className="rounded-xl border border-amber-200/25 bg-zinc-900/70 p-3 space-y-1">
-            <p className="text-[10px] font-bold uppercase tracking-wide text-white/45">All Time BPL+odds (FT)</p>
+            <p className="text-[10px] font-bold uppercase tracking-wide text-white/45">
+              All time · BPL, bookmaker odds on the hub (FT)
+            </p>
             <p className="text-sm tabular-nums text-white/95">
               <span className="text-emerald-200/90">{data.allTime.wins}W</span>
               <span className="text-white/30"> — </span>
@@ -113,12 +115,39 @@ export function BplHubCell() {
             <p className="text-[10px] text-white/40">
               {data.settledPickCount} settled line{data.settledPickCount === 1 ? '' : 's'} in ledger
             </p>
+            {data.allTimeWithPreKoOdds ? (
+              <div className="pt-2 mt-2 border-t border-white/10 space-y-0.5">
+                <p className="text-[10px] font-bold uppercase tracking-wide text-white/40">
+                  All time · pre-KO odds (provable on the row)
+                </p>
+                <p className="text-sm tabular-nums text-white/90">
+                  <span className="text-emerald-200/90">{data.allTimeWithPreKoOdds.wins}W</span>
+                  <span className="text-white/30"> — </span>
+                  <span className="text-red-200/90">{data.allTimeWithPreKoOdds.losses}L</span>
+                </p>
+                <p className="text-lg font-semibold text-cyan-100/90 tabular-nums">
+                  ROI{' '}
+                  {data.allTimeWithPreKoOdds.roiPercent == null
+                    ? '—'
+                    : `${data.allTimeWithPreKoOdds.roiPercent >= 0 ? '+' : ''}${data.allTimeWithPreKoOdds.roiPercent.toFixed(1)}%`}
+                </p>
+              </div>
+            ) : null}
           </div>
 
           <div>
-            <p className="text-xs font-bold uppercase tracking-wide text-white/45 mb-2">
+            <p className="text-xs font-bold uppercase tracking-wide text-white/45 mb-1">
               Selection day (London){' '}
               <span className="tabular-nums text-amber-200/80">{data.current.dateKey}</span>
+            </p>
+            <p className="text-[10px] text-white/40 mb-2">
+              {data.current.bestPerformingFixtureCount} best (BPL) line
+              {data.current.bestPerformingFixtureCount === 1 ? '' : 's'}
+              {data.current.bestPerformingFixtureCount !== data.current.withBookmakerOddsFixtureCount
+                ? ` · ${data.current.withBookmakerOddsFixtureCount} with bookmaker odds on the hub`
+                : data.current.withBookmakerOddsFixtureCount > 0
+                  ? ' · all with bookmaker odds on the hub'
+                  : ''}
             </p>
             {data.current.fixtures.length === 0 ? (
               <p className="text-sm text-white/50">No BPL lines with bookmaker odds for this date (or not uploaded yet).</p>

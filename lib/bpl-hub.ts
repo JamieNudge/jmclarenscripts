@@ -4,6 +4,7 @@
  */
 
 import {
+  bplOddsPreKickClass,
   mergeUnanimousPicksByFixtureBand,
   parseLeaguePerformanceFromSelection,
   parseUnanimousExport,
@@ -60,11 +61,28 @@ export type BplAllTimePublic = {
 
 export type BplHubPublicPayload = {
   allTime: BplAllTimePublic;
+  /**
+   * All Time only for lines where we could confirm bookmaker odds were stored before kickoff
+   * (odds + kickoff + an odds-related timestamp on the row). Omitted from this subtotal when unprovable.
+   */
+  allTimeWithPreKoOdds: BplAllTimePublic | null;
   /** Inclusive London calendar range for All Time metrics (end advances each day). */
   allTimeDateRange: { startYyyyMmDd: string; endYyyyMmDd: string };
   settledPickCount: number;
-  current: { dateKey: string; generatedAtMs: number; fixtures: BplCompactFixture[] };
-  previous: { dateKey: string; generatedAtMs: number; fixtures: BplCompactFixture[] } | null;
+  current: {
+    dateKey: string;
+    generatedAtMs: number;
+    fixtures: BplCompactFixture[];
+    bestPerformingFixtureCount: number;
+    withBookmakerOddsFixtureCount: number;
+  };
+  previous: {
+    dateKey: string;
+    generatedAtMs: number;
+    fixtures: BplCompactFixture[];
+    bestPerformingFixtureCount: number;
+    withBookmakerOddsFixtureCount: number;
+  } | null;
   serverMessage?: string;
 };
 
@@ -73,11 +91,13 @@ type PickLedgerEntry = {
   result: 'win' | 'loss' | 'void' | 'push' | 'dropped';
   profit1u: number;
   recordedAt: number;
+  oddsPreKick?: 'yes' | 'no' | 'unknown';
 };
 
 export type BplHubState = {
   v: 1;
   allTime: { wins: number; losses: number; voids: number; profit: number };
+  allTimeWithPreKoOdds: { wins: number; losses: number; voids: number; profit: number };
   pickLedger: Record<string, PickLedgerEntry>;
   /** Set on first hub write: first day All Time is tracked (London yyyy-MM-dd). */
   allTimeTrackingStartYyyyMmDd?: string;
@@ -91,6 +111,7 @@ export function newEmptyHub(): BplHubState {
   return {
     v: 1,
     allTime: { wins: 0, losses: 0, voids: 0, profit: 0 },
+    allTimeWithPreKoOdds: { wins: 0, losses: 0, voids: 0, profit: 0 },
     pickLedger: {},
     current: undefined,
     previous: null,
@@ -100,6 +121,20 @@ export function newEmptyHub(): BplHubState {
 function publicAllTime(s: BplHubState['allTime']): BplAllTimePublic {
   const staked = s.wins + s.losses;
   const roi = staked > 0 ? (s.profit / staked) * 100 : null;
+  return {
+    wins: s.wins,
+    losses: s.losses,
+    voids: s.voids,
+    staked,
+    profit: s.profit,
+    roiPercent: roi,
+  };
+}
+
+function publicAllTimeWithPreKoOrNull(s: BplHubState['allTimeWithPreKoOdds']): BplAllTimePublic | null {
+  const staked = s.wins + s.losses;
+  if (staked === 0) return null;
+  const roi = (s.profit / staked) * 100;
   return {
     wins: s.wins,
     losses: s.losses,
@@ -216,23 +251,39 @@ function toCompact(p: PickRecord, dateKey: string, now: number): BplCompactFixtu
   };
 }
 
+export type BplDisplayDay = {
+  fixtures: BplCompactFixture[];
+  /** Merged BPL (best-performing) lines for the day, including those without bookmaker odds on the row. */
+  bestPerformingFixtureCount: number;
+  /** Merged BPL lines that also have bookmaker odds (same list as `fixtures` when non-empty). */
+  withBookmakerOddsFixtureCount: number;
+};
+
 export function getBplDisplayRows(
   dateKey: string,
   selectionVal: unknown,
   exportVal: unknown,
   now: number,
-): BplCompactFixture[] {
+): BplDisplayDay {
   const { over, under } = parseUnanimousExport(exportVal);
   const leagueWinRates = parseLeaguePerformanceFromSelection(selectionVal);
-  const pre: PickRecord[] = [
-    ...over,
-    ...under,
-  ].filter(
-    (p) => bookmakerOdds(p) != null && pickPassesBestFilter(p, leagueWinRates),
-  );
-  if (pre.length === 0) return [];
-  const merged = mergeUnanimousPicksByFixtureBand(pre);
-  return merged.map((p) => toCompact(p, dateKey, now));
+  const all: PickRecord[] = [...over, ...under];
+  const best = all.filter((p) => pickPassesBestFilter(p, leagueWinRates));
+  const withOdds = best.filter((p) => bookmakerOdds(p) != null);
+  const mergedBest = mergeUnanimousPicksByFixtureBand(best);
+  if (withOdds.length === 0) {
+    return {
+      fixtures: [],
+      bestPerformingFixtureCount: mergedBest.length,
+      withBookmakerOddsFixtureCount: 0,
+    };
+  }
+  const merged = mergeUnanimousPicksByFixtureBand(withOdds);
+  return {
+    fixtures: merged.map((p) => toCompact(p, dateKey, now)),
+    bestPerformingFixtureCount: mergedBest.length,
+    withBookmakerOddsFixtureCount: merged.length,
+  };
 }
 
 export function applyReconciliationForDate(
@@ -255,9 +306,11 @@ export function applyReconciliationForDate(
   }
   const merged = mergeUnanimousPicksByFixtureBand(pre);
   let processed = 0;
+  const basePreKo = hub.allTimeWithPreKoOdds ?? { wins: 0, losses: 0, voids: 0, profit: 0 };
   const next: BplHubState = {
     ...hub,
     allTime: { ...hub.allTime },
+    allTimeWithPreKoOdds: { ...basePreKo },
     pickLedger: { ...hub.pickLedger },
   };
   for (const p of merged) {
@@ -265,18 +318,22 @@ export function applyReconciliationForDate(
     if (next.pickLedger[key]) {
       continue;
     }
+    const oddsClass = bplOddsPreKickClass(p);
     const { result, profit1u, countsStake } = evaluateBplSettle(p, now);
     if (result === 'pending') {
       continue;
     }
     if (result === 'dropped') {
-      next.pickLedger[key] = { dateKey, result: 'dropped', profit1u: 0, recordedAt: now };
+      next.pickLedger[key] = { dateKey, result: 'dropped', profit1u: 0, recordedAt: now, oddsPreKick: oddsClass };
       processed += 1;
       continue;
     }
     if (result === 'void' || result === 'push') {
       next.allTime.voids += 1;
-      next.pickLedger[key] = { dateKey, result, profit1u: 0, recordedAt: now };
+      if (oddsClass === 'yes') {
+        next.allTimeWithPreKoOdds.voids += 1;
+      }
+      next.pickLedger[key] = { dateKey, result, profit1u: 0, recordedAt: now, oddsPreKick: oddsClass };
       processed += 1;
       continue;
     }
@@ -286,7 +343,12 @@ export function applyReconciliationForDate(
       if (countsStake) {
         next.allTime.profit += profit1u;
       }
-      next.pickLedger[key] = { dateKey, result, profit1u, recordedAt: now };
+      if (oddsClass === 'yes' && countsStake) {
+        if (result === 'win') next.allTimeWithPreKoOdds.wins += 1;
+        else next.allTimeWithPreKoOdds.losses += 1;
+        next.allTimeWithPreKoOdds.profit += profit1u;
+      }
+      next.pickLedger[key] = { dateKey, result, profit1u, recordedAt: now, oddsPreKick: oddsClass };
       processed += 1;
     }
   }
@@ -320,6 +382,7 @@ export function parseHub(val: unknown): BplHubState {
     return newEmptyHub();
   }
   const al = o.allTime as Record<string, unknown> | undefined;
+  const alPre = o.allTimeWithPreKoOdds as Record<string, unknown> | undefined;
   return {
     v: 1,
     allTime: {
@@ -327,6 +390,12 @@ export function parseHub(val: unknown): BplHubState {
       losses: num(al?.losses) ?? 0,
       voids: num(al?.voids) ?? 0,
       profit: num(al?.profit) ?? 0,
+    },
+    allTimeWithPreKoOdds: {
+      wins: num(alPre?.wins) ?? 0,
+      losses: num(alPre?.losses) ?? 0,
+      voids: num(alPre?.voids) ?? 0,
+      profit: num(alPre?.profit) ?? 0,
     },
     pickLedger:
       typeof o.pickLedger === 'object' && o.pickLedger != null && !Array.isArray(o.pickLedger)
@@ -368,18 +437,33 @@ export function buildBplHubPublicPayload(
   now: number,
   currentKey: string,
   previousKey: string | null,
-  currentFixtures: BplCompactFixture[],
-  previousFixtures: BplCompactFixture[],
+  current: BplDisplayDay,
+  previous: BplDisplayDay | null,
   serverMessage?: string,
 ): BplHubPublicPayload {
+  const preKo = hub.allTimeWithPreKoOdds ?? { wins: 0, losses: 0, voids: 0, profit: 0 };
   return {
     allTime: publicAllTime(hub.allTime),
+    allTimeWithPreKoOdds: publicAllTimeWithPreKoOrNull(preKo),
     allTimeDateRange: allTimeRangeForHub(hub, currentKey),
     settledPickCount: Object.keys(hub.pickLedger).length,
-    current: { dateKey: currentKey, generatedAtMs: now, fixtures: currentFixtures },
-    previous: previousKey
-      ? { dateKey: previousKey, generatedAtMs: now, fixtures: previousFixtures }
-      : null,
+    current: {
+      dateKey: currentKey,
+      generatedAtMs: now,
+      fixtures: current.fixtures,
+      bestPerformingFixtureCount: current.bestPerformingFixtureCount,
+      withBookmakerOddsFixtureCount: current.withBookmakerOddsFixtureCount,
+    },
+    previous:
+      previousKey && previous
+        ? {
+            dateKey: previousKey,
+            generatedAtMs: now,
+            fixtures: previous.fixtures,
+            bestPerformingFixtureCount: previous.bestPerformingFixtureCount,
+            withBookmakerOddsFixtureCount: previous.withBookmakerOddsFixtureCount,
+          }
+        : null,
     serverMessage,
   };
 }
