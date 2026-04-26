@@ -24,7 +24,7 @@ export function BestPicksBlogPreviewsRail() {
 
   return (
     <aside
-      className="rounded-2xl border border-zinc-600/50 bg-zinc-950/95 ring-1 ring-white/[0.06] p-4 space-y-3 2xl:sticky 2xl:top-24"
+      className="rounded-2xl border border-zinc-600/50 bg-zinc-950/95 ring-1 ring-white/[0.06] p-4 space-y-3"
       style={{ fontFamily: blogTextFontFamily }}
       aria-label="Recent blog posts"
     >
