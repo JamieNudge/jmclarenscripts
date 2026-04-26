@@ -50,7 +50,14 @@ export function BestPicksIntro({ dateKey }: { dateKey: string }) {
           >
             {FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_TITLE}
           </Link>
-          ), combining different modelling approaches to identify more reliable outcomes.
+          ), combining different modelling approaches to identify more reliable outcomes. Also{' '}
+          <Link
+            href="/blog"
+            className="text-amber-100/95 underline underline-offset-2 hover:text-amber-50/95"
+          >
+            Blog posts
+          </Link>{' '}
+          about the models and the experience of using AI coding agents in their building and updating.
         </p>
       </div>
 
