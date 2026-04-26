@@ -71,7 +71,9 @@ export function BplHubCell() {
 
   return (
     <div className={`${bestPicksGridTileClassName} gap-3 !overflow-y-auto [scrollbar-gutter:stable]`}>
-      <h2 className="text-lg md:text-xl font-semibold text-white tracking-tight shrink-0">StatStrike</h2>
+      <h2 className="text-lg md:text-xl font-semibold text-white tracking-tight shrink-0">
+        StatStrike - Best Performing - As seen in iOS app
+      </h2>
       <p className="text-sm text-white/70 font-medium shrink-0">1u Flat Stake</p>
       {data?.allTimeDateRange && (
         <p className="text-xs text-white/45 tabular-nums shrink-0">
