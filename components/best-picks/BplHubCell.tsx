@@ -70,30 +70,34 @@ export function BplHubCell() {
   }, [londonDateKey]);
 
   return (
-    <div className={`${bestPicksGridTileClassName} gap-3 !overflow-y-auto [scrollbar-gutter:stable]`}>
-      <h2 className="text-lg md:text-xl font-semibold text-white tracking-tight shrink-0">
-        StatStrike - Best Performing - As seen in iOS app
-      </h2>
-      <p className="text-sm text-white/70 font-medium shrink-0">1u Flat Stake</p>
-      {data?.allTimeDateRange && (
-        <p className="text-xs text-white/45 tabular-nums shrink-0">
-          All Time: {formatYmdForDisplay(data.allTimeDateRange.startYyyyMmDd)} – {formatYmdForDisplay(data.allTimeDateRange.endYyyyMmDd)} (London)
-        </p>
-      )}
-      {loading && <p className="text-sm text-white/50">Loading…</p>}
-      {err && (
-        <p className="text-sm text-amber-200/90" role="alert">
-          {err}
-        </p>
-      )}
-      {data?.serverMessage ? (
-        <p className="text-xs text-amber-200/80" role="status">
-          {data.serverMessage}
-        </p>
-      ) : null}
+    <div className={`${bestPicksGridTileClassName} gap-3`}>
+      <div className="shrink-0 space-y-1.5">
+        <h2 className="text-lg md:text-xl font-semibold text-white tracking-tight">
+          StatStrike - Best Performing - As seen in iOS app
+        </h2>
+        <p className="text-sm text-white/70 font-medium">1u Flat Stake</p>
+        {data?.allTimeDateRange && (
+          <p className="text-xs text-white/45 tabular-nums">
+            All Time: {formatYmdForDisplay(data.allTimeDateRange.startYyyyMmDd)} –{' '}
+            {formatYmdForDisplay(data.allTimeDateRange.endYyyyMmDd)} (London)
+          </p>
+        )}
+        {loading && <p className="text-sm text-white/50">Loading…</p>}
+        {err && (
+          <p className="text-sm text-amber-200/90" role="alert">
+            {err}
+          </p>
+        )}
+        {data?.serverMessage ? (
+          <p className="text-xs text-amber-200/80" role="status">
+            {data.serverMessage}
+          </p>
+        ) : null}
+      </div>
+
       {data && (
-        <div className="flex-1 min-h-0 space-y-4 min-w-0">
-          <div className="rounded-xl border border-amber-200/25 bg-zinc-900/70 p-3 space-y-1">
+        <>
+          <div className="shrink-0 rounded-xl border border-amber-200/25 bg-zinc-900/70 p-3 space-y-1">
             <p className="text-[10px] font-bold uppercase tracking-wide text-white/45">
               All time · BPL, bookmaker odds on the hub (FT)
             </p>
@@ -137,7 +141,7 @@ export function BplHubCell() {
             ) : null}
           </div>
 
-          <div>
+          <div className="flex-1 min-h-0 min-w-0 flex flex-col overflow-y-auto [scrollbar-gutter:stable]">
             <p className="text-xs font-bold uppercase tracking-wide text-white/45 mb-1">
               Selection day (London){' '}
               <span className="tabular-nums text-amber-200/80">{data.current.dateKey}</span>
@@ -154,7 +158,7 @@ export function BplHubCell() {
             {data.current.fixtures.length === 0 ? (
               <p className="text-sm text-white/50">No BPL lines with bookmaker odds for this date (or not uploaded yet).</p>
             ) : (
-              <ul className="space-y-2 max-h-[18rem] overflow-y-auto pr-0.5 [scrollbar-gutter:stable]">
+              <ul className="space-y-2 pb-1">
                 {data.current.fixtures.map((f) => (
                   <li
                     key={f.id}
@@ -183,7 +187,7 @@ export function BplHubCell() {
               </ul>
             )}
           </div>
-        </div>
+        </>
       )}
     </div>
   );
