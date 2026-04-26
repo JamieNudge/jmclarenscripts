@@ -59,15 +59,18 @@ export default function BestPicksPage() {
       </div>
 
       <footer className="w-full border-t border-zinc-700/60 bg-black mt-auto">
-        <div className="max-w-6xl mx-auto px-4 py-6 lg:px-6 space-y-4 pb-[max(6rem,env(safe-area-inset-bottom))]">
+        {/*
+          Match main hub: full width with same horizontal padding as the content column (not max-w-6xl centered).
+        */}
+        <div className="w-full px-4 py-6 lg:px-6 space-y-4 pb-[max(6rem,env(safe-area-inset-bottom))]">
           {BEST_PICKS_EXTENDED_SITE_NAV ? (
-            <div className="w-full min-w-0">
+            <div className="w-full min-w-0 text-left">
               <BestPicksSiteNav variant="footer" />
             </div>
           ) : null}
           <AdSenseAutoPlaceholder
             orientation="horizontal"
-            className="w-full min-h-[90px] !border-white/30 !bg-zinc-950/70 !text-white/70"
+            className="w-full min-h-[90px] !justify-start !text-left !text-white/70 !border-white/30 !bg-zinc-950/70 px-4 py-3"
           />
           <div className="flex flex-row flex-wrap items-start justify-between gap-x-6 gap-y-2">
             <p
