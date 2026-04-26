@@ -33,7 +33,7 @@ function appStoreLink(href: string | undefined, label: string) {
  */
 export function BestPicksIntro({ dateKey }: { dateKey: string }) {
   return (
-    <header className="w-full max-w-6xl mb-5 md:mb-6 space-y-3">
+    <header className="w-full max-w-6xl 2xl:max-w-none mb-5 md:mb-6 space-y-3">
       {BEST_PICKS_EXTENDED_SITE_NAV ? <BestPicksSiteNav variant="header" /> : null}
       <div>
         <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight leading-tight text-white flex flex-col gap-1 sm:flex-row sm:flex-wrap sm:items-baseline sm:gap-x-2 sm:gap-y-0.5">
