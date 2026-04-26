@@ -13,6 +13,7 @@ export default function BestPicksAboutPage() {
     <BestPicksSubpageShell
       title="About Football Predictions & Data-Driven Picks"
       description="What this page is for, what you’ll find on it, and how it relates to the apps."
+      hubFooter
     >
       <section className="space-y-4">
         <p>
