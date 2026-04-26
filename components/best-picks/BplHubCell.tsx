@@ -43,7 +43,10 @@ export function BplHubCell() {
       setLoading(true);
       setErr(null);
       try {
-        const res = await fetch('/api/football-predictions/bpl-payload', { method: 'GET' });
+        const res = await fetch('/api/football-predictions/bpl-payload', {
+          method: 'GET',
+          cache: 'no-store',
+        });
         if (!res.ok) {
           setErr('Could not load BPL panel.');
           setData(null);
@@ -68,6 +71,16 @@ export function BplHubCell() {
       cancelled = true;
     };
   }, [londonDateKey]);
+
+  const allBplLines =
+    data == null
+      ? null
+      : (data.allTimeBplAllLines ?? {
+          wins: data.allTime.wins,
+          losses: data.allTime.losses,
+          voids: data.allTime.voids,
+          settledLineCount: data.settledPickCount,
+        });
 
   return (
     <div className={`${bestPicksGridTileClassName} gap-3`}>
@@ -95,32 +108,54 @@ export function BplHubCell() {
         ) : null}
       </div>
 
-      {data && (
+      {data && allBplLines && (
         <>
-          <div className="shrink-0 rounded-xl border border-amber-200/25 bg-zinc-900/70 p-3 space-y-1">
-            <p className="text-[10px] font-bold uppercase tracking-wide text-white/60">
-              All time · BPL, bookmaker odds on the hub (FT)
-            </p>
-            <p className="text-sm tabular-nums text-white/95">
-              <span className="text-emerald-200/90">{data.allTime.wins}W</span>
-              <span className="text-white/50"> — </span>
-              <span className="text-red-200/90">{data.allTime.losses}L</span>
-              {data.allTime.voids > 0 ? (
-                <span className="text-white/65">
-                  {' '}
-                  · {data.allTime.voids} void/push
-                </span>
-              ) : null}
-            </p>
-            <p className="text-lg font-semibold text-amber-100/95 tabular-nums">
-              ROI{' '}
-              {data.allTime.roiPercent == null
-                ? '—'
-                : `${data.allTime.roiPercent >= 0 ? '+' : ''}${data.allTime.roiPercent.toFixed(1)}%`}
-            </p>
-            <p className="text-[10px] text-white/60">
-              {data.settledPickCount} settled line{data.settledPickCount === 1 ? '' : 's'} in ledger
-            </p>
+          <div className="shrink-0 rounded-xl border border-amber-200/25 bg-zinc-900/70 p-3 space-y-2">
+            <div className="space-y-0.5">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-amber-100/80">
+                All time · BPL, every best line (incl. no on-file odds)
+              </p>
+              <p className="text-sm tabular-nums text-white/95">
+                <span className="text-emerald-200/90">{allBplLines.wins}W</span>
+                <span className="text-white/50"> — </span>
+                <span className="text-red-200/90">{allBplLines.losses}L</span>
+                {allBplLines.voids > 0 ? (
+                  <span className="text-white/65">
+                    {' '}
+                    · {allBplLines.voids} void/push
+                  </span>
+                ) : null}
+              </p>
+              <p className="text-[10px] text-white/60">
+                {allBplLines.settledLineCount} settled line
+                {allBplLines.settledLineCount === 1 ? '' : 's'} in BPL (all) ledger
+              </p>
+            </div>
+            <div className="space-y-0.5 pt-1 border-t border-white/10">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-white/60">
+                All time · BPL, bookmaker odds on the hub (FT)
+              </p>
+              <p className="text-sm tabular-nums text-white/95">
+                <span className="text-emerald-200/90">{data.allTime.wins}W</span>
+                <span className="text-white/50"> — </span>
+                <span className="text-red-200/90">{data.allTime.losses}L</span>
+                {data.allTime.voids > 0 ? (
+                  <span className="text-white/65">
+                    {' '}
+                    · {data.allTime.voids} void/push
+                  </span>
+                ) : null}
+              </p>
+              <p className="text-lg font-semibold text-amber-100/95 tabular-nums">
+                ROI{' '}
+                {data.allTime.roiPercent == null
+                  ? '—'
+                  : `${data.allTime.roiPercent >= 0 ? '+' : ''}${data.allTime.roiPercent.toFixed(1)}%`}
+              </p>
+              <p className="text-[10px] text-white/60">
+                {data.settledPickCount} settled line{data.settledPickCount === 1 ? '' : 's'} in odds ledger
+              </p>
+            </div>
             {data.allTimeWithPreKoOdds ? (
               <div className="pt-2 mt-2 border-t border-white/10 space-y-0.5">
                 <p className="text-[10px] font-bold uppercase tracking-wide text-white/60">
