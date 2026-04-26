@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { onValue, ref } from 'firebase/database';
 import { bestPicksGridTileClassName } from '@/lib/best-picks-panel-shell';
 import {
@@ -286,6 +287,17 @@ export function BestPicksResearchAlgorithmPanel({
             ) : null}
             {!consensusError && !consensusLoading && recordLine ? (
               <p className="text-sm text-white leading-snug">{recordLine}</p>
+            ) : null}
+            {!consensusError && !consensusLoading ? (
+              <p className="text-sm text-white/80 leading-snug">
+                <Link
+                  href="/football-predictions#bpl-statstrike-fixtures"
+                  className="text-amber-200/90 underline underline-offset-2 hover:text-amber-100/95"
+                >
+                  StatStrike - Best Performing - As seen in iOS app
+                </Link>
+                <span className="text-white/60"> — Best Performing BPL lines in the hub fixture list.</span>
+              </p>
             ) : null}
             {!consensusError && !consensusLoading && !hasConsensusContent ? (
               <p className="text-sm text-white leading-relaxed">

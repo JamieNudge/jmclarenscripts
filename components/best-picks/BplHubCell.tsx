@@ -83,7 +83,7 @@ export function BplHubCell() {
         });
 
   return (
-    <div className={`${bestPicksGridTileClassName} gap-3`}>
+    <div id="bpl-statstrike" className={`${bestPicksGridTileClassName} gap-3`}>
       <div className="shrink-0 space-y-1.5">
         <h2 className="text-lg md:text-xl font-semibold text-white tracking-tight">
           StatStrike - Best Performing - As seen in iOS app
@@ -176,7 +176,10 @@ export function BplHubCell() {
             ) : null}
           </div>
 
-          <div className="flex-1 min-h-0 min-w-0 flex flex-col overflow-y-auto [scrollbar-gutter:stable]">
+          <div
+            id="bpl-statstrike-fixtures"
+            className="flex-1 min-h-0 min-w-0 flex flex-col overflow-y-auto [scrollbar-gutter:stable] scroll-mt-4"
+          >
             <p className="text-xs font-bold uppercase tracking-wide text-white/65 mb-1">
               Selection day (London){' '}
               <span className="tabular-nums text-amber-200/80">{data.current.dateKey}</span>
