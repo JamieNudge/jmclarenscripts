@@ -13,6 +13,13 @@ function resultPillClass(r: BplCompactFixture['result']): string {
   return 'text-white/50 border-white/10 bg-white/5';
 }
 
+function formatYmdForDisplay(ymd: string): string {
+  const m = ymd.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return ymd;
+  const t = Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  return new Date(t).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
+}
+
 function resultLabel(r: BplCompactFixture['result']): string {
   if (r === 'win') return 'W';
   if (r === 'loss') return 'L';
@@ -28,7 +35,7 @@ export function BplHubCell() {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
 
-  const displayDate = useBestPicksLondonDateKey();
+  const londonDateKey = useBestPicksLondonDateKey();
 
   useEffect(() => {
     let cancelled = false;
@@ -60,16 +67,17 @@ export function BplHubCell() {
     return () => {
       cancelled = true;
     };
-  }, [displayDate]);
+  }, [londonDateKey]);
 
   return (
     <div className={`${bestPicksGridTileClassName} gap-3 !overflow-y-auto [scrollbar-gutter:stable]`}>
-      <h2 className="text-lg md:text-xl font-semibold text-white tracking-tight shrink-0">Stat Strike — best performing (BPL)</h2>
-      <p className="text-sm text-white/60 leading-relaxed shrink-0">
-        1u flat stake · FT results only. All Time updates when the site next reconciles (often your first visit of
-        the day). Late finisher? It may show on the prior selection day. Metrics refresh after a page load, not
-        exactly on a clock.
-      </p>
+      <h2 className="text-lg md:text-xl font-semibold text-white tracking-tight shrink-0">StatStrike</h2>
+      <p className="text-sm text-white/70 font-medium shrink-0">1u Flat Stake</p>
+      {data?.allTimeDateRange && (
+        <p className="text-xs text-white/45 tabular-nums shrink-0">
+          All Time: {formatYmdForDisplay(data.allTimeDateRange.startYyyyMmDd)} – {formatYmdForDisplay(data.allTimeDateRange.endYyyyMmDd)} (London)
+        </p>
+      )}
       {loading && <p className="text-sm text-white/50">Loading…</p>}
       {err && (
         <p className="text-sm text-amber-200/90" role="alert">
@@ -109,9 +117,8 @@ export function BplHubCell() {
 
           <div>
             <p className="text-xs font-bold uppercase tracking-wide text-white/45 mb-2">
-              Today on hub calendar{' '}
-              <span className="tabular-nums text-amber-200/80">{data.current.dateKey}</span> · your device:{' '}
-              <span className="tabular-nums text-white/50">{displayDate}</span>
+              Selection day (London){' '}
+              <span className="tabular-nums text-amber-200/80">{data.current.dateKey}</span>
             </p>
             {data.current.fixtures.length === 0 ? (
               <p className="text-sm text-white/50">No BPL lines with bookmaker odds for this date (or not uploaded yet).</p>

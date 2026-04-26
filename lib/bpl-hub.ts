@@ -1,6 +1,6 @@
 /**
  * Best Performing Leagues (BPL) hub: display + lazy All Time settlement (server-side).
- * Reads Stat Strike `selections` + `unanimousExports`; writes only `footballPredictions/bplHub`.
+ * Reads StatStrike `selections` + `unanimousExports`; writes only `footballPredictions/bplHub`.
  */
 
 import {
@@ -60,6 +60,8 @@ export type BplAllTimePublic = {
 
 export type BplHubPublicPayload = {
   allTime: BplAllTimePublic;
+  /** Inclusive London calendar range for All Time metrics (end advances each day). */
+  allTimeDateRange: { startYyyyMmDd: string; endYyyyMmDd: string };
   settledPickCount: number;
   current: { dateKey: string; generatedAtMs: number; fixtures: BplCompactFixture[] };
   previous: { dateKey: string; generatedAtMs: number; fixtures: BplCompactFixture[] } | null;
@@ -77,6 +79,8 @@ export type BplHubState = {
   v: 1;
   allTime: { wins: number; losses: number; voids: number; profit: number };
   pickLedger: Record<string, PickLedgerEntry>;
+  /** Set on first hub write: first day All Time is tracked (London yyyy-MM-dd). */
+  allTimeTrackingStartYyyyMmDd?: string;
   current?: { dateKey: string; generatedAtMs: number; fixtures: BplCompactFixture[] };
   previous?: { dateKey: string; generatedAtMs: number; fixtures: BplCompactFixture[] } | null;
 };
@@ -289,6 +293,24 @@ export function applyReconciliationForDate(
   return { hub: next, processed };
 }
 
+function parseOptionalYyyyMmDd(v: unknown): string | undefined {
+  if (typeof v !== 'string') return undefined;
+  const t = v.trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(t)) return undefined;
+  return t;
+}
+
+/** Earliest selection day present in the pick ledger (from key prefix `bpl:yyyy-MM-dd|`). */
+export function minDateKeyFromPickLedger(pickLedger: Record<string, PickLedgerEntry>): string | null {
+  const dates: string[] = [];
+  for (const k of Object.keys(pickLedger)) {
+    const m = k.match(/^bpl:(\d{4}-\d{2}-\d{2})\|/);
+    if (m) dates.push(m[1]);
+  }
+  if (dates.length === 0) return null;
+  return dates.sort()[0];
+}
+
 export function parseHub(val: unknown): BplHubState {
   if (val == null || typeof val !== 'object' || Array.isArray(val)) {
     return newEmptyHub();
@@ -310,6 +332,7 @@ export function parseHub(val: unknown): BplHubState {
       typeof o.pickLedger === 'object' && o.pickLedger != null && !Array.isArray(o.pickLedger)
         ? (o.pickLedger as Record<string, PickLedgerEntry>)
         : {},
+    allTimeTrackingStartYyyyMmDd: parseOptionalYyyyMmDd(o.allTimeTrackingStartYyyyMmDd),
     current: o.current as BplHubState['current'],
     previous: (o.previous as BplHubState['previous']) ?? null,
   };
@@ -333,6 +356,13 @@ export function previousDateKeyFrom(currentKey: string): string {
   return addCalendarDaysYyyyMmDd(currentKey, -1);
 }
 
+function allTimeRangeForHub(hub: BplHubState, currentKey: string): { startYyyyMmDd: string; endYyyyMmDd: string } {
+  const endYyyyMmDd = currentKey;
+  const startYyyyMmDd =
+    hub.allTimeTrackingStartYyyyMmDd ?? minDateKeyFromPickLedger(hub.pickLedger) ?? currentKey;
+  return { startYyyyMmDd, endYyyyMmDd };
+}
+
 export function buildBplHubPublicPayload(
   hub: BplHubState,
   now: number,
@@ -344,11 +374,22 @@ export function buildBplHubPublicPayload(
 ): BplHubPublicPayload {
   return {
     allTime: publicAllTime(hub.allTime),
+    allTimeDateRange: allTimeRangeForHub(hub, currentKey),
     settledPickCount: Object.keys(hub.pickLedger).length,
     current: { dateKey: currentKey, generatedAtMs: now, fixtures: currentFixtures },
     previous: previousKey
       ? { dateKey: previousKey, generatedAtMs: now, fixtures: previousFixtures }
       : null,
     serverMessage,
+  };
+}
+
+/** Call before persisting hub: fix tracking start so the range does not jump day-to-day. */
+export function ensureAllTimeTrackingStart(hub: BplHubState, currentKey: string): BplHubState {
+  if (hub.allTimeTrackingStartYyyyMmDd) return hub;
+  const fromLedger = minDateKeyFromPickLedger(hub.pickLedger);
+  return {
+    ...hub,
+    allTimeTrackingStartYyyyMmDd: fromLedger ?? currentKey,
   };
 }

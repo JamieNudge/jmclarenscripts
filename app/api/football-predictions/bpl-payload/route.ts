@@ -4,6 +4,7 @@ import {
   applyReconciliationForDate,
   bplHubRtdbPath,
   buildBplHubPublicPayload,
+  ensureAllTimeTrackingStart,
   getBplDisplayRows,
   newEmptyHub,
   parseHub,
@@ -84,6 +85,8 @@ export async function GET() {
       dk = previousDateKeyFrom(dk);
     }
   }
+
+  hub = ensureAllTimeTrackingStart(hub, currentKey);
 
   const { selectionPath: sCur, unanimousPath: uCur } = statStrikeRtdbPathsFromEnv(currentKey);
   const { selectionPath: sPr, unanimousPath: uPr } = statStrikeRtdbPathsFromEnv(previousKey);
