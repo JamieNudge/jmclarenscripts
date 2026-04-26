@@ -15,7 +15,10 @@ import {
   type ResearchAlgorithmPerModelStructured,
 } from '@/lib/best-picks-firebase';
 import { getFirebaseRealtimeDb, isFirebaseClientConfigured } from '@/lib/firebase-client';
-import { FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_TITLE } from '@/lib/football-predictions-brand';
+import {
+  FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_PATH,
+  FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_TITLE,
+} from '@/lib/football-predictions-brand';
 
 export const bestPicksResearchAlgorithmPanelTitle = FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_TITLE;
 
@@ -291,7 +294,7 @@ export function BestPicksResearchAlgorithmPanel({
             {!consensusError && !consensusLoading ? (
               <p className="text-sm text-white/80 leading-snug">
                 <Link
-                  href="/football-predictions#bpl-statstrike-fixtures"
+                  href={`${FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_PATH}#bpl-statstrike-fixtures`}
                   className="text-amber-200/90 underline underline-offset-2 hover:text-amber-100/95"
                 >
                   StatStrike - Best Performing - As seen in iOS app

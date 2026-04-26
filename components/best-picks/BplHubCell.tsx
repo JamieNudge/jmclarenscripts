@@ -1,9 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { bestPicksGridTileClassName } from '@/lib/best-picks-panel-shell';
 import type { BplHubPublicPayload, BplCompactFixture } from '@/lib/bpl-hub';
 import { useBestPicksLondonDateKey } from '@/hooks/useBestPicksLondonDateKey';
+import { FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_PATH } from '@/lib/football-predictions-brand';
 
 function resultPillClass(r: BplCompactFixture['result']): string {
   if (r === 'win') return 'text-emerald-200/95 border-emerald-400/35 bg-emerald-500/10';
@@ -30,7 +32,13 @@ function resultLabel(r: BplCompactFixture['result']): string {
   return '—';
 }
 
-export function BplHubCell() {
+const todayBplFixturesHref = `${FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_PATH}#bpl-statstrike-fixtures` as const;
+
+/**
+ * @param showTodayFixtures - When `false` (hub home tile), all-time stats stay but the in-cell fixture list is
+ *   replaced by a CTA to the research page, where the full BPL / StatStrike block lives.
+ */
+export function BplHubCell({ showTodayFixtures = true }: { showTodayFixtures?: boolean } = {}) {
   const [data, setData] = useState<BplHubPublicPayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
@@ -176,55 +184,66 @@ export function BplHubCell() {
             ) : null}
           </div>
 
-          <div
-            id="bpl-statstrike-fixtures"
-            className="flex-1 min-h-0 min-w-0 flex flex-col overflow-y-auto [scrollbar-gutter:stable] scroll-mt-4"
-          >
-            <p className="text-xs font-bold uppercase tracking-wide text-white/65 mb-1">
-              Selection day (London){' '}
-              <span className="tabular-nums text-amber-200/80">{data.current.dateKey}</span>
-            </p>
-            <p className="text-[10px] text-white/60 mb-2">
-              {data.current.bestPerformingFixtureCount} best (BPL) line
-              {data.current.bestPerformingFixtureCount === 1 ? '' : 's'}
-              {data.current.bestPerformingFixtureCount !== data.current.withBookmakerOddsFixtureCount
-                ? ` · ${data.current.withBookmakerOddsFixtureCount} with bookmaker odds on the hub`
-                : data.current.withBookmakerOddsFixtureCount > 0
-                  ? ' · all with bookmaker odds on the hub'
-                  : ''}
-            </p>
-            {data.current.fixtures.length === 0 ? (
-              <p className="text-sm text-white/70">No BPL lines with bookmaker odds for this date (or not uploaded yet).</p>
-            ) : (
-              <ul className="space-y-2 pb-1">
-                {data.current.fixtures.map((f) => (
-                  <li
-                    key={f.id}
-                    className="rounded-lg border border-white/10 bg-black/25 px-3 py-2 flex items-start justify-between gap-2"
-                  >
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-white leading-snug line-clamp-2">{f.title}</p>
-                      {f.band && (
-                        <p className="text-[10px] text-cyan-200/80 mt-0.5">
-                          {f.side === 'over' ? 'O' : 'U'} · {f.band}
-                        </p>
-                      )}
-                    </div>
-                    <div className="shrink-0 flex flex-col items-end gap-0.5">
-                      <span className="text-xs tabular-nums text-amber-100/90">@{f.odds.toFixed(2)}</span>
-                      {f.result != null && (
-                        <span
-                          className={`text-[9px] font-bold px-1.5 py-0.5 rounded border ${resultPillClass(f.result)}`}
-                        >
-                          {resultLabel(f.result)}
-                        </span>
-                      )}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+          {showTodayFixtures ? (
+            <div
+              id="bpl-statstrike-fixtures"
+              className="flex-1 min-h-0 min-w-0 flex flex-col overflow-y-auto [scrollbar-gutter:stable] scroll-mt-4"
+            >
+              <p className="text-xs font-bold uppercase tracking-wide text-white/65 mb-1">
+                Selection day (London){' '}
+                <span className="tabular-nums text-amber-200/80">{data.current.dateKey}</span>
+              </p>
+              <p className="text-[10px] text-white/60 mb-2">
+                {data.current.bestPerformingFixtureCount} best (BPL) line
+                {data.current.bestPerformingFixtureCount === 1 ? '' : 's'}
+                {data.current.bestPerformingFixtureCount !== data.current.withBookmakerOddsFixtureCount
+                  ? ` · ${data.current.withBookmakerOddsFixtureCount} with bookmaker odds on the hub`
+                  : data.current.withBookmakerOddsFixtureCount > 0
+                    ? ' · all with bookmaker odds on the hub'
+                    : ''}
+              </p>
+              {data.current.fixtures.length === 0 ? (
+                <p className="text-sm text-white/70">No BPL lines with bookmaker odds for this date (or not uploaded yet).</p>
+              ) : (
+                <ul className="space-y-2 pb-1">
+                  {data.current.fixtures.map((f) => (
+                    <li
+                      key={f.id}
+                      className="rounded-lg border border-white/10 bg-black/25 px-3 py-2 flex items-start justify-between gap-2"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-white leading-snug line-clamp-2">{f.title}</p>
+                        {f.band && (
+                          <p className="text-[10px] text-cyan-200/80 mt-0.5">
+                            {f.side === 'over' ? 'O' : 'U'} · {f.band}
+                          </p>
+                        )}
+                      </div>
+                      <div className="shrink-0 flex flex-col items-end gap-0.5">
+                        <span className="text-xs tabular-nums text-amber-100/90">@{f.odds.toFixed(2)}</span>
+                        {f.result != null && (
+                          <span
+                            className={`text-[9px] font-bold px-1.5 py-0.5 rounded border ${resultPillClass(f.result)}`}
+                          >
+                            {resultLabel(f.result)}
+                          </span>
+                        )}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ) : (
+            <div className="shrink-0 pt-1">
+              <Link
+                href={todayBplFixturesHref}
+                className="block w-full text-center rounded-xl border border-amber-200/40 bg-amber-500/10 px-4 py-3 text-sm font-semibold text-amber-100/95 tracking-tight shadow-sm shadow-black/20 transition-colors hover:bg-amber-500/15 hover:border-amber-200/55 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/50"
+              >
+                Click for today&apos;s BPL fixtures!
+              </Link>
+            </div>
+          )}
         </>
       )}
     </div>

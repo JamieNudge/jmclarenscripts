@@ -38,9 +38,9 @@ export default function BestPicksPage() {
         Hub: intro + (grid + blog at 2xl) inside one flex-1; ad + footer come from the layout.
       */}
       <div className="mx-auto w-full max-w-6xl 2xl:mx-0 2xl:max-w-none">
-        <BestPicksHeadAndPanels>
-          <BplHubCell />
-        </BestPicksHeadAndPanels>
+            <BestPicksHeadAndPanels>
+              <BplHubCell showTodayFixtures={false} />
+            </BestPicksHeadAndPanels>
       </div>
     </BestPicksHubWithSideAdLayout>
   );
