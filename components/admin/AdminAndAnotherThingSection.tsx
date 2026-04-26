@@ -13,6 +13,7 @@ export function AdminAndAnotherThingSection({ adminKey }: Props) {
   const [text, setText] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [file, setFile] = useState<File | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -45,6 +46,22 @@ export function AdminAndAnotherThingSection({ adminKey }: Props) {
     void load();
   }, [load]);
 
+  const cancelEdit = () => {
+    setEditingId(null);
+    setText('');
+    setImageUrl('');
+    setFile(null);
+    setStatus(null);
+  };
+
+  const startEdit = (p: AnotherThingPost) => {
+    setEditingId(p.id);
+    setText(p.text);
+    setImageUrl(p.imageUrl ?? '');
+    setFile(null);
+    setStatus('Editing — change the text or image, then save.');
+  };
+
   const uploadFileAndGetUrl = async (): Promise<string | null> => {
     if (!file) return null;
     setUploading(true);
@@ -75,7 +92,62 @@ export function AdminAndAnotherThingSection({ adminKey }: Props) {
     }
   };
 
+  const saveEdit = async () => {
+    if (!editingId) return;
+    setStatus(null);
+    if (!adminKey.trim()) {
+      setStatus('Paste your admin key first.');
+      return;
+    }
+    const t = text.trim();
+    if (!t) {
+      setStatus('Write something first.');
+      return;
+    }
+    setLoading(true);
+    try {
+      let img: string | null;
+      if (file) {
+        const up = await uploadFileAndGetUrl();
+        if (!up) {
+          setLoading(false);
+          return;
+        }
+        img = up;
+      } else {
+        img = imageUrl.trim() || null;
+      }
+      const res = await fetch('/api/admin/and-another-thing', {
+        method: 'PATCH',
+        headers: authHeaders(),
+        body: JSON.stringify({ id: editingId, text: t, imageUrl: img }),
+      });
+      const j = (await res.json()) as { error?: string; post?: AnotherThingPost };
+      if (!res.ok) {
+        setStatus(j.error || 'Update failed');
+        return;
+      }
+      if (j.post) {
+        setPosts((prev) =>
+          prev
+            .map((x) => (x.id === j.post!.id ? j.post! : x))
+            .sort((a, b) => (a.createdAt < b.createdAt ? 1 : a.createdAt > b.createdAt ? -1 : 0)),
+        );
+      }
+      cancelEdit();
+      setStatus('Updated.');
+    } catch (e) {
+      setStatus(e instanceof Error ? e.message : 'Update failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const submit = async () => {
+    if (editingId) {
+      void saveEdit();
+      return;
+    }
     setStatus(null);
     if (!adminKey.trim()) {
       setStatus('Paste your admin key first.');
@@ -125,6 +197,9 @@ export function AdminAndAnotherThingSection({ adminKey }: Props) {
 
   const remove = async (id: string) => {
     if (!adminKey.trim() || !window.confirm('Delete this post?')) return;
+    if (editingId === id) {
+      cancelEdit();
+    }
     setStatus(null);
     try {
       const res = await fetch(`/api/admin/and-another-thing?id=${encodeURIComponent(id)}`, {
@@ -147,9 +222,17 @@ export function AdminAndAnotherThingSection({ adminKey }: Props) {
     <section className="rounded-2xl border border-cyan-500/25 bg-cyan-950/20 p-5 space-y-4">
       <h2 className="text-lg font-semibold text-white">And Another Thing…</h2>
       <p className="text-xs text-white/50 leading-relaxed">
-        Short notes for the public feed (same style as a micro-blog). Optional image: upload or paste a URL. Max ~2000
-        characters.
+        Short notes for the public feed. You can <strong className="text-cyan-200/90">edit</strong> any post
+        (text + image) — no “post first, live forever” rule here. Optional image: upload or paste a URL. Clear the URL
+        and save to remove the image. Max ~2000 characters.
       </p>
+
+      {editingId ? (
+        <p className="text-xs text-cyan-200/80 rounded-md border border-cyan-500/30 bg-cyan-950/40 px-2 py-1.5">
+          Editing post <code className="text-cyan-100/90 text-[10px]">{editingId.slice(0, 8)}…</code> — created{' '}
+          {posts.find((p) => p.id === editingId)?.createdAt?.slice(0, 10) ?? '—'}
+        </p>
+      ) : null}
 
       <textarea
         className={`${inputCls} min-h-[8rem] resize-y`}
@@ -173,7 +256,7 @@ export function AdminAndAnotherThingSection({ adminKey }: Props) {
           className={`${inputCls} mt-1`}
           value={imageUrl}
           onChange={(e) => setImageUrl(e.target.value)}
-          placeholder="https://…"
+          placeholder="https://… (clear to remove image when saving an edit)"
         />
       </div>
 
@@ -184,8 +267,17 @@ export function AdminAndAnotherThingSection({ adminKey }: Props) {
           onClick={() => void submit()}
           className="rounded-lg bg-cyan-600/90 px-4 py-2 text-sm font-medium text-white hover:bg-cyan-600 disabled:opacity-50"
         >
-          {uploading ? 'Uploading…' : 'Post to feed'}
+          {uploading ? 'Uploading…' : editingId ? 'Save changes' : 'Post to feed'}
         </button>
+        {editingId ? (
+          <button
+            type="button"
+            onClick={cancelEdit}
+            className="rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-sm text-white/85 hover:bg-white/10"
+          >
+            Cancel edit
+          </button>
+        ) : null}
         <button
           type="button"
           disabled={loading}
@@ -217,13 +309,22 @@ export function AdminAndAnotherThingSection({ adminKey }: Props) {
                   {p.imageUrl ? ' · image' : ''}
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() => void remove(p.id)}
-                className="shrink-0 text-red-300 text-xs hover:underline"
-              >
-                Delete
-              </button>
+              <span className="flex shrink-0 flex-col items-end gap-1">
+                <button
+                  type="button"
+                  onClick={() => startEdit(p)}
+                  className="text-cyan-300 text-xs hover:underline"
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void remove(p.id)}
+                  className="text-red-300 text-xs hover:underline"
+                >
+                  Delete
+                </button>
+              </span>
             </li>
           ))}
         </ul>

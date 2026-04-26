@@ -4,8 +4,10 @@ import { getDatabase } from 'firebase-admin/database';
 import { isManualPicksAdminAuthorized } from '@/lib/admin-manual-picks-auth';
 import { getFirebaseAdminApp } from '@/lib/firebase-admin';
 import {
+  type AnotherThingPost,
   andAnotherThingPostsPath,
   normalizeNewPost,
+  normalizeUpdatePost,
   parsePostsMap,
 } from '@/lib/and-another-thing';
 
@@ -32,6 +34,57 @@ export async function GET(req: NextRequest) {
   } catch (e) {
     return NextResponse.json(
       { error: e instanceof Error ? e.message : 'Load failed' },
+      { status: 500 },
+    );
+  }
+}
+
+function isAnotherThingPost(val: unknown): val is AnotherThingPost {
+  if (val == null || typeof val !== 'object' || Array.isArray(val)) return false;
+  const o = val as Record<string, unknown>;
+  return (
+    typeof o.id === 'string' &&
+    typeof o.text === 'string' &&
+    typeof o.createdAt === 'string' &&
+    (o.imageUrl === null || typeof o.imageUrl === 'string')
+  );
+}
+
+export async function PATCH(req: NextRequest) {
+  if (!process.env.ADMIN_MANUAL_PICKS_KEY?.trim()) return misconfigured();
+  if (!isManualPicksAdminAuthorized(req)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  let body: Record<string, unknown>;
+  try {
+    body = (await req.json()) as Record<string, unknown>;
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
+  }
+  const id = typeof body.id === 'string' ? body.id.trim() : '';
+  if (!id) {
+    return NextResponse.json({ error: 'Field `id` is required' }, { status: 400 });
+  }
+  try {
+    const app = getFirebaseAdminApp();
+    const postRef = getDatabase(app).ref(`${andAnotherThingPostsPath()}/${id}`);
+    const snap = await postRef.once('value');
+    if (!snap.exists()) {
+      return NextResponse.json({ error: 'Post not found' }, { status: 404 });
+    }
+    const raw = snap.val();
+    if (!isAnotherThingPost(raw)) {
+      return NextResponse.json({ error: 'Invalid stored post shape' }, { status: 500 });
+    }
+    const n = normalizeUpdatePost(body, raw);
+    if (!n.ok) {
+      return NextResponse.json({ error: n.error }, { status: 400 });
+    }
+    await postRef.set(n.post);
+    return NextResponse.json({ ok: true, post: n.post });
+  } catch (e) {
+    return NextResponse.json(
+      { error: e instanceof Error ? e.message : 'Update failed' },
       { status: 500 },
     );
   }

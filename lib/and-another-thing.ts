@@ -79,3 +79,36 @@ export function normalizeNewPost(
     post: { id, text, imageUrl, createdAt: nowIso },
   };
 }
+
+/** PATCH: `imageUrl` omitted keeps existing; `null` or `""` clears. */
+export function normalizeUpdatePost(
+  body: Record<string, unknown>,
+  existing: AnotherThingPost,
+): { ok: true; post: AnotherThingPost } | { ok: false; error: string } {
+  const text = typeof body.text === 'string' ? body.text.trim().slice(0, MAX_TEXT) : '';
+  if (!text) return { ok: false, error: 'Text is required.' };
+
+  let imageUrl: string | null;
+  if (Object.prototype.hasOwnProperty.call(body, 'imageUrl')) {
+    if (body.imageUrl === null) {
+      imageUrl = null;
+    } else if (typeof body.imageUrl === 'string') {
+      const t = body.imageUrl.trim();
+      imageUrl = t ? t.slice(0, MAX_URL) : null;
+    } else {
+      return { ok: false, error: 'imageUrl must be a string, null, or omitted.' };
+    }
+  } else {
+    imageUrl = existing.imageUrl;
+  }
+
+  return {
+    ok: true,
+    post: {
+      id: existing.id,
+      text,
+      imageUrl,
+      createdAt: existing.createdAt,
+    },
+  };
+}
