@@ -43,6 +43,7 @@ export function AndAnotherThingHubPreview({ initialPosts, variant }: Props) {
   }, [load]);
 
   const latest = posts[0] ?? null;
+  const nextOlder = latest && posts.length > 1 ? posts[1] : null;
 
   const frameClassName =
     variant === 'sidebar'
@@ -73,10 +74,10 @@ export function AndAnotherThingHubPreview({ initialPosts, variant }: Props) {
         ) : (
           <Link
             href={AND_ANOTHER_THING_PATH}
-            className="group block h-full min-h-0 rounded-xl border border-zinc-200 bg-white p-2.5 text-left text-zinc-900 shadow-sm shadow-black/10 transition-colors hover:border-amber-200/50 hover:shadow-md"
+            className="group flex h-full min-h-0 flex-col rounded-xl border border-zinc-200 bg-white p-2.5 text-left text-zinc-900 shadow-sm shadow-black/10 transition-colors hover:border-amber-200/50 hover:shadow-md"
           >
             {latest.imageUrl ? (
-              <div className="mb-2 overflow-hidden rounded-lg border border-zinc-200 bg-zinc-100 aspect-[16/9] max-h-[72px]">
+              <div className="mb-1.5 shrink-0 overflow-hidden rounded-lg border border-zinc-200 bg-zinc-100 aspect-[16/9] max-h-[64px]">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={latest.imageUrl}
@@ -85,10 +86,20 @@ export function AndAnotherThingHubPreview({ initialPosts, variant }: Props) {
                 />
               </div>
             ) : null}
-            <p className="text-xs font-semibold leading-snug line-clamp-3 group-hover:text-zinc-950">
-              {latest.text}
-            </p>
-            <p className="mt-2 text-[10px] text-zinc-500 tabular-nums">
+            <div className="min-h-0 flex-1 max-h-full overflow-y-auto overflow-x-hidden [scrollbar-gutter:stable] pr-0.5 -mr-0.5">
+              <p className="text-xs font-semibold leading-snug break-words [overflow-wrap:anywhere] group-hover:text-zinc-950">
+                {latest.text}
+              </p>
+              {nextOlder && nextOlder.id !== latest.id ? (
+                <div className="mt-2.5 border-t border-zinc-200 pt-2">
+                  <p className="text-[9px] font-medium uppercase tracking-wide text-zinc-500 mb-1">Earlier</p>
+                  <p className="text-[11px] text-zinc-600 leading-snug line-clamp-4 break-words [overflow-wrap:anywhere]">
+                    {nextOlder.text}
+                  </p>
+                </div>
+              ) : null}
+            </div>
+            <p className="shrink-0 border-t border-zinc-200/80 pt-1.5 mt-1.5 text-[10px] text-zinc-500 tabular-nums">
               {new Date(latest.createdAt).toLocaleString('en-GB', {
                 timeZone: 'UTC',
                 dateStyle: 'medium',
