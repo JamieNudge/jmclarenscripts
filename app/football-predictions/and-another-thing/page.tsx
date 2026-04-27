@@ -5,9 +5,13 @@ import {
   AND_ANOTHER_THING_TITLE,
   FOOTBALL_PREDICTIONS_PAGE_TITLE,
 } from '@/lib/football-predictions-brand';
+import { loadAndAnotherThingPostsForPublic } from '@/lib/and-another-thing.posts.server';
 
 const desc =
   'Short updates and asides: thought-of-the-day style notes from the publication. Informational only.';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export const metadata: Metadata = {
   title: `${AND_ANOTHER_THING_TITLE} — ${FOOTBALL_PREDICTIONS_PAGE_TITLE}`,
@@ -19,14 +23,15 @@ export const metadata: Metadata = {
   },
 };
 
-export default function AndAnotherThingPage() {
+export default async function AndAnotherThingPage() {
+  const initialPosts = await loadAndAnotherThingPostsForPublic();
   return (
     <BestPicksSubpageShell
       title={AND_ANOTHER_THING_TITLE}
       description="A short, informal line — a thought for the day, a link, or a picture. Nothing here is betting or financial advice."
       hubFooter
     >
-      <AndAnotherThingFeed />
+      <AndAnotherThingFeed initialPosts={initialPosts} />
     </BestPicksSubpageShell>
   );
 }

@@ -11,6 +11,7 @@ import { BestPicksVideo } from '@/components/best-picks/BestPicksVideo';
 import { bestPicksGridTileClassName } from '@/lib/best-picks-panel-shell';
 import { bestPicksPopgoalsComingSoonMeta } from '@/lib/best-picks-popgoals-coming-soon-meta';
 import { AND_ANOTHER_THING_PATH, AND_ANOTHER_THING_TITLE } from '@/lib/football-predictions-brand';
+import type { AnotherThingPost } from '@/lib/and-another-thing';
 import { isFirebaseClientConfigured } from '@/lib/firebase-client';
 
 /** Right column: PopGoals teaser + ProphIt in one tile (md: spans both rows). */
@@ -55,7 +56,13 @@ function BestPicksComingSoonAndProphitPanel() {
   );
 }
 
-export function FirebasePicksPanels({ children }: { children: ReactNode }) {
+export function FirebasePicksPanels({
+  children,
+  andAnotherThingInitialPosts,
+}: {
+  children: ReactNode;
+  andAnotherThingInitialPosts: AnotherThingPost[];
+}) {
   const configHint = !isFirebaseClientConfigured();
 
   return (
@@ -100,7 +107,7 @@ export function FirebasePicksPanels({ children }: { children: ReactNode }) {
             </Link>
           </div>
           <div className="min-h-0 flex-1 overflow-y-auto pr-0.5 mt-2">
-            <AndAnotherThingFeed />
+            <AndAnotherThingFeed initialPosts={andAnotherThingInitialPosts} />
           </div>
         </div>
         <div className="flex min-h-0 min-w-0 flex-col max-md:order-5 md:order-none md:col-start-3 md:row-start-1 md:row-span-2 md:h-full md:min-h-0">

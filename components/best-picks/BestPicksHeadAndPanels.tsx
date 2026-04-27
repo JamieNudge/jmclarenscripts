@@ -5,9 +5,16 @@ import { BestPicksBlogPreviewsRail } from '@/components/best-picks/BestPicksBlog
 import { BestPicksIntro } from '@/components/best-picks/BestPicksIntro';
 import { FirebasePicksPanels } from '@/components/best-picks/FirebasePicksPanels';
 import { useBestPicksLondonDateKey } from '@/hooks/useBestPicksLondonDateKey';
+import type { AnotherThingPost } from '@/lib/and-another-thing';
 
 /** One London date clock for hero (avoids duplicate timers). First grid cell: pass {@link BplHubCell} as children. */
-export function BestPicksHeadAndPanels({ children }: { children: ReactNode }) {
+export function BestPicksHeadAndPanels({
+  children,
+  andAnotherThingInitialPosts,
+}: {
+  children: ReactNode;
+  andAnotherThingInitialPosts: AnotherThingPost[];
+}) {
   const dateKey = useBestPicksLondonDateKey();
   return (
     <>
@@ -18,7 +25,9 @@ export function BestPicksHeadAndPanels({ children }: { children: ReactNode }) {
       */}
       <div className="2xl:flex 2xl:min-w-0 2xl:items-start 2xl:gap-5">
         <div className="min-w-0 w-full 2xl:flex-1 2xl:min-w-0 min-h-0">
-          <FirebasePicksPanels>{children}</FirebasePicksPanels>
+          <FirebasePicksPanels andAnotherThingInitialPosts={andAnotherThingInitialPosts}>
+            {children}
+          </FirebasePicksPanels>
         </div>
         <div className="hidden 2xl:block w-56 shrink-0 min-w-0 min-h-0">
           <BestPicksBlogPreviewsRail />

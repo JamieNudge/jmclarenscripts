@@ -36,6 +36,15 @@ export type AnotherThingPost = {
 const MAX_TEXT = 2000;
 const MAX_URL = 2000;
 
+function createdAtToIsoString(v: unknown): string {
+  if (typeof v === 'string' && v.trim()) return v.trim();
+  if (typeof v === 'number' && Number.isFinite(v)) {
+    const d = new Date(v);
+    if (!Number.isNaN(d.getTime())) return d.toISOString();
+  }
+  return '';
+}
+
 export function parsePostsMap(val: unknown): AnotherThingPost[] {
   if (val == null || typeof val !== 'object' || Array.isArray(val)) return [];
   const out: AnotherThingPost[] = [];
@@ -50,7 +59,7 @@ export function parsePostsMap(val: unknown): AnotherThingPost[] {
         : typeof o.imageUrl === 'string' && o.imageUrl.trim()
           ? o.imageUrl.trim().slice(0, MAX_URL)
           : null;
-    const createdAt = typeof o.createdAt === 'string' ? o.createdAt : '';
+    const createdAt = createdAtToIsoString(o.createdAt);
     if (!id || !text || !createdAt) continue;
     out.push({ id, text, imageUrl, createdAt });
   }

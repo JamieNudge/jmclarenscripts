@@ -3,8 +3,19 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { AnotherThingPost } from '@/lib/and-another-thing';
 
-export function AndAnotherThingFeed() {
-  const [posts, setPosts] = useState<AnotherThingPost[] | null>(null);
+type Props = {
+  /**
+   * When set (e.g. from a Server Component), first paint comes from RTDB on the server.
+   * We skip the initial client `fetch` so a cached/stale **API** response cannot overwrite good data.
+   * Refetch still runs when the tab becomes visible.
+   */
+  initialPosts?: AnotherThingPost[];
+};
+
+export function AndAnotherThingFeed({ initialPosts }: Props) {
+  const [posts, setPosts] = useState<AnotherThingPost[] | null>(
+    initialPosts !== undefined ? initialPosts : null,
+  );
   const [err, setErr] = useState<string | null>(null);
 
   const load = useCallback(async () => {
@@ -14,19 +25,21 @@ export function AndAnotherThingFeed() {
       const j = (await res.json()) as { posts?: AnotherThingPost[]; error?: string };
       if (!res.ok) {
         setErr(j.error || 'Could not load.');
-        setPosts([]);
+        setPosts((prev) => (prev && prev.length > 0 ? prev : []));
         return;
       }
       setPosts(j.posts ?? []);
     } catch (e) {
       setErr(e instanceof Error ? e.message : 'Could not load.');
-      setPosts([]);
+      setPosts((prev) => (prev && prev.length > 0 ? prev : []));
     }
   }, []);
 
   useEffect(() => {
-    void load();
-  }, [load]);
+    if (initialPosts === undefined) {
+      void load();
+    }
+  }, [initialPosts, load]);
 
   useEffect(() => {
     const onVis = () => {
@@ -40,7 +53,7 @@ export function AndAnotherThingFeed() {
     return <p className="text-sm text-white/60">Loading…</p>;
   }
 
-  if (err) {
+  if (err && posts.length === 0) {
     return (
       <p className="text-sm text-amber-200/90" role="alert">
         {err}
@@ -53,7 +66,13 @@ export function AndAnotherThingFeed() {
   }
 
   return (
-    <ul className="space-y-5 min-w-0">
+    <div className="space-y-4 min-w-0">
+      {err ? (
+        <p className="text-xs text-amber-200/85" role="status">
+          {err} (showing last loaded posts.)
+        </p>
+      ) : null}
+      <ul className="space-y-5 min-w-0">
       {posts.map((p) => (
         <li
           key={p.id}
@@ -78,6 +97,7 @@ export function AndAnotherThingFeed() {
           </p>
         </li>
       ))}
-    </ul>
+      </ul>
+    </div>
   );
 }

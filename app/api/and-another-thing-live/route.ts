@@ -1,3 +1,4 @@
+import { unstable_noStore as noStore } from 'next/cache';
 import { NextResponse } from 'next/server';
 import { getDatabase } from 'firebase-admin/database';
 import { getFirebaseAdminApp } from '@/lib/firebase-admin';
@@ -15,6 +16,7 @@ const noCacheHeaders = {
 } as const;
 
 export async function GET() {
+  noStore();
   if (!process.env.FIREBASE_SERVICE_ACCOUNT_JSON?.trim()) {
     return NextResponse.json({ posts: [] }, { headers: noCacheHeaders });
   }
