@@ -12,7 +12,7 @@ function linkActive(pathname: string, href: string): boolean {
 }
 
 const linkClass =
-  'text-xs md:text-sm font-medium text-amber-100/90 hover:text-amber-50/95 underline-offset-4 hover:underline rounded-md px-1.5 py-1 -mx-1.5 transition-colors';
+  'text-xs md:text-sm font-medium text-amber-100/95 hover:text-amber-50/95 underline-offset-4 hover:underline rounded-md px-1.5 py-1 -mx-1.5 transition-colors';
 const linkActiveClass = 'text-white underline decoration-amber-200/80';
 
 export function BestPicksSiteNav({ variant }: { variant: 'header' | 'footer' }) {
@@ -39,7 +39,7 @@ export function BestPicksSiteNav({ variant }: { variant: 'header' | 'footer' }) 
         return (
           <span key={href} className="inline-flex items-center gap-x-2">
             {i > 0 ? (
-              <span className="text-white/45 select-none text-[10px] tabular-nums" aria-hidden>
+              <span className="text-white/68 select-none text-[10px] tabular-nums" aria-hidden>
                 ·
               </span>
             ) : null}

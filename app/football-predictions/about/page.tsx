@@ -41,7 +41,7 @@ export default function BestPicksAboutPage() {
           </Link>
           .
         </p>
-        <p className="text-xs text-white/75">
+        <p className="text-xs text-white/85">
           Questions about this website: see{' '}
           <Link
             href="/football-predictions/contact"

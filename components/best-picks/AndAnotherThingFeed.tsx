@@ -52,25 +52,25 @@ export function AndAnotherThingFeed({ initialPosts }: Props) {
   }, [load]);
 
   if (posts === null) {
-    return <p className="text-sm text-white/60">Loading…</p>;
+    return <p className="text-sm text-white/92">Loading…</p>;
   }
 
   if (err && posts.length === 0) {
     return (
-      <p className="text-sm text-amber-200/90" role="alert">
+      <p className="text-sm text-amber-200/93" role="alert">
         {err}
       </p>
     );
   }
 
   if (posts.length === 0) {
-    return <p className="text-sm text-white/70">No posts yet — check back soon.</p>;
+    return <p className="text-sm text-white/94">No posts yet — check back soon.</p>;
   }
 
   return (
     <div className="space-y-4 min-w-0">
       {err ? (
-        <p className="text-xs text-amber-200/85" role="status">
+        <p className="text-xs text-amber-200/93" role="status">
           {err} (showing last loaded posts.)
         </p>
       ) : null}

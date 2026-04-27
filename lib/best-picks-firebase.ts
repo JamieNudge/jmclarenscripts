@@ -418,7 +418,8 @@ export function bplOddsPreKickClass(p: PickRecord): 'yes' | 'no' | 'unknown' {
   return te < kick ? 'yes' : 'no';
 }
 
-function formatKickoffFromPickRecord(p: PickRecord): string | null {
+/** Human-readable kick-off (UTC) from common RTDB `kickoff` / time fields — used in BPL hub, subtitles, and exports. */
+export function formatKickoffFromPickRecord(p: PickRecord): string | null {
   for (const k of KICKOFF_SORT_FIELD_KEYS) {
     const v = p[k];
     if (isEmptyKickoffSlot(v)) continue;
@@ -431,6 +432,11 @@ function formatKickoffFromPickRecord(p: PickRecord): string | null {
     if (legacy) return legacy;
   }
   return null;
+}
+
+/** League name when present (StatStrike / consensus `league` field). */
+export function pickLeagueDisplay(p: PickRecord): string | null {
+  return pickPrimitiveText(p.league);
 }
 
 /** Extra keys sometimes present on `dailyConsensusSelections` picks but not on generic pick rows. */

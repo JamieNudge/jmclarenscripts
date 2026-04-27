@@ -33,7 +33,7 @@ function bandPillClass(band: string): string {
   if (b.includes('under')) {
     return 'text-orange-200 border-orange-400/30 bg-orange-500/15';
   }
-  return 'text-white/80 border-white/20 bg-white/10';
+  return 'text-white/93 border-white/20 bg-white/10';
 }
 
 function outcomeClass(outcome: string): string {
@@ -45,7 +45,7 @@ function outcomeClass(outcome: string): string {
     case 'void':
       return 'text-amber-200 border-amber-400/35 bg-amber-500/15';
     default:
-      return 'text-white/72 border-white/20 bg-white/10';
+      return 'text-white/92 border-white/20 bg-white/10';
   }
 }
 
@@ -65,11 +65,11 @@ function ConsensusPickRow({ pick }: { pick: DailyConsensusPickParsed }) {
         <div className="w-full min-w-0">
           <p className="text-sm font-medium text-white leading-relaxed text-pretty">
             {pick.home}
-            <span className="text-white/65 font-normal mx-1">v</span>
+            <span className="text-white/93 font-normal mx-1">v</span>
             {pick.away}
           </p>
           {metaLine ? (
-            <p className="text-xs text-white/90 mt-1.5 leading-relaxed text-pretty">{metaLine}</p>
+            <p className="text-xs text-white/94 mt-1.5 leading-relaxed text-pretty">{metaLine}</p>
           ) : null}
         </div>
         <div className="flex w-full min-w-0 flex-row flex-wrap items-center gap-1.5">
@@ -117,13 +117,13 @@ function PerModelPickRow({ row }: { row: ResearchAlgorithmPerModelStructured }) 
             {home}
             {away ? (
               <>
-                <span className="text-white/65 font-normal mx-1">v</span>
+                <span className="text-white/93 font-normal mx-1">v</span>
                 {away}
               </>
             ) : null}
           </p>
           {row.metaLine ? (
-            <p className="text-xs text-white/90 mt-1.5 leading-relaxed text-pretty">{row.metaLine}</p>
+            <p className="text-xs text-white/94 mt-1.5 leading-relaxed text-pretty">{row.metaLine}</p>
           ) : null}
         </div>
         <div className="flex w-full min-w-0 flex-row flex-wrap items-center gap-1.5">
@@ -151,7 +151,7 @@ function PerModelPickRow({ row }: { row: ResearchAlgorithmPerModelStructured }) 
         {row.mergedDetailLines && row.mergedDetailLines.length > 0 ? (
           <div className="space-y-1 pt-0.5 border-t border-white/12">
             {row.mergedDetailLines.map((line, j) => (
-              <p key={j} className="text-[11px] text-white/85 leading-relaxed text-pretty">
+              <p key={j} className="text-[11px] text-white/92 leading-relaxed text-pretty">
                 {line}
               </p>
             ))}
@@ -292,14 +292,14 @@ export function BestPicksResearchAlgorithmPanel({
               <p className="text-sm text-white leading-snug">{recordLine}</p>
             ) : null}
             {!consensusError && !consensusLoading ? (
-              <p className="text-sm text-white/80 leading-snug">
+              <p className="text-sm text-white/93 leading-snug">
                 <Link
                   href={`${FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_PATH}#bpl-statstrike-fixtures`}
-                  className="text-amber-200/90 underline underline-offset-2 hover:text-amber-100/95"
+                  className="text-amber-200/93 underline underline-offset-2 hover:text-amber-100/95"
                 >
                   StatStrike - Best Performing - As seen in iOS app
                 </Link>
-                <span className="text-white/60"> — Best Performing BPL lines in the hub fixture list.</span>
+                <span className="text-white/92"> — Best Performing BPL lines in the hub fixture list.</span>
               </p>
             ) : null}
             {!consensusError && !consensusLoading && !hasConsensusContent ? (
@@ -314,7 +314,7 @@ export function BestPicksResearchAlgorithmPanel({
       <div className={scrollArea}>
         {!configured && (
           <p className="text-sm text-white leading-relaxed">
-            Firebase is not configured — add keys in <code className="text-xs text-white/90">.env.local</code>.
+            Firebase is not configured — add keys in <code className="text-xs text-white/94">.env.local</code>.
           </p>
         )}
 
@@ -357,7 +357,7 @@ export function BestPicksResearchAlgorithmPanel({
                       >
                         <p className="text-sm font-medium text-white leading-snug">{row.primary}</p>
                         {row.secondary ? (
-                          <p className="text-xs text-white/90 mt-0.5 leading-snug whitespace-pre-line">
+                          <p className="text-xs text-white/94 mt-0.5 leading-snug whitespace-pre-line">
                             {row.secondary}
                           </p>
                         ) : null}

@@ -40,7 +40,7 @@ export function BestPicksSubpageShell({
               <div className={showHeaderNav ? 'mt-6' : ''}>
                 <Link
                   href="/football-predictions"
-                  className="mb-8 inline-flex items-center gap-2 text-sm text-white/80 transition-colors hover:text-white"
+                  className="mb-8 inline-flex items-center gap-2 text-sm text-white/93 transition-colors hover:text-white"
                 >
                   <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -54,7 +54,7 @@ export function BestPicksSubpageShell({
 
             <h1 className="mb-3 text-3xl font-bold md:text-4xl">{title}</h1>
             {description ? (
-              <div className="mb-8 text-sm text-white/80 leading-relaxed">{description}</div>
+              <div className="mb-8 text-sm text-white/93 leading-relaxed">{description}</div>
             ) : null}
             {hubFooter ? (
               <div className={`${bodyProse} min-h-0 flex-1`}>{children}</div>
@@ -64,11 +64,11 @@ export function BestPicksSubpageShell({
                 <div className="mt-8 w-full shrink-0">
                   <AdSenseAutoPlaceholder
                     orientation="horizontal"
-                    className="w-full min-h-[90px] !border-white/30 !bg-zinc-900/50 !text-white/70"
+                    className="w-full min-h-[90px] !border-white/30 !bg-zinc-900/50 !text-white/94"
                   />
                 </div>
                 <footer
-                  className="mt-10 shrink-0 border-t border-white/10 pt-6 text-xs text-white/75 leading-relaxed pb-[max(0.5rem,env(safe-area-inset-bottom))]"
+                  className="mt-10 shrink-0 border-t border-white/10 pt-6 text-xs text-white/91 leading-relaxed pb-[max(0.5rem,env(safe-area-inset-bottom))]"
                   role="contentinfo"
                 >
                   {footer}
@@ -84,7 +84,7 @@ export function BestPicksSubpageShell({
                 >
                   <AdSenseAutoPlaceholder
                     orientation="horizontal"
-                    className="w-full min-h-[90px] !border-white/30 !bg-zinc-900/50 !text-white/70"
+                    className="w-full min-h-[90px] !border-white/30 !bg-zinc-900/50 !text-white/94"
                   />
                 </footer>
               </>

@@ -23,7 +23,7 @@ export function ResearchAlgorithmSelectionsView() {
         <div className={BEST_PICKS_EXTENDED_SITE_NAV ? 'mt-6' : 'mt-0'}>
           <Link
             href="/football-predictions"
-            className="inline-flex items-center gap-2 text-white/80 hover:text-white transition-colors mb-8 text-sm"
+            className="inline-flex items-center gap-2 text-white/93 hover:text-white transition-colors mb-8 text-sm"
           >
             <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden>
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -33,12 +33,12 @@ export function ResearchAlgorithmSelectionsView() {
         </div>
 
         <h1 className="text-3xl md:text-4xl font-bold mb-3">{FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_TITLE}</h1>
-        <div className="text-sm text-white/80 mb-8 leading-relaxed">
-          Day <span className="tabular-nums text-amber-100/90">{dateKey}</span> in the picks calendar. Selections
+        <div className="text-sm text-white/93 mb-8 leading-relaxed">
+          Day <span className="tabular-nums text-amber-100/95">{dateKey}</span> in the picks calendar. Selections
           update when Firebase is configured. For the app overview, see{' '}
           <Link
             href="/football-predictions#how-apps-work"
-            className="text-amber-200/80 underline underline-offset-2 hover:text-amber-100/90"
+            className="text-amber-200/88 underline underline-offset-2 hover:text-amber-100/95"
           >
             How apps work
           </Link>{' '}

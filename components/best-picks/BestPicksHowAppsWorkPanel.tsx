@@ -42,7 +42,7 @@ function storeAppLink(
         </div>
       )}
       <div className="min-w-0 space-y-1.5">
-        <p className="font-semibold text-amber-100/90 text-sm sm:text-base">
+        <p className="font-semibold text-amber-100/95 text-sm sm:text-base">
           {href ? (
             <Link
               href={href}
@@ -74,7 +74,7 @@ export function BestPicksHowAppsWorkPanel() {
     >
       <div className="shrink-0 mb-2 space-y-1.5">
         <h2 className="text-lg md:text-xl font-semibold text-white">How apps work</h2>
-        <p className="text-sm text-white/88 leading-relaxed">
+        <p className="text-sm text-white/93 leading-relaxed">
           What each product does. Live apps link to the App Store; coming-soon items are described here only.
         </p>
       </div>
@@ -82,7 +82,7 @@ export function BestPicksHowAppsWorkPanel() {
       <div className={scrollArea}>
         <div className="space-y-5 pb-1">
           <div>
-            <h3 className="text-sm font-semibold text-amber-100/90 mb-2">Live on the App Store</h3>
+            <h3 className="text-sm font-semibold text-amber-100/95 mb-2">Live on the App Store</h3>
             <ul className="space-y-4 list-none pl-0">
               {storeAppLink(
                 statStrike?.appStoreUrl,
@@ -114,7 +114,7 @@ export function BestPicksHowAppsWorkPanel() {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-amber-100/90 mb-2">Coming soon</h3>
+            <h3 className="text-sm font-semibold text-amber-100/95 mb-2">Coming soon</h3>
             <ul className="space-y-4 list-none pl-0">
               <li className="list-none pl-0 [&:after]:content-[''] [&:after]:block [&:after]:clear-both">
                 <div className={iconFloatClass} aria-hidden>
@@ -127,7 +127,7 @@ export function BestPicksHowAppsWorkPanel() {
                   />
                 </div>
                 <div className="min-w-0 space-y-1">
-                  <p className="font-semibold text-amber-100/90 text-sm sm:text-base">PopGoals</p>
+                  <p className="font-semibold text-amber-100/95 text-sm sm:text-base">PopGoals</p>
                   <p className="text-xs sm:text-sm text-white/92 leading-relaxed">
                     Three golden balls every day with the top slice of Over and Under 2.5 selections. Not on the App
                     Store yet.
@@ -136,8 +136,8 @@ export function BestPicksHowAppsWorkPanel() {
               </li>
               <li className="space-y-1.5 text-xs sm:text-sm text-white/92">
                 <p>
-                  <span className="font-semibold text-amber-100/90">ProphIt </span>
-                  <span className="font-medium text-amber-200/75 text-sm normal-case">Coming Soon!</span>
+                  <span className="font-semibold text-amber-100/95">ProphIt </span>
+                  <span className="font-medium text-amber-200/86 text-sm normal-case">Coming Soon!</span>
                 </p>
                 <p>A new service! Have a theory for predicting goal band outcomes?</p>
                 <p>

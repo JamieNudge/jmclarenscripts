@@ -30,19 +30,19 @@ export function BestPicksBlogPreviewsRail() {
     >
       <div className="flex items-baseline justify-between gap-2">
         <h2 className="text-sm font-semibold text-white/95 tracking-tight">From the blog</h2>
-        <Link href="/blog" className="text-[11px] text-amber-200/85 hover:text-amber-100 underline-offset-2 shrink-0">
+        <Link href="/blog" className="text-[11px] text-amber-200/93 hover:text-amber-100 underline-offset-2 shrink-0">
           All →
         </Link>
       </div>
 
       {loading ? (
-        <p className="text-xs text-white/70">Loading…</p>
+        <p className="text-xs text-white/94">Loading…</p>
       ) : err ? (
         <p className="text-xs text-red-300/80 leading-snug" role="alert">
           {err}
         </p>
       ) : slice.length === 0 ? (
-        <p className="text-xs text-white/70 leading-snug">No published posts yet.</p>
+        <p className="text-xs text-white/94 leading-snug">No published posts yet.</p>
       ) : (
         <ul className="space-y-3">
           {slice.map((p) => (
@@ -65,9 +65,9 @@ export function BestPicksBlogPreviewsRail() {
                   {p.title}
                 </h3>
                 {p.excerpt ? (
-                  <p className="text-[11px] text-white/72 mt-1.5 leading-relaxed line-clamp-2">{clip(p.excerpt, EXCERPT_CHARS)}</p>
+                  <p className="text-[11px] text-white/92 mt-1.5 leading-relaxed line-clamp-2">{clip(p.excerpt, EXCERPT_CHARS)}</p>
                 ) : null}
-                <p className="text-[10px] text-white/60 mt-2 tabular-nums">{(p.publishedAt ?? p.updatedAt).slice(0, 10)}</p>
+                <p className="text-[10px] text-white/92 mt-2 tabular-nums">{(p.publishedAt ?? p.updatedAt).slice(0, 10)}</p>
               </Link>
             </li>
           ))}

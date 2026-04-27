@@ -17,23 +17,23 @@ export function BestPicksHubFooter() {
         ) : null}
         <AdSenseAutoPlaceholder
           orientation="horizontal"
-          className="w-full min-h-[90px] !justify-start !text-left !text-white/70 !border-white/30 !bg-zinc-950/70 px-4 py-3"
+          className="w-full min-h-[90px] !justify-start !text-left !text-white/94 !border-white/30 !bg-zinc-950/70 px-4 py-3"
         />
         <div className="flex w-full min-w-0 flex-col items-stretch gap-3 md:flex-row md:flex-wrap md:items-start md:justify-between md:gap-x-6 md:gap-y-2">
           <p
-            className="w-full min-w-0 break-words text-left text-[11px] leading-relaxed text-white/78 md:max-w-[min(100%,42rem)] md:flex-1 md:text-xs"
+            className="w-full min-w-0 break-words text-left text-[11px] leading-relaxed text-white/93 md:max-w-[min(100%,42rem)] md:flex-1 md:text-xs"
             role="note"
           >
-            <span className="font-medium text-white/90">Disclaimer.</span> Statistical views of past match patterns
-            are <span className="text-white/85">not</span> guarantees of future results. This website does not
+            <span className="font-medium text-white/94">Disclaimer.</span> Statistical views of past match patterns
+            are <span className="text-white/92">not</span> guarantees of future results. This website does not
             offer real money gambling, prizes, or simulated gambling. Content on this page is for informational
             purposes only.
           </p>
-          <p className="w-full min-w-0 break-words text-left text-[11px] leading-relaxed text-white/75 md:max-w-sm md:text-right md:text-xs">
-            <Link href="/football-predictions/privacy" className="underline hover:text-white/90 underline-offset-2">
+          <p className="w-full min-w-0 break-words text-left text-[11px] leading-relaxed text-white/91 md:max-w-sm md:text-right md:text-xs">
+            <Link href="/football-predictions/privacy" className="underline hover:text-white/94 underline-offset-2">
               Privacy policy
             </Link>
-            <span className="text-white/45"> · </span>
+            <span className="text-white/68"> · </span>
             Google ads may appear on this page; the privacy policy covers cookies and how ads work.
           </p>
         </div>

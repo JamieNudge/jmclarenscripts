@@ -59,7 +59,7 @@ export function AndAnotherThingHubPreview({ initialPosts, variant }: Props) {
         <h2 className="text-sm font-semibold text-white/95 tracking-tight line-clamp-1">{AND_ANOTHER_THING_TITLE}</h2>
         <Link
           href={AND_ANOTHER_THING_PATH}
-          className="shrink-0 text-[11px] text-amber-200/85 hover:text-amber-100 underline-offset-2"
+          className="shrink-0 text-[11px] text-amber-200/93 hover:text-amber-100 underline-offset-2"
         >
           Open
         </Link>
@@ -70,7 +70,7 @@ export function AndAnotherThingHubPreview({ initialPosts, variant }: Props) {
         }
       >
         {!latest ? (
-          <p className="text-xs text-white/60 leading-snug">No posts yet.</p>
+          <p className="text-xs text-white/92 leading-snug">No posts yet.</p>
         ) : (
           <Link
             href={AND_ANOTHER_THING_PATH}

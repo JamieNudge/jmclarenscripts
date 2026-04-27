@@ -22,7 +22,7 @@ function BestPicksProphitPanelBody({ headingLevel = 'h2' }: { headingLevel?: 'h2
         </span>
       </div>
       <div className={scrollArea}>
-        <div className="space-y-4 text-sm text-white/88 leading-relaxed pb-1">
+        <div className="space-y-4 text-sm text-white/93 leading-relaxed pb-1">
           <p>Have a theory for predicting goal band outcomes?</p>
           <p>
             This service lets you test your approach using real data, live execution, and transparent tracking
@@ -32,31 +32,31 @@ function BestPicksProphitPanelBody({ headingLevel = 'h2' }: { headingLevel?: 'h2
           <hr className={hr} />
 
           <h3 className="text-base font-semibold text-white/95">How the research service works</h3>
-          <ol className="list-decimal list-outside pl-5 space-y-4 marker:text-white/65">
+          <ol className="list-decimal list-outside pl-5 space-y-4 marker:text-white/93">
             <li>
               <span className="font-semibold text-white/92">You define your idea</span>
-              <span className="block text-white/82 mt-1 pl-0">
+              <span className="block text-white/94 mt-1 pl-0">
                 Describe your logic — from simple rules to more detailed concepts.
               </span>
             </li>
             <li>
               <span className="font-semibold text-white/92">I build your model</span>
-              <span className="block text-white/82 mt-1 pl-0">
+              <span className="block text-white/94 mt-1 pl-0">
                 Your idea is translated into a working forecasting algorithm.
               </span>
             </li>
             <li>
               <span className="font-semibold text-white/92">We run it live</span>
-              <span className="block text-white/82 mt-1 pl-0">
+              <span className="block text-white/94 mt-1 pl-0">
                 Your model is executed against real matches over a fixed research period.
               </span>
             </li>
             <li>
               <span className="font-semibold text-white/92">You track the results</span>
-              <span className="block text-white/82 mt-1 pl-0">
+              <span className="block text-white/94 mt-1 pl-0">
                 You get access to a dedicated app/dashboard showing:
               </span>
-              <ul className="list-disc list-outside pl-5 mt-2 space-y-1 text-white/85">
+              <ul className="list-disc list-outside pl-5 mt-2 space-y-1 text-white/92">
                 <li>Predictions</li>
                 <li>Results (W/L)</li>
                 <li>Performance over time</li>
@@ -67,7 +67,7 @@ function BestPicksProphitPanelBody({ headingLevel = 'h2' }: { headingLevel?: 'h2
           <hr className={hr} />
 
           <h3 className="text-base font-semibold text-white/95">What you get</h3>
-          <ul className="list-disc list-outside pl-5 space-y-2 text-white/88">
+          <ul className="list-disc list-outside pl-5 space-y-2 text-white/93">
             <li>A working version of your idea as a live model</li>
             <li>A private dashboard to track performance</li>
             <li>Real-world validation (not just backtested theory)</li>
@@ -77,8 +77,8 @@ function BestPicksProphitPanelBody({ headingLevel = 'h2' }: { headingLevel?: 'h2
           <hr className={hr} />
 
           <h3 className="text-base font-semibold text-white/95">After the research period</h3>
-          <p className="text-white/88">When the initial research period ends, you can:</p>
-          <ul className="list-disc list-outside pl-5 space-y-2 text-white/88">
+          <p className="text-white/93">When the initial research period ends, you can:</p>
+          <ul className="list-disc list-outside pl-5 space-y-2 text-white/93">
             <li>Extend testing for an additional fee, or</li>
             <li>
               Have your algorithm deployed in a dedicated app for your personal use, for a one-off fixed cost
@@ -93,7 +93,7 @@ function BestPicksProphitPanelBody({ headingLevel = 'h2' }: { headingLevel?: 'h2
           <hr className={hr} />
 
           <h3 className="text-base font-semibold text-white/95">Important</h3>
-          <ul className="list-disc list-outside pl-5 space-y-2 text-white/88">
+          <ul className="list-disc list-outside pl-5 space-y-2 text-white/93">
             <li>
               This is a <strong className="font-semibold text-white/95">research and testing service</strong>, not
               financial advice
@@ -115,11 +115,11 @@ function BestPicksProphitPanelBody({ headingLevel = 'h2' }: { headingLevel?: 'h2
           <details className="group rounded-xl border border-white/18 bg-zinc-950/80 overflow-hidden -mx-1">
             <summary className="cursor-pointer list-none flex items-center justify-between gap-3 px-3 py-3 text-sm font-semibold text-white hover:bg-white/[0.07] [&::-webkit-details-marker]:hidden">
               <span>Submit your idea</span>
-              <span className="flex items-center gap-2 text-xs font-medium text-sky-300/90 shrink-0">
+              <span className="flex items-center gap-2 text-xs font-medium text-sky-200/93 shrink-0">
                 <span className="max-sm:hidden">Click to expand</span>
                 <span className="sm:hidden">Tap to expand</span>
                 <svg
-                  className="w-4 h-4 text-white/70 transition-transform duration-200 group-open:rotate-180"
+                  className="w-4 h-4 text-white/94 transition-transform duration-200 group-open:rotate-180"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"

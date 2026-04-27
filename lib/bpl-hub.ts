@@ -5,12 +5,14 @@
 
 import {
   bplOddsPreKickClass,
+  formatKickoffFromPickRecord,
   mergeUnanimousPicksByFixtureBand,
   parseLeaguePerformanceFromSelection,
   parseUnanimousExport,
   pickDisplayTitle,
   pickHasResearchExcludedStatus,
   pickKickoffSortTimeMs,
+  pickLeagueDisplay,
   pickMergeKey,
   pickPassesBestFilter,
 } from '@/lib/best-picks-firebase';
@@ -46,6 +48,11 @@ export type BplCompactFixture = {
   title: string;
   band: string | null;
   side: 'over' | 'under';
+  /** Single-line forecast, e.g. "Over 2.5" — derived from `predictedBand` and side. */
+  forecast: string;
+  league: string | null;
+  /** Kick-off as formatted for display (typically UTC from export). */
+  kickoff: string | null;
   odds: number;
   result: 'win' | 'loss' | 'void' | 'push' | 'pending' | 'dropped' | null;
 };
@@ -132,6 +139,8 @@ export type BplHubState = {
 };
 
 const MS_48H = 48 * 60 * 60 * 1000;
+/** If export has a terminal outcome but no display status, assume FT after a normal match length. */
+const MS_2_5H = 2.5 * 60 * 60 * 1000;
 
 export function newEmptyHub(): BplHubState {
   return {
@@ -217,6 +226,22 @@ function parseGoalsLine(p: PickRecord, listSide: 'over' | 'under'): { side: 'ove
   return { side, line };
 }
 
+/** One line for the goals pick: prefer `predictedBand` text; else side + line. */
+function bplHubForecastLine(p: PickRecord, side: 'over' | 'under'): string {
+  const b = str(p.predictedBand).replace(/\s+/g, ' ').trim();
+  if (b) {
+    if (/^over[\s.]/i.test(b) || /^under[\s.]/i.test(b) || /^o\.?\d/i.test(b) || /^u\.?\d/i.test(b)) {
+      return b;
+    }
+    return `${side === 'over' ? 'Over' : 'Under'} — ${b}`;
+  }
+  const gl = parseGoalsLine(p, side);
+  if (gl) {
+    return `${side === 'over' ? 'Over' : 'Under'} ${gl.line} goals`;
+  }
+  return side === 'over' ? 'Over' : 'Under';
+}
+
 type Settle = 'win' | 'loss' | 'void' | 'push' | 'pending' | 'dropped';
 
 function pickOutcomeString(p: PickRecord): string {
@@ -226,6 +251,74 @@ function pickOutcomeString(p: PickRecord): string {
 function winProfit(p: PickRecord): number {
   const o = bookmakerOdds(p) ?? 1;
   return o - 1;
+}
+
+/**
+ * Whether the fixture is full time (or otherwise finished for settlement), using status strings and a
+ * kickoff+time fallback when the export has a terminal outcome but omitted status.
+ */
+function pickFixtureIsFullTime(p: PickRecord, now: number): boolean {
+  for (const k of ['displayStatus', 'status', 'fixtureStatus', 'matchStatus', 'matchState'] as const) {
+    const s = str(p[k]).toLowerCase();
+    if (!s) continue;
+    if (
+      /\b(ft|aet|f\/t|pen(alties)?|pens?\.?|finished|full[\s-]?time|abandon|abandoned|cancel(l)?ed|postpon|postp|walkover|awarded|awrd|\bwo\b|forfeit|after extra|after et|match end|ended)\b/.test(
+        s,
+      )
+    ) {
+      return true;
+    }
+    if (
+      /\b(live|1h|2h|h1|h2|first half|second half|halftime|half time|\bht\b|in[\s-]?play|in_play|inprogress|not started|ns\b|pre[\s-]?ko|delay|suspended|1st|2nd|int|break)\b/.test(
+        s,
+      )
+    ) {
+      return false;
+    }
+  }
+  const o = pickOutcomeString(p);
+  if (o === 'win' || o === 'loss' || o === 'void' || o === 'push') {
+    const k = pickKickoffSortTimeMs(p);
+    if (k != null && now - k > MS_2_5H) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * O/U total-goals from running score. Over can only **lose** at full time (or when still below the line, treat
+ * as **pending** in play). Under can only **win** at full time when still at or under the line; more goals
+ * can still come. Irreversible: over wins when total &gt; line; under loses when total &gt; line.
+ */
+function settleBplGoalsLineFromRunningTotal(
+  p: PickRecord,
+  gl: { side: 'over' | 'under'; line: number },
+  total: number,
+  now: number,
+): { result: Settle; profit1u: number; countsStake: boolean } {
+  const { side, line } = gl;
+  const overWins = total > line;
+  if (overWins && side === 'over') {
+    return { result: 'win', profit1u: winProfit(p), countsStake: true };
+  }
+  if (overWins && side === 'under') {
+    return { result: 'loss', profit1u: -1, countsStake: true };
+  }
+  const isFt = pickFixtureIsFullTime(p, now);
+  if (!overWins && side === 'under') {
+    if (isFt) {
+      return { result: 'win', profit1u: winProfit(p), countsStake: true };
+    }
+    return { result: 'pending', profit1u: 0, countsStake: false };
+  }
+  if (!overWins && side === 'over') {
+    if (isFt) {
+      return { result: 'loss', profit1u: -1, countsStake: true };
+    }
+    return { result: 'pending', profit1u: 0, countsStake: false };
+  }
+  return { result: 'pending', profit1u: 0, countsStake: false };
 }
 
 /**
@@ -240,35 +333,20 @@ export function evaluateBplSettle(p: PickRecord, now: number): { result: Settle;
   if (oc === 'void' || oc === 'push') {
     return { result: oc === 'push' ? 'push' : 'void', profit1u: 0, countsStake: false };
   }
+  const hs = num(p.homeScore ?? p.homeGoals);
+  const as = num(p.awayScore ?? p.awayGoals);
+  if (hs != null && as != null) {
+    const gl = parseGoalsLine(p, listSide);
+    if (gl) {
+      const total = hs + as;
+      return settleBplGoalsLineFromRunningTotal(p, gl, total, now);
+    }
+  }
   if (oc === 'win') {
     return { result: 'win', profit1u: winProfit(p), countsStake: true };
   }
   if (oc === 'loss') {
     return { result: 'loss', profit1u: -1, countsStake: true };
-  }
-  if (oc === 'pending' || !oc) {
-    const hs = num(p.homeScore ?? p.homeGoals);
-    const as = num(p.awayScore ?? p.awayGoals);
-    if (hs != null && as != null) {
-      const total = hs + as;
-      const gl = parseGoalsLine(p, listSide);
-      if (gl) {
-        const { side, line } = gl;
-        const overWins = total > line;
-        if (overWins && side === 'over') {
-          return { result: 'win', profit1u: winProfit(p), countsStake: true };
-        }
-        if (!overWins && side === 'under') {
-          return { result: 'win', profit1u: winProfit(p), countsStake: true };
-        }
-        if (overWins && side === 'under') {
-          return { result: 'loss', profit1u: -1, countsStake: true };
-        }
-        if (!overWins && side === 'over') {
-          return { result: 'loss', profit1u: -1, countsStake: true };
-        }
-      }
-    }
   }
   const k = pickKickoffSortTimeMs(p);
   if (k != null && now - k > MS_48H) {
@@ -292,6 +370,9 @@ function toCompact(p: PickRecord, dateKey: string, now: number): BplCompactFixtu
     title: pickDisplayTitle(p),
     band: str(p.predictedBand) || null,
     side,
+    forecast: bplHubForecastLine(p, side),
+    league: pickLeagueDisplay(p),
+    kickoff: formatKickoffFromPickRecord(p),
     odds,
     result,
   };
