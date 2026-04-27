@@ -5,7 +5,6 @@ import { BEST_PICKS_EXTENDED_SITE_NAV } from '@/components/best-picks/best-picks
 import { BestPicksSiteNav } from '@/components/best-picks/BestPicksSiteNav';
 import { apps } from '@/lib/apps-data';
 import {
-  AND_ANOTHER_THING_TITLE,
   FOOTBALL_PREDICTIONS_PAGE_TITLE,
   FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_PATH,
   FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_TITLE,
@@ -43,25 +42,25 @@ export function BestPicksIntro({ dateKey }: { dateKey: string }) {
             {dateKey}
           </span>
         </h1>
-        <p className="mt-2 md:mt-3 text-lg md:text-xl lg:text-2xl font-semibold text-amber-50/90 leading-snug text-pretty">
-          Daily selections based on a four-algorithm system (
-          <Link
-            href={FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_PATH}
-            className="text-amber-100/95 underline underline-offset-2 hover:text-amber-50/95 sm:whitespace-nowrap"
-          >
-            {FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_TITLE}
-          </Link>
-          ), combining different modelling approaches to identify more reliable outcomes.{' '}
-          <Link
-            href="/blog"
-            className="text-amber-100/95 underline underline-offset-2 hover:text-amber-50/95"
-          >
-            Blog posts
-          </Link>{' '}
-          go deeper on the models and the experience of using AI coding agents in their building and updating. On the
-          widest layout, {AND_ANOTHER_THING_TITLE} and blog previews sit together in a column to the right of the hub; on
-          other widths they run in the main column under the grid.
-        </p>
+        <div className="mt-2 md:mt-3 rounded-2xl border border-amber-200/20 bg-zinc-950/50 ring-1 ring-white/[0.05] px-4 py-3.5 md:px-5 md:py-4 2xl:max-w-[min(100%,calc(100%-15rem-1.25rem))]">
+          <p className="text-lg md:text-xl lg:text-2xl font-semibold text-amber-50/90 leading-snug text-pretty">
+            Daily selections based on a four-algorithm system (
+            <Link
+              href={FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_PATH}
+              className="text-amber-100/95 underline underline-offset-2 hover:text-amber-50/95 sm:whitespace-nowrap"
+            >
+              {FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_TITLE}
+            </Link>
+            ), combining different modelling approaches to identify more reliable outcomes.             Also{' '}
+            <Link
+              href="/blog"
+              className="text-amber-100/95 underline underline-offset-2 hover:text-amber-50/95"
+            >
+              Blog posts
+            </Link>{' '}
+            about the models and the experience of using AI coding agents in their building and updating.
+          </p>
+        </div>
       </div>
 
       {!BEST_PICKS_EXTENDED_SITE_NAV ? (
