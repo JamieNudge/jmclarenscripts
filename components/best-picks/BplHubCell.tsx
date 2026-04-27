@@ -109,7 +109,6 @@ export function BplHubCell({ showTodayFixtures = true }: { showTodayFixtures?: b
             'StatStrike - Best Performing - As seen in iOS app'
           )}
         </h2>
-        <p className="text-sm text-white/93 font-medium">1u Flat Stake</p>
         {data?.allTimeDateRange && (
           <p className="text-xs text-white/93 tabular-nums">
             All Time: {formatYmdForDisplay(data.allTimeDateRange.startYyyyMmDd)} –{' '}
