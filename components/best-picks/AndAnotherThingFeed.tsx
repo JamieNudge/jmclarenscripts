@@ -10,7 +10,7 @@ export function AndAnotherThingFeed() {
   const load = useCallback(async () => {
     setErr(null);
     try {
-      const res = await fetch(`/api/and-another-thing?t=${Date.now()}`, { cache: 'no-store' });
+      const res = await fetch(`/api/and-another-thing-live?v=2&t=${Date.now()}`, { cache: 'no-store' });
       const j = (await res.json()) as { posts?: AnotherThingPost[]; error?: string };
       if (!res.ok) {
         setErr(j.error || 'Could not load.');
