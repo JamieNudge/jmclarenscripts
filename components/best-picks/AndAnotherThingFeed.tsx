@@ -78,18 +78,18 @@ export function AndAnotherThingFeed({ initialPosts }: Props) {
       {posts.map((p) => (
         <li
           key={p.id}
-          className="rounded-2xl border border-zinc-600/50 bg-zinc-950/80 px-4 py-4 sm:px-5 sm:py-5"
+          className="rounded-2xl border border-zinc-200 bg-white text-zinc-900 shadow-md shadow-black/20 px-4 py-4 sm:px-5 sm:py-5"
         >
           {p.imageUrl ? (
-            <div className="mb-3 overflow-hidden rounded-xl border border-white/10">
+            <div className="mb-3 overflow-hidden rounded-xl border border-zinc-200 bg-zinc-100">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={p.imageUrl} alt="" className="w-full max-h-[min(50vh,28rem)] object-contain bg-black/40" />
+              <img src={p.imageUrl} alt="" className="w-full max-h-[min(50vh,28rem)] object-contain bg-zinc-100" />
             </div>
           ) : null}
-          <p className="text-sm sm:text-base text-white/92 leading-relaxed whitespace-pre-wrap break-words">
+          <p className="text-sm sm:text-base text-zinc-900 leading-relaxed whitespace-pre-wrap break-words">
             {p.text}
           </p>
-          <p className="mt-3 text-[11px] text-white/50 tabular-nums">
+          <p className="mt-3 text-[11px] text-zinc-500 tabular-nums">
             {new Date(p.createdAt).toLocaleString('en-GB', {
               timeZone: 'UTC',
               dateStyle: 'medium',
