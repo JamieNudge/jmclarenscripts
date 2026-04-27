@@ -2,15 +2,13 @@
 
 import type { ReactNode } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
-import { AndAnotherThingFeed } from '@/components/best-picks/AndAnotherThingFeed';
+import { AndAnotherThingHubPreview } from '@/components/best-picks/AndAnotherThingHubPreview';
 import { BestPicksBlogPreviewsRail } from '@/components/best-picks/BestPicksBlogPreviewsRail';
 import { BestPicksNewProductPanel } from '@/components/best-picks/BestPicksExtraPanels';
 import { BestPicksHowAppsWorkPanel } from '@/components/best-picks/BestPicksHowAppsWorkPanel';
 import { BestPicksVideo } from '@/components/best-picks/BestPicksVideo';
 import { bestPicksGridTileClassName } from '@/lib/best-picks-panel-shell';
 import { bestPicksPopgoalsComingSoonMeta } from '@/lib/best-picks-popgoals-coming-soon-meta';
-import { AND_ANOTHER_THING_PATH, AND_ANOTHER_THING_TITLE } from '@/lib/football-predictions-brand';
 import type { AnotherThingPost } from '@/lib/and-another-thing';
 import { isFirebaseClientConfigured } from '@/lib/firebase-client';
 
@@ -77,11 +75,11 @@ export function FirebasePicksPanels({
         </div>
       )}
       {/*
-        md: 3×2 with explicit placement — left: App / Video; centre: How apps work (row-span 2);
-        right: PopGoals (coming soon) + ProphIt in one cell (row-span 2). Row 3: And Another Thing… (full width).
-        max-md: BPL → How apps → blog → And Another Thing… → Coming soon → Video (order-*); blog hidden md+ (2xl rail).
+        md: 3×2 — left: App / Video; centre: How apps (row-span 2); right: coming-soon+ProphIt (row-span 2).
+        md to <2xl: And Another Thing… compact strip under the grid (full width); 2xl: microblog+blog in right rail only.
+        max-md: BPL → How apps → blog → AAT… → Coming soon → Video (order-*); blog hidden md+ (md rail / 2xl right column).
       */}
-      <div className="grid grid-cols-1 gap-4 max-md:[grid-template-rows:repeat(6,minmax(0,26rem))] md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.3fr)_minmax(0,1.3fr)] md:gap-5 md:[grid-template-rows:minmax(0,26rem)_minmax(0,26rem)_minmax(0,min(28rem,50vh))] [&>*]:min-h-0 [&>*]:min-w-0">
+      <div className="grid grid-cols-1 gap-4 max-md:[grid-template-rows:repeat(6,minmax(0,26rem))] md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.3fr)_minmax(0,1.3fr)] md:gap-5 md:max-2xl:[grid-template-rows:minmax(0,26rem)_minmax(0,26rem)_minmax(0,14rem)] 2xl:[grid-template-rows:minmax(0,26rem)_minmax(0,26rem)] [&>*]:min-h-0 [&>*]:min-w-0">
         <div className="min-h-0 h-full flex flex-col max-md:order-1 md:order-none md:col-start-1 md:row-start-1">
           {children}
         </div>
@@ -94,21 +92,8 @@ export function FirebasePicksPanels({
         <div className="min-h-0 min-w-0 flex max-md:order-3 max-md:max-h-[min(32rem,70vh)] max-md:overflow-y-auto md:hidden">
           <BestPicksBlogPreviewsRail />
         </div>
-        <div
-          className={`${bestPicksGridTileClassName} max-md:order-4 md:col-span-3 md:row-start-3 max-h-[min(32rem,75vh)] md:max-h-none md:min-h-0 md:h-full`}
-        >
-          <div className="flex shrink-0 items-baseline justify-between gap-2">
-            <h2 className="text-lg font-semibold text-white tracking-tight min-w-0 pr-1">{AND_ANOTHER_THING_TITLE}</h2>
-            <Link
-              href={AND_ANOTHER_THING_PATH}
-              className="shrink-0 text-[11px] text-amber-200/85 hover:text-amber-100 underline-offset-2"
-            >
-              Open page
-            </Link>
-          </div>
-          <div className="min-h-0 flex-1 overflow-y-auto pr-0.5 mt-2">
-            <AndAnotherThingFeed initialPosts={andAnotherThingInitialPosts} />
-          </div>
+        <div className="min-h-0 min-w-0 max-md:order-4 md:max-2xl:col-span-3 md:max-2xl:row-start-3 2xl:hidden">
+          <AndAnotherThingHubPreview initialPosts={andAnotherThingInitialPosts} variant="gridCompact" />
         </div>
         <div className="flex min-h-0 min-w-0 flex-col max-md:order-5 md:order-none md:col-start-3 md:row-start-1 md:row-span-2 md:h-full md:min-h-0">
           <BestPicksComingSoonAndProphitPanel />

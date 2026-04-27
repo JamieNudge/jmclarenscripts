@@ -5,6 +5,7 @@ import { BEST_PICKS_EXTENDED_SITE_NAV } from '@/components/best-picks/best-picks
 import { BestPicksSiteNav } from '@/components/best-picks/BestPicksSiteNav';
 import { apps } from '@/lib/apps-data';
 import {
+  AND_ANOTHER_THING_TITLE,
   FOOTBALL_PREDICTIONS_PAGE_TITLE,
   FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_PATH,
   FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_TITLE,
@@ -50,14 +51,16 @@ export function BestPicksIntro({ dateKey }: { dateKey: string }) {
           >
             {FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_TITLE}
           </Link>
-          ), combining different modelling approaches to identify more reliable outcomes. Also{' '}
+          ), combining different modelling approaches to identify more reliable outcomes.{' '}
           <Link
             href="/blog"
             className="text-amber-100/95 underline underline-offset-2 hover:text-amber-50/95"
           >
             Blog posts
           </Link>{' '}
-          about the models and the experience of using AI coding agents in their building and updating.
+          go deeper on the models and the experience of using AI coding agents in their building and updating. On the
+          widest layout, {AND_ANOTHER_THING_TITLE} and blog previews sit together in a column to the right of the hub; on
+          other widths they run in the main column under the grid.
         </p>
       </div>
 

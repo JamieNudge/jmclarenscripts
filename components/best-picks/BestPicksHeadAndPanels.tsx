@@ -1,6 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
+import { AndAnotherThingHubPreview } from '@/components/best-picks/AndAnotherThingHubPreview';
 import { BestPicksBlogPreviewsRail } from '@/components/best-picks/BestPicksBlogPreviewsRail';
 import { BestPicksIntro } from '@/components/best-picks/BestPicksIntro';
 import { FirebasePicksPanels } from '@/components/best-picks/FirebasePicksPanels';
@@ -29,7 +30,8 @@ export function BestPicksHeadAndPanels({
             {children}
           </FirebasePicksPanels>
         </div>
-        <div className="hidden 2xl:block w-56 shrink-0 min-w-0 min-h-0">
+        <div className="hidden 2xl:flex 2xl:flex-col 2xl:gap-4 w-56 shrink-0 min-w-0 min-h-0">
+          <AndAnotherThingHubPreview initialPosts={andAnotherThingInitialPosts} variant="sidebar" />
           <BestPicksBlogPreviewsRail />
         </div>
       </div>
