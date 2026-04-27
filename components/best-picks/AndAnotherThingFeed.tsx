@@ -10,7 +10,7 @@ export function AndAnotherThingFeed() {
   const load = useCallback(async () => {
     setErr(null);
     try {
-      const res = await fetch('/api/and-another-thing', { cache: 'no-store' });
+      const res = await fetch(`/api/and-another-thing?t=${Date.now()}`, { cache: 'no-store' });
       const j = (await res.json()) as { posts?: AnotherThingPost[]; error?: string };
       if (!res.ok) {
         setErr(j.error || 'Could not load.');
@@ -26,6 +26,14 @@ export function AndAnotherThingFeed() {
 
   useEffect(() => {
     void load();
+  }, [load]);
+
+  useEffect(() => {
+    const onVis = () => {
+      if (document.visibilityState === 'visible') void load();
+    };
+    document.addEventListener('visibilitychange', onVis);
+    return () => document.removeEventListener('visibilitychange', onVis);
   }, [load]);
 
   if (posts === null) {
