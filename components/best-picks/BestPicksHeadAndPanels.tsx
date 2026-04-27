@@ -21,8 +21,9 @@ export function BestPicksHeadAndPanels({
     <>
       <BestPicksIntro dateKey={dateKey} />
       {/*
-        At 2xl+, blog is in the same row as the 3×2 grid (not beside the full hero) so the rail tops align
-        with the grid, and the ad is flush to the right of the hub column with no dead flex-1 gap before it.
+        At 2xl+, the blog rail is in-flow so its top lines up with the main grid (and Coming Soon). And Another
+        Thing is placed above it with absolute + bottom-full so it does not push the rail down; it sits in the
+        band above the shared row (with the bordered intro to the left).
       */}
       <div className="2xl:flex 2xl:min-w-0 2xl:items-start 2xl:gap-5">
         <div className="min-w-0 w-full 2xl:flex-1 2xl:min-w-0 min-h-0">
@@ -30,8 +31,10 @@ export function BestPicksHeadAndPanels({
             {children}
           </FirebasePicksPanels>
         </div>
-        <div className="hidden 2xl:flex 2xl:flex-col 2xl:gap-4 w-56 shrink-0 min-w-0 min-h-0">
-          <AndAnotherThingHubPreview initialPosts={andAnotherThingInitialPosts} variant="sidebar" />
+        <div className="hidden 2xl:block w-56 shrink-0 min-w-0 min-h-0 relative">
+          <div className="absolute bottom-full left-0 right-0 mb-4 w-full min-w-0 z-[1]">
+            <AndAnotherThingHubPreview initialPosts={andAnotherThingInitialPosts} variant="sidebar" />
+          </div>
           <BestPicksBlogPreviewsRail />
         </div>
       </div>
