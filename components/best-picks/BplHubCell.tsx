@@ -139,25 +139,11 @@ export function BplHubCell({ showTodayFixtures = true }: { showTodayFixtures?: b
                 {allBplLines.settledLineCount === 1 ? '' : 's'} in BPL (all) ledger
               </p>
             </div>
-            <div className="space-y-0.5 pt-1 border-t border-white/10">
+            <div className="pt-1 border-t border-white/10">
               <p className="text-[10px] font-bold uppercase tracking-wide text-white/60">
                 All time · BPL, bookmaker odds on the hub (FT)
               </p>
-              <p className="text-sm tabular-nums text-white/95">
-                <span className="text-emerald-200/90">{data.allTime.wins}W</span>
-                <span className="text-white/50"> — </span>
-                <span className="text-red-200/90">{data.allTime.losses}L</span>
-                {data.allTime.voids > 0 ? (
-                  <span className="text-white/65">
-                    {' '}
-                    · {data.allTime.voids} void/push
-                  </span>
-                ) : null}
-              </p>
-              {/* FT odds ROI line hidden pending manual check; API still returns allTime.roiPercent. */}
-              <p className="text-[10px] text-white/60">
-                {data.settledPickCount} settled line{data.settledPickCount === 1 ? '' : 's'} in odds ledger
-              </p>
+              {/* W/L, ROI, and settled count hidden pending manual check; API still returns allTime + settledPickCount. */}
             </div>
             {data.allTimeWithPreKoOdds ? (
               <div className="pt-2 mt-2 border-t border-white/10 space-y-0.5">
