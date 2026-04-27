@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { bestPicksGridTileClassName } from '@/lib/best-picks-panel-shell';
+import { apps } from '@/lib/apps-data';
 import type { BplHubPublicPayload, BplCompactFixture } from '@/lib/bpl-hub';
 import { useBestPicksLondonDateKey } from '@/hooks/useBestPicksLondonDateKey';
 import { FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_PATH } from '@/lib/football-predictions-brand';
@@ -33,6 +34,7 @@ function resultLabel(r: BplCompactFixture['result']): string {
 }
 
 const todayBplFixturesHref = `${FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_PATH}#bpl-statstrike-fixtures` as const;
+const statStrikeAppStoreUrl = apps.find((a) => a.id === 'stat-strike')?.appStoreUrl;
 
 /**
  * @param showTodayFixtures - When `false` (hub home tile), all-time stats stay but the in-cell fixture list is
@@ -94,7 +96,18 @@ export function BplHubCell({ showTodayFixtures = true }: { showTodayFixtures?: b
     <div id="bpl-statstrike" className={`${bestPicksGridTileClassName} gap-3`}>
       <div className="shrink-0 space-y-1.5">
         <h2 className="text-lg md:text-xl font-semibold text-white tracking-tight">
-          StatStrike - Best Performing - As seen in iOS app
+          {statStrikeAppStoreUrl ? (
+            <a
+              href={statStrikeAppStoreUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-amber-200/93 underline underline-offset-2 hover:text-amber-100/95"
+            >
+              StatStrike - Best Performing - As seen in iOS app
+            </a>
+          ) : (
+            'StatStrike - Best Performing - As seen in iOS app'
+          )}
         </h2>
         <p className="text-sm text-white/93 font-medium">1u Flat Stake</p>
         {data?.allTimeDateRange && (

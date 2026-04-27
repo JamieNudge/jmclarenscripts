@@ -15,10 +15,14 @@ import {
   type ResearchAlgorithmPerModelStructured,
 } from '@/lib/best-picks-firebase';
 import { getFirebaseRealtimeDb, isFirebaseClientConfigured } from '@/lib/firebase-client';
+import { apps } from '@/lib/apps-data';
 import {
   FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_PATH,
   FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_TITLE,
 } from '@/lib/football-predictions-brand';
+
+const statStrikeApp = apps.find((a) => a.id === 'stat-strike');
+const STAT_STRIKE_APP_STORE_URL = statStrikeApp?.appStoreUrl;
 
 export const bestPicksResearchAlgorithmPanelTitle = FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_TITLE;
 
@@ -293,13 +297,26 @@ export function BestPicksResearchAlgorithmPanel({
             ) : null}
             {!consensusError && !consensusLoading ? (
               <p className="text-sm text-white/93 leading-snug">
+                {STAT_STRIKE_APP_STORE_URL ? (
+                  <a
+                    href={STAT_STRIKE_APP_STORE_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-amber-200/93 underline underline-offset-2 hover:text-amber-100/95"
+                  >
+                    StatStrike - Best Performing - As seen in iOS app
+                  </a>
+                ) : (
+                  <span className="text-amber-200/93">StatStrike - Best Performing - As seen in iOS app</span>
+                )}
+                <span className="text-white/92"> — </span>
                 <Link
                   href={`${FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_PATH}#bpl-statstrike-fixtures`}
-                  className="text-amber-200/93 underline underline-offset-2 hover:text-amber-100/95"
+                  className="text-amber-200/88 underline underline-offset-2 hover:text-amber-100/95"
                 >
-                  StatStrike - Best Performing - As seen in iOS app
+                  Best Performing BPL lines
                 </Link>
-                <span className="text-white/92"> — Best Performing BPL lines in the hub fixture list.</span>
+                <span className="text-white/92"> in the hub fixture list.</span>
               </p>
             ) : null}
             {!consensusError && !consensusLoading && !hasConsensusContent ? (
