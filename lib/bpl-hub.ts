@@ -53,7 +53,8 @@ export type BplCompactFixture = {
   league: string | null;
   /** Kick-off as formatted for display (typically UTC from export). */
   kickoff: string | null;
-  odds: number;
+  /** Decimal odds when stored on the row; `null` if no on-file bookmaker odds. */
+  odds: number | null;
   result: 'win' | 'loss' | 'void' | 'push' | 'pending' | 'dropped' | null;
 };
 
@@ -356,7 +357,7 @@ export function evaluateBplSettle(p: PickRecord, now: number): { result: Settle;
 }
 
 function toCompact(p: PickRecord, dateKey: string, now: number): BplCompactFixture {
-  const odds = bookmakerOdds(p) ?? 0;
+  const odds = bookmakerOdds(p);
   const ev = evaluateBplSettle(p, now);
   const side = inferListSideFromBand(p);
   let result: BplCompactFixture['result'] = null;
@@ -382,7 +383,7 @@ export type BplDisplayDay = {
   fixtures: BplCompactFixture[];
   /** Merged BPL (best-performing) lines for the day, including those without bookmaker odds on the row. */
   bestPerformingFixtureCount: number;
-  /** Merged BPL lines that also have bookmaker odds (same list as `fixtures` when non-empty). */
+  /** How many of that day’s BPL lines have bookmaker odds on the row (subset of `fixtures`). */
   withBookmakerOddsFixtureCount: number;
 };
 
@@ -396,20 +397,19 @@ export function getBplDisplayRows(
   const leagueWinRates = parseLeaguePerformanceFromSelection(selectionVal);
   const all: PickRecord[] = [...over, ...under];
   const best = all.filter((p) => pickPassesBestFilter(p, leagueWinRates));
-  const withOdds = best.filter((p) => bookmakerOdds(p) != null);
   const mergedBest = mergeUnanimousPicksByFixtureBand(best);
-  if (withOdds.length === 0) {
+  if (mergedBest.length === 0) {
     return {
       fixtures: [],
-      bestPerformingFixtureCount: mergedBest.length,
+      bestPerformingFixtureCount: 0,
       withBookmakerOddsFixtureCount: 0,
     };
   }
-  const merged = mergeUnanimousPicksByFixtureBand(withOdds);
+  const withBookmakerOddsFixtureCount = mergedBest.filter((p) => bookmakerOdds(p) != null).length;
   return {
-    fixtures: merged.map((p) => toCompact(p, dateKey, now)),
+    fixtures: mergedBest.map((p) => toCompact(p, dateKey, now)),
     bestPerformingFixtureCount: mergedBest.length,
-    withBookmakerOddsFixtureCount: merged.length,
+    withBookmakerOddsFixtureCount,
   };
 }
 

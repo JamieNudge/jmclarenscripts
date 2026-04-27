@@ -29,7 +29,7 @@ function resultLabel(r: BplCompactFixture['result']): string {
   if (r === 'void') return 'Void';
   if (r === 'push') return 'Push';
   if (r === 'dropped') return '—';
-  if (r === 'pending') return 'Live';
+  if (r === 'pending') return 'Pending';
   return '—';
 }
 
@@ -190,14 +190,14 @@ export function BplHubCell({ showTodayFixtures = true }: { showTodayFixtures?: b
               <p className="text-[10px] text-white/92 mb-2">
                 {data.current.bestPerformingFixtureCount} best (BPL) line
                 {data.current.bestPerformingFixtureCount === 1 ? '' : 's'}
-                {data.current.bestPerformingFixtureCount !== data.current.withBookmakerOddsFixtureCount
+                {data.current.withBookmakerOddsFixtureCount < data.current.bestPerformingFixtureCount
                   ? ` · ${data.current.withBookmakerOddsFixtureCount} with bookmaker odds on the hub`
                   : data.current.withBookmakerOddsFixtureCount > 0
-                    ? ' · all with bookmaker odds on the hub'
-                    : ''}
+                    ? ' · all lines include bookmaker odds on the hub'
+                    : ' · no bookmaker odds on the hub for these lines yet'}
               </p>
               {data.current.fixtures.length === 0 ? (
-                <p className="text-sm text-white/94">No BPL lines with bookmaker odds for this date (or not uploaded yet).</p>
+                <p className="text-sm text-white/94">No BPL lines for this date (or not uploaded yet).</p>
               ) : (
                 <ul className="space-y-2 pb-1">
                   {data.current.fixtures.map((f) => (
@@ -222,7 +222,15 @@ export function BplHubCell({ showTodayFixtures = true }: { showTodayFixtures?: b
                         ) : null}
                       </div>
                       <div className="shrink-0 flex flex-col items-end gap-0.5">
-                        <span className="text-xs tabular-nums text-amber-100/95">@{f.odds.toFixed(2)}</span>
+                        <span
+                          className={
+                            f.odds != null
+                              ? 'text-xs tabular-nums text-amber-100/95'
+                              : 'text-[10px] font-medium text-white/78 tabular-nums'
+                          }
+                        >
+                          {f.odds != null ? `@${f.odds.toFixed(2)}` : '—'}
+                        </span>
                         {f.result != null && (
                           <span
                             className={`text-[9px] font-bold px-1.5 py-0.5 rounded border ${resultPillClass(f.result)}`}
