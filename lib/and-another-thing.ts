@@ -66,6 +66,20 @@ export function parsePostsMap(val: unknown): AnotherThingPost[] {
   return out.sort((a, b) => (a.createdAt < b.createdAt ? 1 : a.createdAt > b.createdAt ? -1 : 0));
 }
 
+/** Merge two lists (e.g. SSR + client); same id → keep the row with the lexicographically later createdAt. */
+export function mergeAnotherThingPostLists(
+  a: AnotherThingPost[],
+  b: AnotherThingPost[],
+): AnotherThingPost[] {
+  const m = new Map<string, AnotherThingPost>();
+  for (const p of a) m.set(p.id, p);
+  for (const p of b) {
+    const o = m.get(p.id);
+    if (!o || p.createdAt > o.createdAt) m.set(p.id, p);
+  }
+  return Array.from(m.values()).sort((x, y) => (x.createdAt < y.createdAt ? 1 : x.createdAt > y.createdAt ? -1 : 0));
+}
+
 export function normalizeNewPost(
   body: Record<string, unknown>,
   id: string,

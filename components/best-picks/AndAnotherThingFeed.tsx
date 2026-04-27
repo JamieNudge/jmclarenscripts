@@ -1,13 +1,12 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import type { AnotherThingPost } from '@/lib/and-another-thing';
+import { mergeAnotherThingPostLists, type AnotherThingPost } from '@/lib/and-another-thing';
 
 type Props = {
   /**
    * When set (e.g. from a Server Component), first paint comes from RTDB on the server.
-   * We skip the initial client `fetch` so a cached/stale **API** response cannot overwrite good data.
-   * Refetch still runs when the tab becomes visible.
+   * Client loads merge with SSR (union by id) so a stale RSC or API body cannot drop newer rows.
    */
   initialPosts?: AnotherThingPost[];
 };
@@ -25,21 +24,24 @@ export function AndAnotherThingFeed({ initialPosts }: Props) {
       const j = (await res.json()) as { posts?: AnotherThingPost[]; error?: string };
       if (!res.ok) {
         setErr(j.error || 'Could not load.');
-        setPosts((prev) => (prev && prev.length > 0 ? prev : []));
+        setPosts((prev) => (prev && prev.length > 0 ? prev : (initialPosts ?? [])));
         return;
       }
-      setPosts(j.posts ?? []);
+      setPosts((prev) =>
+        mergeAnotherThingPostLists(
+          prev != null && prev.length > 0 ? prev : (initialPosts ?? []),
+          j.posts ?? [],
+        ),
+      );
     } catch (e) {
       setErr(e instanceof Error ? e.message : 'Could not load.');
-      setPosts((prev) => (prev && prev.length > 0 ? prev : []));
+      setPosts((prev) => (prev && prev.length > 0 ? prev : (initialPosts ?? [])));
     }
-  }, []);
+  }, [initialPosts]);
 
   useEffect(() => {
-    if (initialPosts === undefined) {
-      void load();
-    }
-  }, [initialPosts, load]);
+    void load();
+  }, [load]);
 
   useEffect(() => {
     const onVis = () => {

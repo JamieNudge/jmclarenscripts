@@ -1,4 +1,5 @@
 import { randomUUID } from 'crypto';
+import { revalidatePath } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
 import { getDatabase } from 'firebase-admin/database';
 import { isManualPicksAdminAuthorized } from '@/lib/admin-manual-picks-auth';
@@ -37,6 +38,11 @@ export async function GET(req: NextRequest) {
       { status: 500 },
     );
   }
+}
+
+function revalidateAndAnotherThingPages() {
+  revalidatePath('/football-predictions');
+  revalidatePath('/football-predictions/and-another-thing');
 }
 
 function isAnotherThingPost(val: unknown): val is AnotherThingPost {
@@ -81,6 +87,7 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: n.error }, { status: 400 });
     }
     await postRef.set(n.post);
+    revalidateAndAnotherThingPages();
     return NextResponse.json({ ok: true, post: n.post });
   } catch (e) {
     return NextResponse.json(
@@ -111,6 +118,7 @@ export async function POST(req: NextRequest) {
     const app = getFirebaseAdminApp();
     const ref = getDatabase(app).ref(`${andAnotherThingPostsPath()}/${id}`);
     await ref.set(n.post);
+    revalidateAndAnotherThingPages();
     return NextResponse.json({ ok: true, post: n.post });
   } catch (e) {
     return NextResponse.json(
@@ -133,6 +141,7 @@ export async function DELETE(req: NextRequest) {
     const app = getFirebaseAdminApp();
     const ref = getDatabase(app).ref(`${andAnotherThingPostsPath()}/${id}`);
     await ref.remove();
+    revalidateAndAnotherThingPages();
     return NextResponse.json({ ok: true });
   } catch (e) {
     return NextResponse.json(
