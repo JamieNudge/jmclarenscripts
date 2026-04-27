@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getDatabase } from 'firebase-admin/database';
 import {
   applyReconciliationForDate,
@@ -15,11 +15,21 @@ import {
 import { getFirebaseAdminApp } from '@/lib/firebase-admin';
 import { picksDateStringInTimeZone, picksTimeZoneFromEnv, statStrikeRtdbPathsFromEnv } from '@/lib/best-picks-firebase';
 
+export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-const CACHE_HEADER = 'public, s-maxage=300, stale-while-revalidate=900';
+/** When `?day` matches server London date key, CDN caches per day (no cross-midnight mix-up). */
+const CACHE_HEADER_DAY_KEYED = 'public, s-maxage=86400, stale-while-revalidate=3600';
 
 const MAX_RECONCILE_PAST_DAYS = 3;
+
+function cacheControlForDayQuery(dayParam: string | null, currentKey: string): string {
+  const d = dayParam?.trim();
+  if (d && d === currentKey) {
+    return CACHE_HEADER_DAY_KEYED;
+  }
+  return 'no-store';
+}
 
 function adminOrNull() {
   try {
@@ -53,7 +63,7 @@ function misconfiguredResponse() {
   );
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const a = adminOrNull();
   if (!a) {
     return misconfiguredResponse();
@@ -62,6 +72,8 @@ export async function GET() {
   const tz = picksTimeZoneFromEnv();
   const now = Date.now();
   const currentKey = picksDateStringInTimeZone(tz, new Date());
+  const dayParam = req.nextUrl.searchParams.get('day');
+  const cacheControl = cacheControlForDayQuery(dayParam, currentKey);
   const previousKey = previousDateKeyFrom(currentKey);
   const hubPath = bplHubRtdbPath();
 
@@ -125,5 +137,5 @@ export async function GET() {
   }
 
   const payload = buildBplHubPublicPayload(updated, now, currentKey, previousKey, currentDay, previousDay);
-  return NextResponse.json(payload, { headers: { 'Cache-Control': CACHE_HEADER } });
+  return NextResponse.json(payload, { headers: { 'Cache-Control': cacheControl } });
 }

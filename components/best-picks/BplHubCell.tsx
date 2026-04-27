@@ -51,10 +51,10 @@ export function BplHubCell({ showTodayFixtures = true }: { showTodayFixtures?: b
       setLoading(true);
       setErr(null);
       try {
-        const res = await fetch('/api/football-predictions/bpl-payload', {
-          method: 'GET',
-          cache: 'no-store',
-        });
+        const res = await fetch(
+          `/api/football-predictions/bpl-payload?${new URLSearchParams({ day: londonDateKey })}`,
+          { method: 'GET' },
+        );
         if (!res.ok) {
           setErr('Could not load BPL panel.');
           setData(null);
