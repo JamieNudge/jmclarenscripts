@@ -154,12 +154,7 @@ export function BplHubCell({ showTodayFixtures = true }: { showTodayFixtures?: b
                   </span>
                 ) : null}
               </p>
-              <p className="text-lg font-semibold text-amber-100/95 tabular-nums">
-                ROI{' '}
-                {data.allTime.roiPercent == null
-                  ? '—'
-                  : `${data.allTime.roiPercent >= 0 ? '+' : ''}${data.allTime.roiPercent.toFixed(1)}%`}
-              </p>
+              {/* FT odds ROI line hidden pending manual check; API still returns allTime.roiPercent. */}
               <p className="text-[10px] text-white/60">
                 {data.settledPickCount} settled line{data.settledPickCount === 1 ? '' : 's'} in odds ledger
               </p>
