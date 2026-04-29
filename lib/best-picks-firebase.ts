@@ -226,6 +226,26 @@ function formatKickoffUtc(ms: number): string {
   return `${dd}/${mm}/${yyyy} ${hh}:${min} UTC`;
 }
 
+/** Same date/time pattern as {@link formatKickoffUtc} but in a wall-clock zone, with short zone name (e.g. GMT / BST). */
+function formatKickoffWallWithZoneName(ms: number, timeZone: string): string {
+  const d = new Date(ms);
+  if (Number.isNaN(d.getTime())) return '';
+  const dmy = new Intl.DateTimeFormat('en-GB', { timeZone, day: '2-digit', month: '2-digit', year: 'numeric' }).format(d);
+  const hm = new Intl.DateTimeFormat('en-GB', { timeZone, hour: '2-digit', minute: '2-digit', hour12: false }).format(d);
+  const parts = new Intl.DateTimeFormat('en-GB', { timeZone, timeZoneName: 'short' }).formatToParts(d);
+  const zName = parts.find((p) => p.type === 'timeZoneName')?.value?.trim() || '';
+  return zName ? `${dmy} ${hm} ${zName}` : `${dmy} ${hm}`;
+}
+
+/** e.g. `29/04/2026 01:00 BST (29/04/2026 00:00 UTC)` for UK visitors plus a conversion anchor. */
+function formatKickoffUkAndUtc(ms: number, ukTimeZone: string): string {
+  const uk = formatKickoffWallWithZoneName(ms, ukTimeZone);
+  const utc = formatKickoffUtc(ms);
+  if (!utc) return '';
+  if (!uk) return utc;
+  return `${uk} (${utc})`;
+}
+
 function formatKickoffField(v: unknown): string | null {
   if (v == null) return null;
   if (typeof v === 'number' && Number.isFinite(v)) {
@@ -426,6 +446,25 @@ export function formatKickoffFromPickRecord(p: PickRecord): string | null {
     const ms = timeUnknownToSortMs(v);
     if (ms != null) {
       const s = formatKickoffUtc(ms);
+      if (s) return s;
+    }
+    const legacy = formatKickoffField(v);
+    if (legacy) return legacy;
+  }
+  return null;
+}
+
+/**
+ * Per-model / research card subtitle: when we have a real instant, show UK (London) wall clock + short zone
+ * name and the UTC time in parentheses; otherwise same fallbacks as {@link formatKickoffFromPickRecord}.
+ */
+function formatKickoffFromPickRecordUkAndUtc(p: PickRecord): string | null {
+  for (const k of KICKOFF_SORT_FIELD_KEYS) {
+    const v = p[k];
+    if (isEmptyKickoffSlot(v)) continue;
+    const ms = timeUnknownToSortMs(v);
+    if (ms != null) {
+      const s = formatKickoffUkAndUtc(ms, picksDateTimeZoneId());
       if (s) return s;
     }
     const legacy = formatKickoffField(v);
@@ -1124,7 +1163,7 @@ function buildPerModelStructuredFromPick(p: PickRecord): ResearchAlgorithmPerMod
   const fixtureLine = `${teams.home} v ${teams.away}`;
   const country = pickPrimitiveText(p.country);
   const league = pickPrimitiveText(p.league);
-  const kick = formatKickoffFromPickRecord(p);
+  const kick = formatKickoffFromPickRecordUkAndUtc(p);
   const metaLine = [country, league, kick].filter(Boolean).join(' · ') || null;
 
   const bandRaw = pickPrimitiveText(p.predictedBand);
@@ -1172,7 +1211,7 @@ function buildPerModelStructuredFromGroup(grp: PickRecord): ResearchAlgorithmPer
   const fixtureLine = `${teams.home} v ${teams.away}`;
   const country = pickPrimitiveText(grp.country);
   const league = pickPrimitiveText(grp.league);
-  const kick = formatKickoffFromPickRecord(grp);
+  const kick = formatKickoffFromPickRecordUkAndUtc(grp);
   const metaLine = [country, league, kick].filter(Boolean).join(' · ') || null;
 
   const bandRaw = pickPrimitiveText(grp.predictedBand);
