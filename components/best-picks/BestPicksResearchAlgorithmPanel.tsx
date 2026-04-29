@@ -59,8 +59,8 @@ function ConsensusPickRow({ pick }: { pick: DailyConsensusPickParsed }) {
       ? `${pick.homeScore}-${pick.awayScore}`
       : null;
 
-  const venue = [pick.country?.trim(), pick.league?.trim()].filter(Boolean).join(' · ');
-  const metaLine = [venue, pick.kickoff?.trim()].filter(Boolean).join(' · ');
+  const venueLine = [pick.country?.trim(), pick.league?.trim()].filter(Boolean).join(' · ');
+  const kickoffLine = pick.kickoff?.trim() || null;
 
   return (
     <li className="rounded-xl border border-white/15 bg-white/[0.06] px-3 py-2.5 shrink-0">
@@ -72,8 +72,9 @@ function ConsensusPickRow({ pick }: { pick: DailyConsensusPickParsed }) {
             <span className="text-white/93 font-normal mx-1">v</span>
             {pick.away}
           </p>
-          {metaLine ? (
-            <p className="text-xs text-white/94 mt-1.5 leading-relaxed text-pretty">{metaLine}</p>
+          {venueLine ? <p className="text-xs text-white/94 mt-1.5 leading-relaxed text-pretty">{venueLine}</p> : null}
+          {kickoffLine ? (
+            <p className="text-xs text-white/94 leading-relaxed text-pretty">{kickoffLine}</p>
           ) : null}
         </div>
         <div className="flex w-full min-w-0 flex-row flex-wrap items-center gap-1.5">

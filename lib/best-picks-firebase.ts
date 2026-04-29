@@ -552,6 +552,16 @@ function tryConsensusMergedDateTime(p: PickRecord): string | null {
 /**
  * Best-effort datetime line for daily consensus cards (extra keys + merged date/time + calendar fallback).
  */
+const DAILY_CONSENSUS_EXPORT_KICKOFF_RE = /^\d{1,2}:\d{2}\s+KO\s+UK\s+[A-Z]{2,5}\s+\(\d{1,2}:\d{2}\s+UTC\)$/i;
+
+/** Accept both legacy kickoff strings and AMBF's newer export kickoff line with UK/UTC context. */
+function normalizeConsensusKickoffDisplay(raw: unknown): string {
+  const tail = str(raw).replace(/\s+/g, ' ').trim();
+  if (!tail) return '';
+  if (DAILY_CONSENSUS_EXPORT_KICKOFF_RE.test(tail)) return tail;
+  return tail;
+}
+
 function formatKickoffFromConsensusPick(p: PickRecord, calendarDateKey?: string): string {
   const merged = tryConsensusMergedDateTime(p);
   if (merged) return merged;
@@ -581,7 +591,7 @@ function formatKickoffFromConsensusPick(p: PickRecord, calendarDateKey?: string)
     return raw;
   }
 
-  const tail = str(p.kickoff).trim();
+  const tail = normalizeConsensusKickoffDisplay(p.kickoff);
   if (tail) return tail;
 
   const cal = calendarDateKey?.trim();
