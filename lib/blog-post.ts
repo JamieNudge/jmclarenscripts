@@ -8,9 +8,13 @@
  * "blogPosts": {
  *   ".read": true,
  *   ".write": false
+ * },
+ * "blogCategories": {
+ *   ".read": true,
+ *   ".write": false
  * }
  * ```
- * All writes go through Admin SDK (`/api/admin/blog-posts`). Public site reads with the client SDK.
+ * All writes go through Admin SDK (`/api/admin/blog-posts`, `/api/admin/blog-categories`). Public site reads with the client SDK.
  *
  * **Storage** (for `blog/**` uploads from `/api/admin/blog-media`):
  * ```
@@ -47,6 +51,8 @@ export type BlogPostRecord = {
   updatedAt: string;
   headerImageUrl: string | null;
   bodyMarkdown: string;
+  /** RTDB `blogCategories/{slug}` key; null = uncategorized. */
+  categorySlug: string | null;
 };
 
 export function isValidBlogSlug(slug: string): boolean {
@@ -104,6 +110,22 @@ export function normalizeBlogPostInput(
     publishedAt = publishedAt ?? null;
   }
 
+  let categorySlug: string | null;
+  if (Object.prototype.hasOwnProperty.call(body, 'categorySlug')) {
+    const raw = body.categorySlug;
+    if (raw === null || raw === '') {
+      categorySlug = null;
+    } else if (typeof raw === 'string') {
+      const n = normalizeBlogSlug(raw.trim());
+      if (!n) return { ok: false, error: 'Invalid category slug (lowercase letters, numbers, hyphens only).' };
+      categorySlug = n;
+    } else {
+      return { ok: false, error: 'Invalid category slug.' };
+    }
+  } else {
+    categorySlug = existing?.categorySlug ?? null;
+  }
+
   const post: BlogPostRecord = {
     slug,
     title,
@@ -113,6 +135,7 @@ export function normalizeBlogPostInput(
     updatedAt: nowIso,
     headerImageUrl,
     bodyMarkdown,
+    categorySlug,
   };
   return { ok: true, post };
 }
@@ -133,6 +156,11 @@ export function parseBlogPostFromRtdb(val: unknown): BlogPostRecord | null {
     o.headerImageUrl == null || o.headerImageUrl === ''
       ? null
       : trimStr(o.headerImageUrl, MAX_URL) || null;
+  let categorySlug: string | null = null;
+  if (typeof o.categorySlug === 'string' && o.categorySlug.trim()) {
+    const cs = normalizeBlogSlug(o.categorySlug.trim());
+    if (cs) categorySlug = cs;
+  }
   return {
     slug,
     title,
@@ -142,5 +170,6 @@ export function parseBlogPostFromRtdb(val: unknown): BlogPostRecord | null {
     updatedAt,
     headerImageUrl,
     bodyMarkdown,
+    categorySlug,
   };
 }

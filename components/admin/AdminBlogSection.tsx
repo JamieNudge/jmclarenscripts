@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import type { BlogCategoryRecord } from '@/lib/blog-category';
 import type { BlogPostRecord } from '@/lib/blog-post';
 import { blogMarkdownComposerFontFamily } from '@/lib/fonts';
 import { suggestBlogExcerptFromMarkdown } from '@/lib/suggest-blog-excerpt';
@@ -36,6 +37,11 @@ function countWords(s: string): number {
 
 export function AdminBlogSection({ adminKey }: Props) {
   const [posts, setPosts] = useState<BlogPostRecord[]>([]);
+  const [categories, setCategories] = useState<BlogCategoryRecord[]>([]);
+  const [editBySlug, setEditBySlug] = useState<Record<string, { label: string; sortOrder: string }>>({});
+  const [newCatLabel, setNewCatLabel] = useState('');
+  const [newCatSlug, setNewCatSlug] = useState('');
+  const [newCatSort, setNewCatSort] = useState('');
   const [blogStatus, setBlogStatus] = useState<string | null>(null);
   const [blogLoading, setBlogLoading] = useState(false);
   const [editingSlug, setEditingSlug] = useState<string | null>(null);
@@ -46,6 +52,8 @@ export function AdminBlogSection({ adminKey }: Props) {
   const [published, setPublished] = useState(false);
   const [headerImageUrl, setHeaderImageUrl] = useState('');
   const [bodyMarkdown, setBodyMarkdown] = useState('');
+  /** '' = none; '__new__' = show create panel; else category slug */
+  const [postCategorySelect, setPostCategorySelect] = useState('');
   const bodyRef = useRef<HTMLTextAreaElement>(null);
   /** Latest body for async handlers (e.g. image upload) and undo/redo. */
   const bodyMarkdownRef = useRef(bodyMarkdown);
@@ -113,9 +121,34 @@ export function AdminBlogSection({ adminKey }: Props) {
     }
   }, [adminKey, canUse]);
 
+  const loadCategories = useCallback(async () => {
+    if (!canUse) return;
+    try {
+      const res = await fetch('/api/admin/blog-categories', { headers: authHeader(adminKey) });
+      const json = (await res.json()) as { categories?: BlogCategoryRecord[]; error?: string };
+      if (!res.ok) {
+        setBlogStatus(json.error || res.statusText);
+        return;
+      }
+      const list = json.categories ?? [];
+      setCategories(list);
+      const m: Record<string, { label: string; sortOrder: string }> = {};
+      for (const c of list) {
+        m[c.slug] = { label: c.label, sortOrder: String(c.sortOrder) };
+      }
+      setEditBySlug(m);
+    } catch (e) {
+      setBlogStatus(e instanceof Error ? e.message : 'Categories load failed');
+    }
+  }, [adminKey, canUse]);
+
   useEffect(() => {
     if (canUse) void loadList();
   }, [canUse, loadList]);
+
+  useEffect(() => {
+    if (canUse) void loadCategories();
+  }, [canUse, loadCategories]);
 
   const resetForm = () => {
     setEditingSlug(null);
@@ -125,6 +158,7 @@ export function AdminBlogSection({ adminKey }: Props) {
     setPublished(false);
     setHeaderImageUrl('');
     setBodyMarkdown('');
+    setPostCategorySelect('');
     clearBodyHistory();
   };
 
@@ -153,6 +187,7 @@ export function AdminBlogSection({ adminKey }: Props) {
       setPublished(p.published);
       setHeaderImageUrl(p.headerImageUrl ?? '');
       setBodyMarkdown(p.bodyMarkdown);
+      setPostCategorySelect(p.categorySlug ?? '');
       clearBodyHistory();
       setBlogStatus(`Editing “${p.title}”.`);
     } catch (e) {
@@ -176,6 +211,10 @@ export function AdminBlogSection({ adminKey }: Props) {
       setBlogStatus('Title is required.');
       return;
     }
+    if (postCategorySelect === '__new__') {
+      setBlogStatus('Finish creating the new category below, or pick an existing category.');
+      return;
+    }
 
     setBlogLoading(true);
     setBlogStatus(null);
@@ -187,6 +226,7 @@ export function AdminBlogSection({ adminKey }: Props) {
         published,
         headerImageUrl: headerImageUrl.trim() || null,
         bodyMarkdown,
+        categorySlug: postCategorySelect.trim() ? postCategorySelect.trim() : null,
       };
 
       const isUpdate = editingSlug != null;
@@ -235,6 +275,104 @@ export function AdminBlogSection({ adminKey }: Props) {
       await loadList();
     } catch (e) {
       setBlogStatus(e instanceof Error ? e.message : 'Delete failed');
+    } finally {
+      setBlogLoading(false);
+    }
+  };
+
+  const createCategoryFromPanel = async () => {
+    if (!canUse) return;
+    const label = newCatLabel.trim();
+    if (!label) {
+      setBlogStatus('Category label is required.');
+      return;
+    }
+    setBlogLoading(true);
+    setBlogStatus(null);
+    try {
+      const body: Record<string, unknown> = { label };
+      if (newCatSort.trim() !== '' && !Number.isNaN(Number.parseInt(newCatSort, 10))) {
+        body.sortOrder = Number.parseInt(newCatSort, 10);
+      }
+      if (newCatSlug.trim()) {
+        body.slug = newCatSlug.trim().toLowerCase();
+      }
+      const res = await fetch('/api/admin/blog-categories', {
+        method: 'POST',
+        headers: { ...authHeader(adminKey), 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      const json = (await res.json()) as { category?: BlogCategoryRecord; error?: string };
+      if (!res.ok) {
+        setBlogStatus(json.error || res.statusText);
+        return;
+      }
+      const slugNew = json.category?.slug;
+      setNewCatLabel('');
+      setNewCatSlug('');
+      setNewCatSort('');
+      await loadCategories();
+      if (slugNew) {
+        setPostCategorySelect(slugNew);
+      }
+      setBlogStatus(`Category created${slugNew ? ` — ${slugNew}` : ''}.`);
+    } catch (e) {
+      setBlogStatus(e instanceof Error ? e.message : 'Create category failed');
+    } finally {
+      setBlogLoading(false);
+    }
+  };
+
+  const updateCategoryRow = async (slug: string) => {
+    if (!canUse) return;
+    const ed = editBySlug[slug];
+    if (!ed) return;
+    setBlogLoading(true);
+    setBlogStatus(null);
+    try {
+      const sortOrder = Number.parseInt(ed.sortOrder, 10);
+      const res = await fetch(`/api/admin/blog-categories?slug=${encodeURIComponent(slug)}`, {
+        method: 'PATCH',
+        headers: { ...authHeader(adminKey), 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          label: ed.label.trim(),
+          sortOrder: Number.isFinite(sortOrder) ? sortOrder : 0,
+        }),
+      });
+      const json = (await res.json()) as { error?: string };
+      if (!res.ok) {
+        setBlogStatus(json.error || res.statusText);
+        return;
+      }
+      await loadCategories();
+      setBlogStatus(`Updated category “${slug}”.`);
+    } catch (e) {
+      setBlogStatus(e instanceof Error ? e.message : 'Update category failed');
+    } finally {
+      setBlogLoading(false);
+    }
+  };
+
+  const deleteCategoryRow = async (slug: string) => {
+    if (!canUse) return;
+    if (!confirm(`Delete category “${slug}”? Posts must not use it.`)) return;
+    setBlogLoading(true);
+    setBlogStatus(null);
+    try {
+      const res = await fetch(`/api/admin/blog-categories?slug=${encodeURIComponent(slug)}`, {
+        method: 'DELETE',
+        headers: authHeader(adminKey),
+      });
+      const json = (await res.json()) as { error?: string };
+      if (!res.ok) {
+        setBlogStatus(json.error || res.statusText);
+        return;
+      }
+      if (postCategorySelect === slug) setPostCategorySelect('');
+      await loadCategories();
+      setBlogStatus('Category deleted.');
+    } catch (e) {
+      setBlogStatus(e instanceof Error ? e.message : 'Delete category failed');
     } finally {
       setBlogLoading(false);
     }
@@ -325,6 +463,13 @@ export function AdminBlogSection({ adminKey }: Props) {
     input.click();
   };
 
+  const orphanCategorySlug =
+    postCategorySelect &&
+    postCategorySelect !== '__new__' &&
+    !categories.some((c) => c.slug === postCategorySelect)
+      ? postCategorySelect
+      : null;
+
   return (
     <section className="rounded-2xl border border-white/15 bg-white/5 p-6 space-y-4">
       <h2 className="text-lg font-semibold">5. Blog posts</h2>
@@ -335,6 +480,116 @@ export function AdminBlogSection({ adminKey }: Props) {
         &quot;Upload image&quot; button opens your OS file dialog — it may <strong className="text-white/60">not</strong>{' '}
         list files in the same order as Finder; drag-and-drop from Finder (below) avoids that.
       </p>
+
+      <div className="rounded-xl border border-white/10 bg-black/20 p-4 space-y-3">
+        <h3 className="text-sm font-semibold text-white/90">Blog categories</h3>
+        <p className="text-[11px] text-white/45 leading-relaxed">
+          Stored in Realtime Database at <code className="text-white/60">blogCategories</code>. Lower{' '}
+          <code className="text-white/60">sort order</code> values appear first when grouping the site. See{' '}
+          <code className="text-white/60">lib/blog-category.ts</code> for suggested Firebase rules.
+        </p>
+        <button
+          type="button"
+          disabled={!canUse || blogLoading}
+          onClick={() => void loadCategories()}
+          className="rounded-lg bg-white/12 hover:bg-white/20 px-3 py-1.5 text-xs font-medium disabled:opacity-50"
+        >
+          Refresh categories
+        </button>
+        {categories.length > 0 ? (
+          <ul className="space-y-2 text-sm max-h-56 overflow-y-auto">
+            {categories.map((c) => (
+              <li
+                key={c.slug}
+                className="flex flex-col gap-2 rounded-lg border border-white/10 bg-black/30 p-2 sm:flex-row sm:flex-wrap sm:items-end"
+              >
+                <code className="text-xs text-white/45 shrink-0 self-start pt-2 sm:pt-0">{c.slug}</code>
+                <input
+                  className={`${inputCls} flex-1 min-w-[8rem]`}
+                  aria-label={`Label for ${c.slug}`}
+                  value={editBySlug[c.slug]?.label ?? c.label}
+                  onChange={(e) =>
+                    setEditBySlug((m) => ({
+                      ...m,
+                      [c.slug]: {
+                        label: e.target.value,
+                        sortOrder: m[c.slug]?.sortOrder ?? String(c.sortOrder),
+                      },
+                    }))
+                  }
+                />
+                <div className="flex flex-wrap items-center gap-2">
+                  <input
+                    type="number"
+                    className={`${inputCls} w-20 sm:w-24`}
+                    aria-label={`Sort order for ${c.slug}`}
+                    value={editBySlug[c.slug]?.sortOrder ?? String(c.sortOrder)}
+                    onChange={(e) =>
+                      setEditBySlug((m) => ({
+                        ...m,
+                        [c.slug]: {
+                          label: m[c.slug]?.label ?? c.label,
+                          sortOrder: e.target.value,
+                        },
+                      }))
+                    }
+                  />
+                  <button
+                    type="button"
+                    disabled={!canUse || blogLoading}
+                    onClick={() => void updateCategoryRow(c.slug)}
+                    className="rounded-lg bg-sky-600/85 hover:bg-sky-600 px-2.5 py-1.5 text-xs font-medium disabled:opacity-50"
+                  >
+                    Save
+                  </button>
+                  <button
+                    type="button"
+                    disabled={!canUse || blogLoading}
+                    onClick={() => void deleteCategoryRow(c.slug)}
+                    className="rounded-lg bg-red-900/50 hover:bg-red-800/60 px-2.5 py-1.5 text-xs font-medium text-red-100 disabled:opacity-50"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-xs text-white/40">No categories yet — add one below or choose “Create new” on a post.</p>
+        )}
+        <div className="border-t border-white/10 pt-3 space-y-2">
+          <p className="text-xs font-medium text-white/55">New category</p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <input
+              className={inputCls}
+              value={newCatLabel}
+              onChange={(e) => setNewCatLabel(e.target.value)}
+              placeholder="Label (required)"
+            />
+            <input
+              className={inputCls}
+              value={newCatSlug}
+              onChange={(e) => setNewCatSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+              placeholder="Slug (optional)"
+            />
+            <input
+              type="number"
+              className={inputCls}
+              value={newCatSort}
+              onChange={(e) => setNewCatSort(e.target.value)}
+              placeholder="Sort order"
+            />
+          </div>
+          <button
+            type="button"
+            disabled={!canUse || blogLoading}
+            onClick={() => void createCategoryFromPanel()}
+            className="rounded-lg bg-emerald-700/85 hover:bg-emerald-700 px-3 py-1.5 text-xs font-semibold disabled:opacity-50"
+          >
+            Create category
+          </button>
+        </div>
+      </div>
 
       <div className="flex flex-wrap gap-2">
         <button
@@ -440,6 +695,66 @@ export function AdminBlogSection({ adminKey }: Props) {
       <div>
         <label className="text-xs text-white/45">Title</label>
         <input className={`${inputCls} mt-1`} value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Post title" />
+      </div>
+
+      <div>
+        <label className="text-xs text-white/45">Category</label>
+        <select
+          className={`${inputCls} mt-1`}
+          value={postCategorySelect}
+          onChange={(e) => setPostCategorySelect(e.target.value)}
+        >
+          <option value="">(None)</option>
+          {orphanCategorySlug ? (
+            <option value={orphanCategorySlug}>
+              {orphanCategorySlug} (missing from list — pick another or clear)
+            </option>
+          ) : null}
+          {categories.map((c) => (
+            <option key={c.slug} value={c.slug}>
+              {c.label}
+            </option>
+          ))}
+          <option value="__new__">+ Create new category…</option>
+        </select>
+        {postCategorySelect === '__new__' ? (
+          <div className="mt-2 rounded-lg border border-amber-400/25 bg-amber-500/10 p-3 space-y-2">
+            <p className="text-[11px] text-amber-100/85 leading-relaxed">
+              Same fields as <strong className="text-amber-50/90">Blog categories → New category</strong> above — fill
+              label (and optional slug / sort), then create. This post will switch to the new category so you can save the
+              post next.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <input
+                className={inputCls}
+                value={newCatLabel}
+                onChange={(e) => setNewCatLabel(e.target.value)}
+                placeholder="Label (required)"
+              />
+              <input
+                className={inputCls}
+                value={newCatSlug}
+                onChange={(e) => setNewCatSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+                placeholder="Slug (optional)"
+              />
+              <input
+                type="number"
+                className={inputCls}
+                value={newCatSort}
+                onChange={(e) => setNewCatSort(e.target.value)}
+                placeholder="Sort order"
+              />
+            </div>
+            <button
+              type="button"
+              disabled={!canUse || blogLoading}
+              onClick={() => void createCategoryFromPanel()}
+              className="rounded-lg bg-emerald-600/90 hover:bg-emerald-600 px-3 py-1.5 text-xs font-semibold disabled:opacity-50"
+            >
+              Create category &amp; use for this post
+            </button>
+          </div>
+        ) : null}
       </div>
 
       <div>
