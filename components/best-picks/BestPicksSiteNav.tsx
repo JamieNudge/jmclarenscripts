@@ -3,12 +3,14 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { bestPicksSiteNavFooterExtra, bestPicksSiteNavPrimary } from '@/components/best-picks/best-picks-site-nav-links';
+import { pathnameToLongFpPath } from '@/lib/hub-football-routes';
 
-function linkActive(pathname: string, href: string): boolean {
-  if (href === '/football-predictions') return pathname === '/football-predictions';
-  if (href === '/blog') return pathname === '/blog' || pathname.startsWith('/blog/');
-  if (href === '/football-predictions/privacy') return pathname === '/football-predictions/privacy';
-  return pathname === href || pathname.startsWith(`${href}/`);
+function linkActive(pathname: string, href: string, hostname: string): boolean {
+  const longPath = pathnameToLongFpPath(pathname, hostname) ?? pathname;
+  if (href === '/football-predictions') return longPath === '/football-predictions';
+  if (href === '/blog') return longPath === '/blog' || longPath.startsWith('/blog/');
+  if (href === '/football-predictions/privacy') return longPath === '/football-predictions/privacy';
+  return longPath === href || longPath.startsWith(`${href}/`);
 }
 
 const linkClass =
@@ -17,6 +19,7 @@ const linkActiveClass = 'text-white underline decoration-amber-200/80';
 
 export function BestPicksSiteNav({ variant }: { variant: 'header' | 'footer' }) {
   const pathname = usePathname() ?? '';
+  const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
 
   const items =
     variant === 'header'
@@ -35,7 +38,7 @@ export function BestPicksSiteNav({ variant }: { variant: 'header' | 'footer' }) 
       }
     >
       {items.map(({ href, label }, i) => {
-        const active = linkActive(pathname, href);
+        const active = linkActive(pathname, href, hostname);
         return (
           <span key={href} className="inline-flex items-center gap-x-2">
             {i > 0 ? (

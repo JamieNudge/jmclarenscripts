@@ -2,11 +2,14 @@
 
 import { usePathname } from 'next/navigation';
 import { useLayoutEffect } from 'react';
+import { pathnameToLongFpPath } from '@/lib/hub-football-routes';
 
 const CLASS_NAME = 'best-picks-route';
 
 function syncBestPicksRouteClass(pathname: string | null) {
-  const on = Boolean(pathname?.startsWith('/football-predictions'));
+  if (typeof window === 'undefined') return;
+  const longPath = pathnameToLongFpPath(pathname, window.location.hostname) ?? pathname;
+  const on = Boolean(longPath?.startsWith('/football-predictions'));
   document.documentElement.classList.toggle(CLASS_NAME, on);
   document.body.classList.toggle(CLASS_NAME, on);
 }
