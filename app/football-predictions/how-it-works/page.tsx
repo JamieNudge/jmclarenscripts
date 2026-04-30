@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 export default function HowItWorksPage() {
   return (
     <BestPicksContentWithSideAdLayout>
-      <div className="mx-auto w-full max-w-3xl">
+      <div className="mx-auto w-full max-w-6xl 2xl:max-w-none">
         <HowItWorksFromHubRedirect />
       </div>
     </BestPicksContentWithSideAdLayout>

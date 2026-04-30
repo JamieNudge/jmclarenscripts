@@ -14,7 +14,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
   const slug = params.slug?.trim() ?? '';
   return (
     <BestPicksContentWithSideAdLayout>
-      <div className="mx-auto w-full max-w-3xl">
+      <div className="mx-auto w-full max-w-6xl 2xl:max-w-none">
         <div className="mb-10">
           <BestPicksSiteNav variant="header" />
         </div>

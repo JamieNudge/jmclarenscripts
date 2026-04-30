@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 export default function BlogIndexPage() {
   return (
     <BestPicksContentWithSideAdLayout>
-      <div className="mx-auto w-full max-w-5xl">
+      <div className="mx-auto w-full max-w-6xl 2xl:max-w-none">
         <div className="mb-10">
           <BestPicksSiteNav variant="header" />
         </div>

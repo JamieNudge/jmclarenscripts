@@ -34,7 +34,7 @@ export function BestPicksSubpageShell({
     <main className="flex min-h-screen flex-col bg-gradient-to-b from-[#111827] to-[#1f2937] text-white">
       <div className="flex w-full min-h-0 flex-1 flex-col lg:flex-row lg:min-h-0">
         <div className="flex min-h-0 min-w-0 flex-1 flex-col px-4 py-10 md:py-14 lg:px-6 lg:pr-4 2xl:pr-0">
-          <div className="mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col">
+          <div className="mx-auto flex min-h-0 w-full max-w-6xl 2xl:max-w-none flex-1 flex-col">
             {showHeaderNav ? <BestPicksSiteNav variant="header" /> : null}
             {showBackToHub ? (
               <div className={showHeaderNav ? 'mt-6' : ''}>
