@@ -16,7 +16,7 @@ export default function BlogIndexPage() {
     <BestPicksContentWithSideAdLayout>
       <div className="mx-auto w-full max-w-5xl">
         <div className="mb-10">
-          <BestPicksSiteNav variant="footer" />
+          <BestPicksSiteNav variant="header" />
         </div>
 
         <h1 className="mb-3 text-3xl font-bold md:text-4xl">Blogs</h1>

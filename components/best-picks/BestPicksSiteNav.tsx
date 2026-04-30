@@ -21,10 +21,8 @@ export function BestPicksSiteNav({ variant }: { variant: 'header' | 'footer' }) 
   const pathname = usePathname() ?? '';
   const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
 
-  const items =
-    variant === 'header'
-      ? [...bestPicksSiteNavPrimary]
-      : [...bestPicksSiteNavPrimary, ...bestPicksSiteNavFooterExtra];
+  /** Header and footer use the same links so Contact + Privacy appear in the top bar everywhere (not only on /blog). */
+  const items = [...bestPicksSiteNavPrimary, ...bestPicksSiteNavFooterExtra];
 
   return (
     <nav

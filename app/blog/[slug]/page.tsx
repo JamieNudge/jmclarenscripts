@@ -16,7 +16,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
     <BestPicksContentWithSideAdLayout>
       <div className="mx-auto w-full max-w-3xl">
         <div className="mb-10">
-          <BestPicksSiteNav variant="footer" />
+          <BestPicksSiteNav variant="header" />
         </div>
 
         <BlogPostClient slug={slug} />
