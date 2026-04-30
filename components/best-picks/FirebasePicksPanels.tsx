@@ -57,9 +57,12 @@ function BestPicksComingSoonAndProphitPanel() {
 export function FirebasePicksPanels({
   children,
   andAnotherThingInitialPosts,
+  showAndAnotherThingInGrid = true,
 }: {
   children: ReactNode;
   andAnotherThingInitialPosts: AnotherThingPost[];
+  /** When false, the grid strip is omitted (2xl+ uses the sidebar instance only). */
+  showAndAnotherThingInGrid?: boolean;
 }) {
   const configHint = !isFirebaseClientConfigured();
 
@@ -92,8 +95,16 @@ export function FirebasePicksPanels({
         <div className="min-h-0 min-w-0 flex max-md:order-3 max-md:max-h-[min(32rem,70vh)] max-md:overflow-y-auto md:hidden">
           <BestPicksBlogPreviewsRail />
         </div>
-        <div className="min-h-0 min-w-0 max-md:order-4 md:max-2xl:col-span-3 md:max-2xl:row-start-3 2xl:hidden">
-          <AndAnotherThingHubPreview initialPosts={andAnotherThingInitialPosts} variant="gridCompact" />
+        <div
+          className={
+            showAndAnotherThingInGrid
+              ? 'min-h-0 min-w-0 max-md:order-4 md:max-2xl:col-span-3 md:max-2xl:row-start-3 2xl:hidden'
+              : 'hidden'
+          }
+        >
+          {showAndAnotherThingInGrid ? (
+            <AndAnotherThingHubPreview initialPosts={andAnotherThingInitialPosts} variant="gridCompact" />
+          ) : null}
         </div>
         <div className="flex min-h-0 min-w-0 flex-col max-md:order-5 md:order-none md:col-start-3 md:row-start-1 md:row-span-2 md:h-full md:min-h-0">
           <BestPicksComingSoonAndProphitPanel />
