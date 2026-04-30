@@ -1,5 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { shouldInjectAdSenseInInitialHtml } from '@/lib/adsense-initial-html';
 import { HUB_FP_SLUG_SET, parseHubHostList } from '@/lib/hub-football-routes';
 
 const DEFAULT_PRIMARY = 'https://jmclarenscripts.vercel.app';
@@ -29,27 +30,40 @@ function redirectStripFpPrefix(request: NextRequest, restWithSlash: string): Nex
   return NextResponse.redirect(u, 308);
 }
 
+function withAdSenseRequestHeader(request: NextRequest): Headers {
+  const pathname = request.nextUrl.pathname || '/';
+  const host = request.headers.get('host')?.split(':')[0] ?? '';
+  const nextHeaders = new Headers(request.headers);
+  nextHeaders.set(
+    'x-adsense-initial',
+    shouldInjectAdSenseInInitialHtml(pathname, host) ? '1' : '0',
+  );
+  return nextHeaders;
+}
+
 export function middleware(request: NextRequest) {
+  const forward = { request: { headers: withAdSenseRequestHeader(request) } };
+
   if (!isHubHost(request)) {
-    return NextResponse.next();
+    return NextResponse.next(forward);
   }
 
   const { pathname } = request.nextUrl;
 
   if (pathname === '/' || pathname === '') {
-    return NextResponse.rewrite(new URL('/football-predictions', request.url));
+    return NextResponse.rewrite(new URL('/football-predictions', request.url), forward);
   }
 
   if (PASSTHROUGH_FILES.has(pathname)) {
-    return NextResponse.next();
+    return NextResponse.next(forward);
   }
 
   if (pathname.startsWith('/.well-known/')) {
-    return NextResponse.next();
+    return NextResponse.next(forward);
   }
 
   if (pathname === '/blog' || pathname.startsWith('/blog/')) {
-    return NextResponse.next();
+    return NextResponse.next(forward);
   }
 
   if (
@@ -61,7 +75,7 @@ export function middleware(request: NextRequest) {
     pathname.startsWith('/icons/') ||
     pathname === '/icons'
   ) {
-    return NextResponse.next();
+    return NextResponse.next(forward);
   }
 
   // Long hub URLs → short canonical URLs on GoalLab
@@ -77,14 +91,17 @@ export function middleware(request: NextRequest) {
     if (segment && HUB_FP_SLUG_SET.has(segment)) {
       return redirectStripFpPrefix(request, rest.startsWith('/') ? rest : `/${rest}`);
     }
-    return NextResponse.next();
+    return NextResponse.next(forward);
   }
 
   // Short hub paths → internal football-predictions routes
   const parts = pathname.split('/').filter(Boolean);
   const first = parts[0] ?? '';
   if (first && HUB_FP_SLUG_SET.has(first)) {
-    return NextResponse.rewrite(new URL(`/football-predictions/${parts.join('/')}`, request.url));
+    return NextResponse.rewrite(
+      new URL(`/football-predictions/${parts.join('/')}`, request.url),
+      forward,
+    );
   }
 
   const { search } = request.nextUrl;
