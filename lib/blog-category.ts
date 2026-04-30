@@ -123,3 +123,19 @@ export function sortBlogCategories(list: BlogCategoryRecord[]): BlogCategoryReco
     return a.label.localeCompare(b.label);
   });
 }
+
+/** Prefer registry label; otherwise title-case words from the slug (preview / missing category doc). */
+export function resolveBlogCategoryLabel(
+  categorySlug: string | null | undefined,
+  labelBySlug: Record<string, string>,
+): string | null {
+  if (!categorySlug?.trim()) return null;
+  const slug = normalizeBlogSlug(categorySlug.trim());
+  if (!slug) return null;
+  if (labelBySlug[slug]) return labelBySlug[slug];
+  return slug
+    .split('-')
+    .filter(Boolean)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
+}

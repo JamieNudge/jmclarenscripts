@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { AdSenseAutoPlaceholder } from '@/components/AdSenseAutoPlaceholder';
 import { MarkdownBody } from '@/components/blog/MarkdownBody';
 import { splitBlogMarkdownForAdPlaceholders } from '@/lib/blog-body-ad-slots';
+import { resolveBlogCategoryLabel } from '@/lib/blog-category';
 import type { BlogPostRecord } from '@/lib/blog-post';
 import { blogTextFontFamily } from '@/lib/fonts';
 
@@ -10,10 +11,18 @@ type Props = {
   /** Default: link back to public blog index */
   backHref?: string;
   backLabel?: string;
+  /** Slug → label from RTDB `blogCategories`; omit to show title-cased slug only when needed */
+  categoryLabels?: Record<string, string>;
 };
 
-export function BlogPostArticleView({ post, backHref = '/blog', backLabel = '← All posts' }: Props) {
+export function BlogPostArticleView({
+  post,
+  backHref = '/blog',
+  backLabel = '← All posts',
+  categoryLabels = {},
+}: Props) {
   const bodySegments = splitBlogMarkdownForAdPlaceholders(post.bodyMarkdown);
+  const categoryLine = resolveBlogCategoryLabel(post.categorySlug, categoryLabels);
 
   return (
     <article style={{ fontFamily: blogTextFontFamily }}>
@@ -30,6 +39,9 @@ export function BlogPostArticleView({ post, backHref = '/blog', backLabel = '←
         </div>
       ) : null}
       <header className="mb-8">
+        {categoryLine ? (
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-amber-200/90 mb-3">{categoryLine}</p>
+        ) : null}
         <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">{post.title}</h1>
         <p className="text-xs text-white/70 tabular-nums">
           {post.publishedAt?.slice(0, 10) ?? post.updatedAt.slice(0, 10)}

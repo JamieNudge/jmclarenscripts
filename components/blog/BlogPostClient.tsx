@@ -8,13 +8,15 @@ import {
   parseBlogPostFromRtdb,
   type BlogPostRecord,
 } from '@/lib/blog-post';
-import { getFirebaseRealtimeDb, isFirebaseClientConfigured } from '@/lib/firebase-client';
 import { BlogPostArticleView } from '@/components/blog/BlogPostArticleView';
+import { usePublishedBlogCategories } from '@/hooks/usePublishedBlogCategories';
+import { getFirebaseRealtimeDb, isFirebaseClientConfigured } from '@/lib/firebase-client';
 
 export function BlogPostClient({ slug }: { slug: string }) {
   const [loading, setLoading] = useState(true);
   const [post, setPost] = useState<BlogPostRecord | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const { labelBySlug } = usePublishedBlogCategories();
 
   useEffect(() => {
     if (!isFirebaseClientConfigured()) {
@@ -100,5 +102,5 @@ export function BlogPostClient({ slug }: { slug: string }) {
     );
   }
 
-  return <BlogPostArticleView post={post} />;
+  return <BlogPostArticleView post={post} categoryLabels={labelBySlug} />;
 }
