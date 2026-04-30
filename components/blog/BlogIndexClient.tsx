@@ -6,6 +6,47 @@ import { usePublishedBlogPosts } from '@/hooks/usePublishedBlogPosts';
 import { resolveBlogCategoryLabel } from '@/lib/blog-category';
 import { blogTextFontFamily } from '@/lib/fonts';
 
+function BlogCardParts({
+  categoryLine,
+  title,
+  excerpt,
+  dateStr,
+  titleAs,
+  excerptTone = 'default',
+}: {
+  categoryLine: string | null;
+  title: string;
+  excerpt: string | null;
+  dateStr: string;
+  titleAs: 'h2' | 'h3';
+  /** Hero overlay: slightly brighter excerpt on gradient */
+  excerptTone?: 'default' | 'hero';
+}) {
+  const excerptCls =
+    excerptTone === 'hero'
+      ? 'text-sm text-white/85 mt-2 leading-relaxed line-clamp-3'
+      : 'text-sm text-white/75 mt-2 leading-relaxed line-clamp-3';
+
+  return (
+    <>
+      {categoryLine ? (
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-amber-200/90 mb-2">{categoryLine}</p>
+      ) : null}
+      {titleAs === 'h2' ? (
+        <h2 className="text-2xl font-bold leading-tight text-white md:text-3xl md:leading-tight group-hover:text-amber-50/95 transition-colors">
+          {title}
+        </h2>
+      ) : (
+        <h3 className="text-lg font-semibold leading-snug text-white group-hover:text-amber-100/95 transition-colors">
+          {title}
+        </h3>
+      )}
+      {excerpt ? <p className={excerptCls}>{excerpt}</p> : null}
+      <p className="text-xs text-white/55 mt-2 tabular-nums">{dateStr}</p>
+    </>
+  );
+}
+
 export function BlogIndexClient() {
   const { posts, loading, err, configured } = usePublishedBlogPosts();
   const { labelBySlug } = usePublishedBlogCategories();
@@ -35,39 +76,105 @@ export function BlogIndexClient() {
     return <p className="text-sm text-white/72 italic">No posts yet — check back soon.</p>;
   }
 
+  const hero = posts[0]!;
+  const rest = posts.slice(1);
+  const heroCategory = resolveBlogCategoryLabel(hero.categorySlug, labelBySlug);
+  const heroDate = (hero.publishedAt ?? hero.updatedAt).slice(0, 10);
+
   return (
-    <ul className="space-y-6" style={{ fontFamily: blogTextFontFamily }}>
-      {posts.map((p) => {
-        const categoryLine = resolveBlogCategoryLabel(p.categorySlug, labelBySlug);
-        return (
-          <li key={p.slug} className="border-b border-white/10 pb-6 last:border-0 last:pb-0">
-            <Link href={`/blog/${p.slug}`} className="group block">
-              {p.headerImageUrl ? (
-                <div className="mb-3 rounded-xl overflow-hidden border border-white/10 aspect-[16/9] max-h-[min(220px,40vh)] bg-black/30">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={p.headerImageUrl}
-                    alt=""
-                    className="w-full h-full object-cover group-hover:opacity-95 transition-opacity"
-                  />
-                </div>
-              ) : null}
-              {categoryLine ? (
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-amber-200/90 mb-2">
-                  {categoryLine}
+    <div className="space-y-10" style={{ fontFamily: blogTextFontFamily }}>
+      {/* Featured */}
+      <article>
+        <Link
+          href={`/blog/${hero.slug}`}
+          className="group block overflow-hidden rounded-2xl border border-white/10 bg-black/30 shadow-lg shadow-black/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/45 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950"
+        >
+          {hero.headerImageUrl ? (
+            <div className="relative">
+              <div className="aspect-[21/9] min-h-[200px] max-h-[min(380px,48vh)] w-full bg-black/40">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={hero.headerImageUrl}
+                  alt=""
+                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                />
+              </div>
+              <div
+                className="absolute inset-0 bg-gradient-to-t from-[#0b1426] via-[#0b1426]/75 to-transparent"
+                aria-hidden
+              />
+              <div className="absolute bottom-0 left-0 right-0 p-5 md:p-8">
+                <BlogCardParts
+                  categoryLine={heroCategory}
+                  title={hero.title}
+                  excerpt={hero.excerpt || null}
+                  dateStr={heroDate}
+                  titleAs="h2"
+                  excerptTone="hero"
+                />
+                <p className="mt-4 text-sm font-medium text-amber-200/90 group-hover:text-amber-100">
+                  Read article <span aria-hidden>→</span>
                 </p>
-              ) : null}
-              <h2 className="text-xl font-semibold text-white group-hover:text-amber-100/95 transition-colors">
-                {p.title}
-              </h2>
-              {p.excerpt ? <p className="text-sm text-white/75 mt-2 leading-relaxed">{p.excerpt}</p> : null}
-              <p className="text-xs text-white/65 mt-2 tabular-nums">
-                {(p.publishedAt ?? p.updatedAt).slice(0, 10)}
+              </div>
+            </div>
+          ) : (
+            <div className="p-6 md:p-10">
+              <BlogCardParts
+                categoryLine={heroCategory}
+                title={hero.title}
+                excerpt={hero.excerpt || null}
+                dateStr={heroDate}
+                titleAs="h2"
+                excerptTone="default"
+              />
+              <p className="mt-5 text-sm font-medium text-amber-200/90 group-hover:text-amber-100">
+                Read article <span aria-hidden>→</span>
               </p>
-            </Link>
-          </li>
-        );
-      })}
-    </ul>
+            </div>
+          )}
+        </Link>
+      </article>
+
+      {/* Grid */}
+      {rest.length > 0 ? (
+        <section aria-labelledby="blog-latest-heading">
+          <h2
+            id="blog-latest-heading"
+            className="mb-6 text-center font-serif text-2xl font-semibold uppercase tracking-[0.12em] text-white/95 md:text-left md:text-3xl"
+          >
+            Latest articles
+          </h2>
+          <ul className="grid gap-8 sm:grid-cols-2 xl:grid-cols-3">
+            {rest.map((p) => {
+              const categoryLine = resolveBlogCategoryLabel(p.categorySlug, labelBySlug);
+              const dateStr = (p.publishedAt ?? p.updatedAt).slice(0, 10);
+              return (
+                <li key={p.slug}>
+                  <Link href={`/blog/${p.slug}`} className="group flex h-full flex-col">
+                    {p.headerImageUrl ? (
+                      <div className="mb-3 aspect-[16/9] overflow-hidden rounded-xl border border-white/10 bg-black/30">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={p.headerImageUrl}
+                          alt=""
+                          className="h-full w-full object-cover transition-opacity group-hover:opacity-95"
+                        />
+                      </div>
+                    ) : null}
+                    <BlogCardParts
+                      categoryLine={categoryLine}
+                      title={p.title}
+                      excerpt={p.excerpt || null}
+                      dateStr={dateStr}
+                      titleAs="h3"
+                    />
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ) : null}
+    </div>
   );
 }
