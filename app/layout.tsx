@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { AdSenseGlobalPlaceholder } from "@/components/AdSenseGlobalPlaceholder";
 import { AdSenseRouteCleanup } from "@/components/AdSenseRouteCleanup";
 import { AdSenseScriptGate } from "@/components/AdSenseScriptGate";
@@ -38,16 +39,20 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const h = await headers();
+  const hostHeader = h.get("x-forwarded-host") ?? h.get("host");
+  const requestHost = hostHeader?.split(":")[0] ?? "";
+
   return (
     <html lang="en">
       <body className={`${inter.className} antialiased`}>
         <BestPicksDocumentRouteClass />
-        <AdSenseScriptGate />
+        <AdSenseScriptGate requestHost={requestHost} />
         <AdSenseRouteCleanup />
         {children}
         <AdSenseGlobalPlaceholder />

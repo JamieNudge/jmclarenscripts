@@ -13,7 +13,8 @@ export function AdSenseRouteCleanup() {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (pathUsesAdSenseClient(pathname)) return;
+    const host = typeof window !== 'undefined' ? window.location.hostname : '';
+    if (pathUsesAdSenseClient(pathname, host)) return;
     stripAdSenseAndCmpArtifacts();
   }, [pathname]);
 
