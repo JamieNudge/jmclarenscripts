@@ -87,36 +87,65 @@ export function BlogIndexClient() {
       <article>
         <Link
           href={`/blog/${hero.slug}`}
-          className="group block overflow-hidden rounded-2xl border border-white/10 bg-black/30 shadow-lg shadow-black/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/45 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950"
+          className="group block rounded-2xl border border-white/10 bg-black/30 shadow-lg shadow-black/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/45 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 md:overflow-hidden"
         >
           {hero.headerImageUrl ? (
-            <div className="relative">
-              <div className="aspect-[21/9] min-h-[200px] max-h-[min(380px,48vh)] w-full bg-black/40">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={hero.headerImageUrl}
-                  alt=""
-                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-                />
+            <>
+              {/*
+                Mobile: stack image + text — overlay + overflow-hidden clipped multi-line titles.
+                md+: gradient overlay on image (unchanged).
+              */}
+              <div className="flex flex-col md:hidden">
+                <div className="aspect-[16/9] w-full overflow-hidden rounded-t-2xl bg-black/40">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={hero.headerImageUrl}
+                    alt=""
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                  />
+                </div>
+                <div className="rounded-b-2xl border-t border-white/10 bg-[#0b1426] px-5 py-5">
+                  <BlogCardParts
+                    categoryLine={heroCategory}
+                    title={hero.title}
+                    excerpt={hero.excerpt || null}
+                    dateStr={heroDate}
+                    titleAs="h2"
+                    excerptTone="default"
+                  />
+                  <p className="mt-4 text-sm font-medium text-amber-200/90 group-hover:text-amber-100">
+                    Read article <span aria-hidden>→</span>
+                  </p>
+                </div>
               </div>
-              <div
-                className="absolute inset-0 bg-gradient-to-t from-[#0b1426] via-[#0b1426]/75 to-transparent"
-                aria-hidden
-              />
-              <div className="absolute bottom-0 left-0 right-0 p-5 md:p-8">
-                <BlogCardParts
-                  categoryLine={heroCategory}
-                  title={hero.title}
-                  excerpt={hero.excerpt || null}
-                  dateStr={heroDate}
-                  titleAs="h2"
-                  excerptTone="hero"
+              <div className="relative hidden md:block">
+                <div className="aspect-[21/9] min-h-[200px] max-h-[min(380px,48vh)] w-full bg-black/40">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={hero.headerImageUrl}
+                    alt=""
+                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                  />
+                </div>
+                <div
+                  className="absolute inset-0 bg-gradient-to-t from-[#0b1426] via-[#0b1426]/75 to-transparent"
+                  aria-hidden
                 />
-                <p className="mt-4 text-sm font-medium text-amber-200/90 group-hover:text-amber-100">
-                  Read article <span aria-hidden>→</span>
-                </p>
+                <div className="absolute bottom-0 left-0 right-0 p-5 md:p-8">
+                  <BlogCardParts
+                    categoryLine={heroCategory}
+                    title={hero.title}
+                    excerpt={hero.excerpt || null}
+                    dateStr={heroDate}
+                    titleAs="h2"
+                    excerptTone="hero"
+                  />
+                  <p className="mt-4 text-sm font-medium text-amber-200/90 group-hover:text-amber-100">
+                    Read article <span aria-hidden>→</span>
+                  </p>
+                </div>
               </div>
-            </div>
+            </>
           ) : (
             <div className="p-6 md:p-10">
               <BlogCardParts
