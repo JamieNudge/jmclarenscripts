@@ -96,6 +96,29 @@ export default function GoalLabPrivacySupportPage() {
             Please refer to the privacy policies of these third-party services for more information
             about their data practices.
           </p>
+          <p>
+            When ads are shown, Google may act as an independent controller for certain advertising
+            data it processes through AdMob and related ad serving systems. You can learn more about
+            how Google uses data on partner sites and apps in Google&apos;s{' '}
+            <a
+              href="https://policies.google.com/technologies/partner-sites"
+              className="underline hover:text-cyan-300"
+              target="_blank"
+              rel="noreferrer"
+            >
+              partner sites policy
+            </a>{' '}
+            and review AdMob advertising partners in Google&apos;s{' '}
+            <a
+              href="https://support.google.com/admob/answer/9012903"
+              className="underline hover:text-cyan-300"
+              target="_blank"
+              rel="noreferrer"
+            >
+              ad technology providers list
+            </a>
+            .
+          </p>
 
           <h3 className="text-xl font-semibold mt-6">3. Advertising</h3>
           <p>
@@ -108,6 +131,13 @@ export default function GoalLabPrivacySupportPage() {
             <li>Opt out of personalised advertising in your iOS device settings</li>
             <li>Reset your advertising identifier in your device settings</li>
           </ul>
+          <p>
+            GoalLab uses Google&apos;s certified Consent Management Platform to collect and manage
+            advertising privacy choices where required. Users in the EEA, UK, and Switzerland may be
+            shown a consent message before ads are requested. Users in applicable US states can use
+            the in-app privacy entry point to opt out of the sale or sharing of personal information
+            for advertising purposes.
+          </p>
 
           <h3 className="text-xl font-semibold mt-6">4. Data Storage &amp; Retention</h3>
           <p>
@@ -133,6 +163,7 @@ export default function GoalLabPrivacySupportPage() {
             <li>Uninstall GoalLab at any time, which removes the application and its local data.</li>
             <li>Purchase ad-free access to remove advertisements.</li>
             <li>Opt out of personalised advertising in your device settings.</li>
+            <li>Open Settings in the app and tap &quot;Manage privacy choices&quot; when available.</li>
             <li>
               Reset your track record data through the app&apos;s settings.
             </li>

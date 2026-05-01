@@ -110,6 +110,36 @@ export default function StatStrikePrivacySupportPage() {
             Aside from ad delivery on the free tier, the app does not collect your name, email
             address, or other personal profile information directly.
           </p>
+          <p>
+            When ads are shown, Google may act as an independent controller for certain advertising
+            data it processes through AdMob and related ad serving systems. You can learn more about
+            how Google uses data on partner sites and apps in Google&apos;s{' '}
+            <a
+              href="https://policies.google.com/technologies/partner-sites"
+              className="underline hover:text-blue-300"
+              target="_blank"
+              rel="noreferrer"
+            >
+              partner sites policy
+            </a>{' '}
+            and review AdMob advertising partners in Google&apos;s{' '}
+            <a
+              href="https://support.google.com/admob/answer/9012903"
+              className="underline hover:text-blue-300"
+              target="_blank"
+              rel="noreferrer"
+            >
+              ad technology providers list
+            </a>
+            .
+          </p>
+          <p>
+            StatStrike uses Google&apos;s certified Consent Management Platform to collect and manage
+            advertising privacy choices where required. Users in the EEA, UK, and Switzerland may be
+            shown a consent message before ads are requested. Users in applicable US states can use
+            the in-app privacy entry point to opt out of the sale or sharing of personal information
+            for advertising purposes.
+          </p>
 
           <h3 className="text-xl font-semibold mt-6">4. Network and Cloud Services</h3>
           <p>
@@ -147,6 +177,7 @@ export default function StatStrikePrivacySupportPage() {
             <li>Uninstall StatStrike at any time, which removes the application and its data.</li>
             <li>Purchase an eligible subscription to remove in-app banner ads.</li>
             <li>Opt out of personalised advertising in your device settings where supported.</li>
+            <li>Open Settings in the app and tap &quot;Manage privacy choices&quot; when available.</li>
             <li>
               Clear cached fixture data through the app settings (if this feature is available).
             </li>
