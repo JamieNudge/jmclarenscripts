@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
-import Link from 'next/link';
 import { AdSenseAutoPlaceholder } from '@/components/AdSenseAutoPlaceholder';
+import { HubFootballLink } from '@/components/hub/HubFootballLink';
 import { BestPicksHubFooter } from '@/components/best-picks/BestPicksHubFooter';
 import { BestPicksVerticalAdAside } from '@/components/best-picks/BestPicksVerticalAdAside';
 import { BEST_PICKS_EXTENDED_SITE_NAV } from '@/components/best-picks/best-picks-site-nav-config';
@@ -38,7 +38,7 @@ export function BestPicksSubpageShell({
             {showHeaderNav ? <BestPicksSiteNav variant="header" /> : null}
             {showBackToHub ? (
               <div className={showHeaderNav ? 'mt-6' : ''}>
-                <Link
+                <HubFootballLink
                   href="/football-predictions"
                   className="mb-8 inline-flex items-center gap-2 text-sm text-white/93 transition-colors hover:text-white"
                 >
@@ -46,7 +46,7 @@ export function BestPicksSubpageShell({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                   </svg>
                   Back to Football Predictions
-                </Link>
+                </HubFootballLink>
               </div>
             ) : showHeaderNav ? (
               <div className="mt-8" aria-hidden />

@@ -54,6 +54,15 @@ export function pathnameToLongFpPath(pathname: string | null, hostname: string |
  * Client-only: hub-friendly href with hash (server cannot see `#` in middleware).
  * Example: `('/football-predictions#how-apps-work', true)` → `/#how-apps-work`
  */
+/**
+ * Navigation href for the browser / Next router: on GoalLab use short public paths so SPA transitions
+ * match middleware shortcuts (mobile Safari especially may keep long `/football-predictions/...` URLs otherwise).
+ */
+export function hubPublicHref(canonicalFpStyleHref: string, isGoalLabHub: boolean): string {
+  if (!isGoalLabHub) return canonicalFpStyleHref;
+  return longFpPathToPublicHubPath(canonicalFpStyleHref, true);
+}
+
 export function longFpPathToPublicHubPath(longPath: string, useHub: boolean): string {
   if (!useHub) return longPath;
   const i = longPath.indexOf('#');

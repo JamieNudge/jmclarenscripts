@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BestPicksSubpageShell } from '@/components/best-picks/BestPicksSubpageShell';
+import { HubFootballLink } from '@/components/hub/HubFootballLink';
 
 export const metadata: Metadata = {
   title: 'About — Football Predictions & Data-Driven Picks',
@@ -33,29 +34,29 @@ export default function BestPicksAboutPage() {
         <p>
           Individual apps have their own branding, terms, and App Store listings; those apply when you use the apps
           themselves. For how each app is meant to work, see{' '}
-          <Link
+          <HubFootballLink
             href="/football-predictions#how-apps-work"
             className="text-amber-200/85 underline underline-offset-2 hover:text-amber-100/90"
           >
             How apps work
-          </Link>
+          </HubFootballLink>
           .
         </p>
         <p className="text-xs text-white/85">
           Questions about this website: see{' '}
-          <Link
+          <HubFootballLink
             href="/football-predictions/contact"
             className="text-amber-200/80 underline underline-offset-2 hover:text-amber-100/90"
           >
             Contact
-          </Link>
+          </HubFootballLink>
           . Privacy and cookies:{' '}
-          <Link
+          <HubFootballLink
             href="/football-predictions/privacy"
             className="text-amber-200/80 underline underline-offset-2 hover:text-amber-100/90"
           >
             Privacy policy
-          </Link>
+          </HubFootballLink>
           .
         </p>
       </section>

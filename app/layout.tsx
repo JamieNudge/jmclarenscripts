@@ -4,6 +4,7 @@ import Script from "next/script";
 import { AdSenseGlobalPlaceholder } from "@/components/AdSenseGlobalPlaceholder";
 import { AdSenseRouteCleanup } from "@/components/AdSenseRouteCleanup";
 import { AdSenseScriptGate } from "@/components/AdSenseScriptGate";
+import { HubNavProvider } from "@/components/hub/HubNavContext";
 import { BestPicksDocumentRouteClass } from "@/components/best-picks/BestPicksDocumentRouteClass";
 import { inter } from "@/lib/fonts";
 import "./globals.css";
@@ -50,24 +51,27 @@ export default async function RootLayout({
   const requestHost = hostHeader?.split(":")[0] ?? "";
   /** Crawlers (AdSense verification) read initial HTML; client-only injectors are not enough. */
   const adsenseInitial = h.get("x-adsense-initial") === "1";
+  const isGoalLabHub = h.get("x-goal-lab-hub") === "1";
   const adsenseSrc = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${encodeURIComponent(ADSENSE_CLIENT_ID)}`;
 
   return (
     <html lang="en">
       <body className={`${inter.className} antialiased`}>
-        {adsenseInitial ? (
-          <Script
-            id="adsbygoogle-initial"
-            src={adsenseSrc}
-            strategy="beforeInteractive"
-            crossOrigin="anonymous"
-          />
-        ) : null}
-        <BestPicksDocumentRouteClass />
-        <AdSenseScriptGate requestHost={requestHost} />
-        <AdSenseRouteCleanup />
-        {children}
-        <AdSenseGlobalPlaceholder />
+        <HubNavProvider isGoalLabHub={isGoalLabHub}>
+          {adsenseInitial ? (
+            <Script
+              id="adsbygoogle-initial"
+              src={adsenseSrc}
+              strategy="beforeInteractive"
+              crossOrigin="anonymous"
+            />
+          ) : null}
+          <BestPicksDocumentRouteClass />
+          <AdSenseScriptGate requestHost={requestHost} />
+          <AdSenseRouteCleanup />
+          {children}
+          <AdSenseGlobalPlaceholder />
+        </HubNavProvider>
       </body>
     </html>
   );

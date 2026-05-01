@@ -1,7 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { shouldInjectAdSenseInInitialHtml } from '@/lib/adsense-initial-html';
-import { HUB_FP_SLUG_SET, parseHubHostList } from '@/lib/hub-football-routes';
+import { HUB_FP_SLUG_SET, isHubHostname, parseHubHostList } from '@/lib/hub-football-routes';
 
 const DEFAULT_PRIMARY = 'https://jmclarenscripts.vercel.app';
 
@@ -30,7 +30,7 @@ function redirectStripFpPrefix(request: NextRequest, restWithSlash: string): Nex
   return NextResponse.redirect(u, 308);
 }
 
-function withAdSenseRequestHeader(request: NextRequest): Headers {
+function buildForwardedRequestHeaders(request: NextRequest): Headers {
   const pathname = request.nextUrl.pathname || '/';
   const host = request.headers.get('host')?.split(':')[0] ?? '';
   const nextHeaders = new Headers(request.headers);
@@ -38,11 +38,12 @@ function withAdSenseRequestHeader(request: NextRequest): Headers {
     'x-adsense-initial',
     shouldInjectAdSenseInInitialHtml(pathname, host) ? '1' : '0',
   );
+  nextHeaders.set('x-goal-lab-hub', isHubHostname(host) ? '1' : '0');
   return nextHeaders;
 }
 
 export function middleware(request: NextRequest) {
-  const forward = { request: { headers: withAdSenseRequestHeader(request) } };
+  const forward = { request: { headers: buildForwardedRequestHeaders(request) } };
 
   if (!isHubHost(request)) {
     return NextResponse.next(forward);

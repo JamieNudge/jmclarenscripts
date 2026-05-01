@@ -1,7 +1,7 @@
 'use client';
 
-import Link from 'next/link';
 import { BplHubCell } from '@/components/best-picks/BplHubCell';
+import { HubFootballLink } from '@/components/hub/HubFootballLink';
 import { BestPicksHubWithSideAdLayout } from '@/components/best-picks/BestPicksHubWithSideAdLayout';
 import { BestPicksResearchAlgorithmPanel } from '@/components/best-picks/BestPicksResearchAlgorithmPanel';
 import { BestPicksSiteNav } from '@/components/best-picks/BestPicksSiteNav';
@@ -21,7 +21,7 @@ export function ResearchAlgorithmSelectionsView() {
       <div className="w-full min-w-0 max-w-6xl 2xl:max-w-none 2xl:mx-0 mx-auto">
         {BEST_PICKS_EXTENDED_SITE_NAV ? <BestPicksSiteNav variant="header" /> : null}
         <div className={BEST_PICKS_EXTENDED_SITE_NAV ? 'mt-6' : 'mt-0'}>
-          <Link
+          <HubFootballLink
             href="/football-predictions"
             className="inline-flex items-center gap-2 text-white/93 hover:text-white transition-colors mb-8 text-sm"
           >
@@ -29,19 +29,19 @@ export function ResearchAlgorithmSelectionsView() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
             Back to Football Predictions
-          </Link>
+          </HubFootballLink>
         </div>
 
         <h1 className="text-3xl md:text-4xl font-bold mb-3">{FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_TITLE}</h1>
         <div className="text-sm text-white/93 mb-8 leading-relaxed">
           Day <span className="tabular-nums text-amber-100/95">{dateKey}</span> in the picks calendar. Selections
           update when Firebase is configured. For the app overview, see{' '}
-          <Link
+          <HubFootballLink
             href="/football-predictions#how-apps-work"
             className="text-amber-200/88 underline underline-offset-2 hover:text-amber-100/95"
           >
             How apps work
-          </Link>{' '}
+          </HubFootballLink>{' '}
           on the home page.
         </div>
 

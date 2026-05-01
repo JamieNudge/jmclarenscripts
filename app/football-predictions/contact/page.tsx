@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { BestPicksSubpageShell } from '@/components/best-picks/BestPicksSubpageShell';
+import { HubFootballLink } from '@/components/hub/HubFootballLink';
 
 const CONTACT_EMAIL = 'jmclarenscripts@gmail.com';
 const mailtoHref = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(
@@ -23,12 +23,12 @@ export default function BestPicksContactPage() {
         <p>
           For privacy questions about this site (including this hub, cookies, and Google ads), use the
           same contact channel referenced in the{' '}
-          <Link
+          <HubFootballLink
             href="/football-predictions/privacy"
             className="text-amber-200/80 underline underline-offset-2 hover:text-amber-100/90"
           >
             privacy policy
-          </Link>
+          </HubFootballLink>
           .
         </p>
         <p>

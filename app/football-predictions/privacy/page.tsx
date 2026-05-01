@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BestPicksSubpageShell } from '@/components/best-picks/BestPicksSubpageShell';
+import { HubFootballLink } from '@/components/hub/HubFootballLink';
 
 export const metadata: Metadata = {
   title: 'Privacy — Football Predictions & Data-Driven Picks & blog',
@@ -48,7 +49,7 @@ export default function BestPicksPrivacyPage() {
         <p>
           <span className="font-semibold text-white/95">What you send:</span> If you use an email
           address given on this hub or a contact page, we receive what you include (for example
-          your address and the message). Use the <Link href="/football-predictions/contact" className="text-amber-200/80 underline underline-offset-2 hover:text-amber-100/90">contact</Link> page
+          your address and the message). Use the <HubFootballLink href="/football-predictions/contact" className="text-amber-200/80 underline underline-offset-2 hover:text-amber-100/90">contact</HubFootballLink> page
           for publication-related questions.
         </p>
         <p>

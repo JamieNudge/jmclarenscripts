@@ -2,8 +2,9 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useGoalLabHubNav } from '@/components/hub/HubNavContext';
 import { bestPicksSiteNavFooterExtra, bestPicksSiteNavPrimary } from '@/components/best-picks/best-picks-site-nav-links';
-import { pathnameToLongFpPath } from '@/lib/hub-football-routes';
+import { hubPublicHref, pathnameToLongFpPath } from '@/lib/hub-football-routes';
 
 function linkActive(pathname: string, href: string, hostname: string): boolean {
   const longPath = pathnameToLongFpPath(pathname, hostname) ?? pathname;
@@ -20,6 +21,7 @@ const linkActiveClass = 'text-white underline decoration-amber-200/80';
 export function BestPicksSiteNav({ variant }: { variant: 'header' | 'footer' }) {
   const pathname = usePathname() ?? '';
   const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
+  const isGoalLabHub = useGoalLabHubNav();
 
   /** Header and footer use the same links so Contact + Privacy appear in the top bar everywhere (not only on /blog). */
   const items = [...bestPicksSiteNavPrimary, ...bestPicksSiteNavFooterExtra];
@@ -45,7 +47,7 @@ export function BestPicksSiteNav({ variant }: { variant: 'header' | 'footer' }) 
               </span>
             ) : null}
             <Link
-              href={href}
+              href={hubPublicHref(href, isGoalLabHub)}
               className={`${linkClass} ${active ? linkActiveClass : ''}`}
               aria-current={active ? 'page' : undefined}
             >

@@ -1,5 +1,5 @@
-import Link from 'next/link';
 import { AdSenseAutoPlaceholder } from '@/components/AdSenseAutoPlaceholder';
+import { HubFootballLink } from '@/components/hub/HubFootballLink';
 import { BEST_PICKS_EXTENDED_SITE_NAV } from '@/components/best-picks/best-picks-site-nav-config';
 import { BestPicksSiteNav } from '@/components/best-picks/BestPicksSiteNav';
 
@@ -30,9 +30,9 @@ export function BestPicksHubFooter() {
             purposes only.
           </p>
           <p className="w-full min-w-0 break-words text-left text-[11px] leading-relaxed text-white/91 md:max-w-sm md:text-right md:text-xs">
-            <Link href="/football-predictions/privacy" className="underline hover:text-white/94 underline-offset-2">
+            <HubFootballLink href="/football-predictions/privacy" className="underline hover:text-white/94 underline-offset-2">
               Privacy policy
-            </Link>
+            </HubFootballLink>
             <span className="text-white/68"> · </span>
             Google ads may appear on this page; the privacy policy covers cookies and how ads work.
           </p>

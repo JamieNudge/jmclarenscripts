@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { BestPicksSubpageShell } from '@/components/best-picks/BestPicksSubpageShell';
+import { HubFootballLink } from '@/components/hub/HubFootballLink';
 
 export const metadata: Metadata = {
   title: 'Methodology — Football Predictions & Data-Driven Picks',
@@ -36,12 +36,12 @@ export default function BestPicksMethodologyPage() {
         </p>
         <p className="text-xs text-white/85">
           For how each app is described for visitors, see{' '}
-          <Link
+          <HubFootballLink
             href="/football-predictions#how-apps-work"
             className="text-amber-200/80 underline underline-offset-2 hover:text-amber-100/90"
           >
             How apps work
-          </Link>
+          </HubFootballLink>
           .
         </p>
       </section>
