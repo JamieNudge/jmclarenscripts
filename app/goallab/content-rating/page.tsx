@@ -59,8 +59,9 @@ export default function GoalLabContentRatingPage() {
 
           <h2 className="text-xl font-semibold mt-4">Advertising</h2>
           <p>
-            GoalLab displays advertisements through Google AdMob. Users can remove advertisements
-            by purchasing ad-free access through the app. Advertisements may include:
+            GoalLab displays advertisements through Google AdMob while the user is in the
+            ad-supported state, including during any eligible introductory subscription trial.
+            Advertisements may include:
           </p>
           <ul className="list-disc list-inside space-y-1 ml-4">
             <li>Banner advertisements within the app interface</li>
@@ -84,7 +85,7 @@ export default function GoalLabContentRatingPage() {
             <li>No sexual content or nudity</li>
             <li>No drugs, alcohol, or tobacco promotion</li>
             <li>No user-generated public content or online chat</li>
-            <li>Contains advertising (can be removed via in-app purchase)</li>
+            <li>Contains advertising while in the ad-supported state</li>
           </ul>
           <p className="mt-4">
             The app displays football match statistics, team data, confidence bands, and prediction

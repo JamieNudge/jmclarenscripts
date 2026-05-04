@@ -61,7 +61,8 @@ export default function GoalLabPrivacySupportPage() {
               App preferences such as display settings and session counts.
             </li>
             <li>
-              Subscription and purchase status for ad-free features.
+              Subscription, introductory trial, and purchase status for access and advertising
+              entitlements.
             </li>
           </ul>
           <p>
@@ -83,9 +84,9 @@ export default function GoalLabPrivacySupportPage() {
             </li>
             <li>
               <span className="font-semibold">Google AdMob:</span> For displaying advertisements
-              to users who have not purchased ad-free access. AdMob may collect device identifiers
-              and usage data for ad personalisation. You can opt out of personalised ads in your
-              device settings.
+              to users in the ad-supported state, including users in the introductory trial period.
+              AdMob may collect device identifiers and usage data for ad personalisation. You can
+              opt out of personalised ads in your device settings.
             </li>
             <li>
               <span className="font-semibold">Apple App Store:</span> For processing in-app
@@ -122,15 +123,27 @@ export default function GoalLabPrivacySupportPage() {
 
           <h3 className="text-xl font-semibold mt-6">3. Advertising</h3>
           <p>
-            GoalLab displays advertisements through Google AdMob to users who have not purchased
-            ad-free access. These ads may be personalised based on your interests and usage
-            patterns. You can:
+            GoalLab displays advertisements through Google AdMob while you are in the ad-supported
+            state. This can include the introductory free-trial period for the monthly subscription.
+            These ads may be personalised based on your interests and usage patterns. You can:
           </p>
           <ul className="list-disc list-inside space-y-1 ml-4">
-            <li>Purchase ad-free access through an in-app subscription or one-time purchase</li>
+            <li>
+              Start the monthly subscription, which may include an App Store introductory free trial
+              if you are eligible
+            </li>
+            <li>
+              Purchase lifetime access through a one-time in-app purchase
+            </li>
             <li>Opt out of personalised advertising in your iOS device settings</li>
             <li>Reset your advertising identifier in your device settings</li>
           </ul>
+          <p>
+            If you start the monthly subscription and receive an introductory free trial through App
+            Store Connect, GoalLab remains unlocked during that trial while advertising may still be
+            shown. If the subscription continues into the paid period, advertising is removed. If
+            the subscription ends without renewal, app access ends.
+          </p>
           <p>
             GoalLab uses Google&apos;s certified Consent Management Platform to collect and manage
             advertising privacy choices where required. Users in the EEA, UK, and Switzerland may be
@@ -161,7 +174,13 @@ export default function GoalLabPrivacySupportPage() {
           <p>You remain in control of your data on your device. You can:</p>
           <ul className="list-disc list-inside space-y-1 ml-4">
             <li>Uninstall GoalLab at any time, which removes the application and its local data.</li>
-            <li>Purchase ad-free access to remove advertisements.</li>
+            <li>
+              Start or cancel the monthly subscription in your Apple subscription settings, including
+              during any introductory trial period.
+            </li>
+            <li>
+              Purchase lifetime access through the app if you prefer a one-time payment option.
+            </li>
             <li>Opt out of personalised advertising in your device settings.</li>
             <li>Open Settings in the app and tap &quot;Manage privacy choices&quot; when available.</li>
             <li>
@@ -194,7 +213,7 @@ export default function GoalLabPrivacySupportPage() {
             <li>Predictions or Best Picks not displaying or updating</li>
             <li>Fixture data not loading</li>
             <li>Track record not syncing across devices</li>
-            <li>Subscription or ad-free purchase issues</li>
+            <li>Subscription, introductory trial, or lifetime purchase issues</li>
             <li>App crashes or unexpected behaviour</li>
           </ul>
           <p className="mt-4">
@@ -234,9 +253,11 @@ export default function GoalLabPrivacySupportPage() {
 
           <h4 className="text-lg font-semibold mt-4">How do I remove ads?</h4>
           <p>
-            You can remove advertisements by purchasing an ad-free subscription or lifetime
-            access through the app&apos;s paywall. Tap the subscription option within Settings
-            or the &quot;Remove Ads&quot; button on any ad banner.
+            GoalLab offers a monthly subscription and a separate lifetime purchase through the
+            app&apos;s paywall. The monthly subscription may include a 3-day introductory free trial
+            if you are eligible. Ads may still be shown during the introductory trial period, and
+            are removed once the paid subscription period begins. Lifetime access removes ads
+            immediately.
           </p>
 
           <h4 className="text-lg font-semibold mt-4">Are predictions guaranteed?</h4>

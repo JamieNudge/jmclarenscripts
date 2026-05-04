@@ -91,15 +91,21 @@ export default function GoalLabTermsPage() {
           <h2 className="text-xl font-semibold mt-8">5. Advertising</h2>
           <p>
             GoalLab displays advertisements through Google AdMob. By using the app, you agree to
-            the display of advertisements. You may remove advertisements by purchasing an ad-free
-            subscription or lifetime access through the app.
+            the display of advertisements while you are in the ad-supported state, including during
+            any eligible introductory subscription trial. Advertising is removed once a paid monthly
+            subscription period begins, or immediately if you purchase lifetime access.
           </p>
 
           <h2 className="text-xl font-semibold mt-8">6. Subscriptions and Purchases</h2>
           <p>
-            GoalLab offers ad-free access through in-app purchases managed by Apple&apos;s App Store:
+            GoalLab offers a monthly auto-renewable subscription and a separate lifetime purchase
+            through in-app purchases managed by Apple&apos;s App Store:
           </p>
           <ul className="list-disc list-inside space-y-1 ml-4">
+            <li>
+              The monthly subscription may include an introductory free trial if you are eligible,
+              as configured in App Store Connect
+            </li>
             <li>Payment will be charged to your Apple ID account at confirmation of purchase</li>
             <li>Subscriptions automatically renew unless cancelled at least 24 hours before the end of the current period</li>
             <li>Your account will be charged for renewal within 24 hours prior to the end of the current period</li>
@@ -107,8 +113,11 @@ export default function GoalLabTermsPage() {
             <li>Lifetime purchases are one-time payments that do not renew</li>
           </ul>
           <p className="mt-4">
-            For pricing and terms, please refer to the in-app purchase information displayed
-            before purchase.
+            If the monthly subscription is started and an introductory trial is active, GoalLab
+            remains unlocked during that trial while advertisements may still be shown. If the
+            subscription continues into the paid period, advertisements are removed. If the monthly
+            subscription ends without renewal, app access ends. For pricing and terms, please refer
+            to the in-app purchase information displayed before purchase.
           </p>
 
           <h2 className="text-xl font-semibold mt-8">7. Data Accuracy</h2>
