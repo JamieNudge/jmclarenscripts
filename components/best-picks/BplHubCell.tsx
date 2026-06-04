@@ -313,7 +313,7 @@ export function BplHubCell({ showTodayFixtures = true }: { showTodayFixtures?: b
                 href={todayBplFixturesHref}
                 className="block w-full text-center rounded-xl border border-amber-200/40 bg-amber-500/10 px-4 py-3 text-sm font-semibold text-amber-100/95 tracking-tight shadow-sm shadow-black/20 transition-colors hover:bg-amber-500/15 hover:border-amber-200/55 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/50"
               >
-                Click for today&apos;s BPL fixtures!
+                Click for today&apos;s BPL fixtures preview
               </Link>
             </div>
           )}
