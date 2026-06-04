@@ -4,6 +4,8 @@
  */
 
 export type PickRecord = Record<string, unknown>;
+type GoalsPickSide = 'over' | 'under';
+const UNANIMOUS_EXPORT_LIST_SIDE_KEY = '__unanimousExportListSide';
 
 /** Normalise RTDB object maps or arrays into a list of pick objects. */
 export function rtdbValueToPickList(val: unknown): PickRecord[] {
@@ -111,9 +113,23 @@ export function parseUnanimousExport(val: unknown): { over: PickRecord[]; under:
   }
   const o = val as PickRecord;
   return {
-    over: rtdbValueToPickList(o.overForecasts),
-    under: rtdbValueToPickList(o.underForecasts),
+    over: tagUnanimousExportListSide(rtdbValueToPickList(o.overForecasts), 'over'),
+    under: tagUnanimousExportListSide(rtdbValueToPickList(o.underForecasts), 'under'),
   };
+}
+
+function tagUnanimousExportListSide(picks: PickRecord[], side: GoalsPickSide): PickRecord[] {
+  return picks.map((p) => ({ ...p, [UNANIMOUS_EXPORT_LIST_SIDE_KEY]: side }));
+}
+
+/** Prefer explicit `predictedBand`, but preserve RTDB export list side when band text is missing. */
+export function pickGoalsSideFromBandOrFallback(p: PickRecord): GoalsPickSide | null {
+  const band = pickPrimitiveText(p.predictedBand)?.toLowerCase() ?? '';
+  if (band.includes('under') && !band.includes('over')) return 'under';
+  if (band.includes('over') && !band.includes('under')) return 'over';
+  const taggedSide = p[UNANIMOUS_EXPORT_LIST_SIDE_KEY];
+  if (taggedSide === 'over' || taggedSide === 'under') return taggedSide;
+  return null;
 }
 
 export function isInBestPerformingLeagues(
@@ -988,7 +1004,8 @@ function researchFixtureBandKey(p: PickRecord): string {
     .toLowerCase()
     .replace(/\s+/g, ' ')
     .trim();
-  return `${idPart}|band:${band}`;
+  const side = pickGoalsSideFromBandOrFallback(p);
+  return `${idPart}|side:${side ?? 'unknown'}|band:${band}`;
 }
 
 /**

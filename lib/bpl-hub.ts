@@ -10,6 +10,7 @@ import {
   parseLeaguePerformanceFromSelection,
   parseUnanimousExport,
   pickDisplayTitle,
+  pickGoalsSideFromBandOrFallback,
   pickHasResearchExcludedStatus,
   pickKickoffSortTimeMs,
   pickLeagueDisplay,
@@ -202,9 +203,7 @@ function tallyBplAllLinesFromLedgers(hub: BplHubState): BplAllLinesWinLoss {
 }
 
 export function inferListSideFromBand(p: PickRecord): 'over' | 'under' {
-  const b = str(p.predictedBand).toLowerCase();
-  if (b.includes('under') && !b.includes('over')) return 'under';
-  return 'over';
+  return pickGoalsSideFromBandOrFallback(p) ?? 'over';
 }
 
 export function bplPickLedgerKey(dateKey: string, p: PickRecord): string {
