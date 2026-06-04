@@ -37,6 +37,23 @@ const todayBplFixturesHref = `${FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_PATH}#b
 const statStrikeAppStoreUrl = apps.find((a) => a.id === 'stat-strike')?.appStoreUrl;
 const TEASER_VISIBLE_COUNT = 3;
 const TEASER_BLURRED_COUNT = 3;
+const IN_PLAY_WINDOW_MS = 12 * 60 * 60 * 1000;
+
+function parseFixtureKickoffMs(kickoff: string | null): number | null {
+  if (!kickoff) return null;
+  const m = kickoff.match(/^(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2})\s+UTC$/);
+  if (!m) return null;
+  return Date.UTC(Number(m[3]), Number(m[2]) - 1, Number(m[1]), Number(m[4]), Number(m[5]));
+}
+
+function fixturePendingLabel(fixture: BplCompactFixture): string {
+  if (fixture.result !== 'pending') return resultLabel(fixture.result);
+  const kickoffMs = parseFixtureKickoffMs(fixture.kickoff);
+  if (kickoffMs == null) return 'Pending';
+  const elapsed = Date.now() - kickoffMs;
+  if (elapsed >= 0 && elapsed <= IN_PLAY_WINDOW_MS) return 'In-play';
+  return 'Pending';
+}
 
 function BplFixtureRow({ fixture, className = '' }: { fixture: BplCompactFixture; className?: string }) {
   return (
@@ -69,7 +86,7 @@ function BplFixtureRow({ fixture, className = '' }: { fixture: BplCompactFixture
         </span>
         {fixture.result != null && (
           <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded border ${resultPillClass(fixture.result)}`}>
-            {resultLabel(fixture.result)}
+            {fixturePendingLabel(fixture)}
           </span>
         )}
       </div>
@@ -92,7 +109,7 @@ function DownloadAppTeaser({ hiddenCount }: { hiddenCount: number }) {
           rel="noopener noreferrer"
           className="mt-3 inline-flex items-center justify-center rounded-lg border border-amber-200/45 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-100/95 transition-colors hover:bg-amber-500/15 hover:border-amber-200/60"
         >
-          Download the iOS app
+          Download StatStrike on iOS
         </a>
       ) : null}
     </div>

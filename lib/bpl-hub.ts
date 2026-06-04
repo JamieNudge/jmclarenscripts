@@ -141,8 +141,8 @@ export type BplHubState = {
 };
 
 const MS_48H = 48 * 60 * 60 * 1000;
-/** If export has a terminal outcome but no display status, assume FT after a normal match length. */
-const MS_2_5H = 2.5 * 60 * 60 * 1000;
+/** If export has a terminal outcome but no display status, only assume FT well after kickoff to avoid live false positives. */
+const MS_12H = 12 * 60 * 60 * 1000;
 
 export function newEmptyHub(): BplHubState {
   return {
@@ -279,7 +279,7 @@ function pickFixtureIsFullTime(p: PickRecord, now: number): boolean {
   const o = pickOutcomeString(p);
   if (o === 'win' || o === 'loss' || o === 'void' || o === 'push') {
     const k = pickKickoffSortTimeMs(p);
-    if (k != null && now - k > MS_2_5H) {
+    if (k != null && now - k > MS_12H) {
       return true;
     }
   }
