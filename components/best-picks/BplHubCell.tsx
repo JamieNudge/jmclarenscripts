@@ -35,6 +35,69 @@ function resultLabel(r: BplCompactFixture['result']): string {
 
 const todayBplFixturesHref = `${FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_PATH}#bpl-statstrike-fixtures` as const;
 const statStrikeAppStoreUrl = apps.find((a) => a.id === 'stat-strike')?.appStoreUrl;
+const TEASER_VISIBLE_COUNT = 3;
+const TEASER_BLURRED_COUNT = 3;
+
+function BplFixtureRow({ fixture, className = '' }: { fixture: BplCompactFixture; className?: string }) {
+  return (
+    <li
+      className={`rounded-lg border border-white/10 bg-black/25 px-3 py-2 flex items-start justify-between gap-2 ${className}`.trim()}
+    >
+      <div className="min-w-0 flex-1 space-y-0.5">
+        <p className="text-sm font-medium text-white leading-snug line-clamp-2">{fixture.title}</p>
+        {fixture.league?.trim() || fixture.kickoff?.trim() ? (
+          <p className="text-[10px] text-white/92 leading-snug line-clamp-2">
+            {[fixture.league, fixture.kickoff]
+              .map((x) => (x == null ? '' : x.trim()))
+              .filter(Boolean)
+              .join(' · ')}
+          </p>
+        ) : null}
+        {fixture.forecast ? (
+          <p className="text-[10px] text-cyan-200/92 font-medium leading-snug line-clamp-2">{fixture.forecast}</p>
+        ) : null}
+      </div>
+      <div className="shrink-0 flex flex-col items-end gap-0.5">
+        <span
+          className={
+            fixture.odds != null
+              ? 'text-xs tabular-nums text-amber-100/95'
+              : 'text-[10px] font-medium text-white/78 tabular-nums'
+          }
+        >
+          {fixture.odds != null ? `@${fixture.odds.toFixed(2)}` : '—'}
+        </span>
+        {fixture.result != null && (
+          <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded border ${resultPillClass(fixture.result)}`}>
+            {resultLabel(fixture.result)}
+          </span>
+        )}
+      </div>
+    </li>
+  );
+}
+
+function DownloadAppTeaser({ hiddenCount }: { hiddenCount: number }) {
+  return (
+    <div className="rounded-xl border border-amber-200/35 bg-black/72 backdrop-blur-sm px-4 py-3 text-center shadow-lg shadow-black/25">
+      <p className="text-sm font-semibold text-amber-100/95">Unlock the full daily list in StatStrike</p>
+      <p className="mt-1 text-xs leading-relaxed text-white/90">
+        Showing the first {TEASER_VISIBLE_COUNT} best-performing lines
+        {hiddenCount > 0 ? ` with ${hiddenCount} more available in the app today.` : '.'}
+      </p>
+      {statStrikeAppStoreUrl ? (
+        <a
+          href={statStrikeAppStoreUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-3 inline-flex items-center justify-center rounded-lg border border-amber-200/45 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-100/95 transition-colors hover:bg-amber-500/15 hover:border-amber-200/60"
+        >
+          Download the iOS app
+        </a>
+      ) : null}
+    </div>
+  );
+}
 
 /**
  * @param showTodayFixtures - When `false` (hub home tile), all-time stats stay but the in-cell fixture list is
@@ -91,6 +154,10 @@ export function BplHubCell({ showTodayFixtures = true }: { showTodayFixtures?: b
           voids: data.allTime.voids,
           settledLineCount: data.settledPickCount,
         });
+  const visibleFixtures = data?.current.fixtures.slice(0, TEASER_VISIBLE_COUNT) ?? [];
+  const blurredFixtures =
+    data?.current.fixtures.slice(TEASER_VISIBLE_COUNT, TEASER_VISIBLE_COUNT + TEASER_BLURRED_COUNT) ?? [];
+  const hiddenFixtureCount = Math.max(0, (data?.current.fixtures.length ?? 0) - visibleFixtures.length);
 
   return (
     <div id="bpl-statstrike" className={`${bestPicksGridTileClassName} gap-3`}>
@@ -198,49 +265,29 @@ export function BplHubCell({ showTodayFixtures = true }: { showTodayFixtures?: b
               {data.current.fixtures.length === 0 ? (
                 <p className="text-sm text-white/94">No BPL lines for this date (or not uploaded yet).</p>
               ) : (
-                <ul className="space-y-2 pb-1">
-                  {data.current.fixtures.map((f) => (
-                    <li
-                      key={f.id}
-                      className="rounded-lg border border-white/10 bg-black/25 px-3 py-2 flex items-start justify-between gap-2"
-                    >
-                      <div className="min-w-0 flex-1 space-y-0.5">
-                        <p className="text-sm font-medium text-white leading-snug line-clamp-2">{f.title}</p>
-                        {f.league?.trim() || f.kickoff?.trim() ? (
-                          <p className="text-[10px] text-white/92 leading-snug line-clamp-2">
-                            {[f.league, f.kickoff]
-                              .map((x) => (x == null ? '' : x.trim()))
-                              .filter(Boolean)
-                              .join(' · ')}
-                          </p>
-                        ) : null}
-                        {f.forecast ? (
-                          <p className="text-[10px] text-cyan-200/92 font-medium leading-snug line-clamp-2">
-                            {f.forecast}
-                          </p>
-                        ) : null}
+                <div className="space-y-2 pb-1">
+                  <ul className="space-y-2">
+                    {visibleFixtures.map((f) => (
+                      <BplFixtureRow key={f.id} fixture={f} />
+                    ))}
+                  </ul>
+                  {blurredFixtures.length > 0 ? (
+                    <div className="relative pt-1">
+                      <div className="pointer-events-none absolute inset-x-0 bottom-0 top-10 bg-gradient-to-b from-transparent via-black/35 to-black/80" />
+                      <ul
+                        aria-hidden
+                        className="space-y-2 select-none opacity-55 [mask-image:linear-gradient(to_bottom,rgba(0,0,0,0.95),rgba(0,0,0,0.18))]"
+                      >
+                        {blurredFixtures.map((f) => (
+                          <BplFixtureRow key={`blurred-${f.id}`} fixture={f} className="blur-[3px]" />
+                        ))}
+                      </ul>
+                      <div className="absolute inset-x-3 bottom-3">
+                        <DownloadAppTeaser hiddenCount={hiddenFixtureCount} />
                       </div>
-                      <div className="shrink-0 flex flex-col items-end gap-0.5">
-                        <span
-                          className={
-                            f.odds != null
-                              ? 'text-xs tabular-nums text-amber-100/95'
-                              : 'text-[10px] font-medium text-white/78 tabular-nums'
-                          }
-                        >
-                          {f.odds != null ? `@${f.odds.toFixed(2)}` : '—'}
-                        </span>
-                        {f.result != null && (
-                          <span
-                            className={`text-[9px] font-bold px-1.5 py-0.5 rounded border ${resultPillClass(f.result)}`}
-                          >
-                            {resultLabel(f.result)}
-                          </span>
-                        )}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+                    </div>
+                  ) : null}
+                </div>
               )}
             </div>
           ) : (
