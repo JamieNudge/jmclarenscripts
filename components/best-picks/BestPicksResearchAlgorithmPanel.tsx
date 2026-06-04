@@ -95,6 +95,26 @@ function ConsensusPickRow({ pick, className = '' }: { pick: DailyConsensusPickPa
   );
 }
 
+function LockedConsensusPlaceholderRow({ className = '' }: { className?: string }) {
+  return (
+    <li className={`rounded-xl border border-white/15 bg-white/[0.06] px-3 py-2.5 shrink-0 ${className}`.trim()}>
+      <div className="flex w-full min-w-0 flex-col gap-2.5">
+        <div className="w-full min-w-0 space-y-1.5">
+          <div className="h-4 w-3/4 rounded bg-white/16" />
+          <div className="h-3 w-2/3 rounded bg-white/10" />
+          <div className="h-3 w-1/2 rounded bg-white/10" />
+        </div>
+        <div className="flex w-full min-w-0 flex-row flex-wrap items-center gap-1.5">
+          <span className="h-6 w-20 rounded-md border border-white/15 bg-white/10" />
+          <span className="h-5 w-24 rounded-md border border-white/15 bg-white/10" />
+          <span className="h-4 w-10 rounded bg-white/10" />
+          <span className="h-5 w-14 rounded-md border border-white/15 bg-white/10" />
+        </div>
+      </div>
+    </li>
+  );
+}
+
 function DownloadAppTeaser({ hiddenCount, label }: { hiddenCount: number; label: string }) {
   return (
     <div className="rounded-xl border border-amber-200/35 bg-black/72 backdrop-blur-sm px-4 py-3 text-center shadow-lg shadow-black/25">
@@ -174,6 +194,8 @@ export function BestPicksResearchAlgorithmPanel({
     TEASER_VISIBLE_COUNT + TEASER_BLURRED_COUNT,
   );
   const hiddenConsensusCount = Math.max(0, consensusPicks.length - visibleConsensusPicks.length);
+  const blurredPlaceholderCount = Math.max(0, TEASER_BLURRED_COUNT - blurredConsensusPicks.length);
+  const showConsensusTeaser = !consensusLoading && !consensusError;
 
   const recordLine =
     consensus &&
@@ -242,14 +264,16 @@ export function BestPicksResearchAlgorithmPanel({
 
         {configured && (
           <>
-            {hasConsensusContent ? (
+            {showConsensusTeaser ? (
               <div className="space-y-2 pb-1">
-                <ul className="space-y-2">
-                  {visibleConsensusPicks.map((pick) => (
-                    <ConsensusPickRow key={`${pick.fixtureID}-${pick.band}`} pick={pick} />
-                  ))}
-                </ul>
-                {blurredConsensusPicks.length > 0 ? (
+                {visibleConsensusPicks.length > 0 ? (
+                  <ul className="space-y-2">
+                    {visibleConsensusPicks.map((pick) => (
+                      <ConsensusPickRow key={`${pick.fixtureID}-${pick.band}`} pick={pick} />
+                    ))}
+                  </ul>
+                ) : null}
+                {blurredConsensusPicks.length > 0 || blurredPlaceholderCount > 0 ? (
                   <div className="relative pt-1">
                     <div className="pointer-events-none absolute inset-x-0 bottom-0 top-10 bg-gradient-to-b from-transparent via-black/35 to-black/80" />
                     <ul
@@ -262,6 +286,9 @@ export function BestPicksResearchAlgorithmPanel({
                           pick={pick}
                           className="blur-[3px]"
                         />
+                      ))}
+                      {Array.from({ length: blurredPlaceholderCount }).map((_, i) => (
+                        <LockedConsensusPlaceholderRow key={`placeholder-${i}`} className="blur-[3px]" />
                       ))}
                     </ul>
                     <div className="absolute inset-x-3 bottom-3">
