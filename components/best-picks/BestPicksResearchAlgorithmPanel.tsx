@@ -28,6 +28,8 @@ export const bestPicksResearchAlgorithmPanelTitle = FOOTBALL_PREDICTIONS_RESEARC
 
 const scrollArea =
   'min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-1 -mr-0.5 [scrollbar-gutter:stable] scroll-smooth overscroll-y-contain';
+const TEASER_VISIBLE_COUNT = 3;
+const TEASER_BLURRED_COUNT = 3;
 
 function bandPillClass(band: string): string {
   const b = band.toLowerCase();
@@ -53,7 +55,7 @@ function outcomeClass(outcome: string): string {
   }
 }
 
-function ConsensusPickRow({ pick }: { pick: DailyConsensusPickParsed }) {
+function ConsensusPickRow({ pick, className = '' }: { pick: DailyConsensusPickParsed; className?: string }) {
   const score =
     pick.homeScore != null && pick.awayScore != null
       ? `${pick.homeScore}-${pick.awayScore}`
@@ -63,7 +65,7 @@ function ConsensusPickRow({ pick }: { pick: DailyConsensusPickParsed }) {
   const kickoffLine = pick.kickoff?.trim() || null;
 
   return (
-    <li className="rounded-xl border border-white/15 bg-white/[0.06] px-3 py-2.5 shrink-0">
+    <li className={`rounded-xl border border-white/15 bg-white/[0.06] px-3 py-2.5 shrink-0 ${className}`.trim()}>
       {/* Stacked: full-width fixture + context first; model / outcome chips on a second row (no side-by-side squeeze). */}
       <div className="flex w-full min-w-0 flex-col gap-2.5">
         <div className="w-full min-w-0">
@@ -111,11 +113,11 @@ function splitPerModelFixtureLine(fixtureLine: string): { home: string; away: st
   };
 }
 
-function PerModelPickRow({ row }: { row: ResearchAlgorithmPerModelStructured }) {
+function PerModelPickRow({ row, className = '' }: { row: ResearchAlgorithmPerModelStructured; className?: string }) {
   const { home, away } = splitPerModelFixtureLine(row.fixtureLine);
 
   return (
-    <li className="rounded-xl border border-white/15 bg-white/[0.06] px-3 py-2.5 shrink-0">
+    <li className={`rounded-xl border border-white/15 bg-white/[0.06] px-3 py-2.5 shrink-0 ${className}`.trim()}>
       <div className="flex w-full min-w-0 flex-col gap-2.5">
         <div className="w-full min-w-0">
           <p className="text-sm font-medium text-white leading-relaxed text-pretty">
@@ -164,6 +166,28 @@ function PerModelPickRow({ row }: { row: ResearchAlgorithmPerModelStructured }) 
         ) : null}
       </div>
     </li>
+  );
+}
+
+function DownloadAppTeaser({ hiddenCount, label }: { hiddenCount: number; label: string }) {
+  return (
+    <div className="rounded-xl border border-amber-200/35 bg-black/72 backdrop-blur-sm px-4 py-3 text-center shadow-lg shadow-black/25">
+      <p className="text-sm font-semibold text-amber-100/95">Unlock the full daily list in StatStrike</p>
+      <p className="mt-1 text-xs leading-relaxed text-white/90">
+        Showing the first {TEASER_VISIBLE_COUNT} {label}
+        {hiddenCount > 0 ? ` with ${hiddenCount} more available in the app today.` : '.'}
+      </p>
+      {STAT_STRIKE_APP_STORE_URL ? (
+        <a
+          href={STAT_STRIKE_APP_STORE_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-3 inline-flex items-center justify-center rounded-lg border border-amber-200/45 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-100/95 transition-colors hover:bg-amber-500/15 hover:border-amber-200/60"
+        >
+          Download the iOS app
+        </a>
+      ) : null}
+    </div>
   );
 }
 
@@ -244,6 +268,15 @@ export function BestPicksResearchAlgorithmPanel({
   const consensusPicks = consensus?.picks ?? [];
   const hasConsensusContent = consensusPicks.length > 0;
   const hasResearchContent = rows.length > 0;
+  const visibleConsensusPicks = consensusPicks.slice(0, TEASER_VISIBLE_COUNT);
+  const blurredConsensusPicks = consensusPicks.slice(
+    TEASER_VISIBLE_COUNT,
+    TEASER_VISIBLE_COUNT + TEASER_BLURRED_COUNT,
+  );
+  const hiddenConsensusCount = Math.max(0, consensusPicks.length - visibleConsensusPicks.length);
+  const visibleResearchRows = rows.slice(0, TEASER_VISIBLE_COUNT);
+  const blurredResearchRows = rows.slice(TEASER_VISIBLE_COUNT, TEASER_VISIBLE_COUNT + TEASER_BLURRED_COUNT);
+  const hiddenResearchCount = Math.max(0, rows.length - visibleResearchRows.length);
 
   const recordLine =
     consensus &&
@@ -339,11 +372,33 @@ export function BestPicksResearchAlgorithmPanel({
         {configured && (
           <>
             {hasConsensusContent ? (
-              <ul className="space-y-2 pb-1">
-                {consensusPicks.map((pick) => (
-                  <ConsensusPickRow key={`${pick.fixtureID}-${pick.band}`} pick={pick} />
-                ))}
-              </ul>
+              <div className="space-y-2 pb-1">
+                <ul className="space-y-2">
+                  {visibleConsensusPicks.map((pick) => (
+                    <ConsensusPickRow key={`${pick.fixtureID}-${pick.band}`} pick={pick} />
+                  ))}
+                </ul>
+                {blurredConsensusPicks.length > 0 ? (
+                  <div className="relative pt-1">
+                    <div className="pointer-events-none absolute inset-x-0 bottom-0 top-10 bg-gradient-to-b from-transparent via-black/35 to-black/80" />
+                    <ul
+                      aria-hidden
+                      className="space-y-2 select-none opacity-55 [mask-image:linear-gradient(to_bottom,rgba(0,0,0,0.95),rgba(0,0,0,0.18))]"
+                    >
+                      {blurredConsensusPicks.map((pick) => (
+                        <ConsensusPickRow
+                          key={`blurred-${pick.fixtureID}-${pick.band}`}
+                          pick={pick}
+                          className="blur-[3px]"
+                        />
+                      ))}
+                    </ul>
+                    <div className="absolute inset-x-3 bottom-3">
+                      <DownloadAppTeaser hiddenCount={hiddenConsensusCount} label="consensus picks" />
+                    </div>
+                  </div>
+                ) : null}
+              </div>
             ) : null}
 
             {showDivider && <div className="border-t border-white/15 my-3 shrink-0" aria-hidden />}
@@ -364,25 +419,61 @@ export function BestPicksResearchAlgorithmPanel({
                 </p>
               )}
               {hasResearchContent && (
-                <ul className="space-y-2 pb-0.5 mt-1">
-                  {rows.map((row, i) =>
-                    row.perModel ? (
-                      <PerModelPickRow key={`pm-${row.perModel.fixtureLine}-${i}`} row={row.perModel} />
-                    ) : (
-                      <li
-                        key={`${row.primary.slice(0, 80)}-${i}`}
-                        className="rounded-xl border border-white/15 bg-white/[0.05] px-3 py-2.5 shrink-0"
+                <div className="space-y-2 pb-0.5 mt-1">
+                  <ul className="space-y-2">
+                    {visibleResearchRows.map((row, i) =>
+                      row.perModel ? (
+                        <PerModelPickRow key={`pm-${row.perModel.fixtureLine}-${i}`} row={row.perModel} />
+                      ) : (
+                        <li
+                          key={`${row.primary.slice(0, 80)}-${i}`}
+                          className="rounded-xl border border-white/15 bg-white/[0.05] px-3 py-2.5 shrink-0"
+                        >
+                          <p className="text-sm font-medium text-white leading-snug">{row.primary}</p>
+                          {row.secondary ? (
+                            <p className="text-xs text-white/94 mt-0.5 leading-snug whitespace-pre-line">
+                              {row.secondary}
+                            </p>
+                          ) : null}
+                        </li>
+                      ),
+                    )}
+                  </ul>
+                  {blurredResearchRows.length > 0 ? (
+                    <div className="relative pt-1">
+                      <div className="pointer-events-none absolute inset-x-0 bottom-0 top-10 bg-gradient-to-b from-transparent via-black/35 to-black/80" />
+                      <ul
+                        aria-hidden
+                        className="space-y-2 select-none opacity-55 [mask-image:linear-gradient(to_bottom,rgba(0,0,0,0.95),rgba(0,0,0,0.18))]"
                       >
-                        <p className="text-sm font-medium text-white leading-snug">{row.primary}</p>
-                        {row.secondary ? (
-                          <p className="text-xs text-white/94 mt-0.5 leading-snug whitespace-pre-line">
-                            {row.secondary}
-                          </p>
-                        ) : null}
-                      </li>
-                    ),
-                  )}
-                </ul>
+                        {blurredResearchRows.map((row, i) =>
+                          row.perModel ? (
+                            <PerModelPickRow
+                              key={`blurred-pm-${row.perModel.fixtureLine}-${i}`}
+                              row={row.perModel}
+                              className="blur-[3px]"
+                            />
+                          ) : (
+                            <li
+                              key={`blurred-${row.primary.slice(0, 80)}-${i}`}
+                              className="rounded-xl border border-white/15 bg-white/[0.05] px-3 py-2.5 shrink-0 blur-[3px]"
+                            >
+                              <p className="text-sm font-medium text-white leading-snug">{row.primary}</p>
+                              {row.secondary ? (
+                                <p className="text-xs text-white/94 mt-0.5 leading-snug whitespace-pre-line">
+                                  {row.secondary}
+                                </p>
+                              ) : null}
+                            </li>
+                          ),
+                        )}
+                      </ul>
+                      <div className="absolute inset-x-3 bottom-3">
+                        <DownloadAppTeaser hiddenCount={hiddenResearchCount} label="selections" />
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
               )}
             </div>
           </>
