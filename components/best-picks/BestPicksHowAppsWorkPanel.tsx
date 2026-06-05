@@ -88,13 +88,49 @@ export function BestPicksHowAppsWorkPanel() {
                 statStrike?.appStoreUrl,
                 'StatStrike',
                 statStrike?.icon,
-                <>
-                  A daily selection of Over 2.5 and Under 2.5 football forecasts. The statistical criteria used is
-                  listed with most forecasts and the algorithm&apos;s confidence in its work. App includes Track Record
-                  for performance transparency, filters to tighten focus on big fixture list days, aggregate market
-                  odds when available before KO, and a Best Performing category that only includes forecasts where the
-                  model has a minimum of 70% league accuracy historically.
-                </>,
+                <div className="space-y-2">
+                  <p>StatStrike is a football forecasting app focused on quality over quantity.</p>
+                  <p>
+                    Every day, StatStrike monitors leagues worldwide and publishes Over 2.5 and Under 2.5 forecasts from
+                    leagues currently meeting performance standards. Rather than flooding users with predictions, the
+                    app focuses on fixtures supported by historical league performance and statistical criteria.
+                  </p>
+                  <div>
+                    <p className="font-semibold text-amber-100/95 mt-3">Each forecast includes:</p>
+                    <ul className="list-disc pl-4 space-y-0.5 mt-1">
+                      <li>Model confidence score</li>
+                      <li>Supporting fixture statistics</li>
+                      <li>Historical league performance metrics</li>
+                      <li>Aggregate market odds (when available)</li>
+                      <li>Transparent track record data</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-amber-100/95 mt-3">FEATURES</p>
+                    <ul className="list-disc pl-4 space-y-0.5 mt-1">
+                      <li>Daily Over 2.5 forecasts</li>
+                      <li>Daily Under 2.5 forecasts</li>
+                      <li>Best Performing category featuring leagues with a proven historical record</li>
+                      <li>Full prediction archive</li>
+                      <li>Automatic result tracking</li>
+                      <li>Performance transparency</li>
+                      <li>Fixture filtering tools</li>
+                      <li>Historical league qualification metrics</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-amber-100/95 mt-3">TRANSPARENCY FIRST</p>
+                    <p className="mt-1">Every forecast is archived and tracked.</p>
+                    <p>
+                      Users can review historical performance, win rates and prediction history directly within the
+                      app. No deleted losses. No cherry-picked results. Just measurable forecasting performance.
+                    </p>
+                    <p>
+                      StatStrike is designed for football fans who value transparency, accountability and
+                      data-driven forecasting.
+                    </p>
+                  </div>
+                </div>,
               )}
               {storeAppLink(
                 goalLab?.appStoreUrl,
