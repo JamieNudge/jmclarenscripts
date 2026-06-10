@@ -31,10 +31,10 @@ export function BestPicksHubFooter() {
           </p>
           <p className="w-full min-w-0 break-words text-left text-[11px] leading-relaxed text-white/91 md:max-w-sm md:text-right md:text-xs">
             <HubFootballLink href="/football-predictions/privacy" className="underline hover:text-white/94 underline-offset-2">
-              Privacy policy
+              Privacy policies
             </HubFootballLink>
             <span className="text-white/68"> · </span>
-            Google ads may appear on this page; the privacy policy covers cookies and how ads work.
+            Google ads may appear on this page; the privacy policies cover cookies, ads, and app-specific links.
           </p>
         </div>
       </div>

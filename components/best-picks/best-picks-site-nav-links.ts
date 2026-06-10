@@ -16,5 +16,5 @@ export const bestPicksSiteNavPrimary = [
 
 export const bestPicksSiteNavFooterExtra = [
   { href: '/football-predictions/contact', label: 'Contact' },
-  { href: '/football-predictions/privacy', label: 'Privacy policy' },
+  { href: '/football-predictions/privacy', label: 'Privacy policies' },
 ] as const;

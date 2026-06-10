@@ -25,10 +25,10 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
           <AdSenseAutoPlaceholder orientation="horizontal" className="w-full min-h-[90px]" />
           <p className="max-w-[min(100%,42rem)] text-left text-[11px] leading-relaxed text-white/75 md:text-xs">
             <HubFootballLink href="/football-predictions/privacy" className="underline hover:text-white/70 underline-offset-2">
-              Privacy policy
+              Privacy policies
             </HubFootballLink>
             <span className="text-white/25"> · </span>
-            Google ads may appear on this page; the privacy policy covers cookies and how ads work.
+            Google ads may appear on this page; the privacy policies cover cookies, ads, and app-specific links.
           </p>
         </footer>
       </div>

@@ -55,7 +55,7 @@ export default function BestPicksAboutPage() {
             href="/football-predictions/privacy"
             className="text-amber-200/80 underline underline-offset-2 hover:text-amber-100/90"
           >
-            Privacy policy
+            Privacy policies
           </HubFootballLink>
           .
         </p>
