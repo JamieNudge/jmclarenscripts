@@ -12,9 +12,9 @@ This note records the privacy-messaging setup completed for the iOS production a
   - Banner ad unit: `ca-app-pub-6299348707363839/1452051181`
   - Test banner ad unit: `ca-app-pub-3940256099942544/2435281174`
 - GoalLab
-  - Privacy: `https://jmclarenscripts.vercel.app/privacy/goallab`
-  - Terms: `https://jmclarenscripts.vercel.app/terms/goallab`
-  - Content rating: `https://jmclarenscripts.vercel.app/goallab/content-rating`
+  - Privacy: `https://thegoallab.net/privacy/goallab`
+  - Terms: `https://thegoallab.net/terms/goallab`
+  - Content rating: `https://thegoallab.net/goallab/content-rating`
   - AdMob app ID: `ca-app-pub-6299348707363839~9063455739`
   - Banner ad unit #1: `ca-app-pub-6299348707363839/3877635718`
   - Banner ad unit #2: `ca-app-pub-6299348707363839/8178573889`

@@ -13,9 +13,9 @@ Canonical app legal URLs may live on different hosts. Use the full URLs below in
 ---
 
 ## GoalLab
-- Privacy: https://jmclarenscripts.vercel.app/privacy/goallab
-- Terms: https://jmclarenscripts.vercel.app/terms/goallab
-- Content rating: https://jmclarenscripts.vercel.app/goallab/content-rating
+- Privacy: https://thegoallab.net/privacy/goallab
+- Terms: https://thegoallab.net/terms/goallab
+- Content rating: https://thegoallab.net/goallab/content-rating
 
 ---
 
