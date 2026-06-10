@@ -5,9 +5,9 @@ This note records the privacy-messaging setup completed for the iOS production a
 ## Apps covered
 
 - StatStrike
-  - Privacy: `https://jmclarenscripts.vercel.app/privacy/statstrike`
-  - Terms: `https://jmclarenscripts.vercel.app/terms/statstrike`
-  - Content rating: `https://jmclarenscripts.vercel.app/statstrike/content-rating`
+  - Privacy: `https://thegoallab.net/privacy/statstrike`
+  - Terms: `https://thegoallab.net/terms/statstrike`
+  - Content rating: `https://thegoallab.net/statstrike/content-rating`
   - AdMob app ID: `ca-app-pub-6299348707363839~3486565467`
   - Banner ad unit: `ca-app-pub-6299348707363839/1452051181`
   - Test banner ad unit: `ca-app-pub-3940256099942544/2435281174`

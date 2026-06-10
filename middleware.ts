@@ -23,6 +23,13 @@ const PASSTHROUGH_FILES = new Set([
   '/app-ads.txt',
 ]);
 
+function isDirectAppPolicyPath(pathname: string): boolean {
+  if (/^\/(privacy|terms|support|accessibility|disclaimer)\/[^/]+(?:\/.*)?$/.test(pathname)) {
+    return true;
+  }
+  return /^\/[^/]+\/content-rating$/.test(pathname);
+}
+
 function redirectStripFpPrefix(request: NextRequest, restWithSlash: string): NextResponse {
   const u = request.nextUrl.clone();
   const path = restWithSlash.startsWith('/') ? restWithSlash : `/${restWithSlash}`;
@@ -60,6 +67,10 @@ export function middleware(request: NextRequest) {
   }
 
   if (pathname.startsWith('/.well-known/')) {
+    return NextResponse.next(forward);
+  }
+
+  if (isDirectAppPolicyPath(pathname)) {
     return NextResponse.next(forward);
   }
 

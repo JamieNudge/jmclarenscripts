@@ -4,9 +4,9 @@ import { BestPicksSubpageShell } from '@/components/best-picks/BestPicksSubpageS
 import { HubFootballLink } from '@/components/hub/HubFootballLink';
 
 export const metadata: Metadata = {
-  title: 'Privacy — Football Predictions & Data-Driven Picks & blog',
+  title: 'App and Page Privacy Policies — Football Predictions & Data-Driven Picks',
   description:
-    'Privacy policy for the Football Predictions & Data-Driven Picks hub, related pages, and the blog: cookies, Google AdSense, and how to get in touch.',
+    'Privacy information for Football Predictions & Data-Driven Picks, related pages, the blog, and links to app-specific privacy policies hosted on the GoalLab domain.',
 };
 
 export default function BestPicksPrivacyPage() {
@@ -14,15 +14,14 @@ export default function BestPicksPrivacyPage() {
     <BestPicksSubpageShell
       alwaysShowHeaderNav
       showBackToHub={false}
-      title="Privacy policy"
-      description="This policy covers Football Predictions & Data-Driven Picks (all pages under /football-predictions), the blog (index and posts under /blog), and how data is used there. It does not describe the separate app showcase home page."
+      title="App and Page Privacy Policies"
+      description="This page covers Football Predictions & Data-Driven Picks, related blog pages, and links to the separate privacy policies for individual apps discussed on the GoalLab site."
     >
       <section className="space-y-6 text-sm md:text-base leading-relaxed text-white/90">
         <p>
           This site section is operated by Jamie McLaren as the publisher of Football Predictions &amp; Data-Driven
-          Picks and the blog. It is separate from the <Link href="/privacy" className="text-amber-200/80 underline underline-offset-2 hover:text-amber-100/90">main portfolio and app showcase privacy policy</Link> (for
-          the home page and other non–hub pages) and from privacy policies for individual
-          iPhone or iPad apps, which are linked below.
+          Picks and the blog. It explains how privacy works for these GoalLab web pages and links to
+          separate privacy policies for individual iPhone and iPad apps, which are listed below.
         </p>
         <p>
           For privacy questions about <strong className="font-medium text-white">this publication only</strong>, contact:{' '}

@@ -1,15 +1,14 @@
 # Production policy & support links
 
-**Base URL:** `https://jmclarenscripts.vercel.app`
-
-Use these full URLs in app store listings (e.g. Google Play, App Store) and in-app links.
+Canonical app legal URLs may live on different hosts. Use the full URLs below in app store listings and in-app links.
 
 ---
 
 ## StatStrike
-- Privacy: https://jmclarenscripts.vercel.app/privacy/statstrike
-- Support: https://jmclarenscripts.vercel.app/support/statstrike
-- Terms: https://jmclarenscripts.vercel.app/terms/statstrike
+- Privacy: https://thegoallab.net/privacy/statstrike
+- Support: https://thegoallab.net/support/statstrike
+- Terms: https://thegoallab.net/terms/statstrike
+- Content rating: https://thegoallab.net/statstrike/content-rating
 
 ---
 
@@ -53,6 +52,4 @@ Use these full URLs in app store listings (e.g. Google Play, App Store) and in-a
 - Recipe Saviour: `/privacy/recipe-saviour`, `/support/recipe-saviour`
 - Desktop Totem: `/privacy/desktop-totem`, `/support/desktop-totem`, `/accessibility/desktop-totem`
 - Aikido Vocabulary: `/privacy/aikido-vocabulary`
-- StatStrike content rating: https://jmclarenscripts.vercel.app/statstrike/content-rating
-
-Prefix any path with `https://jmclarenscripts.vercel.app` for the full URL.
+- StatStrike content rating: https://thegoallab.net/statstrike/content-rating

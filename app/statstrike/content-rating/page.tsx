@@ -10,14 +10,13 @@ export default function StatStrikeContentRatingPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#111827] to-[#1f2937] text-white">
       <div className="max-w-3xl mx-auto px-4 py-12 md:py-16">
-        {/* Back to portfolio */}
         <div className="mb-6">
           <a
             href="/"
             className="inline-flex items-center gap-2 text-sm text-white/80 hover:text-white rounded-full bg-white/10 px-4 py-2 border border-white/20 hover:bg-white/15 transition-colors"
           >
             <span className="text-lg leading-none">←</span>
-            <span>Back to portfolio</span>
+            <span>Back to GoalLab</span>
           </a>
         </div>
 

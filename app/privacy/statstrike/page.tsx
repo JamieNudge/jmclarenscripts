@@ -11,7 +11,6 @@ export default function StatStrikePrivacySupportPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#111827] to-[#1f2937] text-white">
       <div className="max-w-3xl mx-auto px-4 py-12 md:py-16">
-        {/* Back button */}
         <Link
           href="/"
           className="inline-flex items-center gap-2 text-white/80 hover:text-white transition-colors mb-8"
@@ -19,7 +18,7 @@ export default function StatStrikePrivacySupportPage() {
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
-          Back to portfolio
+          Back to GoalLab
         </Link>
 
         <h1 className="text-3xl md:text-4xl font-bold mb-4">
