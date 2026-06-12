@@ -7,6 +7,7 @@ import {
   layerHandleLabelsForId,
   layerHandlePairLabel,
 } from '@/lib/dgc/layer-handles';
+import { LayerAreaPercentInput } from '@/components/dgc/LayerAreaPercentInput';
 import type { DgcDocumentController } from '@/lib/dgc/use-dgc-document';
 import { edgeDisplayName, effectiveFieldWidth, fieldOriginY, contentWidth } from '@/lib/dgc/types';
 
@@ -170,6 +171,11 @@ export default function DgcPreview({
         ) : null}
       </div>
 
+      <p className="mb-3 rounded-full border border-white/15 bg-black/50 px-4 py-2 text-center text-sm text-white/90">
+        Drag {activeLabels.start} along the bottom edge. Drag {activeLabels.end} to the left, top,
+        or right edge to set the target area.
+      </p>
+
       <div
         ref={containerRef}
         className={`relative w-full overflow-hidden rounded-xl bg-[#111] ${fullscreen ? 'min-h-[70vh]' : 'min-h-[420px]'}`}
@@ -331,35 +337,41 @@ export default function DgcPreview({
           })}
         </svg>
 
-        <div className="pointer-events-none absolute left-1/2 top-3 max-w-[min(92%,640px)] -translate-x-1/2 rounded-full border border-white/15 bg-black/70 px-4 py-2 text-center text-sm text-white">
-          Drag {activeLabels.start} along the bottom edge. Drag {activeLabels.end} to the left,
-          top, or right edge to set the target area.
-        </div>
-
         <div className="absolute right-3 top-1/2 flex max-h-[min(70%,420px)] -translate-y-1/2 flex-col gap-1.5 overflow-y-auto rounded-xl border border-white/15 bg-black/75 p-2">
           {controller.document.layers.map((layer, index) => {
             const isActive = layer.id === controller.document.activeLayerID;
-            const state = controller.layerStates[layer.id];
             return (
-              <button
+              <div
                 key={layer.id}
-                type="button"
-                onClick={() => controller.selectLayer(layer.id)}
                 className={`rounded-lg px-3 py-2 text-left text-sm transition ${
                   isActive
                     ? 'bg-sky-500/25 font-semibold text-sky-100 ring-1 ring-sky-400/40'
                     : 'text-white/80 hover:bg-white/10'
                 } ${!layer.isVisible ? 'opacity-50' : ''}`}
-                title={layer.name}
               >
-                <span className="font-mono font-bold">{layerHandlePairLabel(index)}</span>
-                <span className="mt-0.5 block truncate text-xs opacity-80">{layer.name}</span>
-                {state?.result ? (
-                  <span className="block text-xs opacity-70">
-                    {formatNumber(state.result.areaFraction * 100)}%
-                  </span>
-                ) : null}
-              </button>
+                <button
+                  type="button"
+                  onClick={() => controller.selectLayer(layer.id)}
+                  className="w-full text-left"
+                  title={layer.name}
+                >
+                  <span className="font-mono font-bold">{layerHandlePairLabel(index)}</span>
+                  <span className="mt-0.5 block truncate text-xs opacity-80">{layer.name}</span>
+                </button>
+                <label
+                  className="mt-2 flex items-center gap-1.5 text-xs"
+                  onClick={(event) => event.stopPropagation()}
+                  onPointerDown={(event) => event.stopPropagation()}
+                >
+                  <span className="shrink-0 opacity-80">Field %</span>
+                  <LayerAreaPercentInput
+                    value={layer.areaFraction}
+                    onCommit={(fraction) =>
+                      controller.updateLayerAreaFraction(layer.id, fraction)
+                    }
+                  />
+                </label>
+              </div>
             );
           })}
         </div>

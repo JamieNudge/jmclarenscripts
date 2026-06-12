@@ -126,6 +126,20 @@ export function useDgcDocument(initial?: DGCDesignDocument) {
     [mutate],
   );
 
+  const updateLayerAreaFraction = useCallback(
+    (layerId: string, value: number) => {
+      mutate((d) => {
+        const index = d.layers.findIndex((layer) => layer.id === layerId);
+        if (index < 0) return;
+        d.layers[index].areaFraction = Math.min(
+          Math.max(value, MIN_FRACTION),
+          MAX_FRACTION,
+        );
+      });
+    },
+    [mutate],
+  );
+
   const updateAreaFromPreview = useCallback(
     (endX: number, endY: number, edge: PartitionEdge) => {
       const layer = activeLayer(document);
@@ -258,6 +272,7 @@ export function useDgcDocument(initial?: DGCDesignDocument) {
     updateFieldHeight,
     updateStartX,
     updateAreaFraction,
+    updateLayerAreaFraction,
     updateAreaFromPreview,
     applyPreset,
     applySampleValues: () => applyPreset(SKETCH_PRESETS[1]),

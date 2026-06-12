@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, type ReactNode } from 'react';
+import { LayerAreaPercentInput } from '@/components/dgc/LayerAreaPercentInput';
 import { formatNumber } from '@/lib/dgc/document';
 import type { DgcDocumentController } from '@/lib/dgc/use-dgc-document';
 import { layerHandlePairLabel, MAX_LAYERS } from '@/lib/dgc/layer-handles';
@@ -230,10 +231,21 @@ function DgcLayersPanel({ controller }: { controller: DgcDocumentController }) {
                       }
                     />
                   </div>
+                  <div
+                    className="mt-2 flex items-center gap-2"
+                    onClick={(event) => event.stopPropagation()}
+                  >
+                    <span className="shrink-0 text-xs text-white/70">Field of Wealth %</span>
+                    <LayerAreaPercentInput
+                      value={layer.areaFraction}
+                      onCommit={(fraction) =>
+                        controller.updateLayerAreaFraction(layer.id, fraction)
+                      }
+                    />
+                  </div>
                   {state?.result ? (
                     <p className="mt-1 text-sm text-white/75">
-                      {edgeDisplayName(state.result.edge)} ·{' '}
-                      {formatNumber(state.result.areaFraction * 100)}%
+                      {edgeDisplayName(state.result.edge)}
                     </p>
                   ) : (
                     <p className="mt-1 text-sm text-red-300">{state?.errorMessage}</p>
