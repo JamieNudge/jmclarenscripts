@@ -5,11 +5,11 @@ import { getDatabase } from 'firebase-admin/database';
 import { isManualPicksAdminAuthorized } from '@/lib/admin-manual-picks-auth';
 import { getFirebaseAdminApp } from '@/lib/firebase-admin';
 import {
-  type AnotherThingPost,
   andAnotherThingPostsPath,
   normalizeNewPost,
   normalizeUpdatePost,
   parsePostsMap,
+  parseStoredPost,
 } from '@/lib/and-another-thing';
 
 export const dynamic = 'force-dynamic';
@@ -45,17 +45,6 @@ function revalidateAndAnotherThingPages() {
   revalidatePath('/football-predictions/and-another-thing');
 }
 
-function isAnotherThingPost(val: unknown): val is AnotherThingPost {
-  if (val == null || typeof val !== 'object' || Array.isArray(val)) return false;
-  const o = val as Record<string, unknown>;
-  return (
-    typeof o.id === 'string' &&
-    typeof o.text === 'string' &&
-    typeof o.createdAt === 'string' &&
-    (o.imageUrl === null || typeof o.imageUrl === 'string')
-  );
-}
-
 export async function PATCH(req: NextRequest) {
   if (!process.env.ADMIN_MANUAL_PICKS_KEY?.trim()) return misconfigured();
   if (!isManualPicksAdminAuthorized(req)) {
@@ -79,10 +68,11 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 });
     }
     const raw = snap.val();
-    if (!isAnotherThingPost(raw)) {
+    const existing = parseStoredPost(id, raw);
+    if (!existing) {
       return NextResponse.json({ error: 'Invalid stored post shape' }, { status: 500 });
     }
-    const n = normalizeUpdatePost(body, raw);
+    const n = normalizeUpdatePost(body, existing);
     if (!n.ok) {
       return NextResponse.json({ error: n.error }, { status: 400 });
     }

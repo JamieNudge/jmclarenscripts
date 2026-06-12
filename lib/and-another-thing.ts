@@ -45,23 +45,28 @@ function createdAtToIsoString(v: unknown): string {
   return '';
 }
 
+export function parseStoredPost(key: string, raw: unknown): AnotherThingPost | null {
+  if (raw == null || typeof raw !== 'object' || Array.isArray(raw)) return null;
+  const o = raw as Record<string, unknown>;
+  const id = typeof o.id === 'string' ? o.id : key;
+  const text = typeof o.text === 'string' ? o.text.slice(0, MAX_TEXT) : '';
+  const imageUrl =
+    o.imageUrl === null
+      ? null
+      : typeof o.imageUrl === 'string' && o.imageUrl.trim()
+        ? o.imageUrl.trim().slice(0, MAX_URL)
+        : null;
+  const createdAt = createdAtToIsoString(o.createdAt);
+  if (!id || !text || !createdAt) return null;
+  return { id, text, imageUrl, createdAt };
+}
+
 export function parsePostsMap(val: unknown): AnotherThingPost[] {
   if (val == null || typeof val !== 'object' || Array.isArray(val)) return [];
   const out: AnotherThingPost[] = [];
   for (const [k, v] of Object.entries(val as Record<string, unknown>)) {
-    if (v == null || typeof v !== 'object' || Array.isArray(v)) continue;
-    const o = v as Record<string, unknown>;
-    const id = typeof o.id === 'string' ? o.id : k;
-    const text = typeof o.text === 'string' ? o.text.slice(0, MAX_TEXT) : '';
-    const imageUrl =
-      o.imageUrl === null
-        ? null
-        : typeof o.imageUrl === 'string' && o.imageUrl.trim()
-          ? o.imageUrl.trim().slice(0, MAX_URL)
-          : null;
-    const createdAt = createdAtToIsoString(o.createdAt);
-    if (!id || !text || !createdAt) continue;
-    out.push({ id, text, imageUrl, createdAt });
+    const post = parseStoredPost(k, v);
+    if (post) out.push(post);
   }
   return out.sort((a, b) => (a.createdAt < b.createdAt ? 1 : a.createdAt > b.createdAt ? -1 : 0));
 }
