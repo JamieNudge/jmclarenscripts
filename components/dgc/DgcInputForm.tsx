@@ -3,6 +3,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { formatNumber } from '@/lib/dgc/document';
 import type { DgcDocumentController } from '@/lib/dgc/use-dgc-document';
+import { layerHandlePairLabel, MAX_LAYERS } from '@/lib/dgc/layer-handles';
 import { DEFAULT_TOTAL_POPULATION_LABEL, edgeDisplayName } from '@/lib/dgc/types';
 
 function parseNumericInput(raw: string): number | null {
@@ -199,9 +200,10 @@ function DgcLayersPanel({ controller }: { controller: DgcDocumentController }) {
   return (
     <Panel title="Layers">
       <div className="space-y-2">
-        {controller.document.layers.map((layer) => {
+        {controller.document.layers.map((layer, index) => {
           const isActive = layer.id === controller.document.activeLayerID;
           const state = controller.layerStates[layer.id];
+          const handlePair = layerHandlePairLabel(index);
           return (
             <div
               key={layer.id}
@@ -223,14 +225,19 @@ function DgcLayersPanel({ controller }: { controller: DgcDocumentController }) {
                   {layer.isVisible ? '👁' : '🚫'}
                 </button>
                 <div className="min-w-0 flex-1">
-                  <input
-                    className="w-full rounded border border-white/15 bg-[#111] px-2 py-1 text-white"
-                    value={layer.name}
-                    onClick={(event) => event.stopPropagation()}
-                    onChange={(event) =>
-                      controller.renameLayer(layer.id, event.target.value)
-                    }
-                  />
+                  <div className="flex items-center gap-2">
+                    <span className="rounded bg-white/10 px-2 py-0.5 font-mono text-xs font-bold text-white">
+                      {handlePair}
+                    </span>
+                    <input
+                      className="min-w-0 flex-1 rounded border border-white/15 bg-[#111] px-2 py-1 text-white"
+                      value={layer.name}
+                      onClick={(event) => event.stopPropagation()}
+                      onChange={(event) =>
+                        controller.renameLayer(layer.id, event.target.value)
+                      }
+                    />
+                  </div>
                   {state?.result ? (
                     <p className="mt-1 text-sm text-white/75">
                       {edgeDisplayName(state.result.edge)} ·{' '}
@@ -262,21 +269,26 @@ function DgcLayersPanel({ controller }: { controller: DgcDocumentController }) {
           );
         })}
       </div>
-      <div className="mt-3 flex gap-2">
+      <div className="mt-3 flex flex-wrap items-center gap-2">
         <button
           type="button"
           onClick={controller.addLayer}
-          className="rounded-lg bg-sky-600 px-3 py-2 text-sm font-medium text-white"
+          disabled={!controller.canAddLayer}
+          className="rounded-lg bg-sky-600 px-3 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-40"
         >
           Add Layer
         </button>
         <button
           type="button"
           onClick={controller.duplicateActiveLayer}
-          className="rounded-lg border border-white/15 px-3 py-2 text-sm text-white"
+          disabled={!controller.canAddLayer}
+          className="rounded-lg border border-white/15 px-3 py-2 text-sm text-white disabled:cursor-not-allowed disabled:opacity-40"
         >
           Duplicate
         </button>
+        <span className="text-xs text-white/60">
+          {controller.document.layers.length}/{MAX_LAYERS} layers
+        </span>
       </div>
     </Panel>
   );

@@ -8,6 +8,12 @@ import {
   SKETCH_PRESETS,
   touchDocument,
 } from './document';
+import {
+  canAddLayer,
+  layerHandleLabelsForId,
+  layerHandlePairLabel,
+  MAX_LAYERS,
+} from './layer-handles';
 import { areaForRegion, solve } from './partition-solver';
 import type {
   DGCDesignDocument,
@@ -155,6 +161,7 @@ export function useDgcDocument(initial?: DGCDesignDocument) {
 
   const addLayer = useCallback(() => {
     mutate((d) => {
+      if (!canAddLayer(d.layers.length)) return;
       const layer = makeDefaultLayer(d.layers.length + 1, d.canvas);
       d.layers.push(layer);
       d.activeLayerID = layer.id;
@@ -163,6 +170,7 @@ export function useDgcDocument(initial?: DGCDesignDocument) {
 
   const duplicateActiveLayer = useCallback(() => {
     mutate((d) => {
+      if (!canAddLayer(d.layers.length)) return;
       const current = d.layers.find((layer) => layer.id === d.activeLayerID);
       if (!current) return;
       const copy = {
@@ -261,6 +269,8 @@ export function useDgcDocument(initial?: DGCDesignDocument) {
     renameLayer,
     updatePngScale,
     sketchPresets: SKETCH_PRESETS,
+    canAddLayer: canAddLayer(document.layers.length),
+    maxLayers: MAX_LAYERS,
     canCopyResult: !!activeState?.result,
     solveCheck: solve,
   };

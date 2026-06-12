@@ -3,10 +3,19 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as CanvasGeometry from '@/lib/dgc/canvas-geometry';
 import { CanvasLayout } from '@/lib/dgc/canvas-layout';
+import {
+  layerHandleLabelsForId,
+  layerHandlePairLabel,
+} from '@/lib/dgc/layer-handles';
 import type { DgcDocumentController } from '@/lib/dgc/use-dgc-document';
 import { edgeDisplayName, effectiveFieldWidth, fieldOriginY } from '@/lib/dgc/types';
 
 type PreviewHandle = 'start' | 'end';
+
+interface HandleHit {
+  layerId: string;
+  handle: PreviewHandle;
+}
 
 interface DgcPreviewProps {
   controller: DgcDocumentController;
@@ -22,7 +31,7 @@ export default function DgcPreview({
   const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ width: 800, height: 520 });
   const [draggingHandle, setDraggingHandle] = useState<PreviewHandle | null>(null);
-  const [hoveredHandle, setHoveredHandle] = useState<PreviewHandle | null>(null);
+  const [hoveredHit, setHoveredHit] = useState<HandleHit | null>(null);
   const [readout, setReadout] = useState<string | null>(null);
 
   useEffect(() => {
@@ -48,6 +57,9 @@ export default function DgcPreview({
   const band = layout.totalPopulationBandScreenRect;
   const active = controller.activeLayer;
   const activeState = controller.activeState;
+  const activeLabels = active
+    ? layerHandleLabelsForId(controller.document.layers, active.id)
+    : { start: 'A', end: 'B' };
 
   const pointerToScreen = useCallback((event: React.PointerEvent | PointerEvent) => {
     const rect = containerRef.current?.getBoundingClientRect();
@@ -56,42 +68,65 @@ export default function DgcPreview({
   }, []);
 
   const nearestHandle = useCallback(
-    (point: { x: number; y: number }): PreviewHandle | null => {
-      if (!activeState?.result || !active) return null;
-      const start = layout.screenPointField(active.startX, 0);
-      const end = layout.screenPointField(
-        activeState.result.endX,
-        activeState.result.endY,
-      );
-      const startDist = distanceSquared(point, start);
-      const endDist = distanceSquared(point, end);
-      const hit = 70 * 70;
-      if (startDist <= hit && startDist <= endDist) return 'start';
-      if (endDist <= hit) return 'end';
-      return null;
+    (point: { x: number; y: number }): HandleHit | null => {
+      const hitRadiusSquared = 70 * 70;
+      let best: HandleHit | null = null;
+      let bestDist = Infinity;
+
+      for (const layer of controller.document.layers) {
+        if (!layer.isVisible) continue;
+        const state = controller.layerStates[layer.id];
+        if (!state?.result) continue;
+
+        const start = layout.screenPointField(state.input.startX, 0);
+        const end = layout.screenPointField(state.result.endX, state.result.endY);
+        const startDist = distanceSquared(point, start);
+        const endDist = distanceSquared(point, end);
+
+        if (startDist <= hitRadiusSquared && startDist < bestDist) {
+          best = { layerId: layer.id, handle: 'start' };
+          bestDist = startDist;
+        }
+        if (endDist <= hitRadiusSquared && endDist < bestDist) {
+          best = { layerId: layer.id, handle: 'end' };
+          bestDist = endDist;
+        }
+      }
+
+      return best;
     },
-    [active, activeState, layout],
+    [controller.document.layers, controller.layerStates, layout],
   );
 
+  const beginHandleInteraction = (hit: HandleHit) => {
+    if (hit.layerId !== controller.document.activeLayerID) {
+      controller.selectLayer(hit.layerId);
+    }
+    setDraggingHandle(hit.handle);
+  };
+
   const onPointerDown = (event: React.PointerEvent) => {
-    if (!activeState?.result) return;
     const point = pointerToScreen(event);
-    const handle = nearestHandle(point);
-    if (!handle) return;
+    const hit = nearestHandle(point);
+    if (!hit) return;
     event.currentTarget.setPointerCapture(event.pointerId);
-    setDraggingHandle(handle);
+    beginHandleInteraction(hit);
   };
 
   const onPointerMove = (event: React.PointerEvent) => {
     const point = pointerToScreen(event);
-    if (draggingHandle === 'start') {
+    const labels = active
+      ? layerHandleLabelsForId(controller.document.layers, active.id)
+      : activeLabels;
+
+    if (draggingHandle === 'start' && active) {
       const fieldPoint = layout.fieldPointFromScreen(point);
       const clamped = Math.min(
         Math.max(fieldPoint.x, -controller.document.canvas.leftMargin),
         effectiveFieldWidth(controller.document.canvas),
       );
       controller.updateStartX(clamped);
-      setReadout(`A: start x = ${formatNumber(clamped)}`);
+      setReadout(`${labels.start}: start x = ${formatNumber(clamped)}`);
       return;
     }
     if (draggingHandle === 'end' && active && activeState?.result) {
@@ -104,11 +139,11 @@ export default function DgcPreview({
       const fraction =
         controller.layerStates[active.id]?.result?.areaFraction ?? 0;
       setReadout(
-        `B: ${edgeDisplayName(snapped.edge)} (${formatNumber(snapped.point.x)}, ${formatNumber(snapped.point.y)}) ${formatNumber(fraction * 100)}%`,
+        `${labels.end}: ${edgeDisplayName(snapped.edge)} (${formatNumber(snapped.point.x)}, ${formatNumber(snapped.point.y)}) ${formatNumber(fraction * 100)}%`,
       );
       return;
     }
-    setHoveredHandle(nearestHandle(point));
+    setHoveredHit(nearestHandle(point));
   };
 
   const onPointerUp = (event: React.PointerEvent) => {
@@ -116,7 +151,7 @@ export default function DgcPreview({
       event.currentTarget.releasePointerCapture(event.pointerId);
     }
     setDraggingHandle(null);
-    setHoveredHandle(null);
+    setHoveredHit(null);
     setReadout(null);
   };
 
@@ -183,8 +218,18 @@ export default function DgcPreview({
           <line
             x1={layout.screenPointCanvas(0, fieldOriginY(controller.document.canvas)).x}
             y1={layout.screenPointCanvas(0, fieldOriginY(controller.document.canvas)).y}
-            x2={layout.screenPointCanvas(layout.canvasWidthValue, fieldOriginY(controller.document.canvas)).x}
-            y2={layout.screenPointCanvas(layout.canvasWidthValue, fieldOriginY(controller.document.canvas)).y}
+            x2={
+              layout.screenPointCanvas(
+                layout.canvasWidthValue,
+                fieldOriginY(controller.document.canvas),
+              ).x
+            }
+            y2={
+              layout.screenPointCanvas(
+                layout.canvasWidthValue,
+                fieldOriginY(controller.document.canvas),
+              ).y
+            }
             stroke="#888"
             strokeWidth={2}
             strokeLinecap="round"
@@ -260,29 +305,73 @@ export default function DgcPreview({
             );
           })}
 
-          {active && activeState?.result ? (
-            <>
-              {renderHandle(
-                layout.screenPointField(active.startX, 0),
-                '#FF9500',
-                'A',
-                hoveredHandle === 'start' || draggingHandle === 'start',
-              )}
-              {renderHandle(
-                layout.screenPointField(
-                  activeState.result.endX,
-                  activeState.result.endY,
-                ),
-                active.colorHex,
-                'B',
-                hoveredHandle === 'end' || draggingHandle === 'end',
-              )}
-            </>
-          ) : null}
+          {controller.document.layers.map((layer) => {
+            if (!layer.isVisible) return null;
+            const state = controller.layerStates[layer.id];
+            if (!state?.result) return null;
+            const isActive = layer.id === controller.document.activeLayerID;
+            const labels = layerHandleLabelsForId(controller.document.layers, layer.id);
+            const startHovered =
+              hoveredHit?.layerId === layer.id && hoveredHit.handle === 'start';
+            const endHovered =
+              hoveredHit?.layerId === layer.id && hoveredHit.handle === 'end';
+            const startDragging = isActive && draggingHandle === 'start';
+            const endDragging = isActive && draggingHandle === 'end';
+
+            return (
+              <g key={`handles-${layer.id}`}>
+                {renderHandle(
+                  layout.screenPointField(state.input.startX, 0),
+                  '#FF9500',
+                  labels.start,
+                  'start',
+                  startHovered || startDragging,
+                  !isActive,
+                )}
+                {renderHandle(
+                  layout.screenPointField(state.result.endX, state.result.endY),
+                  layer.colorHex,
+                  labels.end,
+                  'end',
+                  endHovered || endDragging,
+                  !isActive,
+                )}
+              </g>
+            );
+          })}
         </svg>
 
-        <div className="pointer-events-none absolute left-1/2 top-3 -translate-x-1/2 rounded-full border border-white/15 bg-black/70 px-4 py-2 text-sm text-white">
-          Drag A to choose the starting point. Drag B to adjust the target area.
+        <div className="pointer-events-none absolute left-1/2 top-3 max-w-[min(92%,640px)] -translate-x-1/2 rounded-full border border-white/15 bg-black/70 px-4 py-2 text-center text-sm text-white">
+          Drag {activeLabels.start} to choose the starting point. Drag {activeLabels.end} to
+          adjust the target area.
+        </div>
+
+        <div className="absolute right-3 top-1/2 flex max-h-[min(70%,420px)] -translate-y-1/2 flex-col gap-1.5 overflow-y-auto rounded-xl border border-white/15 bg-black/75 p-2">
+          {controller.document.layers.map((layer, index) => {
+            const isActive = layer.id === controller.document.activeLayerID;
+            const state = controller.layerStates[layer.id];
+            return (
+              <button
+                key={layer.id}
+                type="button"
+                onClick={() => controller.selectLayer(layer.id)}
+                className={`rounded-lg px-3 py-2 text-left text-sm transition ${
+                  isActive
+                    ? 'bg-sky-500/25 font-semibold text-sky-100 ring-1 ring-sky-400/40'
+                    : 'text-white/80 hover:bg-white/10'
+                } ${!layer.isVisible ? 'opacity-50' : ''}`}
+                title={layer.name}
+              >
+                <span className="font-mono font-bold">{layerHandlePairLabel(index)}</span>
+                <span className="mt-0.5 block truncate text-xs opacity-80">{layer.name}</span>
+                {state?.result ? (
+                  <span className="block text-xs opacity-70">
+                    {formatNumber(state.result.areaFraction * 100)}%
+                  </span>
+                ) : null}
+              </button>
+            );
+          })}
         </div>
 
         {readout ? (
@@ -299,16 +388,26 @@ function renderHandle(
   point: { x: number; y: number },
   color: string,
   label: string,
+  role: PreviewHandle,
   active: boolean,
+  dimmed: boolean,
 ) {
-  const radius = active ? 18 : 16;
+  const radius = active ? 18 : dimmed ? 12 : 16;
+  const opacity = dimmed ? 0.45 : 1;
   return (
-    <g key={label}>
+    <g key={`${label}-${role}`} opacity={opacity}>
       <circle cx={point.x} cy={point.y} r={radius} fill={color} fillOpacity={0.18} />
-      <circle cx={point.x} cy={point.y} r={8} fill={color} stroke="white" strokeWidth={1.5} />
+      <circle
+        cx={point.x}
+        cy={point.y}
+        r={active ? 8 : 6}
+        fill={color}
+        stroke="white"
+        strokeWidth={1.5}
+      />
       <text
         x={point.x}
-        y={point.y + (label === 'A' ? 24 : -24)}
+        y={point.y + (role === 'start' ? 24 : -24)}
         textAnchor="middle"
         fill="white"
         fontSize={12}

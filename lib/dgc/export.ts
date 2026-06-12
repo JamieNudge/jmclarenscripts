@@ -1,5 +1,6 @@
 import * as CanvasGeometry from './canvas-geometry';
 import { CanvasLayout } from './canvas-layout';
+import { layerHandleLabelsForId } from './layer-handles';
 import type { CanvasSettings, DrawContext } from './types';
 import { fieldOriginY } from './types';
 
@@ -60,13 +61,15 @@ export function exportSvg(
     ? document.layers
     : document.layers.filter((layer) => layer.id === activeLayerID);
 
-  for (const layer of layers) {
+  for (let layerIndex = 0; layerIndex < layers.length; layerIndex += 1) {
+    const layer = layers[layerIndex];
     if (!layer.isVisible) continue;
     const state = layerStates[layer.id];
     if (!state?.result) continue;
     const { result, input } = state;
     const color = layer.colorHex;
     const isActive = layer.id === activeLayerID;
+    const labels = layerHandleLabelsForId(document.layers, layer.id);
     const vertices = CanvasGeometry.partitionPolygonInsideField(
       input.width,
       input.height,
@@ -90,7 +93,9 @@ export function exportSvg(
     svg += `<line x1="${end.x}" y1="${end.y}" x2="${lineEnd.x}" y2="${lineEnd.y}" stroke="${color}" stroke-width="${isActive ? 3 : 1.5}" stroke-linecap="round"/>\n`;
     if (isActive || exportWholeComposition) {
       svg += `<circle cx="${start.x}" cy="${start.y}" r="6" fill="#FF9500"/>\n`;
+      svg += `<text x="${start.x}" y="${start.y + 16}" text-anchor="middle" font-size="11" font-weight="700" fill="#333">${escapeXml(labels.start)}</text>\n`;
       svg += `<circle cx="${end.x}" cy="${end.y}" r="6" fill="${color}"/>\n`;
+      svg += `<text x="${end.x}" y="${end.y - 10}" text-anchor="middle" font-size="11" font-weight="700" fill="#333">${escapeXml(labels.end)}</text>\n`;
     }
   }
 
