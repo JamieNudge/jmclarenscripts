@@ -62,6 +62,30 @@ export default function DgcPreview({
     ? layerHandleLabelsForId(controller.document.layers, active.id)
     : { start: 'A', end: 'B' };
 
+  const layerPickerLayout = useMemo(() => {
+    const canvasRight = layout.screenRect.x + layout.screenRect.width;
+    const stripLeft = field.x + field.width;
+    const stripWidth = canvasRight - stripLeft;
+    const maxWidth = 148;
+    const padding = 8;
+
+    if (stripWidth >= 72) {
+      return {
+        left: stripLeft + stripWidth / 2,
+        top: field.y + field.height / 2,
+        maxWidth: Math.min(maxWidth, stripWidth - padding),
+        maxHeight: Math.max(field.height - padding * 2, 120),
+      };
+    }
+
+    return {
+      left: canvasRight - 86,
+      top: layout.screenRect.y + layout.screenRect.height / 2,
+      maxWidth,
+      maxHeight: Math.min(layout.screenRect.height * 0.7, 420),
+    };
+  }, [field, layout.screenRect]);
+
   const pointerToScreen = useCallback((event: React.PointerEvent | PointerEvent) => {
     const rect = containerRef.current?.getBoundingClientRect();
     if (!rect) return { x: 0, y: 0 };
@@ -337,13 +361,21 @@ export default function DgcPreview({
           })}
         </svg>
 
-        <div className="absolute right-3 top-1/2 flex max-h-[min(70%,420px)] -translate-y-1/2 flex-col gap-1.5 overflow-y-auto rounded-xl border border-white/15 bg-black/75 p-2">
+        <div
+          className="absolute flex -translate-x-1/2 -translate-y-1/2 flex-col gap-1 overflow-y-auto rounded-xl border border-white/15 bg-black/75 p-1.5"
+          style={{
+            left: layerPickerLayout.left,
+            top: layerPickerLayout.top,
+            maxWidth: layerPickerLayout.maxWidth,
+            maxHeight: layerPickerLayout.maxHeight,
+          }}
+        >
           {controller.document.layers.map((layer, index) => {
             const isActive = layer.id === controller.document.activeLayerID;
             return (
               <div
                 key={layer.id}
-                className={`rounded-lg px-3 py-2 text-left text-sm transition ${
+                className={`rounded-lg px-2 py-1.5 text-left text-xs transition ${
                   isActive
                     ? 'bg-sky-500/25 font-semibold text-sky-100 ring-1 ring-sky-400/40'
                     : 'text-white/80 hover:bg-white/10'
@@ -355,17 +387,18 @@ export default function DgcPreview({
                   className="w-full text-left"
                   title={layer.name}
                 >
-                  <span className="font-mono font-bold">{layerHandlePairLabel(index)}</span>
-                  <span className="mt-0.5 block truncate text-xs opacity-80">{layer.name}</span>
+                  <span className="font-mono text-[11px] font-bold">{layerHandlePairLabel(index)}</span>
+                  <span className="mt-0.5 block truncate text-[10px] opacity-80">{layer.name}</span>
                 </button>
                 <label
-                  className="mt-2 flex items-center gap-1.5 text-xs"
+                  className="mt-1 flex items-center gap-1"
                   onClick={(event) => event.stopPropagation()}
                   onPointerDown={(event) => event.stopPropagation()}
                 >
-                  <span className="shrink-0 opacity-80">Field %</span>
+                  <span className="shrink-0 text-[10px] opacity-70">Field %</span>
                   <LayerAreaPercentInput
                     value={layer.areaFraction}
+                    className="w-14 min-w-0 rounded border border-white/15 bg-[#111] px-1.5 py-0.5 text-[11px] text-white"
                     onCommit={(fraction) =>
                       controller.updateLayerAreaFraction(layer.id, fraction)
                     }
