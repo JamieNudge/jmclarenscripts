@@ -6,6 +6,7 @@ import type { AnotherThingPost } from '@/lib/and-another-thing';
 
 const inputCls =
   'w-full rounded-lg bg-white/10 border border-white/20 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-cyan-500/60';
+const POSTS_CACHE_KEY = 'bestpicks_admin_and_another_thing_posts';
 
 type Props = { adminKey: string };
 
@@ -19,6 +20,7 @@ export function AdminAndAnotherThingSection({ adminKey }: Props) {
   const [status, setStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const textRef = useRef<HTMLTextAreaElement>(null);
+  const cacheReadyRef = useRef(false);
 
   const canUse = adminKey.trim().length > 0;
 
@@ -59,6 +61,43 @@ export function AdminAndAnotherThingSection({ adminKey }: Props) {
   useEffect(() => {
     if (canUse) void load();
   }, [canUse, load]);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(POSTS_CACHE_KEY);
+      if (!raw) {
+        cacheReadyRef.current = true;
+        return;
+      }
+      const parsed = JSON.parse(raw) as unknown;
+      if (Array.isArray(parsed)) {
+        const cached = parsed.filter(
+          (item): item is AnotherThingPost =>
+            !!item &&
+            typeof item === 'object' &&
+            typeof (item as AnotherThingPost).id === 'string' &&
+            typeof (item as AnotherThingPost).text === 'string' &&
+            typeof (item as AnotherThingPost).createdAt === 'string' &&
+            (((item as AnotherThingPost).imageUrl ?? null) === null ||
+              typeof (item as AnotherThingPost).imageUrl === 'string'),
+        );
+        if (cached.length > 0) setPosts(cached);
+      }
+    } catch {
+      /* ignore cache read errors */
+    } finally {
+      cacheReadyRef.current = true;
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!cacheReadyRef.current) return;
+    try {
+      localStorage.setItem(POSTS_CACHE_KEY, JSON.stringify(posts));
+    } catch {
+      /* ignore cache write errors */
+    }
+  }, [posts]);
 
   const cancelEdit = () => {
     setEditingId(null);

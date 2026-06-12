@@ -19,6 +19,7 @@ function authHeader(key: string): HeadersInit {
 
 const inputCls =
   'w-full rounded-lg bg-white/10 border border-white/20 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-500/60';
+const BLOG_POSTS_CACHE_KEY = 'bestpicks_admin_blog_posts';
 
 /** Matches {@link app/api/admin/blog-media/route.ts} client-side checks. */
 const BLOG_IMAGE_MAX_BYTES = 5 * 1024 * 1024;
@@ -66,6 +67,7 @@ export function AdminBlogSection({ adminKey }: Props) {
   const [bodyFuture, setBodyFuture] = useState<string[]>([]);
   const [headerImageDropOver, setHeaderImageDropOver] = useState(false);
   const [bodyImageDropOver, setBodyImageDropOver] = useState(false);
+  const cacheReadyRef = useRef(false);
 
   const clearBodyHistory = useCallback(() => {
     setBodyPast([]);
@@ -152,6 +154,43 @@ export function AdminBlogSection({ adminKey }: Props) {
   useEffect(() => {
     if (canUse) void loadCategories();
   }, [canUse, loadCategories]);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(BLOG_POSTS_CACHE_KEY);
+      if (!raw) {
+        cacheReadyRef.current = true;
+        return;
+      }
+      const parsed = JSON.parse(raw) as unknown;
+      if (Array.isArray(parsed)) {
+        const cached = parsed.filter(
+          (item): item is BlogPostRecord =>
+            !!item &&
+            typeof item === 'object' &&
+            typeof (item as BlogPostRecord).slug === 'string' &&
+            typeof (item as BlogPostRecord).title === 'string' &&
+            typeof (item as BlogPostRecord).updatedAt === 'string' &&
+            typeof (item as BlogPostRecord).bodyMarkdown === 'string' &&
+            typeof (item as BlogPostRecord).published === 'boolean',
+        );
+        if (cached.length > 0) setPosts(cached);
+      }
+    } catch {
+      /* ignore cache read errors */
+    } finally {
+      cacheReadyRef.current = true;
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!cacheReadyRef.current) return;
+    try {
+      localStorage.setItem(BLOG_POSTS_CACHE_KEY, JSON.stringify(posts));
+    } catch {
+      /* ignore cache write errors */
+    }
+  }, [posts]);
 
   const resetForm = () => {
     setEditingSlug(null);
