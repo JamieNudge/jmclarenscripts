@@ -1,6 +1,7 @@
 import * as CanvasGeometry from './canvas-geometry';
 import { CanvasLayout } from './canvas-layout';
 import type { CanvasSettings, DrawContext } from './types';
+import { fieldOriginY } from './types';
 
 function escapeXml(text: string): string {
   return text
@@ -38,11 +39,9 @@ export function exportSvg(
 <rect x="${layout.screenRect.x}" y="${layout.screenRect.y}" width="${layout.screenRect.width}" height="${layout.screenRect.height}" fill="none" stroke="#888" stroke-width="1"/>
 `;
 
-  const axisStart = layout.screenPointCanvas(0, canvas.bottomMargin);
-  const axisEnd = layout.screenPointCanvas(
-    layout.canvasWidthValue,
-    canvas.bottomMargin,
-  );
+  const axisY = fieldOriginY(canvas);
+  const axisStart = layout.screenPointCanvas(0, axisY);
+  const axisEnd = layout.screenPointCanvas(layout.canvasWidthValue, axisY);
   svg += `<line x1="${axisStart.x}" y1="${axisStart.y}" x2="${axisEnd.x}" y2="${axisEnd.y}" stroke="#666" stroke-width="2"/>\n`;
 
   const band = layout.totalPopulationBandScreenRect;

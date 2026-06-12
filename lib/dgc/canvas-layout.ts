@@ -1,5 +1,5 @@
 import type { CanvasSettings, PartitionEdge, Point2D, Rect2D, Size2D } from './types';
-import { canvasHeight, canvasWidth, effectiveFieldWidth } from './types';
+import { canvasHeight, canvasWidth, effectiveFieldWidth, fieldOriginY } from './types';
 
 function distanceSquared(a: Point2D, b: Point2D): number {
   const dx = a.x - b.x;
@@ -45,7 +45,7 @@ export class CanvasLayout {
   }
 
   get fieldScreenRect(): Rect2D {
-    const origin = this.screenPointCanvas(0 + this.canvas.leftMargin, this.canvas.bottomMargin);
+    const origin = this.screenPointCanvas(0 + this.canvas.leftMargin, fieldOriginY(this.canvas));
     const width = effectiveFieldWidth(this.canvas) * this.scale;
     const height = this.canvas.fieldHeight * this.scale;
     return {
@@ -58,7 +58,7 @@ export class CanvasLayout {
 
   get totalPopulationBandScreenRect(): Rect2D | null {
     if (this.canvas.totalPopulationWidth <= 0) return null;
-    const origin = this.screenPointCanvas(this.canvas.leftMargin, this.canvas.bottomMargin);
+    const origin = this.screenPointCanvas(this.canvas.leftMargin, fieldOriginY(this.canvas));
     const bandTopY = origin.y;
     const bandBottomY = this.screenPointCanvas(this.canvas.leftMargin, 0).y;
     return {
@@ -124,7 +124,7 @@ export class CanvasLayout {
   screenPointField(fieldX: number, fieldY: number): Point2D {
     return this.screenPointCanvas(
       this.canvas.leftMargin + fieldX,
-      this.canvas.bottomMargin + fieldY,
+      fieldOriginY(this.canvas) + fieldY,
     );
   }
 
@@ -144,7 +144,7 @@ export class CanvasLayout {
     const canvasPoint = this.canvasPointFromScreen(screenPoint);
     return {
       x: canvasPoint.x - this.canvas.leftMargin,
-      y: canvasPoint.y - this.canvas.bottomMargin,
+      y: canvasPoint.y - fieldOriginY(this.canvas),
     };
   }
 

@@ -38,8 +38,10 @@ export interface CanvasSettings {
   leftMargin: number;
   rightMargin: number;
   topMargin: number;
+  /** @deprecated Use totalPopulationHeight; kept for document compatibility. */
   bottomMargin: number;
   totalPopulationWidth: number;
+  totalPopulationHeight: number;
   fieldOfWealthWidthPercent: number;
   totalPopulationLabel: string;
 }
@@ -52,9 +54,14 @@ export const DEFAULT_CANVAS: CanvasSettings = {
   topMargin: 1,
   bottomMargin: 0.5,
   totalPopulationWidth: 12,
+  totalPopulationHeight: 0.5,
   fieldOfWealthWidthPercent: 100,
   totalPopulationLabel: DEFAULT_TOTAL_POPULATION_LABEL,
 };
+
+export function fieldOriginY(canvas: CanvasSettings): number {
+  return canvas.totalPopulationHeight;
+}
 
 export function effectiveFieldWidth(canvas: CanvasSettings): number {
   return canvas.totalPopulationWidth * (canvas.fieldOfWealthWidthPercent / 100);
@@ -79,10 +86,18 @@ export function normalizeCanvas(canvas: CanvasSettings): CanvasSettings {
         : 100;
   const totalPopulationLabel =
     canvas.totalPopulationLabel?.trim() || DEFAULT_TOTAL_POPULATION_LABEL;
+  const totalPopulationHeight =
+    canvas.totalPopulationHeight > 0
+      ? canvas.totalPopulationHeight
+      : canvas.bottomMargin > 0
+        ? canvas.bottomMargin
+        : DEFAULT_CANVAS.totalPopulationHeight;
 
   return syncFieldWidth({
     ...canvas,
     totalPopulationWidth,
+    totalPopulationHeight,
+    bottomMargin: totalPopulationHeight,
     fieldOfWealthWidthPercent,
     totalPopulationLabel,
   });
@@ -93,7 +108,7 @@ export function canvasWidth(canvas: CanvasSettings): number {
 }
 
 export function canvasHeight(canvas: CanvasSettings): number {
-  return canvas.bottomMargin + canvas.fieldHeight + canvas.topMargin;
+  return canvas.totalPopulationHeight + canvas.fieldHeight + canvas.topMargin;
 }
 
 export function minStartX(canvas: CanvasSettings): number {

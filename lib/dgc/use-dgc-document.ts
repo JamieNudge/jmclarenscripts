@@ -71,6 +71,16 @@ export function useDgcDocument(initial?: DGCDesignDocument) {
     [mutate],
   );
 
+  const updateTotalPopulationHeight = useCallback(
+    (value: number) => {
+      mutate((d) => {
+        d.canvas.totalPopulationHeight = Math.max(0, value);
+        d.canvas.bottomMargin = d.canvas.totalPopulationHeight;
+      });
+    },
+    [mutate],
+  );
+
   const updateFieldHeight = useCallback(
     (value: number) => mutate((d) => { d.canvas.fieldHeight = value; }),
     [mutate],
@@ -235,6 +245,7 @@ export function useDgcDocument(initial?: DGCDesignDocument) {
     updateTotalPopulationWidth,
     updateFieldOfWealthWidthPercent,
     updateTotalPopulationLabel,
+    updateTotalPopulationHeight,
     updateFieldHeight,
     updateLeftMargin,
     updateStartX,

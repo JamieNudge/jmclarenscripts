@@ -69,7 +69,7 @@ export function polygonArea(vertices: Point2D[]): number {
 }
 
 export function fieldOriginInCanvas(canvas: CanvasSettings): Point2D {
-  return { x: canvas.leftMargin, y: canvas.bottomMargin };
+  return { x: canvas.leftMargin, y: canvas.totalPopulationHeight };
 }
 
 function fieldRectangle(fieldWidth: number, fieldHeight: number): Point2D[] {

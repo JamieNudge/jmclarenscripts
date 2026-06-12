@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as CanvasGeometry from '@/lib/dgc/canvas-geometry';
 import { CanvasLayout } from '@/lib/dgc/canvas-layout';
 import type { DgcDocumentController } from '@/lib/dgc/use-dgc-document';
-import { edgeDisplayName, effectiveFieldWidth } from '@/lib/dgc/types';
+import { edgeDisplayName, effectiveFieldWidth, fieldOriginY } from '@/lib/dgc/types';
 
 type PreviewHandle = 'start' | 'end';
 
@@ -181,10 +181,10 @@ export default function DgcPreview({
           ) : null}
 
           <line
-            x1={layout.screenPointCanvas(0, controller.document.canvas.bottomMargin).x}
-            y1={layout.screenPointCanvas(0, controller.document.canvas.bottomMargin).y}
-            x2={layout.screenPointCanvas(layout.canvasWidthValue, controller.document.canvas.bottomMargin).x}
-            y2={layout.screenPointCanvas(layout.canvasWidthValue, controller.document.canvas.bottomMargin).y}
+            x1={layout.screenPointCanvas(0, fieldOriginY(controller.document.canvas)).x}
+            y1={layout.screenPointCanvas(0, fieldOriginY(controller.document.canvas)).y}
+            x2={layout.screenPointCanvas(layout.canvasWidthValue, fieldOriginY(controller.document.canvas)).x}
+            y2={layout.screenPointCanvas(layout.canvasWidthValue, fieldOriginY(controller.document.canvas)).y}
             stroke="#888"
             strokeWidth={2}
             strokeLinecap="round"

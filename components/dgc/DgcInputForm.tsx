@@ -93,15 +93,33 @@ export default function DgcInputForm({ controller }: { controller: DgcDocumentCo
     <div className="space-y-4">
       <h2 className="text-2xl font-semibold text-white">Inputs</h2>
 
-      <Panel title="Field of Wealth">
+      <Panel title="Total Population">
         <EditableNumericField
-          title="Total Population width"
+          title="Width"
           value={document.canvas.totalPopulationWidth}
           onCommit={controller.updateTotalPopulationWidth}
           prompt="e.g. 12"
         />
         <EditableNumericField
-          title="Field of Wealth width (% of Total Population)"
+          title="Height"
+          value={document.canvas.totalPopulationHeight}
+          onCommit={controller.updateTotalPopulationHeight}
+          prompt="e.g. 1"
+        />
+        <label className="block space-y-1">
+          <span className="text-base font-semibold text-white">Label</span>
+          <input
+            className="w-full rounded-lg border border-white/15 bg-[#111] px-3 py-2 text-white"
+            value={document.canvas.totalPopulationLabel}
+            placeholder={DEFAULT_TOTAL_POPULATION_LABEL}
+            onChange={(event) => controller.updateTotalPopulationLabel(event.target.value)}
+          />
+        </label>
+      </Panel>
+
+      <Panel title="Field of Wealth">
+        <EditableNumericField
+          title="Width (% of Total Population)"
           value={document.canvas.fieldOfWealthWidthPercent}
           onCommit={controller.updateFieldOfWealthWidthPercent}
           prompt="e.g. 100"
@@ -119,19 +137,9 @@ export default function DgcInputForm({ controller }: { controller: DgcDocumentCo
           onCommit={controller.updateLeftMargin}
           prompt="e.g. 4"
         />
-        <label className="block space-y-1">
-          <span className="text-base font-semibold text-white">Total Population label</span>
-          <input
-            className="w-full rounded-lg border border-white/15 bg-[#111] px-3 py-2 text-white"
-            value={document.canvas.totalPopulationLabel}
-            placeholder={DEFAULT_TOTAL_POPULATION_LABEL}
-            onChange={(event) => controller.updateTotalPopulationLabel(event.target.value)}
-          />
-        </label>
         <p className="text-sm text-white/80">
-          The orange band is Total Population. Field of Wealth sits above it, left-aligned, at the
-          width percentage you set. The left margin extends the bottom axis so point A can sit
-          outside the field.
+          Field of Wealth sits above Total Population, left-aligned at the width percentage you
+          set. The left margin extends the bottom axis so point A can sit outside the field.
         </p>
       </Panel>
 
