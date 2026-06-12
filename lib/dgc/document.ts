@@ -10,6 +10,7 @@ import {
   DEFAULT_EXPORT_PREFERENCES,
   effectiveFieldWidth,
   minStartX,
+  maxStartX,
   normalizeCanvas,
   syncFieldWidth,
 } from './types';
@@ -97,6 +98,10 @@ export function parseDocumentJson(raw: string): DGCDesignDocument {
     throw new Error('Invalid document: no layers.');
   }
   parsed.canvas = normalizeCanvas(parsed.canvas);
+  const maxStart = maxStartX(parsed.canvas);
+  for (const layer of parsed.layers) {
+    layer.startX = Math.min(Math.max(layer.startX, 0), maxStart);
+  }
   return parsed;
 }
 

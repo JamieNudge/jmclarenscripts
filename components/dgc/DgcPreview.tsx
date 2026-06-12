@@ -8,7 +8,7 @@ import {
   layerHandlePairLabel,
 } from '@/lib/dgc/layer-handles';
 import type { DgcDocumentController } from '@/lib/dgc/use-dgc-document';
-import { edgeDisplayName, effectiveFieldWidth, fieldOriginY } from '@/lib/dgc/types';
+import { edgeDisplayName, effectiveFieldWidth, fieldOriginY, contentWidth } from '@/lib/dgc/types';
 
 type PreviewHandle = 'start' | 'end';
 
@@ -122,7 +122,7 @@ export default function DgcPreview({
     if (draggingHandle === 'start' && active) {
       const fieldPoint = layout.fieldPointFromScreen(point);
       const clamped = Math.min(
-        Math.max(fieldPoint.x, -controller.document.canvas.leftMargin),
+        Math.max(fieldPoint.x, 0),
         effectiveFieldWidth(controller.document.canvas),
       );
       controller.updateStartX(clamped);
@@ -218,18 +218,8 @@ export default function DgcPreview({
           <line
             x1={layout.screenPointCanvas(0, fieldOriginY(controller.document.canvas)).x}
             y1={layout.screenPointCanvas(0, fieldOriginY(controller.document.canvas)).y}
-            x2={
-              layout.screenPointCanvas(
-                layout.canvasWidthValue,
-                fieldOriginY(controller.document.canvas),
-              ).x
-            }
-            y2={
-              layout.screenPointCanvas(
-                layout.canvasWidthValue,
-                fieldOriginY(controller.document.canvas),
-              ).y
-            }
+            x2={layout.screenPointCanvas(contentWidth(controller.document.canvas), fieldOriginY(controller.document.canvas)).x}
+            y2={layout.screenPointCanvas(contentWidth(controller.document.canvas), fieldOriginY(controller.document.canvas)).y}
             stroke="#888"
             strokeWidth={2}
             strokeLinecap="round"
@@ -342,8 +332,8 @@ export default function DgcPreview({
         </svg>
 
         <div className="pointer-events-none absolute left-1/2 top-3 max-w-[min(92%,640px)] -translate-x-1/2 rounded-full border border-white/15 bg-black/70 px-4 py-2 text-center text-sm text-white">
-          Drag {activeLabels.start} to choose the starting point. Drag {activeLabels.end} to
-          adjust the target area.
+          Drag {activeLabels.start} along the bottom edge. Drag {activeLabels.end} to the left,
+          top, or right edge to set the target area.
         </div>
 
         <div className="absolute right-3 top-1/2 flex max-h-[min(70%,420px)] -translate-y-1/2 flex-col gap-1.5 overflow-y-auto rounded-xl border border-white/15 bg-black/75 p-2">

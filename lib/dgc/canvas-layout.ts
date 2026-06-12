@@ -45,7 +45,7 @@ export class CanvasLayout {
   }
 
   get fieldScreenRect(): Rect2D {
-    const origin = this.screenPointCanvas(0 + this.canvas.leftMargin, fieldOriginY(this.canvas));
+    const origin = this.screenPointCanvas(0, fieldOriginY(this.canvas));
     const width = effectiveFieldWidth(this.canvas) * this.scale;
     const height = this.canvas.fieldHeight * this.scale;
     return {
@@ -58,9 +58,9 @@ export class CanvasLayout {
 
   get totalPopulationBandScreenRect(): Rect2D | null {
     if (this.canvas.totalPopulationWidth <= 0) return null;
-    const origin = this.screenPointCanvas(this.canvas.leftMargin, fieldOriginY(this.canvas));
+    const origin = this.screenPointCanvas(0, fieldOriginY(this.canvas));
     const bandTopY = origin.y;
-    const bandBottomY = this.screenPointCanvas(this.canvas.leftMargin, 0).y;
+    const bandBottomY = this.screenPointCanvas(0, 0).y;
     return {
       x: origin.x,
       y: bandTopY,
@@ -74,40 +74,8 @@ export class CanvasLayout {
     return this.totalPopulationBandScreenRect;
   }
 
-  partitionLineDrawEndpoint(fromB: Point2D, toA: Point2D): Point2D {
-    const band = this.totalPopulationBandScreenRect;
-    if (!band) return toA;
-
-    const dx = toA.x - fromB.x;
-    const dy = toA.y - fromB.y;
-    if (Math.abs(dx) < 1e-9 && Math.abs(dy) < 1e-9) return toA;
-
-    let maxT = 1;
-    const tol = 1;
-
-    if (Math.abs(dy) > 1e-9) {
-      for (const yEdge of [band.y + band.height, band.y]) {
-        const t = (yEdge - fromB.y) / dy;
-        if (t < 1 - 1e-9) continue;
-        const x = fromB.x + t * dx;
-        if (x >= band.x - tol && x <= band.x + band.width + tol) {
-          maxT = Math.max(maxT, t);
-        }
-      }
-    }
-
-    if (Math.abs(dx) > 1e-9) {
-      for (const xEdge of [band.x, band.x + band.width]) {
-        const t = (xEdge - fromB.x) / dx;
-        if (t < 1 - 1e-9) continue;
-        const y = fromB.y + t * dy;
-        if (y >= band.y - tol && y <= band.y + band.height + tol) {
-          maxT = Math.max(maxT, t);
-        }
-      }
-    }
-
-    return { x: fromB.x + maxT * dx, y: fromB.y + maxT * dy };
+  partitionLineDrawEndpoint(_fromB: Point2D, toA: Point2D): Point2D {
+    return toA;
   }
 
   screenPointCanvas(canvasX: number, canvasY: number): Point2D {
@@ -122,10 +90,7 @@ export class CanvasLayout {
   }
 
   screenPointField(fieldX: number, fieldY: number): Point2D {
-    return this.screenPointCanvas(
-      this.canvas.leftMargin + fieldX,
-      fieldOriginY(this.canvas) + fieldY,
-    );
+    return this.screenPointCanvas(fieldX, fieldOriginY(this.canvas) + fieldY);
   }
 
   canvasPointFromScreen(screenPoint: Point2D): Point2D {
@@ -143,7 +108,7 @@ export class CanvasLayout {
   fieldPointFromScreen(screenPoint: Point2D): Point2D {
     const canvasPoint = this.canvasPointFromScreen(screenPoint);
     return {
-      x: canvasPoint.x - this.canvas.leftMargin,
+      x: canvasPoint.x,
       y: canvasPoint.y - fieldOriginY(this.canvas),
     };
   }

@@ -20,7 +20,7 @@ import type {
   LayerSolveState,
   PartitionEdge,
 } from './types';
-import { maxStartX, minStartX, effectiveFieldWidth, normalizeCanvas, syncFieldWidth } from './types';
+import { maxStartX, effectiveFieldWidth, normalizeCanvas, syncFieldWidth } from './types';
 
 const MIN_FRACTION = 0.0001;
 const MAX_FRACTION = 0.9999;
@@ -45,7 +45,13 @@ export function useDgcDocument(initial?: DGCDesignDocument) {
   }, []);
 
   const replaceDocument = useCallback((next: DGCDesignDocument) => {
-    setDocument({ ...next, canvas: normalizeCanvas(next.canvas) });
+    const canvas = normalizeCanvas(next.canvas);
+    const maxStart = maxStartX(canvas);
+    const layers = next.layers.map((layer) => ({
+      ...layer,
+      startX: Math.min(Math.max(layer.startX, 0), maxStart),
+    }));
+    setDocument({ ...next, canvas, layers });
   }, []);
 
   const updateTotalPopulationWidth = useCallback(
@@ -92,18 +98,13 @@ export function useDgcDocument(initial?: DGCDesignDocument) {
     [mutate],
   );
 
-  const updateLeftMargin = useCallback(
-    (value: number) => mutate((d) => { d.canvas.leftMargin = Math.max(0, value); }),
-    [mutate],
-  );
-
   const updateStartX = useCallback(
     (value: number) => {
       mutate((d) => {
         const index = d.layers.findIndex((layer) => layer.id === d.activeLayerID);
         if (index < 0) return;
         d.layers[index].startX = Math.min(
-          Math.max(value, minStartX(d.canvas)),
+          Math.max(value, 0),
           maxStartX(d.canvas),
         );
       });
@@ -255,7 +256,6 @@ export function useDgcDocument(initial?: DGCDesignDocument) {
     updateTotalPopulationLabel,
     updateTotalPopulationHeight,
     updateFieldHeight,
-    updateLeftMargin,
     updateStartX,
     updateAreaFraction,
     updateAreaFromPreview,

@@ -132,24 +132,19 @@ export default function DgcInputForm({ controller }: { controller: DgcDocumentCo
           onCommit={controller.updateFieldHeight}
           prompt="e.g. 8"
         />
-        <EditableNumericField
-          title="Left margin (poverty axis)"
-          value={document.canvas.leftMargin}
-          onCommit={controller.updateLeftMargin}
-          prompt="e.g. 4"
-        />
         <p className="text-sm text-white/80">
           Field of Wealth sits above Total Population, left-aligned at the width percentage you
-          set. The left margin extends the bottom axis so point A can sit outside the field.
+          set. Each layer starts on the bottom edge of the field; drag the end handle to the left,
+          top, or right edge to set the target area from the bottom-left corner.
         </p>
       </Panel>
 
       <Panel title="Active Layer">
         <EditableNumericField
-          title="Start on Bottom Axis"
+          title="Start on Bottom Edge"
           value={activeLayer?.startX ?? 0}
           onCommit={controller.updateStartX}
-          prompt="e.g. 3 or -2"
+          prompt="e.g. 3"
         />
         <AreaTargetField
           key={activeLayer?.id ?? 'none'}
@@ -157,11 +152,8 @@ export default function DgcInputForm({ controller }: { controller: DgcDocumentCo
           onCommit={controller.updateAreaFraction}
         />
         <p className="text-sm text-white/80">
-          Type an area target (e.g. 66%) and B moves to match. Dragging B updates this value.
-        </p>
-        <p className="text-sm text-white/80">
-          Use a negative start value to place A on the poverty axis extension, left of the Field of
-          Wealth.
+          Type an area target (e.g. 66%) and the end handle moves to match. Dragging the end
+          handle updates this value.
         </p>
       </Panel>
 

@@ -34,12 +34,10 @@ describe('PartitionSolver', () => {
     expect(result.computedArea).toBeCloseTo(64, 4);
   });
 
-  it('solves outside start on poverty axis', () => {
-    const result = solve(
-      input({ width: 10, height: 8, startX: -2, areaFraction: 0.15, minStartX: -4 }),
-    );
-    expect(result.computedArea).toBeCloseTo(12, 0);
-    expect(result.endY).toBeGreaterThan(0);
+  it('rejects start before bottom-left corner', () => {
+    expect(() =>
+      solve(input({ width: 10, height: 8, startX: -2, areaFraction: 0.15 })),
+    ).toThrow(PartitionSolverError);
   });
 
   it('rejects invalid area fraction', () => {

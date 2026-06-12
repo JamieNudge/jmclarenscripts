@@ -92,108 +92,8 @@ function solveInsideStart(input: SolverInput): PartitionResult {
   return makeResult('right', input, width, endY);
 }
 
-function binarySearch(
-  lower: number,
-  upper: number,
-  targetArea: number,
-  areaAt: (candidate: number) => number,
-): number {
-  let low = lower;
-  let high = upper;
-  const areaLow = areaAt(low);
-  const areaHigh = areaAt(high);
-
-  if (areaLow > targetArea + TOLERANCE || areaHigh + TOLERANCE < targetArea) {
-    throw new PartitionSolverError(
-      'unsolvedEdge',
-      'The solver could not place an endpoint on the left edge for this input.',
-    );
-  }
-
-  for (let i = 0; i < 80; i += 1) {
-    const mid = (low + high) / 2;
-    const area = areaAt(mid);
-    if (area < targetArea) {
-      low = mid;
-    } else {
-      high = mid;
-    }
-  }
-  return (low + high) / 2;
-}
-
-function solveOnEdge(
-  input: SolverInput,
-  edge: PartitionEdge,
-  targetArea: number,
-): { x: number; y: number } {
-  switch (edge) {
-    case 'left': {
-      const value = binarySearch(0, input.height, targetArea, (candidate) =>
-        CanvasGeometry.partitionedAreaInsideField(
-          input.width,
-          input.height,
-          input.startX,
-          0,
-          candidate,
-          'left',
-        ),
-      );
-      return { x: 0, y: value };
-    }
-    case 'top': {
-      const value = binarySearch(0, input.width, targetArea, (candidate) =>
-        CanvasGeometry.partitionedAreaInsideField(
-          input.width,
-          input.height,
-          input.startX,
-          candidate,
-          input.height,
-          'top',
-        ),
-      );
-      return { x: value, y: input.height };
-    }
-    case 'right': {
-      const value = binarySearch(0, input.height, targetArea, (candidate) =>
-        CanvasGeometry.partitionedAreaInsideField(
-          input.width,
-          input.height,
-          input.startX,
-          input.width,
-          candidate,
-          'right',
-        ),
-      );
-      return { x: input.width, y: value };
-    }
-  }
-}
-
-function solveOutsideStart(input: SolverInput): PartitionResult {
-  const targetArea = input.width * input.height * input.areaFraction;
-  const effectiveStart = Math.max(0, input.startX);
-  const leftThreshold = (effectiveStart * input.height) / 2;
-  const topThreshold = (input.height * (effectiveStart + input.width)) / 2;
-
-  let edge: PartitionEdge;
-  if (targetArea <= leftThreshold + TOLERANCE) {
-    edge = 'left';
-  } else if (targetArea <= topThreshold + TOLERANCE) {
-    edge = 'top';
-  } else {
-    edge = 'right';
-  }
-
-  const solved = solveOnEdge(input, edge, targetArea);
-  return makeResult(edge, input, solved.x, solved.y);
-}
-
 export function solve(input: SolverInput): PartitionResult {
   validate(input);
-  if (input.startX < -TOLERANCE) {
-    return solveOutsideStart(input);
-  }
   return solveInsideStart(input);
 }
 
@@ -205,17 +105,6 @@ export function areaForRegion(
   endX: number,
   endY: number,
 ): number {
-  if (startX < -TOLERANCE) {
-    return CanvasGeometry.partitionedAreaInsideField(
-      width,
-      height,
-      startX,
-      endX,
-      endY,
-      edge,
-    );
-  }
-
   switch (edge) {
     case 'left':
       return (startX * endY) / 2;

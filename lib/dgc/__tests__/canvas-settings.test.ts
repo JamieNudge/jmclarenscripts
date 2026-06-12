@@ -34,7 +34,7 @@ describe('CanvasSettings', () => {
     expect(normalized.fieldOfWealthWidthPercent).toBe(100);
     expect(normalized.totalPopulationLabel).toBe('Total Population');
     expect(normalized.totalPopulationHeight).toBe(0.5);
-    expect(normalized.bottomMargin).toBe(0.5);
+    expect(normalized.leftMargin).toBe(0);
     expect(normalized.fieldWidth).toBe(10);
   });
 });

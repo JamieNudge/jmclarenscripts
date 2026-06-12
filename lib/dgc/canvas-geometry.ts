@@ -68,8 +68,8 @@ export function polygonArea(vertices: Point2D[]): number {
   return Math.abs(sum) / 2;
 }
 
-export function fieldOriginInCanvas(canvas: CanvasSettings): Point2D {
-  return { x: canvas.leftMargin, y: canvas.totalPopulationHeight };
+export function fieldOriginInCanvas(_canvas: CanvasSettings): Point2D {
+  return { x: 0, y: _canvas.totalPopulationHeight };
 }
 
 function fieldRectangle(fieldWidth: number, fieldHeight: number): Point2D[] {

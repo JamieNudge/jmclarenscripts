@@ -49,7 +49,7 @@ export interface CanvasSettings {
 export const DEFAULT_CANVAS: CanvasSettings = {
   fieldWidth: 12,
   fieldHeight: 8,
-  leftMargin: 4,
+  leftMargin: 0,
   rightMargin: 1,
   topMargin: 1,
   bottomMargin: 0.5,
@@ -95,6 +95,7 @@ export function normalizeCanvas(canvas: CanvasSettings): CanvasSettings {
 
   return syncFieldWidth({
     ...canvas,
+    leftMargin: 0,
     totalPopulationWidth,
     totalPopulationHeight,
     bottomMargin: totalPopulationHeight,
@@ -104,15 +105,15 @@ export function normalizeCanvas(canvas: CanvasSettings): CanvasSettings {
 }
 
 export function canvasWidth(canvas: CanvasSettings): number {
-  return canvas.leftMargin + contentWidth(canvas) + canvas.rightMargin;
+  return contentWidth(canvas) + canvas.rightMargin;
 }
 
 export function canvasHeight(canvas: CanvasSettings): number {
   return canvas.totalPopulationHeight + canvas.fieldHeight + canvas.topMargin;
 }
 
-export function minStartX(canvas: CanvasSettings): number {
-  return -canvas.leftMargin;
+export function minStartX(_canvas: CanvasSettings): number {
+  return 0;
 }
 
 export function maxStartX(canvas: CanvasSettings): number {
