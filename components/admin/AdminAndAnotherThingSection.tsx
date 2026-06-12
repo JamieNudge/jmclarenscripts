@@ -18,33 +18,45 @@ export function AdminAndAnotherThingSection({ adminKey }: Props) {
   const [status, setStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  const canUse = adminKey.trim().length > 0;
+
   const authHeaders = (): HeadersInit => ({
     Authorization: `Bearer ${adminKey.trim()}`,
     'Content-Type': 'application/json',
   });
 
   const load = useCallback(async () => {
-    if (!adminKey.trim()) return;
+    if (!canUse) {
+      setStatus('Paste your admin key above to load the feed history.');
+      return;
+    }
     setLoading(true);
     setStatus(null);
     try {
-      const res = await fetch('/api/admin/and-another-thing', { headers: { Authorization: `Bearer ${adminKey.trim()}` } });
+      const res = await fetch('/api/admin/and-another-thing', {
+        headers: { Authorization: `Bearer ${adminKey.trim()}` },
+        cache: 'no-store',
+      });
       const j = (await res.json()) as { posts?: AnotherThingPost[]; error?: string };
       if (!res.ok) {
         setStatus(j.error || 'Load failed');
         return;
       }
-      setPosts(j.posts ?? []);
+      const next = j.posts ?? [];
+      setPosts(next);
+      if (next.length === 0) {
+        setStatus('No posts in the feed yet.');
+      }
     } catch (e) {
       setStatus(e instanceof Error ? e.message : 'Load failed');
     } finally {
       setLoading(false);
     }
-  }, [adminKey]);
+  }, [adminKey, canUse]);
 
   useEffect(() => {
-    void load();
-  }, [load]);
+    if (canUse) void load();
+  }, [canUse, load]);
 
   const cancelEdit = () => {
     setEditingId(null);
@@ -127,14 +139,8 @@ export function AdminAndAnotherThingSection({ adminKey }: Props) {
         setStatus(j.error || 'Update failed');
         return;
       }
-      if (j.post) {
-        setPosts((prev) =>
-          prev
-            .map((x) => (x.id === j.post!.id ? j.post! : x))
-            .sort((a, b) => (a.createdAt < b.createdAt ? 1 : a.createdAt > b.createdAt ? -1 : 0)),
-        );
-      }
       cancelEdit();
+      await load();
       setStatus('Updated.');
     } catch (e) {
       setStatus(e instanceof Error ? e.message : 'Update failed');
@@ -295,7 +301,16 @@ export function AdminAndAnotherThingSection({ adminKey }: Props) {
       ) : null}
 
       <div>
-        <p className="text-xs font-semibold text-white/45 mb-2">Recent posts ({posts.length})</p>
+        <p className="text-xs font-semibold text-white/45 mb-2">
+          Recent posts ({posts.length}){loading ? ' — loading…' : ''}
+        </p>
+        {!loading && posts.length === 0 ? (
+          <p className="text-xs text-white/40 mb-2">
+            {canUse
+              ? 'Nothing loaded yet — click Refresh list, or post a new note above.'
+              : 'Paste your admin key above to see published micro-posts here.'}
+          </p>
+        ) : null}
         <ul className="max-h-60 overflow-y-auto space-y-2 pr-1 text-sm">
           {posts.map((p) => (
             <li
