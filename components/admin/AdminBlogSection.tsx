@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import type { BlogCategoryRecord } from '@/lib/blog-category';
 import type { BlogPostRecord } from '@/lib/blog-post';
+import { EmojiInsertBar } from '@/components/admin/EmojiInsertBar';
 import { blogMarkdownComposerFontFamily } from '@/lib/fonts';
 import { suggestBlogExcerptFromMarkdown } from '@/lib/suggest-blog-excerpt';
 import { BlogMarkdownToolbar } from '@/components/admin/BlogMarkdownToolbar';
@@ -54,6 +55,8 @@ export function AdminBlogSection({ adminKey }: Props) {
   const [bodyMarkdown, setBodyMarkdown] = useState('');
   /** '' = none; '__new__' = show create panel; else category slug */
   const [postCategorySelect, setPostCategorySelect] = useState('');
+  const titleRef = useRef<HTMLInputElement>(null);
+  const excerptRef = useRef<HTMLTextAreaElement>(null);
   const bodyRef = useRef<HTMLTextAreaElement>(null);
   /** Latest body for async handlers (e.g. image upload) and undo/redo. */
   const bodyMarkdownRef = useRef(bodyMarkdown);
@@ -694,7 +697,14 @@ export function AdminBlogSection({ adminKey }: Props) {
 
       <div>
         <label className="text-xs text-white/45">Title</label>
-        <input className={`${inputCls} mt-1`} value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Post title" />
+        <input
+          ref={titleRef}
+          className={`${inputCls} mt-1`}
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Post title"
+        />
+        <EmojiInsertBar inputRef={titleRef} value={title} onChange={setTitle} disabled={!canUse || blogLoading} />
       </div>
 
       <div>
@@ -872,6 +882,14 @@ export function AdminBlogSection({ adminKey }: Props) {
           onUndo={undoBody}
           onRedo={redoBody}
         />
+        <EmojiInsertBar
+          inputRef={bodyRef}
+          value={bodyMarkdown}
+          onChange={setBodyMarkdown}
+          disabled={!canUse || blogLoading}
+          label="Body emoji"
+          onBeforeMutate={pushBodySnapshot}
+        />
         <textarea
           ref={bodyRef}
           className={`${inputCls} min-h-[12rem] font-mono text-xs`}
@@ -923,10 +941,18 @@ export function AdminBlogSection({ adminKey }: Props) {
           Heuristic only — strips common Markdown, takes the opening sentence or two (up to the excerpt length limit), then you edit.
         </p>
         <textarea
+          ref={excerptRef}
           className={`${inputCls} mt-1 min-h-[4rem]`}
           value={excerpt}
           onChange={(e) => setExcerpt(e.target.value)}
           placeholder="Short summary for the blog index (plain text; optional but recommended)"
+        />
+        <EmojiInsertBar
+          inputRef={excerptRef}
+          value={excerpt}
+          onChange={setExcerpt}
+          disabled={!canUse || blogLoading}
+          label="Excerpt emoji"
         />
       </div>
 

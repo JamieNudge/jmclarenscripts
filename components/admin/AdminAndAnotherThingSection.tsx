@@ -1,6 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { EmojiInsertBar } from '@/components/admin/EmojiInsertBar';
 import type { AnotherThingPost } from '@/lib/and-another-thing';
 
 const inputCls =
@@ -17,6 +18,7 @@ export function AdminAndAnotherThingSection({ adminKey }: Props) {
   const [uploading, setUploading] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const textRef = useRef<HTMLTextAreaElement>(null);
 
   const canUse = adminKey.trim().length > 0;
 
@@ -241,11 +243,18 @@ export function AdminAndAnotherThingSection({ adminKey }: Props) {
       ) : null}
 
       <textarea
+        ref={textRef}
         className={`${inputCls} min-h-[8rem] resize-y`}
         placeholder="Thought for the day…"
         value={text}
         onChange={(e) => setText(e.target.value)}
         maxLength={2000}
+      />
+      <EmojiInsertBar
+        inputRef={textRef}
+        value={text}
+        onChange={setText}
+        disabled={loading || uploading}
       />
       <div>
         <label className="text-xs text-white/45">Image (optional) — file</label>
