@@ -17,6 +17,10 @@ function dgcPublicBase(): string {
   return u || DEFAULT_DGC_PUBLIC.replace(/\/$/, '');
 }
 
+function dgcSubdomainEnabled(): boolean {
+  return process.env.DGC_SUBDOMAIN_ENABLED === '1';
+}
+
 function requestHost(request: NextRequest): string {
   return request.headers.get('host')?.split(':')[0]?.toLowerCase() ?? '';
 }
@@ -103,6 +107,7 @@ export function middleware(request: NextRequest) {
   }
 
   if (
+    dgcSubdomainEnabled() &&
     !isHubHost(request) &&
     (pathname === '/dgc' || pathname.startsWith('/dgc/'))
   ) {
