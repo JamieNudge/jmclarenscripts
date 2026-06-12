@@ -1,29 +1,88 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { formatNumber } from '@/lib/dgc/document';
 import type { DgcDocumentController } from '@/lib/dgc/use-dgc-document';
 import { edgeDisplayName } from '@/lib/dgc/types';
 
-function numericField(
-  title: string,
-  value: string,
-  onChange: (value: number) => void,
-  prompt: string,
-) {
+function parseNumericInput(raw: string): number | null {
+  const cleaned = raw.trim().replace(/%/g, '').replace(/,/g, '.');
+  if (cleaned === '' || cleaned === '-' || cleaned === '.') return null;
+  const parsed = Number(cleaned);
+  return Number.isNaN(parsed) ? null : parsed;
+}
+
+function EditableNumericField({
+  title,
+  value,
+  onCommit,
+  prompt,
+  suffix = '',
+}: {
+  title: string;
+  value: number;
+  onCommit: (value: number) => void;
+  prompt: string;
+  suffix?: string;
+}) {
+  const [draft, setDraft] = useState(formatNumber(value));
+  const [focused, setFocused] = useState(false);
+
+  useEffect(() => {
+    if (!focused) {
+      setDraft(formatNumber(value));
+    }
+  }, [value, focused]);
+
+  const commit = () => {
+    const parsed = parseNumericInput(draft);
+    if (parsed !== null) {
+      onCommit(parsed);
+    }
+    setFocused(false);
+  };
+
   return (
     <label className="block space-y-1">
       <span className="text-base font-semibold text-white">{title}</span>
-      <input
-        className="w-full rounded-lg border border-white/15 bg-[#111] px-3 py-2 text-white"
-        value={value}
-        placeholder={prompt}
-        onChange={(event) => {
-          const parsed = Number(event.target.value.replace(',', '.'));
-          if (!Number.isNaN(parsed)) onChange(parsed);
-        }}
-      />
+      <div className="relative">
+        <input
+          className="w-full rounded-lg border border-white/15 bg-[#111] px-3 py-2 text-white"
+          value={focused ? draft : `${formatNumber(value)}${suffix}`}
+          placeholder={prompt}
+          inputMode="decimal"
+          onFocus={() => {
+            setFocused(true);
+            setDraft(formatNumber(value));
+          }}
+          onBlur={commit}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter') {
+              event.currentTarget.blur();
+            }
+          }}
+          onChange={(event) => setDraft(event.target.value)}
+        />
+      </div>
     </label>
+  );
+}
+
+function AreaTargetField({
+  value,
+  onCommit,
+}: {
+  value: number;
+  onCommit: (fraction: number) => void;
+}) {
+  return (
+    <EditableNumericField
+      title="Area Target (%)"
+      value={value * 100}
+      prompt="e.g. 66"
+      suffix="%"
+      onCommit={(percent) => onCommit(percent / 100)}
+    />
   );
 }
 
@@ -35,24 +94,24 @@ export default function DgcInputForm({ controller }: { controller: DgcDocumentCo
       <h2 className="text-2xl font-semibold text-white">Inputs</h2>
 
       <Panel title="Field of Wealth">
-        {numericField(
-          'Width',
-          formatNumber(document.canvas.fieldWidth),
-          controller.updateFieldWidth,
-          'e.g. 12',
-        )}
-        {numericField(
-          'Height',
-          formatNumber(document.canvas.fieldHeight),
-          controller.updateFieldHeight,
-          'e.g. 8',
-        )}
-        {numericField(
-          'Left margin (poverty axis)',
-          formatNumber(document.canvas.leftMargin),
-          controller.updateLeftMargin,
-          'e.g. 4',
-        )}
+        <EditableNumericField
+          title="Width"
+          value={document.canvas.fieldWidth}
+          onCommit={controller.updateFieldWidth}
+          prompt="e.g. 12"
+        />
+        <EditableNumericField
+          title="Height"
+          value={document.canvas.fieldHeight}
+          onCommit={controller.updateFieldHeight}
+          prompt="e.g. 8"
+        />
+        <EditableNumericField
+          title="Left margin (poverty axis)"
+          value={document.canvas.leftMargin}
+          onCommit={controller.updateLeftMargin}
+          prompt="e.g. 4"
+        />
         <p className="text-sm text-white/80">
           The inner rectangle is the Field of Wealth. The left margin extends the bottom axis so
           point A can sit outside the field.
@@ -60,18 +119,20 @@ export default function DgcInputForm({ controller }: { controller: DgcDocumentCo
       </Panel>
 
       <Panel title="Active Layer">
-        {numericField(
-          'Start on Bottom Axis',
-          formatNumber(activeLayer?.startX ?? 0),
-          controller.updateStartX,
-          'e.g. 3 or -2',
-        )}
-        {numericField(
-          'Area Target (%)',
-          formatNumber((activeLayer?.areaFraction ?? 0) * 100),
-          (value) => controller.updateAreaFraction(value / 100),
-          'e.g. 35',
-        )}
+        <EditableNumericField
+          title="Start on Bottom Axis"
+          value={activeLayer?.startX ?? 0}
+          onCommit={controller.updateStartX}
+          prompt="e.g. 3 or -2"
+        />
+        <AreaTargetField
+          key={activeLayer?.id ?? 'none'}
+          value={activeLayer?.areaFraction ?? 0}
+          onCommit={controller.updateAreaFraction}
+        />
+        <p className="text-sm text-white/80">
+          Type an area target (e.g. 66%) and B moves to match. Dragging B updates this value.
+        </p>
         <p className="text-sm text-white/80">
           Use a negative start value to place A on the poverty axis extension, left of the Field of
           Wealth.
