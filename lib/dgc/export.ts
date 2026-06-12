@@ -2,6 +2,14 @@ import * as CanvasGeometry from './canvas-geometry';
 import { CanvasLayout } from './canvas-layout';
 import type { CanvasSettings, DrawContext } from './types';
 
+function escapeXml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
 /** Pixels per canvas unit for file export (before PNG scale multiplier). */
 export const EXPORT_PIXELS_PER_UNIT = 40;
 
@@ -37,10 +45,12 @@ export function exportSvg(
   );
   svg += `<line x1="${axisStart.x}" y1="${axisStart.y}" x2="${axisEnd.x}" y2="${axisEnd.y}" stroke="#666" stroke-width="2"/>\n`;
 
-  const band = layout.povertyAxisBandScreenRect;
+  const band = layout.totalPopulationBandScreenRect;
   if (band) {
     svg += `<rect x="${band.x}" y="${band.y}" width="${band.width}" height="${band.height}" fill="#FF9500" fill-opacity="0.16" stroke="#FF9500" stroke-opacity="0.65" stroke-width="2"/>\n`;
-    svg += `<text x="${band.x + band.width / 2}" y="${band.y + band.height / 2}" text-anchor="middle" dominant-baseline="middle" font-size="12" fill="#333">Poverty axis extension</text>\n`;
+    const label =
+      document.canvas.totalPopulationLabel.trim() || 'Total Population';
+    svg += `<text x="${band.x + band.width / 2}" y="${band.y + band.height / 2}" text-anchor="middle" dominant-baseline="middle" font-size="12" fill="#333">${escapeXml(label)}</text>\n`;
   }
 
   const field = layout.fieldScreenRect;

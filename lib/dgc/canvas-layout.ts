@@ -1,5 +1,5 @@
 import type { CanvasSettings, PartitionEdge, Point2D, Rect2D, Size2D } from './types';
-import { canvasHeight, canvasWidth } from './types';
+import { canvasHeight, canvasWidth, effectiveFieldWidth } from './types';
 
 function distanceSquared(a: Point2D, b: Point2D): number {
   const dx = a.x - b.x;
@@ -46,7 +46,7 @@ export class CanvasLayout {
 
   get fieldScreenRect(): Rect2D {
     const origin = this.screenPointCanvas(0 + this.canvas.leftMargin, this.canvas.bottomMargin);
-    const width = this.canvas.fieldWidth * this.scale;
+    const width = effectiveFieldWidth(this.canvas) * this.scale;
     const height = this.canvas.fieldHeight * this.scale;
     return {
       x: origin.x,
@@ -56,21 +56,26 @@ export class CanvasLayout {
     };
   }
 
-  get povertyAxisBandScreenRect(): Rect2D | null {
-    if (this.canvas.leftMargin <= 0) return null;
-    const field = this.fieldScreenRect;
-    const bandTopY = this.screenPointCanvas(this.canvas.leftMargin, this.canvas.bottomMargin).y;
+  get totalPopulationBandScreenRect(): Rect2D | null {
+    if (this.canvas.totalPopulationWidth <= 0) return null;
+    const origin = this.screenPointCanvas(this.canvas.leftMargin, this.canvas.bottomMargin);
+    const bandTopY = origin.y;
     const bandBottomY = this.screenPointCanvas(this.canvas.leftMargin, 0).y;
     return {
-      x: field.x,
+      x: origin.x,
       y: bandTopY,
-      width: field.width,
+      width: this.canvas.totalPopulationWidth * this.scale,
       height: bandBottomY - bandTopY,
     };
   }
 
+  /** @deprecated Use totalPopulationBandScreenRect */
+  get povertyAxisBandScreenRect(): Rect2D | null {
+    return this.totalPopulationBandScreenRect;
+  }
+
   partitionLineDrawEndpoint(fromB: Point2D, toA: Point2D): Point2D {
-    const band = this.povertyAxisBandScreenRect;
+    const band = this.totalPopulationBandScreenRect;
     if (!band) return toA;
 
     const dx = toA.x - fromB.x;

@@ -8,7 +8,10 @@ import type {
 import {
   DEFAULT_CANVAS,
   DEFAULT_EXPORT_PREFERENCES,
+  effectiveFieldWidth,
   minStartX,
+  normalizeCanvas,
+  syncFieldWidth,
 } from './types';
 import { solve } from './partition-solver';
 
@@ -25,14 +28,14 @@ export function makeDefaultLayer(index: number, canvas: CanvasSettings): DesignL
     name: `Layer ${index}`,
     isVisible: true,
     isLocked: false,
-    startX: canvas.fieldWidth * 0.25,
+    startX: effectiveFieldWidth(canvas) * 0.25,
     areaFraction: 0.35,
     colorHex: '#2F7CE5',
   };
 }
 
 export function makeNewDocument(name = 'Untitled Design'): DGCDesignDocument {
-  const canvas = { ...DEFAULT_CANVAS };
+  const canvas = syncFieldWidth({ ...DEFAULT_CANVAS });
   const layer = makeDefaultLayer(1, canvas);
   const now = new Date().toISOString();
   return {
@@ -56,7 +59,7 @@ export function recalculateLayerStates(
   const states: Record<string, LayerSolveState> = {};
   for (const layer of document.layers) {
     const input: SolverInput = {
-      width: document.canvas.fieldWidth,
+      width: effectiveFieldWidth(document.canvas),
       height: document.canvas.fieldHeight,
       startX: layer.startX,
       areaFraction: layer.areaFraction,
@@ -93,6 +96,7 @@ export function parseDocumentJson(raw: string): DGCDesignDocument {
   if (!parsed.layers?.length) {
     throw new Error('Invalid document: no layers.');
   }
+  parsed.canvas = normalizeCanvas(parsed.canvas);
   return parsed;
 }
 

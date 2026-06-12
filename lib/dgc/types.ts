@@ -29,13 +29,19 @@ export interface LayerSolveState {
   errorMessage: string | null;
 }
 
+export const DEFAULT_TOTAL_POPULATION_LABEL = 'Total Population';
+
 export interface CanvasSettings {
+  /** Derived from totalPopulationWidth × fieldOfWealthWidthPercent; kept for document compatibility. */
   fieldWidth: number;
   fieldHeight: number;
   leftMargin: number;
   rightMargin: number;
   topMargin: number;
   bottomMargin: number;
+  totalPopulationWidth: number;
+  fieldOfWealthWidthPercent: number;
+  totalPopulationLabel: string;
 }
 
 export const DEFAULT_CANVAS: CanvasSettings = {
@@ -45,10 +51,45 @@ export const DEFAULT_CANVAS: CanvasSettings = {
   rightMargin: 1,
   topMargin: 1,
   bottomMargin: 0.5,
+  totalPopulationWidth: 12,
+  fieldOfWealthWidthPercent: 100,
+  totalPopulationLabel: DEFAULT_TOTAL_POPULATION_LABEL,
 };
 
+export function effectiveFieldWidth(canvas: CanvasSettings): number {
+  return canvas.totalPopulationWidth * (canvas.fieldOfWealthWidthPercent / 100);
+}
+
+export function contentWidth(canvas: CanvasSettings): number {
+  return Math.max(effectiveFieldWidth(canvas), canvas.totalPopulationWidth);
+}
+
+export function syncFieldWidth(canvas: CanvasSettings): CanvasSettings {
+  return { ...canvas, fieldWidth: effectiveFieldWidth(canvas) };
+}
+
+export function normalizeCanvas(canvas: CanvasSettings): CanvasSettings {
+  const totalPopulationWidth =
+    canvas.totalPopulationWidth > 0 ? canvas.totalPopulationWidth : canvas.fieldWidth;
+  const fieldOfWealthWidthPercent =
+    canvas.fieldOfWealthWidthPercent > 0
+      ? canvas.fieldOfWealthWidthPercent
+      : totalPopulationWidth > 0
+        ? (canvas.fieldWidth / totalPopulationWidth) * 100
+        : 100;
+  const totalPopulationLabel =
+    canvas.totalPopulationLabel?.trim() || DEFAULT_TOTAL_POPULATION_LABEL;
+
+  return syncFieldWidth({
+    ...canvas,
+    totalPopulationWidth,
+    fieldOfWealthWidthPercent,
+    totalPopulationLabel,
+  });
+}
+
 export function canvasWidth(canvas: CanvasSettings): number {
-  return canvas.leftMargin + canvas.fieldWidth + canvas.rightMargin;
+  return canvas.leftMargin + contentWidth(canvas) + canvas.rightMargin;
 }
 
 export function canvasHeight(canvas: CanvasSettings): number {
@@ -60,7 +101,7 @@ export function minStartX(canvas: CanvasSettings): number {
 }
 
 export function maxStartX(canvas: CanvasSettings): number {
-  return canvas.fieldWidth;
+  return effectiveFieldWidth(canvas);
 }
 
 export interface DesignLayer {

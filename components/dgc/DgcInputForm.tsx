@@ -3,7 +3,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { formatNumber } from '@/lib/dgc/document';
 import type { DgcDocumentController } from '@/lib/dgc/use-dgc-document';
-import { edgeDisplayName } from '@/lib/dgc/types';
+import { DEFAULT_TOTAL_POPULATION_LABEL, edgeDisplayName } from '@/lib/dgc/types';
 
 function parseNumericInput(raw: string): number | null {
   const cleaned = raw.trim().replace(/%/g, '').replace(/,/g, '.');
@@ -95,10 +95,17 @@ export default function DgcInputForm({ controller }: { controller: DgcDocumentCo
 
       <Panel title="Field of Wealth">
         <EditableNumericField
-          title="Width"
-          value={document.canvas.fieldWidth}
-          onCommit={controller.updateFieldWidth}
+          title="Total Population width"
+          value={document.canvas.totalPopulationWidth}
+          onCommit={controller.updateTotalPopulationWidth}
           prompt="e.g. 12"
+        />
+        <EditableNumericField
+          title="Field of Wealth width (% of Total Population)"
+          value={document.canvas.fieldOfWealthWidthPercent}
+          onCommit={controller.updateFieldOfWealthWidthPercent}
+          prompt="e.g. 100"
+          suffix="%"
         />
         <EditableNumericField
           title="Height"
@@ -112,9 +119,19 @@ export default function DgcInputForm({ controller }: { controller: DgcDocumentCo
           onCommit={controller.updateLeftMargin}
           prompt="e.g. 4"
         />
+        <label className="block space-y-1">
+          <span className="text-base font-semibold text-white">Total Population label</span>
+          <input
+            className="w-full rounded-lg border border-white/15 bg-[#111] px-3 py-2 text-white"
+            value={document.canvas.totalPopulationLabel}
+            placeholder={DEFAULT_TOTAL_POPULATION_LABEL}
+            onChange={(event) => controller.updateTotalPopulationLabel(event.target.value)}
+          />
+        </label>
         <p className="text-sm text-white/80">
-          The inner rectangle is the Field of Wealth. The left margin extends the bottom axis so
-          point A can sit outside the field.
+          The orange band is Total Population. Field of Wealth sits above it, left-aligned, at the
+          width percentage you set. The left margin extends the bottom axis so point A can sit
+          outside the field.
         </p>
       </Panel>
 

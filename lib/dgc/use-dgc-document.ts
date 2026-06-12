@@ -14,7 +14,7 @@ import type {
   LayerSolveState,
   PartitionEdge,
 } from './types';
-import { maxStartX, minStartX } from './types';
+import { maxStartX, minStartX, effectiveFieldWidth, normalizeCanvas, syncFieldWidth } from './types';
 
 const MIN_FRACTION = 0.0001;
 const MAX_FRACTION = 0.9999;
@@ -39,11 +39,35 @@ export function useDgcDocument(initial?: DGCDesignDocument) {
   }, []);
 
   const replaceDocument = useCallback((next: DGCDesignDocument) => {
-    setDocument(next);
+    setDocument({ ...next, canvas: normalizeCanvas(next.canvas) });
   }, []);
 
-  const updateFieldWidth = useCallback(
-    (value: number) => mutate((d) => { d.canvas.fieldWidth = value; }),
+  const updateTotalPopulationWidth = useCallback(
+    (value: number) => {
+      mutate((d) => {
+        d.canvas.totalPopulationWidth = Math.max(0, value);
+        d.canvas = syncFieldWidth(d.canvas);
+      });
+    },
+    [mutate],
+  );
+
+  const updateFieldOfWealthWidthPercent = useCallback(
+    (value: number) => {
+      mutate((d) => {
+        d.canvas.fieldOfWealthWidthPercent = Math.max(0, value);
+        d.canvas = syncFieldWidth(d.canvas);
+      });
+    },
+    [mutate],
+  );
+
+  const updateTotalPopulationLabel = useCallback(
+    (label: string) => {
+      mutate((d) => {
+        d.canvas.totalPopulationLabel = label;
+      });
+    },
     [mutate],
   );
 
@@ -90,14 +114,15 @@ export function useDgcDocument(initial?: DGCDesignDocument) {
       const layer = activeLayer(document);
       if (!layer) return;
       const computedArea = areaForRegion(
-        document.canvas.fieldWidth,
+        effectiveFieldWidth(document.canvas),
         document.canvas.fieldHeight,
         layer.startX,
         edge,
         endX,
         endY,
       );
-      const total = document.canvas.fieldWidth * document.canvas.fieldHeight;
+      const total =
+        effectiveFieldWidth(document.canvas) * document.canvas.fieldHeight;
       if (total <= 0) return;
       updateAreaFraction(
         Math.min(Math.max(computedArea / total, MIN_FRACTION), MAX_FRACTION),
@@ -207,7 +232,9 @@ export function useDgcDocument(initial?: DGCDesignDocument) {
     activeLayer: active,
     activeState,
     replaceDocument,
-    updateFieldWidth,
+    updateTotalPopulationWidth,
+    updateFieldOfWealthWidthPercent,
+    updateTotalPopulationLabel,
     updateFieldHeight,
     updateLeftMargin,
     updateStartX,

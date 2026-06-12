@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import * as CanvasGeometry from '@/lib/dgc/canvas-geometry';
 import { CanvasLayout } from '@/lib/dgc/canvas-layout';
 import type { DgcDocumentController } from '@/lib/dgc/use-dgc-document';
-import { edgeDisplayName } from '@/lib/dgc/types';
+import { edgeDisplayName, effectiveFieldWidth } from '@/lib/dgc/types';
 
 type PreviewHandle = 'start' | 'end';
 
@@ -45,7 +45,7 @@ export default function DgcPreview({
     [size, controller.document.canvas],
   );
   const field = layout.fieldScreenRect;
-  const band = layout.povertyAxisBandScreenRect;
+  const band = layout.totalPopulationBandScreenRect;
   const active = controller.activeLayer;
   const activeState = controller.activeState;
 
@@ -88,7 +88,7 @@ export default function DgcPreview({
       const fieldPoint = layout.fieldPointFromScreen(point);
       const clamped = Math.min(
         Math.max(fieldPoint.x, -controller.document.canvas.leftMargin),
-        controller.document.canvas.fieldWidth,
+        effectiveFieldWidth(controller.document.canvas),
       );
       controller.updateStartX(clamped);
       setReadout(`A: start x = ${formatNumber(clamped)}`);
@@ -174,7 +174,8 @@ export default function DgcPreview({
                 fontSize={12}
                 fontWeight={500}
               >
-                Poverty axis extension
+                {controller.document.canvas.totalPopulationLabel.trim() ||
+                  'Total Population'}
               </text>
             </>
           ) : null}
