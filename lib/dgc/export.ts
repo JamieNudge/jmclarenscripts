@@ -1,16 +1,32 @@
 import * as CanvasGeometry from './canvas-geometry';
 import { CanvasLayout } from './canvas-layout';
-import type { DrawContext } from './types';
+import type { CanvasSettings, DrawContext } from './types';
 
-export function exportSvg(context: DrawContext): string {
+/** Pixels per canvas unit for file export (before PNG scale multiplier). */
+export const EXPORT_PIXELS_PER_UNIT = 40;
+
+export function exportUnitScale(canvas: CanvasSettings, pngScale: number): number {
+  return EXPORT_PIXELS_PER_UNIT * pngScale;
+}
+
+export function makeExportLayout(canvas: CanvasSettings, pngScale: number): CanvasLayout {
+  return CanvasLayout.fromExportScale(canvas, exportUnitScale(canvas, pngScale));
+}
+
+export function exportSvg(
+  context: DrawContext,
+  outputWidth = context.layout.screenRect.width,
+  outputHeight = context.layout.screenRect.height,
+): string {
   const { layout, document, layerStates, activeLayerID, exportWholeComposition } =
     context;
-  const { width, height } = layout.screenRect;
+  const viewWidth = layout.screenRect.width;
+  const viewHeight = layout.screenRect.height;
   const canvas = document.canvas;
 
   let svg = `<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
-<rect x="0" y="0" width="${width}" height="${height}" fill="white"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="${Math.round(outputWidth)}" height="${Math.round(outputHeight)}" viewBox="0 0 ${viewWidth} ${viewHeight}">
+<rect x="0" y="0" width="${viewWidth}" height="${viewHeight}" fill="white"/>
 <rect x="${layout.screenRect.x}" y="${layout.screenRect.y}" width="${layout.screenRect.width}" height="${layout.screenRect.height}" fill="none" stroke="#888" stroke-width="1"/>
 `;
 
@@ -73,31 +89,45 @@ export function exportSvg(context: DrawContext): string {
   return svg;
 }
 
-export function svgToPngBlob(svg: string, scale: number): Promise<Blob> {
+export function svgToPngBlob(
+  svg: string,
+  pixelWidth: number,
+  pixelHeight: number,
+): Promise<Blob> {
   return new Promise((resolve, reject) => {
+    const canvas = window.document.createElement('canvas');
+    const width = Math.max(1, Math.round(pixelWidth));
+    const height = Math.max(1, Math.round(pixelHeight));
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      reject(new Error('Canvas unavailable.'));
+      return;
+    }
+
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, width, height);
+
     const img = new Image();
     const url = URL.createObjectURL(
       new Blob([svg], { type: 'image/svg+xml;charset=utf-8' }),
     );
     img.onload = () => {
-      const canvas = window.document.createElement('canvas');
-      canvas.width = img.width * scale;
-      canvas.height = img.height * scale;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        reject(new Error('Canvas unavailable.'));
-        return;
+      try {
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob(
+          (blob) => {
+            URL.revokeObjectURL(url);
+            if (blob) resolve(blob);
+            else reject(new Error('PNG export failed.'));
+          },
+          'image/png',
+        );
+      } catch (error) {
+        URL.revokeObjectURL(url);
+        reject(error instanceof Error ? error : new Error('PNG export failed.'));
       }
-      ctx.scale(scale, scale);
-      ctx.drawImage(img, 0, 0);
-      canvas.toBlob(
-        (blob) => {
-          URL.revokeObjectURL(url);
-          if (blob) resolve(blob);
-          else reject(new Error('PNG export failed.'));
-        },
-        'image/png',
-      );
     };
     img.onerror = () => {
       URL.revokeObjectURL(url);
@@ -107,36 +137,26 @@ export function svgToPngBlob(svg: string, scale: number): Promise<Blob> {
   });
 }
 
-export async function exportPng(context: DrawContext, scale: number): Promise<Blob> {
-  const svg = exportSvg(context);
-  return svgToPngBlob(svg, scale);
+export async function exportPng(context: DrawContext): Promise<Blob> {
+  const { width, height } = context.layout.screenRect;
+  const svg = exportSvg(context, width, height);
+  return svgToPngBlob(svg, width, height);
 }
 
-export async function exportPdf(context: DrawContext, scale: number): Promise<Blob> {
+export async function exportPdf(context: DrawContext): Promise<Blob> {
   const { jsPDF } = await import('jspdf');
-  const pngBlob = await exportPng(context, scale);
+  const { width, height } = context.layout.screenRect;
+  const pngBlob = await exportPng(context);
   const pngUrl = URL.createObjectURL(pngBlob);
   try {
-    const img = await loadImage(pngUrl);
-    const width = img.width / scale;
-    const height = img.height / scale;
     const pdf = new jsPDF({
       orientation: width > height ? 'landscape' : 'portrait',
       unit: 'px',
-      format: [width, height],
+      format: [Math.round(width), Math.round(height)],
     });
     pdf.addImage(pngUrl, 'PNG', 0, 0, width, height);
     return pdf.output('blob');
   } finally {
     URL.revokeObjectURL(pngUrl);
   }
-}
-
-function loadImage(url: string): Promise<HTMLImageElement> {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => resolve(img);
-    img.onerror = () => reject(new Error('Failed to load image.'));
-    img.src = url;
-  });
 }

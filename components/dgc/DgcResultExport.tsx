@@ -1,14 +1,18 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { CanvasLayout } from '@/lib/dgc/canvas-layout';
+import {
+  exportPdf,
+  exportPng,
+  exportSvg,
+  makeExportLayout,
+} from '@/lib/dgc/export';
 import {
   downloadBlob,
   formatNumber,
   parseDocumentJson,
   serializeDocument,
 } from '@/lib/dgc/document';
-import { exportPdf, exportPng, exportSvg } from '@/lib/dgc/export';
 import type { DgcDocumentController } from '@/lib/dgc/use-dgc-document';
 import { edgeDisplayName } from '@/lib/dgc/types';
 import { dgcSiteConfig } from '@/lib/dgc/site-config';
@@ -22,9 +26,8 @@ export default function DgcResultExport({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const result = controller.activeState?.result;
 
-  const makeDrawContext = () => {
-    const scale = controller.document.exportPreferences.pngScale;
-    const layout = CanvasLayout.fromExportScale(controller.document.canvas, scale);
+  const makeDrawContext = (pngScale = controller.document.exportPreferences.pngScale) => {
+    const layout = makeExportLayout(controller.document.canvas, pngScale);
     return {
       layout,
       document: controller.document,
@@ -35,20 +38,20 @@ export default function DgcResultExport({
   };
 
   const exportFile = async (format: 'png' | 'svg' | 'pdf') => {
-    const context = makeDrawContext();
+    const pngScale = controller.document.exportPreferences.pngScale;
+    const context = makeDrawContext(pngScale);
     const base = controller.document.name.replace(/\s+/g, '-').toLowerCase();
     if (format === 'svg') {
       const svg = exportSvg(context);
       downloadBlob(new Blob([svg], { type: 'image/svg+xml' }), `${base}.svg`);
       return;
     }
-    const scale = controller.document.exportPreferences.pngScale;
     if (format === 'png') {
-      const blob = await exportPng(context, scale);
+      const blob = await exportPng(context);
       downloadBlob(blob, `${base}.png`);
       return;
     }
-    const blob = await exportPdf(context, scale);
+    const blob = await exportPdf(context);
     downloadBlob(blob, `${base}.pdf`);
   };
 
