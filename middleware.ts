@@ -1,18 +1,33 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { shouldInjectAdSenseInInitialHtml } from '@/lib/adsense-initial-html';
+import { isDgcHostname } from '@/lib/dgc-hub-routes';
 import { HUB_FP_SLUG_SET, isHubHostname, parseHubHostList } from '@/lib/hub-football-routes';
 
 const DEFAULT_PRIMARY = 'https://jmclarenscripts.vercel.app';
+const DEFAULT_DGC_PUBLIC = 'https://dgc.jmclarenscripts.vercel.app';
 
 function primaryBase(): string {
   const u = (process.env.PRIMARY_PUBLIC_URL ?? DEFAULT_PRIMARY).trim().replace(/\/$/, '');
   return u || DEFAULT_PRIMARY.replace(/\/$/, '');
 }
 
+function dgcPublicBase(): string {
+  const u = (process.env.DGC_PUBLIC_URL ?? DEFAULT_DGC_PUBLIC).trim().replace(/\/$/, '');
+  return u || DEFAULT_DGC_PUBLIC.replace(/\/$/, '');
+}
+
+function requestHost(request: NextRequest): string {
+  return request.headers.get('host')?.split(':')[0]?.toLowerCase() ?? '';
+}
+
 function isHubHost(request: NextRequest): boolean {
-  const host = request.headers.get('host')?.split(':')[0]?.toLowerCase();
-  return !!host && parseHubHostList().has(host);
+  const host = requestHost(request);
+  return host.length > 0 && parseHubHostList().has(host);
+}
+
+function isDgcHost(request: NextRequest): boolean {
+  return isDgcHostname(requestHost(request));
 }
 
 const PASSTHROUGH_FILES = new Set([
@@ -30,6 +45,17 @@ function isDirectAppPolicyPath(pathname: string): boolean {
   return /^\/[^/]+\/content-rating$/.test(pathname);
 }
 
+function isStaticAssetPath(pathname: string): boolean {
+  return (
+    pathname.startsWith('/api/') ||
+    pathname.startsWith('/_next/') ||
+    pathname.startsWith('/images/') ||
+    pathname === '/images' ||
+    pathname.startsWith('/icons/') ||
+    pathname === '/icons'
+  );
+}
+
 function redirectStripFpPrefix(request: NextRequest, restWithSlash: string): NextResponse {
   const u = request.nextUrl.clone();
   const path = restWithSlash.startsWith('/') ? restWithSlash : `/${restWithSlash}`;
@@ -39,24 +65,53 @@ function redirectStripFpPrefix(request: NextRequest, restWithSlash: string): Nex
 
 function buildForwardedRequestHeaders(request: NextRequest): Headers {
   const pathname = request.nextUrl.pathname || '/';
-  const host = request.headers.get('host')?.split(':')[0] ?? '';
+  const host = requestHost(request);
   const nextHeaders = new Headers(request.headers);
   nextHeaders.set(
     'x-adsense-initial',
     shouldInjectAdSenseInInitialHtml(pathname, host) ? '1' : '0',
   );
   nextHeaders.set('x-goal-lab-hub', isHubHostname(host) ? '1' : '0');
+  nextHeaders.set('x-dgc-hub', isDgcHostname(host) ? '1' : '0');
   return nextHeaders;
+}
+
+function handleDgcHost(request: NextRequest, forward: { request: { headers: Headers } }) {
+  const { pathname } = request.nextUrl;
+
+  if (PASSTHROUGH_FILES.has(pathname) || pathname.startsWith('/.well-known/')) {
+    return NextResponse.next(forward);
+  }
+
+  if (isDirectAppPolicyPath(pathname) || isStaticAssetPath(pathname)) {
+    return NextResponse.next(forward);
+  }
+
+  if (pathname === '/dgc' || pathname.startsWith('/dgc/')) {
+    return NextResponse.next(forward);
+  }
+
+  return NextResponse.rewrite(new URL('/dgc', request.url), forward);
 }
 
 export function middleware(request: NextRequest) {
   const forward = { request: { headers: buildForwardedRequestHeaders(request) } };
+  const { pathname } = request.nextUrl;
+
+  if (isDgcHost(request)) {
+    return handleDgcHost(request, forward);
+  }
+
+  if (
+    !isHubHost(request) &&
+    (pathname === '/dgc' || pathname.startsWith('/dgc/'))
+  ) {
+    return NextResponse.redirect(dgcPublicBase(), 308);
+  }
 
   if (!isHubHost(request)) {
     return NextResponse.next(forward);
   }
-
-  const { pathname } = request.nextUrl;
 
   if (pathname === '/' || pathname === '') {
     return NextResponse.rewrite(new URL('/football-predictions', request.url), forward);
@@ -78,19 +133,10 @@ export function middleware(request: NextRequest) {
     return NextResponse.next(forward);
   }
 
-  if (
-    pathname.startsWith('/api/') ||
-    pathname.startsWith('/_next/') ||
-    pathname.startsWith('/_next') ||
-    pathname.startsWith('/images/') ||
-    pathname === '/images' ||
-    pathname.startsWith('/icons/') ||
-    pathname === '/icons'
-  ) {
+  if (isStaticAssetPath(pathname)) {
     return NextResponse.next(forward);
   }
 
-  // Long hub URLs → short canonical URLs on GoalLab
   if (pathname === '/football-predictions' || pathname === '/football-predictions/') {
     const u = request.nextUrl.clone();
     u.pathname = '/';
@@ -106,7 +152,6 @@ export function middleware(request: NextRequest) {
     return NextResponse.next(forward);
   }
 
-  // Short hub paths → internal football-predictions routes
   const parts = pathname.split('/').filter(Boolean);
   const first = parts[0] ?? '';
   if (first && HUB_FP_SLUG_SET.has(first)) {
