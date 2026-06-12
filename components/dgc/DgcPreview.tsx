@@ -64,27 +64,37 @@ export default function DgcPreview({
 
   const layerPickerLayout = useMemo(() => {
     const canvasRight = layout.screenRect.x + layout.screenRect.width;
-    const stripLeft = field.x + field.width;
-    const stripWidth = canvasRight - stripLeft;
-    const maxWidth = 148;
-    const padding = 8;
+    const fieldRight = field.x + field.width;
+    const outerMarginWidth = size.width - canvasRight;
+    const innerMarginWidth = canvasRight - fieldRight;
+    const edgePadding = 12;
+    const preferredWidth = 148;
+    const gapAfterField = 8;
 
-    if (stripWidth >= 72) {
-      return {
-        left: stripLeft + stripWidth / 2,
-        top: field.y + field.height / 2,
-        maxWidth: Math.min(maxWidth, stripWidth - padding),
-        maxHeight: Math.max(field.height - padding * 2, 120),
-      };
+    // Prefer the black margin outside the gray canvas (original right-3 placement).
+    const sideMarginWidth = Math.max(outerMarginWidth, innerMarginWidth);
+    const maxWidth = Math.min(
+      preferredWidth,
+      Math.max(96, size.width - fieldRight - gapAfterField - edgePadding),
+    );
+
+    let left = size.width - edgePadding - maxWidth / 2;
+    if (outerMarginWidth >= maxWidth + gapAfterField) {
+      left = canvasRight + outerMarginWidth / 2;
+    } else if (innerMarginWidth >= maxWidth + gapAfterField) {
+      left = fieldRight + innerMarginWidth / 2;
+    } else {
+      left = Math.max(fieldRight + gapAfterField + maxWidth / 2, left);
     }
 
     return {
-      left: canvasRight - 86,
-      top: layout.screenRect.y + layout.screenRect.height / 2,
+      left,
+      top: field.y + field.height / 2,
       maxWidth,
-      maxHeight: Math.min(layout.screenRect.height * 0.7, 420),
+      maxHeight: Math.max(Math.min(field.height - 16, 280), 96),
+      sideMarginWidth,
     };
-  }, [field, layout.screenRect]);
+  }, [field, layout.screenRect, size.width]);
 
   const pointerToScreen = useCallback((event: React.PointerEvent | PointerEvent) => {
     const rect = containerRef.current?.getBoundingClientRect();
@@ -362,11 +372,11 @@ export default function DgcPreview({
         </svg>
 
         <div
-          className="absolute flex -translate-x-1/2 -translate-y-1/2 flex-col gap-1 overflow-y-auto rounded-xl border border-white/15 bg-black/75 p-1.5"
+          className="pointer-events-auto absolute z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col gap-1 overflow-y-auto rounded-xl border border-white/15 bg-black/75 p-1.5"
           style={{
             left: layerPickerLayout.left,
             top: layerPickerLayout.top,
-            maxWidth: layerPickerLayout.maxWidth,
+            width: layerPickerLayout.maxWidth,
             maxHeight: layerPickerLayout.maxHeight,
           }}
         >

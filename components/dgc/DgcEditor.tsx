@@ -32,8 +32,8 @@ export default function DgcEditor() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#101012] text-white">
-      <header className="shrink-0 border-b border-white/10 px-4 py-4 md:px-6">
+    <div className="min-h-screen bg-[#101012] text-white">
+      <header className="border-b border-white/10 px-4 py-4 md:px-6">
         <div className="mx-auto flex max-w-[1500px] items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-semibold">{dgcSiteConfig.publicProductName}</h1>
@@ -48,12 +48,14 @@ export default function DgcEditor() {
         </div>
       </header>
 
-      <main className="mx-auto grid min-h-0 w-full max-w-[1500px] flex-1 gap-4 px-4 py-4 lg:grid-cols-[380px_minmax(0,1fr)] lg:items-stretch md:px-6 md:py-6">
-        <aside className="min-h-0 overflow-y-auto pr-1 lg:h-full">
-          <DgcInputForm controller={controller} />
+      <main className="mx-auto grid max-w-[1500px] gap-4 px-4 py-4 lg:grid-cols-[380px_minmax(0,1fr)] md:px-6 md:py-6">
+        <aside className="lg:sticky lg:top-6 lg:self-start">
+          <div className="overflow-y-auto rounded-2xl border border-white/15 bg-[#1b1b1d] p-4 shadow-lg max-h-[calc(100dvh-6rem)] lg:h-[calc(100dvh-8.25rem)] lg:max-h-[calc(100dvh-8.25rem)]">
+            <DgcInputForm controller={controller} />
+          </div>
         </aside>
 
-        <div className="min-h-0 space-y-4">
+        <div className="space-y-4">
           <DgcPreview
             controller={controller}
             onRequestFullscreen={() => setFullscreen(true)}
