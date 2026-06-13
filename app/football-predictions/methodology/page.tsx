@@ -45,6 +45,31 @@ export default function BestPicksMethodologyPage() {
           .
         </p>
       </section>
+
+      <section className="space-y-4 border-t border-white/10 pt-6">
+        <h2 className="text-xl font-semibold text-white">How PopGoals works</h2>
+        <p>
+          PopGoals is designed as a live match-intelligence product rather than a generic prediction feed. The
+          app focuses on fixtures with historically interesting scoring patterns, especially matches that can
+          show quieter early phases before stronger goal potential later in defined hot zones.
+        </p>
+        <p>
+          At a high level, the app surfaces fixtures from one or more selection models. These can include a
+          broader composite model and narrower delayed-action logic that looks for quiet-start conditions,
+          possible odds drift, and later goal windows. The app then tracks whether the setup is still intact
+          as the match unfolds.
+        </p>
+        <p>
+          PopGoals therefore aims to answer three questions clearly: why a fixture qualified, whether the live
+          thesis is still valid, and how the relevant strategy has been performing over time. Archive history,
+          per-strategy comparisons, and fixture lifecycle states are used to make the product more transparent,
+          but none of these are guarantees of future outcomes.
+        </p>
+        <p className="text-sm text-white/80">
+          In practical terms, users may see fixtures move through stages such as qualified, watching, trigger,
+          and settled, with detail views explaining the target window and the current state of the setup.
+        </p>
+      </section>
     </BestPicksSubpageShell>
   );
 }

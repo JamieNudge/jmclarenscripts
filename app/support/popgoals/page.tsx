@@ -53,6 +53,11 @@ export default function PopGoalsSupportPage() {
           <h2 className="text-xl font-semibold mt-6">Related</h2>
           <ul className="list-disc list-inside space-y-1 ml-4">
             <li>
+              <Link href="/football-predictions/methodology" className="underline hover:text-violet-300">
+                Methodology, including how PopGoals works
+              </Link>
+            </li>
+            <li>
               <Link href="/privacy/popgoals" className="underline hover:text-violet-300">
                 Privacy policy &amp; support notes
               </Link>
