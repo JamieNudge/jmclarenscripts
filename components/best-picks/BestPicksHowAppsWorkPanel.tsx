@@ -165,8 +165,8 @@ export function BestPicksHowAppsWorkPanel() {
                 <div className="min-w-0 space-y-1">
                   <p className="font-semibold text-amber-100/95 text-sm sm:text-base">PopGoals</p>
                   <p className="text-xs sm:text-sm text-white/92 leading-relaxed">
-                    Three golden balls every day with the top slice of Over and Under 2.5 selections. Not on the App
-                    Store yet.
+                    A calm bubble-lake app for live hot-zone targets, alerts, and settled win/loss tracking. Not on
+                    the App Store yet.
                   </p>
                 </div>
               </li>

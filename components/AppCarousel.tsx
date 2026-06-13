@@ -181,7 +181,11 @@ export default function AppCarousel({ apps, onAppSelect }: AppCarouselProps) {
                           app.status === 'in-review' ? 'bg-blue-400 text-blue-900' :
                           'bg-purple-400 text-purple-900'
                         }`}>
-                          {app.status === 'in-review' ? 'App Store Review' : app.status.toUpperCase()}
+                          {app.status === 'in-review'
+                            ? 'App Store Review'
+                            : app.status === 'coming-soon'
+                            ? 'Coming soon'
+                            : app.status.toUpperCase()}
                         </span>
                         {app.googlePlayStatus && (
                           <span className={`px-3 py-1 rounded-full text-xs font-bold shadow-lg ${

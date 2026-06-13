@@ -4,7 +4,7 @@ import Link from 'next/link';
 export const metadata: Metadata = {
   title: 'PopGoals — Support',
   description:
-    'Support information for the PopGoals iOS app — help with bands, picks, ads, purchases, and contacting the developer.',
+    'Support information for the PopGoals iOS app — help with the bubble lake, hot-zone targets, alerts, ads, purchases, and contacting the developer.',
 };
 
 export default function PopGoalsSupportPage() {
@@ -27,7 +27,7 @@ export default function PopGoalsSupportPage() {
         <section className="space-y-6 text-sm md:text-base leading-relaxed text-white/90">
           <p>
             Thanks for using PopGoals. This page explains how to get help with the bubble lake,
-            bands, fixture detail, Firebase-backed data not appearing, ads, or purchases.
+            hot-zone targets, fixture detail, alerts, Firebase-backed data not appearing, ads, or purchases.
           </p>
 
           <h2 className="text-xl font-semibold mt-6">Getting Help</h2>

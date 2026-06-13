@@ -182,7 +182,11 @@ export default function Home() {
                           : 'bg-purple-400 text-purple-900'
                       }`}
                     >
-                      {app.status === 'in-review' ? 'In App Store Review' : app.status.toUpperCase()}
+                      {app.status === 'in-review'
+                        ? 'In App Store Review'
+                        : app.status === 'coming-soon'
+                        ? 'Coming soon'
+                        : app.status.toUpperCase()}
                     </span>
                     {app.googlePlayStatus && (
                       <span

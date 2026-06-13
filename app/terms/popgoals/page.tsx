@@ -4,7 +4,7 @@ import Link from 'next/link';
 export const metadata: Metadata = {
   title: 'PopGoals — Terms of Use',
   description:
-    'Terms of Use for PopGoals, an iOS football picks app with league bands, model picks, and optional advertisements.',
+    'Terms of Use for PopGoals, an iOS football app with bubble-lake targets, hot-zone alerts, and optional advertisements.',
 };
 
 export default function PopGoalsTermsPage() {
@@ -32,9 +32,8 @@ export default function PopGoalsTermsPage() {
 
           <h2 className="text-xl font-semibold mt-8">1. Nature of the Service</h2>
           <p>
-            PopGoals displays football fixtures, statistical banding by league performance, and
-            model-style Over / Under 2.5 readings for information and entertainment. Features may
-            change between updates.
+            PopGoals displays football fixtures, bubble-lake targets, and hot-zone timing guidance
+            for information and entertainment. Features may change between updates.
           </p>
           <p className="font-semibold text-yellow-300/95">
             PopGoals is for informational and entertainment purposes only. Outputs are not guarantees

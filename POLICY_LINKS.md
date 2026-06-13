@@ -20,11 +20,11 @@ Canonical app legal URLs may live on different hosts. Use the full URLs below in
 ---
 
 ## PopGoals
-- Privacy: https://jmclarenscripts.vercel.app/privacy/popgoals
-- Terms: https://jmclarenscripts.vercel.app/terms/popgoals
-- Support: https://jmclarenscripts.vercel.app/support/popgoals
-- Disclaimer: https://jmclarenscripts.vercel.app/disclaimer/popgoals
-- Content rating: https://jmclarenscripts.vercel.app/popgoals/content-rating (in-app + Settings)
+- Privacy: https://thegoallab.net/privacy/popgoals
+- Terms: https://thegoallab.net/terms/popgoals
+- Support: https://thegoallab.net/support/popgoals
+- Disclaimer: https://thegoallab.net/disclaimer/popgoals
+- Content rating: https://thegoallab.net/popgoals/content-rating (in-app + Settings)
 
 ---
 

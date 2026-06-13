@@ -4,7 +4,7 @@ import Link from 'next/link';
 export const metadata: Metadata = {
   title: 'PopGoals — Privacy Policy & Support',
   description:
-    'Privacy policy and support information for PopGoals, an iOS football picks app with league bands, Firebase-backed data, and optional ads.',
+    'Privacy policy and support information for PopGoals, an iOS football app focused on live hot-zone targets, Firebase-backed data, and optional ads.',
 };
 
 export default function PopGoalsPrivacySupportPage() {
@@ -32,9 +32,9 @@ export default function PopGoalsPrivacySupportPage() {
           <h2 className="text-2xl font-semibold text-white mb-4">Privacy Policy</h2>
 
           <p>
-            PopGoals is an iOS app that presents football fixtures, Over / Under 2.5 style model
-            picks, and league-performance banding in a visual “bubble lake”. This policy explains
-            what data is processed, where it comes from, and how third-party services are used.
+            PopGoals is an iOS app that presents football fixtures in a visual “bubble lake” and
+            focuses on live hot-zone targets for in-play use. This policy explains what data is
+            processed, where it comes from, and how third-party services are used.
           </p>
 
           <h3 className="text-xl font-semibold mt-6">1. Data We Collect and Process</h3>

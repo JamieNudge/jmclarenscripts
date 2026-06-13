@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'PopGoals — Age & Content Rating',
   description:
-    'Age suitability and content rating information for PopGoals, a football picks app with league bands and Over / Under model reads.',
+    'Age suitability and content rating information for PopGoals, a football app with bubble-lake targets and live hot-zone guidance.',
 };
 
 export default function PopGoalsContentRatingPage() {
@@ -33,17 +33,17 @@ export default function PopGoalsContentRatingPage() {
           <p>
             PopGoals is intended for users who are{' '}
             <span className="font-semibold">18 years of age or older</span>. The app presents
-            football match data, model-style Over / Under 2.5 readings, and league banding in a
-            context related to betting markets, which is typically restricted to adults.
+            football match data, live hot-zone targets, and settled win/loss tracking in a context
+            related to betting markets, which is typically restricted to adults.
           </p>
 
           <h2 className="text-xl font-semibold mt-4">Gambling &amp; betting context</h2>
           <p>PopGoals includes:</p>
           <ul className="list-disc list-inside space-y-1 ml-4">
             <li>Fixture lists, kick-off times, and match metadata</li>
-            <li>League pooled performance banding (visual “bubbles”)</li>
-            <li>Model confidence style percentages for Over / Under 2.5 picks</li>
-            <li>Explanatory copy distinguishing band labels from per-fixture model reads</li>
+            <li>Bubble-lake stages such as qualified, watching, trigger, wins, and losses</li>
+            <li>Hot-zone target minute windows and settled goal-time summaries</li>
+            <li>Explanatory copy about alerts, target windows, and responsible use</li>
           </ul>
           <p className="mt-4">
             <span className="font-semibold">Important:</span> The app does not place bets or
