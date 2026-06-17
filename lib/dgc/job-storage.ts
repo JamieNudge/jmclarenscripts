@@ -82,9 +82,25 @@ export function loadJob(id: string): SavedJobRecord | null {
   const registry = readRegistry();
   const record = registry[id];
   if (!record?.document) return null;
-  const document = parseDocumentJson(serializeDocument(record.document));
-  writeLastJobId(id);
-  return { ...record, document };
+  try {
+    const document = parseDocumentJson(serializeDocument(record.document));
+    writeLastJobId(id);
+    return { ...record, document };
+  } catch {
+    return null;
+  }
+}
+
+export function readInitialSavedJob(): {
+  document: DGCDesignDocument;
+  id: string;
+} | null {
+  if (typeof window === 'undefined') return null;
+  const lastId = readLastJobId();
+  if (!lastId) return null;
+  const record = loadJob(lastId);
+  if (!record) return null;
+  return { document: record.document, id: record.id };
 }
 
 export function deleteJob(id: string): void {

@@ -9,14 +9,13 @@ import {
   writeAutosave,
   type AutosavePayload,
 } from './autosave';
+import { makeNewDocument, serializeDocument } from './document';
 import {
   listSavedJobs,
   loadJob,
-  readLastJobId,
   saveJob,
   type SavedJobRecord,
 } from './job-storage';
-import { serializeDocument } from './document';
 import type { DgcDocumentController } from './use-dgc-document';
 import type { DGCDesignDocument } from './types';
 
@@ -25,9 +24,18 @@ export type StatusMessage = {
   message: string;
 } | null;
 
-export function useDgcPersistence(controller: DgcDocumentController) {
+type PersistenceOptions = {
+  initialJobId?: string | null;
+};
+
+export function useDgcPersistence(
+  controller: DgcDocumentController,
+  options: PersistenceOptions = {},
+) {
   const savedBaselineRef = useRef(serializeDocument(controller.document));
-  const [activeJobId, setActiveJobId] = useState<string | null>(null);
+  const [activeJobId, setActiveJobId] = useState<string | null>(
+    options.initialJobId ?? null,
+  );
   const [savedJobs, setSavedJobs] = useState<SavedJobRecord[]>([]);
   const [status, setStatus] = useState<StatusMessage>(null);
   const [restoreOffer, setRestoreOffer] = useState<AutosavePayload | null>(null);
@@ -41,12 +49,15 @@ export function useDgcPersistence(controller: DgcDocumentController) {
   const isDirty =
     serializeDocument(controller.document) !== savedBaselineRef.current;
 
-  const markSaved = useCallback((document: DGCDesignDocument, jobId: string) => {
-    savedBaselineRef.current = serializeDocument(document);
-    setActiveJobId(jobId);
-    clearAutosave();
-    refreshSavedJobs();
-  }, [refreshSavedJobs]);
+  const markSaved = useCallback(
+    (document: DGCDesignDocument, jobId: string) => {
+      savedBaselineRef.current = serializeDocument(document);
+      setActiveJobId(jobId);
+      clearAutosave();
+      refreshSavedJobs();
+    },
+    [refreshSavedJobs],
+  );
 
   const applyLoadedDocument = useCallback(
     (document: DGCDesignDocument, jobId: string, message: string) => {
@@ -86,21 +97,37 @@ export function useDgcPersistence(controller: DgcDocumentController) {
       try {
         const record = loadJob(jobId);
         if (!record) {
-          setStatus({ type: 'error', message: "Couldn't find that saved job." });
+          setStatus({
+            type: 'error',
+            message: "Couldn't open that job — try saving it again.",
+          });
           refreshSavedJobs();
           return;
         }
-        applyLoadedDocument(
-          record.document,
-          record.id,
-          `Loaded ${record.name}`,
-        );
+        applyLoadedDocument(record.document, record.id, `Opened ${record.name}`);
+      } catch (error) {
+        setStatus({
+          type: 'error',
+          message:
+            error instanceof Error
+              ? error.message
+              : "Couldn't open that job — try saving it again.",
+        });
       } finally {
         setIsBusy(false);
       }
     },
     [applyLoadedDocument, refreshSavedJobs],
   );
+
+  const startNewJob = useCallback(() => {
+    const document = makeNewDocument('');
+    controller.replaceDocument(document);
+    savedBaselineRef.current = serializeDocument(document);
+    setActiveJobId(null);
+    clearAutosave();
+    setStatus({ type: 'success', message: 'Started a new job.' });
+  }, [controller]);
 
   const restoreAutosave = useCallback(() => {
     if (!restoreOffer) return;
@@ -120,14 +147,10 @@ export function useDgcPersistence(controller: DgcDocumentController) {
 
   useEffect(() => {
     refreshSavedJobs();
-    const lastJobId = readLastJobId();
-    if (lastJobId) {
-      const record = loadJob(lastJobId);
-      if (record) {
-        controller.replaceDocument(record.document);
-        savedBaselineRef.current = serializeDocument(record.document);
-        setActiveJobId(record.id);
-      }
+
+    if (options.initialJobId) {
+      savedBaselineRef.current = serializeDocument(controller.document);
+      setActiveJobId(options.initialJobId);
     }
 
     const autosave = readAutosave();
@@ -143,7 +166,6 @@ export function useDgcPersistence(controller: DgcDocumentController) {
     }
 
     setHasHydrated(true);
-    // Hydrate once on mount.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -174,6 +196,7 @@ export function useDgcPersistence(controller: DgcDocumentController) {
     restoreOffer,
     saveAllSettings,
     loadSavedJob,
+    startNewJob,
     restoreAutosave,
     dismissRestore,
     refreshSavedJobs,

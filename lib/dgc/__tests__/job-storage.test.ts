@@ -5,6 +5,7 @@ import {
   LAST_JOB_ID_STORAGE_KEY,
   listSavedJobs,
   loadJob,
+  readInitialSavedJob,
   saveJob,
   SAVED_JOBS_STORAGE_KEY,
 } from '../job-storage';
@@ -52,5 +53,14 @@ describe('job-storage', () => {
 
     expect(window.localStorage.getItem(LAST_JOB_ID_STORAGE_KEY)).toBe(saved.id);
     expect(window.localStorage.getItem(SAVED_JOBS_STORAGE_KEY)).toContain('Case A');
+  });
+
+  it('reads the last saved job on startup', () => {
+    const document = makeNewDocument('Startup job');
+    const saved = saveJob(document);
+    const initial = readInitialSavedJob();
+
+    expect(initial?.id).toBe(saved.id);
+    expect(initial?.document.name).toBe('Startup job');
   });
 });

@@ -25,14 +25,24 @@ export default function DgcSaveSettings({
           onChange={(event) => controller.updateJobName(event.target.value)}
         />
       </label>
-      <button
-        type="button"
-        onClick={persistence.saveAllSettings}
-        disabled={persistence.isBusy}
-        className="w-full rounded-lg bg-sky-600 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
-      >
-        Save all settings
-      </button>
+      <div className="flex flex-wrap gap-2">
+        <button
+          type="button"
+          onClick={persistence.saveAllSettings}
+          disabled={persistence.isBusy}
+          className="rounded-lg bg-sky-600 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
+        >
+          Save all settings
+        </button>
+        <button
+          type="button"
+          onClick={persistence.startNewJob}
+          disabled={persistence.isBusy}
+          className="rounded-lg border border-white/15 px-3 py-2 text-sm text-white disabled:opacity-50"
+        >
+          New job
+        </button>
+      </div>
       <p
         className={`text-xs ${persistence.isDirty ? 'text-amber-300' : 'text-white/60'}`}
         aria-live="polite"
@@ -55,39 +65,43 @@ export default function DgcSaveSettings({
 
       {persistence.savedJobs.length > 0 ? (
         <div className="space-y-2 border-t border-white/10 pt-3">
-          <h4 className="text-sm font-semibold text-white">Saved jobs</h4>
+          <h4 className="text-sm font-semibold text-white">Saved jobs — tap to open</h4>
           <ul className="space-y-2">
             {persistence.savedJobs.map((job) => {
               const isActive = persistence.activeJobId === job.id;
               return (
-                <li
-                  key={job.id}
-                  className={`flex items-center justify-between gap-2 rounded-lg border px-3 py-2 ${
-                    isActive
-                      ? 'border-sky-500/40 bg-sky-500/10'
-                      : 'border-white/10 bg-[#111]'
-                  }`}
-                >
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-white">{job.name}</p>
-                    <p className="text-xs text-white/50">
-                      Saved {formatJobSavedAt(job.savedAt)}
-                    </p>
-                  </div>
+                <li key={job.id}>
                   <button
                     type="button"
                     onClick={() => persistence.loadSavedJob(job.id)}
-                    disabled={persistence.isBusy || isActive}
-                    className="shrink-0 rounded-lg border border-white/15 px-3 py-1.5 text-xs text-white disabled:opacity-40"
+                    disabled={persistence.isBusy}
+                    className={`flex w-full items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left transition-colors disabled:opacity-50 ${
+                      isActive
+                        ? 'border-sky-500/40 bg-sky-500/10'
+                        : 'border-white/10 bg-[#111] hover:border-white/25'
+                    }`}
                   >
-                    {isActive ? 'Open' : 'Load'}
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium text-white">{job.name}</p>
+                      <p className="text-xs text-white/50">
+                        Saved {formatJobSavedAt(job.savedAt)}
+                        {isActive ? ' · current' : ''}
+                      </p>
+                    </div>
+                    <span className="shrink-0 text-xs font-medium text-sky-300">
+                      {isActive ? 'Reload' : 'Open'}
+                    </span>
                   </button>
                 </li>
               );
             })}
           </ul>
         </div>
-      ) : null}
+      ) : (
+        <p className="border-t border-white/10 pt-3 text-xs text-white/50">
+          No saved jobs yet. Enter a job name and click Save all settings.
+        </p>
+      )}
     </section>
   );
 }

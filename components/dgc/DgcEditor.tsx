@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useDgcDocument } from '@/lib/dgc/use-dgc-document';
 import { useDgcPersistence } from '@/lib/dgc/use-dgc-persistence';
+import { readInitialSavedJob } from '@/lib/dgc/job-storage';
 import { dgcSiteConfig } from '@/lib/dgc/site-config';
 import DgcInputForm from './DgcInputForm';
 import DgcPreview from './DgcPreview';
@@ -10,8 +11,11 @@ import DgcResultExport from './DgcResultExport';
 import DgcSaveSettings from './DgcSaveSettings';
 
 export default function DgcEditor() {
-  const controller = useDgcDocument();
-  const persistence = useDgcPersistence(controller);
+  const [boot] = useState(() => readInitialSavedJob());
+  const controller = useDgcDocument(boot?.document);
+  const persistence = useDgcPersistence(controller, {
+    initialJobId: boot?.id ?? null,
+  });
   const [fullscreen, setFullscreen] = useState(false);
 
   if (fullscreen) {
