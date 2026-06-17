@@ -9,14 +9,14 @@ import {
   writeAutosave,
   type AutosavePayload,
 } from './autosave';
-import { serializeDocument } from './document';
 import {
-  downloadDesignFallback,
-  openDesignFromFile,
-  openDesignWithPicker,
-  saveDesignWithPicker,
-  type FileAccessResult,
-} from './file-access';
+  listSavedJobs,
+  loadJob,
+  readLastJobId,
+  saveJob,
+  type SavedJobRecord,
+} from './job-storage';
+import { serializeDocument } from './document';
 import type { DgcDocumentController } from './use-dgc-document';
 import type { DGCDesignDocument } from './types';
 
@@ -26,133 +26,92 @@ export type StatusMessage = {
 } | null;
 
 export function useDgcPersistence(controller: DgcDocumentController) {
-  const fileHandleRef = useRef<FileSystemFileHandle | null>(null);
   const savedBaselineRef = useRef(serializeDocument(controller.document));
-  const [savedFileName, setSavedFileName] = useState<string | null>(null);
-  const [fileStatus, setFileStatus] = useState<StatusMessage>(null);
+  const [activeJobId, setActiveJobId] = useState<string | null>(null);
+  const [savedJobs, setSavedJobs] = useState<SavedJobRecord[]>([]);
+  const [status, setStatus] = useState<StatusMessage>(null);
   const [restoreOffer, setRestoreOffer] = useState<AutosavePayload | null>(null);
-  const [isFileBusy, setIsFileBusy] = useState(false);
+  const [isBusy, setIsBusy] = useState(false);
+  const [hasHydrated, setHasHydrated] = useState(false);
+
+  const refreshSavedJobs = useCallback(() => {
+    setSavedJobs(listSavedJobs());
+  }, []);
 
   const isDirty =
     serializeDocument(controller.document) !== savedBaselineRef.current;
 
-  const markSaved = useCallback((document: DGCDesignDocument, fileName: string) => {
+  const markSaved = useCallback((document: DGCDesignDocument, jobId: string) => {
     savedBaselineRef.current = serializeDocument(document);
-    setSavedFileName(fileName);
+    setActiveJobId(jobId);
     clearAutosave();
-  }, []);
+    refreshSavedJobs();
+  }, [refreshSavedJobs]);
 
-  const applyOpenResult = useCallback(
-    (
-      document: DGCDesignDocument,
-      fileName: string,
-      handle?: FileSystemFileHandle,
-    ) => {
+  const applyLoadedDocument = useCallback(
+    (document: DGCDesignDocument, jobId: string, message: string) => {
       controller.replaceDocument(document);
-      fileHandleRef.current = handle ?? null;
-      markSaved(document, fileName);
-      setFileStatus({
-        type: 'success',
-        message: `Loaded settings for ${document.name.trim() || 'job'}`,
-      });
+      markSaved(document, jobId);
+      setStatus({ type: 'success', message });
       setRestoreOffer(null);
     },
     [controller, markSaved],
   );
 
-  const openDesign = useCallback(async () => {
-    setIsFileBusy(true);
-    setFileStatus(null);
+  const saveAllSettings = useCallback(() => {
+    setIsBusy(true);
+    setStatus(null);
     try {
-      const pickerResult = await openDesignWithPicker();
-      if (pickerResult.ok) {
-        applyOpenResult(
-          pickerResult.document,
-          pickerResult.fileName,
-          pickerResult.handle,
-        );
-        return;
-      }
-      if (!pickerResult.cancelled) {
-        setFileStatus({ type: 'error', message: pickerResult.error });
-      }
+      const record = saveJob(controller.document);
+      markSaved(record.document, record.id);
+      setStatus({
+        type: 'success',
+        message: `Saved all settings for ${record.name}`,
+      });
+    } catch (error) {
+      setStatus({
+        type: 'error',
+        message:
+          error instanceof Error ? error.message : "Couldn't save — try again.",
+      });
     } finally {
-      setIsFileBusy(false);
+      setIsBusy(false);
     }
-  }, [applyOpenResult]);
+  }, [controller.document, markSaved]);
 
-  const openDesignFromInput = useCallback(
-    async (file: File) => {
-      setIsFileBusy(true);
-      setFileStatus(null);
+  const loadSavedJob = useCallback(
+    (jobId: string) => {
+      setIsBusy(true);
+      setStatus(null);
       try {
-        const result = await openDesignFromFile(file);
-        if (result.ok) {
-          applyOpenResult(result.document, result.fileName);
-        } else if (!result.cancelled) {
-          setFileStatus({ type: 'error', message: result.error });
+        const record = loadJob(jobId);
+        if (!record) {
+          setStatus({ type: 'error', message: "Couldn't find that saved job." });
+          refreshSavedJobs();
+          return;
         }
+        applyLoadedDocument(
+          record.document,
+          record.id,
+          `Loaded ${record.name}`,
+        );
       } finally {
-        setIsFileBusy(false);
+        setIsBusy(false);
       }
     },
-    [applyOpenResult],
+    [applyLoadedDocument, refreshSavedJobs],
   );
-
-  const runSave = useCallback(
-    async (
-      saver: () => Promise<FileAccessResult>,
-    ): Promise<FileAccessResult> => {
-      setIsFileBusy(true);
-      setFileStatus(null);
-      try {
-        const result = await saver();
-        if (result.ok) {
-          markSaved(controller.document, result.fileName);
-          if (result.handle) {
-            fileHandleRef.current = result.handle;
-          }
-          setFileStatus({
-            type: 'success',
-            message: `Saved all settings for ${controller.document.name.trim() || 'job'}`,
-          });
-        } else if (!result.cancelled) {
-          setFileStatus({ type: 'error', message: result.error });
-        }
-        return result;
-      } finally {
-        setIsFileBusy(false);
-      }
-    },
-    [controller.document, markSaved],
-  );
-
-  const saveDesign = useCallback(async () => {
-    if (fileHandleRef.current) {
-      return runSave(() =>
-        saveDesignWithPicker(controller.document, {
-          existingHandle: fileHandleRef.current,
-        }),
-      );
-    }
-    return runSave(() => saveDesignWithPicker(controller.document));
-  }, [controller.document, runSave]);
-
-  const saveDesignAs = useCallback(async () => {
-    return runSave(() =>
-      saveDesignWithPicker(controller.document, { forcePicker: true }),
-    );
-  }, [controller.document, runSave]);
-
-  const saveDesignFallback = useCallback(async () => {
-    return runSave(async () => downloadDesignFallback(controller.document));
-  }, [controller.document, runSave]);
 
   const restoreAutosave = useCallback(() => {
     if (!restoreOffer) return;
-    applyOpenResult(restoreOffer.document, 'restored design');
+    const name = restoreOffer.document.name.trim() || 'Recovered job';
+    applyLoadedDocument(
+      { ...restoreOffer.document, name },
+      activeJobId ?? 'recovered',
+      `Restored unsaved work for ${name}`,
+    );
     setRestoreOffer(null);
-  }, [applyOpenResult, restoreOffer]);
+  }, [activeJobId, applyLoadedDocument, restoreOffer]);
 
   const dismissRestore = useCallback(() => {
     setRestoreOffer(null);
@@ -160,6 +119,17 @@ export function useDgcPersistence(controller: DgcDocumentController) {
   }, []);
 
   useEffect(() => {
+    refreshSavedJobs();
+    const lastJobId = readLastJobId();
+    if (lastJobId) {
+      const record = loadJob(lastJobId);
+      if (record) {
+        controller.replaceDocument(record.document);
+        savedBaselineRef.current = serializeDocument(record.document);
+        setActiveJobId(record.id);
+      }
+    }
+
     const autosave = readAutosave();
     if (
       autosave &&
@@ -171,40 +141,41 @@ export function useDgcPersistence(controller: DgcDocumentController) {
     ) {
       setRestoreOffer(autosave);
     }
-    // Only evaluate restore offer on initial load.
+
+    setHasHydrated(true);
+    // Hydrate once on mount.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
+    if (!hasHydrated) return;
     const timer = window.setTimeout(() => {
       writeAutosave(controller.document);
     }, AUTOSAVE_DEBOUNCE_MS);
     return () => window.clearTimeout(timer);
-  }, [controller.document]);
+  }, [controller.document, hasHydrated]);
 
   const saveStatusLabel = (() => {
     const jobName = controller.document.name.trim();
-    if (isDirty) return jobName ? `Unsaved changes to ${jobName}` : 'Unsaved changes';
-    if (savedFileName) {
-      return jobName ? `All settings saved for ${jobName}` : 'All settings saved';
+    if (isDirty) {
+      return jobName ? `Unsaved changes to ${jobName}` : 'Unsaved changes';
     }
-    return 'Backed up in this browser';
+    if (jobName) return `All settings saved for ${jobName}`;
+    return 'Saved in this browser while you work';
   })();
 
   return {
     isDirty,
-    savedFileName,
-    fileStatus,
+    activeJobId,
+    savedJobs,
+    status,
     saveStatusLabel,
-    isFileBusy,
+    isBusy,
     restoreOffer,
-    openDesign,
-    openDesignFromInput,
-    saveDesign,
-    saveDesignAs,
-    saveDesignFallback,
+    saveAllSettings,
+    loadSavedJob,
     restoreAutosave,
     dismissRestore,
-    supportsNativeOpen: typeof window !== 'undefined' && 'showOpenFilePicker' in window,
+    refreshSavedJobs,
   };
 }

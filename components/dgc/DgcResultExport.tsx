@@ -182,7 +182,7 @@ Area fraction: ${formatNumber(result.areaFraction * 100)}%`;
                 }
                 disabled={isExporting}
               />
-              PNG transparent background
+              PNG transparent background (on by default)
             </label>
             <div className="flex flex-wrap gap-2">
               <button

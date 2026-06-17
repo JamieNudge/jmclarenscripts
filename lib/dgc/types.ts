@@ -141,7 +141,7 @@ export interface ExportPreferences {
 export const DEFAULT_EXPORT_PREFERENCES: ExportPreferences = {
   preferredFormat: 'png',
   pngScale: 2,
-  pngTransparentBackground: false,
+  pngTransparentBackground: true,
 };
 
 export function normalizeExportPreferences(

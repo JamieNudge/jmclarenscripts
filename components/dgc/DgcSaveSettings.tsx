@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
+import { formatJobSavedAt } from '@/lib/dgc/job-storage';
 import type { useDgcPersistence } from '@/lib/dgc/use-dgc-persistence';
 import type { DgcDocumentController } from '@/lib/dgc/use-dgc-document';
 
@@ -13,16 +13,6 @@ export default function DgcSaveSettings({
   controller: DgcDocumentController;
   persistence: Persistence;
 }) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const loadClicked = () => {
-    if (persistence.supportsNativeOpen) {
-      void persistence.openDesign();
-      return;
-    }
-    fileInputRef.current?.click();
-  };
-
   return (
     <section className="space-y-3 rounded-xl border border-white/15 bg-[#141416] p-4">
       <h3 className="text-lg font-semibold text-white">Save all settings</h3>
@@ -35,55 +25,69 @@ export default function DgcSaveSettings({
           onChange={(event) => controller.updateJobName(event.target.value)}
         />
       </label>
-      <div className="flex flex-wrap gap-2">
-        <button
-          type="button"
-          onClick={() => void persistence.saveDesign()}
-          disabled={persistence.isFileBusy}
-          className="rounded-lg bg-sky-600 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
-        >
-          Save all settings
-        </button>
-        <button
-          type="button"
-          onClick={loadClicked}
-          disabled={persistence.isFileBusy}
-          className="rounded-lg border border-white/15 px-3 py-2 text-sm text-white disabled:opacity-50"
-        >
-          Load settings
-        </button>
-      </div>
+      <button
+        type="button"
+        onClick={persistence.saveAllSettings}
+        disabled={persistence.isBusy}
+        className="w-full rounded-lg bg-sky-600 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
+      >
+        Save all settings
+      </button>
       <p
         className={`text-xs ${persistence.isDirty ? 'text-amber-300' : 'text-white/60'}`}
         aria-live="polite"
       >
         {persistence.saveStatusLabel}
       </p>
-      {persistence.fileStatus ? (
+      {persistence.status ? (
         <p
           className={`text-sm ${
-            persistence.fileStatus.type === 'success' ? 'text-green-400' : 'text-red-300'
+            persistence.status.type === 'success' ? 'text-green-400' : 'text-red-300'
           }`}
           role="status"
         >
-          {persistence.fileStatus.message}
+          {persistence.status.message}
         </p>
       ) : null}
       <p className="text-xs text-white/55">
-        Saves your job name, canvas sizes, layers, and targets so you can reopen and keep editing.
-        To get a picture file, use Export PNG below.
+        Settings stay in this browser on this device. To share a picture, use Export PNG below.
       </p>
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept=".dgcjson,application/json"
-        className="hidden"
-        onChange={(event) => {
-          const file = event.target.files?.[0];
-          if (file) void persistence.openDesignFromInput(file);
-          event.target.value = '';
-        }}
-      />
+
+      {persistence.savedJobs.length > 0 ? (
+        <div className="space-y-2 border-t border-white/10 pt-3">
+          <h4 className="text-sm font-semibold text-white">Saved jobs</h4>
+          <ul className="space-y-2">
+            {persistence.savedJobs.map((job) => {
+              const isActive = persistence.activeJobId === job.id;
+              return (
+                <li
+                  key={job.id}
+                  className={`flex items-center justify-between gap-2 rounded-lg border px-3 py-2 ${
+                    isActive
+                      ? 'border-sky-500/40 bg-sky-500/10'
+                      : 'border-white/10 bg-[#111]'
+                  }`}
+                >
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium text-white">{job.name}</p>
+                    <p className="text-xs text-white/50">
+                      Saved {formatJobSavedAt(job.savedAt)}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => persistence.loadSavedJob(job.id)}
+                    disabled={persistence.isBusy || isActive}
+                    className="shrink-0 rounded-lg border border-white/15 px-3 py-1.5 text-xs text-white disabled:opacity-40"
+                  >
+                    {isActive ? 'Open' : 'Load'}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ) : null}
     </section>
   );
 }

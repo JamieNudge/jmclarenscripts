@@ -115,6 +115,146 @@ export function exportSvg(
   return svg;
 }
 
+function drawExportToCanvas(
+  ctx: CanvasRenderingContext2D,
+  context: DrawContext,
+  width: number,
+  height: number,
+): void {
+  const {
+    layout,
+    document,
+    layerStates,
+    activeLayerID,
+    exportWholeComposition,
+    transparentBackground = false,
+  } = context;
+  const canvas = document.canvas;
+
+  if (!transparentBackground) {
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, width, height);
+    ctx.strokeStyle = 'rgba(136, 136, 136, 0.5)';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(
+      layout.screenRect.x,
+      layout.screenRect.y,
+      layout.screenRect.width,
+      layout.screenRect.height,
+    );
+  }
+
+  const axisY = fieldOriginY(canvas);
+  const axisStart = layout.screenPointCanvas(0, axisY);
+  const axisEnd = layout.screenPointCanvas(contentWidth(canvas), axisY);
+  ctx.strokeStyle = '#666666';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(axisStart.x, axisStart.y);
+  ctx.lineTo(axisEnd.x, axisEnd.y);
+  ctx.stroke();
+
+  const band = layout.totalPopulationBandScreenRect;
+  if (band) {
+    ctx.fillStyle = 'rgba(255, 149, 0, 0.16)';
+    ctx.fillRect(band.x, band.y, band.width, band.height);
+    ctx.strokeStyle = 'rgba(255, 149, 0, 0.65)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(band.x, band.y, band.width, band.height);
+    const label =
+      document.canvas.totalPopulationLabel.trim() || 'Total Population';
+    ctx.fillStyle = '#333333';
+    ctx.font = '12px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(label, band.x + band.width / 2, band.y + band.height / 2);
+  }
+
+  const field = layout.fieldScreenRect;
+  if (!transparentBackground) {
+    ctx.fillStyle = '#f8f8f8';
+    ctx.fillRect(field.x, field.y, field.width, field.height);
+  }
+  ctx.strokeStyle = 'rgba(51, 51, 51, 0.75)';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(field.x, field.y, field.width, field.height);
+
+  if (!transparentBackground) {
+    ctx.fillStyle = '#666666';
+    ctx.font = '12px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillText('Field of Wealth', field.x + field.width / 2, field.y - 6);
+  }
+
+  const layers = exportWholeComposition
+    ? document.layers
+    : document.layers.filter((layer) => layer.id === activeLayerID);
+
+  for (const layer of layers) {
+    if (!layer.isVisible) continue;
+    const state = layerStates[layer.id];
+    if (!state?.result) continue;
+    const { result, input } = state;
+    const color = layer.colorHex;
+    const isActive = layer.id === activeLayerID;
+    const labels = layerHandleLabelsForId(document.layers, layer.id);
+    const vertices = CanvasGeometry.partitionPolygonInsideField(
+      input.width,
+      input.height,
+      input.startX,
+      result.endX,
+      result.endY,
+      result.edge,
+    );
+
+    if (vertices.length >= 3) {
+      ctx.fillStyle = color;
+      ctx.globalAlpha = isActive ? 0.28 : 0.14;
+      ctx.beginPath();
+      const first = layout.screenPointField(vertices[0].x, vertices[0].y);
+      ctx.moveTo(first.x, first.y);
+      for (const vertex of vertices.slice(1)) {
+        const point = layout.screenPointField(vertex.x, vertex.y);
+        ctx.lineTo(point.x, point.y);
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+
+    const start = layout.screenPointField(input.startX, 0);
+    const end = layout.screenPointField(result.endX, result.endY);
+    const lineEnd = layout.partitionLineDrawEndpoint(end, start);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = isActive ? 3 : 1.5;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(end.x, end.y);
+    ctx.lineTo(lineEnd.x, lineEnd.y);
+    ctx.stroke();
+
+    if (isActive || exportWholeComposition) {
+      ctx.fillStyle = '#FF9500';
+      ctx.beginPath();
+      ctx.arc(start.x, start.y, 6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#333333';
+      ctx.font = '700 11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'alphabetic';
+      ctx.fillText(labels.start, start.x, start.y + 16);
+
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(end.x, end.y, 6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#333333';
+      ctx.fillText(labels.end, end.x, end.y - 10);
+    }
+  }
+}
+
 export function svgToPngBlob(
   svg: string,
   pixelWidth: number,
@@ -170,17 +310,42 @@ export async function exportPng(
   context: DrawContext,
   options: { transparentBackground?: boolean } = {},
 ): Promise<Blob> {
-  const { width, height } = context.layout.screenRect;
   const transparentBackground =
-    options.transparentBackground ?? context.transparentBackground ?? false;
-  const svg = exportSvg({ ...context, transparentBackground }, width, height);
-  return svgToPngBlob(svg, width, height, transparentBackground);
+    options.transparentBackground ?? context.transparentBackground ?? true;
+  const { width, height } = context.layout.screenRect;
+  const pixelWidth = Math.max(1, Math.round(width));
+  const pixelHeight = Math.max(1, Math.round(height));
+
+  const canvas = window.document.createElement('canvas');
+  canvas.width = pixelWidth;
+  canvas.height = pixelHeight;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) {
+    throw new Error('Canvas unavailable.');
+  }
+
+  drawExportToCanvas(
+    ctx,
+    { ...context, transparentBackground },
+    pixelWidth,
+    pixelHeight,
+  );
+
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => {
+        if (blob) resolve(blob);
+        else reject(new Error('PNG export failed.'));
+      },
+      'image/png',
+    );
+  });
 }
 
 export async function exportPdf(context: DrawContext): Promise<Blob> {
   const { jsPDF } = await import('jspdf');
   const { width, height } = context.layout.screenRect;
-  const pngBlob = await exportPng(context);
+  const pngBlob = await exportPng(context, { transparentBackground: false });
   const pngUrl = URL.createObjectURL(pngBlob);
   try {
     const pdf = new jsPDF({
