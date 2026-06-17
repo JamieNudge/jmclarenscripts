@@ -39,6 +39,7 @@ export default function DgcResultExport({
       layerStates: controller.layerStates,
       activeLayerID: controller.document.activeLayerID,
       exportWholeComposition: controller.exportWholeComposition,
+      transparentBackground: controller.document.exportPreferences.pngTransparentBackground,
     };
   };
 
@@ -49,6 +50,7 @@ export default function DgcResultExport({
       const pngScale = controller.document.exportPreferences.pngScale;
       const context = makeDrawContext(pngScale);
       const filename = exportDownloadFilename(controller.document.name, format);
+      const transparent = controller.document.exportPreferences.pngTransparentBackground;
 
       if (format === 'svg') {
         const svg = exportSvg(context);
@@ -68,7 +70,9 @@ export default function DgcResultExport({
       }
 
       const blob =
-        format === 'png' ? await exportPng(context) : await exportPdf(context);
+        format === 'png'
+          ? await exportPng(context, { transparentBackground: transparent })
+          : await exportPdf(context);
       const result = downloadExportBlob(blob, filename);
       if (!result.ok) {
         setExportStatus({ type: 'error', message: `Export failed: ${result.error}` });
@@ -140,9 +144,9 @@ Area fraction: ${formatNumber(result.areaFraction * 100)}%`;
           </div>
 
           <div className="space-y-3 text-white">
-            <h3 className="text-lg font-semibold">Export</h3>
+            <h3 className="text-lg font-semibold">Export image</h3>
             <p className="text-xs text-white/60">
-              Downloads an image or PDF to your device. Use Save design in the header to save your editable project.
+              Downloads a PNG, SVG, or PDF using the job name above.
             </p>
             <label className="flex items-center gap-2 text-sm">
               <input
@@ -168,6 +172,17 @@ Area fraction: ${formatNumber(result.areaFraction * 100)}%`;
                 <option value={2}>2×</option>
                 <option value={4}>4×</option>
               </select>
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={controller.document.exportPreferences.pngTransparentBackground}
+                onChange={(event) =>
+                  controller.updatePngTransparentBackground(event.target.checked)
+                }
+                disabled={isExporting}
+              />
+              PNG transparent background
             </label>
             <div className="flex flex-wrap gap-2">
               <button

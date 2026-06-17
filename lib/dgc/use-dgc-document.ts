@@ -20,7 +20,7 @@ import type {
   LayerSolveState,
   PartitionEdge,
 } from './types';
-import { maxStartX, effectiveFieldWidth, normalizeCanvas, syncFieldWidth } from './types';
+import { maxStartX, effectiveFieldWidth, normalizeCanvas, normalizeExportPreferences, syncFieldWidth } from './types';
 
 const MIN_FRACTION = 0.0001;
 const MAX_FRACTION = 0.9999;
@@ -51,7 +51,12 @@ export function useDgcDocument(initial?: DGCDesignDocument) {
       ...layer,
       startX: Math.min(Math.max(layer.startX, 0), maxStart),
     }));
-    setDocument({ ...next, canvas, layers });
+    setDocument({
+      ...next,
+      canvas,
+      layers,
+      exportPreferences: normalizeExportPreferences(next.exportPreferences),
+    });
   }, []);
 
   const updateTotalPopulationWidth = useCallback(
@@ -252,6 +257,24 @@ export function useDgcDocument(initial?: DGCDesignDocument) {
     [mutate],
   );
 
+  const updatePngTransparentBackground = useCallback(
+    (enabled: boolean) => {
+      mutate((d) => {
+        d.exportPreferences.pngTransparentBackground = enabled;
+      });
+    },
+    [mutate],
+  );
+
+  const updateJobName = useCallback(
+    (name: string) => {
+      mutate((d) => {
+        d.name = name;
+      });
+    },
+    [mutate],
+  );
+
   const active = activeLayer(document);
   const activeState: LayerSolveState | undefined = active
     ? layerStates[active.id]
@@ -283,6 +306,8 @@ export function useDgcDocument(initial?: DGCDesignDocument) {
     toggleLayerVisibility,
     renameLayer,
     updatePngScale,
+    updatePngTransparentBackground,
+    updateJobName,
     sketchPresets: SKETCH_PRESETS,
     canAddLayer: canAddLayer(document.layers.length),
     maxLayers: MAX_LAYERS,

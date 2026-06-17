@@ -12,6 +12,7 @@ import {
   minStartX,
   maxStartX,
   normalizeCanvas,
+  normalizeExportPreferences,
   syncFieldWidth,
 } from './types';
 import { solve } from './partition-solver';
@@ -35,7 +36,7 @@ export function makeDefaultLayer(index: number, canvas: CanvasSettings): DesignL
   };
 }
 
-export function makeNewDocument(name = 'Untitled Design'): DGCDesignDocument {
+export function makeNewDocument(name = ''): DGCDesignDocument {
   const canvas = syncFieldWidth({ ...DEFAULT_CANVAS });
   const layer = makeDefaultLayer(1, canvas);
   const now = new Date().toISOString();
@@ -98,6 +99,7 @@ export function parseDocumentJson(raw: string): DGCDesignDocument {
     throw new Error('Invalid document: no layers.');
   }
   parsed.canvas = normalizeCanvas(parsed.canvas);
+  parsed.exportPreferences = normalizeExportPreferences(parsed.exportPreferences);
   const maxStart = maxStartX(parsed.canvas);
   for (const layer of parsed.layers) {
     layer.startX = Math.min(Math.max(layer.startX, 0), maxStart);
@@ -112,12 +114,12 @@ export function serializeDocument(document: DGCDesignDocument): string {
 const DOWNLOAD_REVOKE_DELAY_MS = 1000;
 
 export function designDownloadFilename(name: string): string {
-  const trimmed = (name || 'design').trim().replace(/\s+/g, '-');
+  const trimmed = (name.trim() || 'job-settings').replace(/\s+/g, '-');
   return trimmed.toLowerCase().endsWith('.dgcjson') ? trimmed : `${trimmed}.dgcjson`;
 }
 
 export function exportDownloadFilename(name: string, ext: string): string {
-  const base = (name || 'design').trim().replace(/\s+/g, '-').toLowerCase();
+  const base = (name.trim() || 'job').replace(/\s+/g, '-').toLowerCase();
   return `${base}.${ext}`;
 }
 

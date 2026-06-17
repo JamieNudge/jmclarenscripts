@@ -28,17 +28,27 @@ export function exportSvg(
   outputWidth = context.layout.screenRect.width,
   outputHeight = context.layout.screenRect.height,
 ): string {
-  const { layout, document, layerStates, activeLayerID, exportWholeComposition } =
-    context;
+  const {
+    layout,
+    document,
+    layerStates,
+    activeLayerID,
+    exportWholeComposition,
+    transparentBackground = false,
+  } = context;
   const viewWidth = layout.screenRect.width;
   const viewHeight = layout.screenRect.height;
   const canvas = document.canvas;
 
   let svg = `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${Math.round(outputWidth)}" height="${Math.round(outputHeight)}" viewBox="0 0 ${viewWidth} ${viewHeight}">
-<rect x="0" y="0" width="${viewWidth}" height="${viewHeight}" fill="white"/>
+`;
+
+  if (!transparentBackground) {
+    svg += `<rect x="0" y="0" width="${viewWidth}" height="${viewHeight}" fill="white"/>
 <rect x="${layout.screenRect.x}" y="${layout.screenRect.y}" width="${layout.screenRect.width}" height="${layout.screenRect.height}" fill="none" stroke="#888" stroke-width="1"/>
 `;
+  }
 
   const axisY = fieldOriginY(canvas);
   const axisStart = layout.screenPointCanvas(0, axisY);
@@ -54,8 +64,10 @@ export function exportSvg(
   }
 
   const field = layout.fieldScreenRect;
-  svg += `<rect x="${field.x}" y="${field.y}" width="${field.width}" height="${field.height}" fill="#f8f8f8" stroke="#333" stroke-width="2"/>\n`;
-  svg += `<text x="${field.x + field.width / 2}" y="${field.y - 6}" text-anchor="middle" font-size="12" fill="#666">Field of Wealth</text>\n`;
+  svg += `<rect x="${field.x}" y="${field.y}" width="${field.width}" height="${field.height}" fill="${transparentBackground ? 'none' : '#f8f8f8'}" stroke="#333" stroke-width="2"/>\n`;
+  if (!transparentBackground) {
+    svg += `<text x="${field.x + field.width / 2}" y="${field.y - 6}" text-anchor="middle" font-size="12" fill="#666">Field of Wealth</text>\n`;
+  }
 
   const layers = exportWholeComposition
     ? document.layers
@@ -107,6 +119,7 @@ export function svgToPngBlob(
   svg: string,
   pixelWidth: number,
   pixelHeight: number,
+  transparentBackground = false,
 ): Promise<Blob> {
   return new Promise((resolve, reject) => {
     const canvas = window.document.createElement('canvas');
@@ -120,8 +133,10 @@ export function svgToPngBlob(
       return;
     }
 
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, width, height);
+    if (!transparentBackground) {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, width, height);
+    }
 
     const img = new Image();
     const url = URL.createObjectURL(
@@ -151,10 +166,15 @@ export function svgToPngBlob(
   });
 }
 
-export async function exportPng(context: DrawContext): Promise<Blob> {
+export async function exportPng(
+  context: DrawContext,
+  options: { transparentBackground?: boolean } = {},
+): Promise<Blob> {
   const { width, height } = context.layout.screenRect;
-  const svg = exportSvg(context, width, height);
-  return svgToPngBlob(svg, width, height);
+  const transparentBackground =
+    options.transparentBackground ?? context.transparentBackground ?? false;
+  const svg = exportSvg({ ...context, transparentBackground }, width, height);
+  return svgToPngBlob(svg, width, height, transparentBackground);
 }
 
 export async function exportPdf(context: DrawContext): Promise<Blob> {

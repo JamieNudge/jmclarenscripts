@@ -51,7 +51,10 @@ export function useDgcPersistence(controller: DgcDocumentController) {
       controller.replaceDocument(document);
       fileHandleRef.current = handle ?? null;
       markSaved(document, fileName);
-      setFileStatus({ type: 'success', message: `Opened ${fileName}` });
+      setFileStatus({
+        type: 'success',
+        message: `Loaded settings for ${document.name.trim() || 'job'}`,
+      });
       setRestoreOffer(null);
     },
     [controller, markSaved],
@@ -111,7 +114,7 @@ export function useDgcPersistence(controller: DgcDocumentController) {
           }
           setFileStatus({
             type: 'success',
-            message: `Saved ${result.fileName}`,
+            message: `Saved all settings for ${controller.document.name.trim() || 'job'}`,
           });
         } else if (!result.cancelled) {
           setFileStatus({ type: 'error', message: result.error });
@@ -180,8 +183,11 @@ export function useDgcPersistence(controller: DgcDocumentController) {
   }, [controller.document]);
 
   const saveStatusLabel = (() => {
-    if (isDirty) return 'Unsaved changes';
-    if (savedFileName) return `Saved to ${savedFileName}`;
+    const jobName = controller.document.name.trim();
+    if (isDirty) return jobName ? `Unsaved changes to ${jobName}` : 'Unsaved changes';
+    if (savedFileName) {
+      return jobName ? `All settings saved for ${jobName}` : 'All settings saved';
+    }
     return 'Backed up in this browser';
   })();
 

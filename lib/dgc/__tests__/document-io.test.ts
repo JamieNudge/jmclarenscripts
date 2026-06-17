@@ -26,11 +26,13 @@ describe('document I/O', () => {
 
   it('builds design filenames', () => {
     expect(designDownloadFilename('My Design')).toBe('My-Design.dgcjson');
+    expect(designDownloadFilename('')).toBe('job-settings.dgcjson');
     expect(designDownloadFilename('already.dgcjson')).toBe('already.dgcjson');
   });
 
   it('builds export filenames', () => {
     expect(exportDownloadFilename('My Design', 'png')).toBe('my-design.png');
+    expect(exportDownloadFilename('', 'png')).toBe('job.png');
   });
 
   it('rejects HTML files saved from the browser', () => {

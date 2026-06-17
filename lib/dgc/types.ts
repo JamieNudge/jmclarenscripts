@@ -135,12 +135,26 @@ export type ExportFormatPreference = 'png' | 'svg' | 'pdf';
 export interface ExportPreferences {
   preferredFormat: ExportFormatPreference;
   pngScale: number;
+  pngTransparentBackground: boolean;
 }
 
 export const DEFAULT_EXPORT_PREFERENCES: ExportPreferences = {
   preferredFormat: 'png',
   pngScale: 2,
+  pngTransparentBackground: false,
 };
+
+export function normalizeExportPreferences(
+  preferences: Partial<ExportPreferences> | undefined,
+): ExportPreferences {
+  return {
+    preferredFormat: preferences?.preferredFormat ?? DEFAULT_EXPORT_PREFERENCES.preferredFormat,
+    pngScale: preferences?.pngScale ?? DEFAULT_EXPORT_PREFERENCES.pngScale,
+    pngTransparentBackground:
+      preferences?.pngTransparentBackground ??
+      DEFAULT_EXPORT_PREFERENCES.pngTransparentBackground,
+  };
+}
 
 export interface DGCDesignDocument {
   name: string;
@@ -175,6 +189,7 @@ export interface DrawContext {
   layerStates: Record<string, LayerSolveState>;
   activeLayerID: string;
   exportWholeComposition: boolean;
+  transparentBackground?: boolean;
 }
 
 export type PartitionSolverErrorCode =

@@ -11,7 +11,7 @@ const DGC_FILE_TYPES: Array<{
   accept: Record<string, string[]>;
 }> = [
   {
-    description: 'DGC design file',
+    description: 'Job settings',
     accept: { 'application/json': ['.dgcjson'] },
   },
 ];
