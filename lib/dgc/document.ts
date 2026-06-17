@@ -109,13 +109,33 @@ export function serializeDocument(document: DGCDesignDocument): string {
   return JSON.stringify(document, null, 2);
 }
 
-export function downloadBlob(blob: Blob, filename: string): void {
+const DOWNLOAD_REVOKE_DELAY_MS = 1000;
+
+export function designDownloadFilename(name: string): string {
+  const trimmed = (name || 'design').trim().replace(/\s+/g, '-');
+  return trimmed.toLowerCase().endsWith('.dgcjson') ? trimmed : `${trimmed}.dgcjson`;
+}
+
+export function exportDownloadFilename(name: string, ext: string): string {
+  const base = (name || 'design').trim().replace(/\s+/g, '-').toLowerCase();
+  return `${base}.${ext}`;
+}
+
+export function downloadBlob(blob: Blob, filename: string): boolean {
+  if (typeof window === 'undefined' || typeof document === 'undefined') {
+    return false;
+  }
+
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement('a');
   anchor.href = url;
   anchor.download = filename;
+  anchor.style.display = 'none';
+  document.body.appendChild(anchor);
   anchor.click();
-  URL.revokeObjectURL(url);
+  document.body.removeChild(anchor);
+  window.setTimeout(() => URL.revokeObjectURL(url), DOWNLOAD_REVOKE_DELAY_MS);
+  return true;
 }
 
 export const SKETCH_PRESETS = [

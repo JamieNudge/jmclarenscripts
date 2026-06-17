@@ -1,21 +1,23 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import {
   exportPdf,
   exportPng,
   exportSvg,
   makeExportLayout,
 } from '@/lib/dgc/export';
-import {
-  downloadBlob,
-  formatNumber,
-  parseDocumentJson,
-  serializeDocument,
-} from '@/lib/dgc/document';
+import { exportDownloadFilename } from '@/lib/dgc/document';
+import { downloadExportBlob } from '@/lib/dgc/file-access';
 import type { DgcDocumentController } from '@/lib/dgc/use-dgc-document';
 import { edgeDisplayName } from '@/lib/dgc/types';
+import { formatNumber } from '@/lib/dgc/document';
 import { dgcSiteConfig } from '@/lib/dgc/site-config';
+
+type ExportStatus = {
+  type: 'success' | 'error';
+  message: string;
+} | null;
 
 export default function DgcResultExport({
   controller,
@@ -23,7 +25,10 @@ export default function DgcResultExport({
   controller: DgcDocumentController;
 }) {
   const [expanded, setExpanded] = useState(true);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [exportStatus, setExportStatus] = useState<ExportStatus>(null);
+  const [exportingFormat, setExportingFormat] = useState<
+    'png' | 'svg' | 'pdf' | null
+  >(null);
   const result = controller.activeState?.result;
 
   const makeDrawContext = (pngScale = controller.document.exportPreferences.pngScale) => {
@@ -38,33 +43,51 @@ export default function DgcResultExport({
   };
 
   const exportFile = async (format: 'png' | 'svg' | 'pdf') => {
-    const pngScale = controller.document.exportPreferences.pngScale;
-    const context = makeDrawContext(pngScale);
-    const base = controller.document.name.replace(/\s+/g, '-').toLowerCase();
-    if (format === 'svg') {
-      const svg = exportSvg(context);
-      downloadBlob(new Blob([svg], { type: 'image/svg+xml' }), `${base}.svg`);
-      return;
-    }
-    if (format === 'png') {
-      const blob = await exportPng(context);
-      downloadBlob(blob, `${base}.png`);
-      return;
-    }
-    const blob = await exportPdf(context);
-    downloadBlob(blob, `${base}.pdf`);
-  };
+    setExportingFormat(format);
+    setExportStatus(null);
+    try {
+      const pngScale = controller.document.exportPreferences.pngScale;
+      const context = makeDrawContext(pngScale);
+      const filename = exportDownloadFilename(controller.document.name, format);
 
-  const openDocument = async (file: File) => {
-    const text = await file.text();
-    controller.replaceDocument(parseDocumentJson(text));
-  };
+      if (format === 'svg') {
+        const svg = exportSvg(context);
+        const result = downloadExportBlob(
+          new Blob([svg], { type: 'image/svg+xml' }),
+          filename,
+        );
+        if (!result.ok) {
+          setExportStatus({ type: 'error', message: `Export failed: ${result.error}` });
+          return;
+        }
+        setExportStatus({
+          type: 'success',
+          message: `Downloaded ${result.fileName}`,
+        });
+        return;
+      }
 
-  const saveDocument = () => {
-    const blob = new Blob([serializeDocument(controller.document)], {
-      type: 'application/json',
-    });
-    downloadBlob(blob, `${controller.document.name || 'design'}.dgcjson`);
+      const blob =
+        format === 'png' ? await exportPng(context) : await exportPdf(context);
+      const result = downloadExportBlob(blob, filename);
+      if (!result.ok) {
+        setExportStatus({ type: 'error', message: `Export failed: ${result.error}` });
+        return;
+      }
+      setExportStatus({
+        type: 'success',
+        message: `Downloaded ${result.fileName}`,
+      });
+    } catch (error) {
+      setExportStatus({
+        type: 'error',
+        message: `Export failed: ${
+          error instanceof Error ? error.message : 'Could not render the export.'
+        }`,
+      });
+    } finally {
+      setExportingFormat(null);
+    }
   };
 
   const copyResult = async () => {
@@ -74,6 +97,8 @@ Endpoint: (${formatNumber(result.endX)}, ${formatNumber(result.endY)})
 Area fraction: ${formatNumber(result.areaFraction * 100)}%`;
     await navigator.clipboard.writeText(summary);
   };
+
+  const isExporting = exportingFormat !== null;
 
   return (
     <section className="rounded-2xl border border-white/15 bg-[#1b1b1d] p-4">
@@ -116,6 +141,9 @@ Area fraction: ${formatNumber(result.areaFraction * 100)}%`;
 
           <div className="space-y-3 text-white">
             <h3 className="text-lg font-semibold">Export</h3>
+            <p className="text-xs text-white/60">
+              Downloads an image or PDF to your device. Use Save design in the header to save your editable project.
+            </p>
             <label className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
@@ -134,6 +162,7 @@ Area fraction: ${formatNumber(result.areaFraction * 100)}%`;
                 onChange={(event) =>
                   controller.updatePngScale(Number(event.target.value))
                 }
+                disabled={isExporting}
               >
                 <option value={1}>1×</option>
                 <option value={2}>2×</option>
@@ -144,53 +173,40 @@ Area fraction: ${formatNumber(result.areaFraction * 100)}%`;
               <button
                 type="button"
                 onClick={() => exportFile('png')}
-                className="rounded-lg bg-sky-600 px-3 py-2 text-sm font-medium"
+                disabled={isExporting}
+                className="rounded-lg bg-sky-600 px-3 py-2 text-sm font-medium disabled:opacity-50"
               >
-                Export PNG
+                {exportingFormat === 'png' ? 'Exporting…' : 'Export PNG'}
               </button>
               <button
                 type="button"
                 onClick={() => exportFile('svg')}
-                className="rounded-lg border border-white/15 px-3 py-2 text-sm"
+                disabled={isExporting}
+                className="rounded-lg border border-white/15 px-3 py-2 text-sm disabled:opacity-50"
               >
-                Export SVG
+                {exportingFormat === 'svg' ? 'Exporting…' : 'Export SVG'}
               </button>
               <button
                 type="button"
                 onClick={() => exportFile('pdf')}
-                className="rounded-lg border border-white/15 px-3 py-2 text-sm"
+                disabled={isExporting}
+                className="rounded-lg border border-white/15 px-3 py-2 text-sm disabled:opacity-50"
               >
-                Export PDF
+                {exportingFormat === 'pdf' ? 'Exporting…' : 'Export PDF'}
               </button>
             </div>
 
-            <div className="flex flex-wrap gap-2 pt-2">
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="rounded-lg border border-white/15 px-3 py-2 text-sm"
+            {exportStatus ? (
+              <p
+                className={`text-sm ${
+                  exportStatus.type === 'success' ? 'text-green-400' : 'text-red-300'
+                }`}
+                role="status"
               >
-                Open .dgcjson
-              </button>
-              <button
-                type="button"
-                onClick={saveDocument}
-                className="rounded-lg border border-white/15 px-3 py-2 text-sm"
-              >
-                Download .dgcjson
-              </button>
-            </div>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".dgcjson,application/json"
-              className="hidden"
-              onChange={(event) => {
-                const file = event.target.files?.[0];
-                if (file) void openDocument(file);
-                event.target.value = '';
-              }}
-            />
+                {exportStatus.message}
+              </p>
+            ) : null}
+
             <p className="text-xs text-white/60">
               {dgcSiteConfig.publicProductName} web beta · files interchange with the macOS app.
             </p>

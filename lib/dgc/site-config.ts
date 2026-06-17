@@ -8,7 +8,7 @@ export const dgcSiteConfig = {
   publicUrl:
     process.env.NEXT_PUBLIC_DGC_URL ??
     process.env.DGC_PUBLIC_URL ??
-    'https://dgc.jmclarenscripts.vercel.app',
+    'https://jmclarenscripts.vercel.app/dgc',
 };
 
 export const DEFAULT_DGC_HUB_HOSTS = 'dgc.jmclarenscripts.vercel.app';
