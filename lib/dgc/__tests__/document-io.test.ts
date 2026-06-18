@@ -3,6 +3,7 @@ import {
   designDownloadFilename,
   downloadBlob,
   exportDownloadFilename,
+  jobNameFromFileName,
   makeNewDocument,
   parseDocumentJson,
   serializeDocument,
@@ -33,6 +34,10 @@ describe('document I/O', () => {
   it('builds export filenames', () => {
     expect(exportDownloadFilename('My Design', 'png')).toBe('my-design.png');
     expect(exportDownloadFilename('', 'png')).toBe('job.png');
+  });
+
+  it('derives job names from filenames', () => {
+    expect(jobNameFromFileName('Diana-8-sketch.dgcjson')).toBe('Diana 8 sketch');
   });
 
   it('rejects HTML files saved from the browser', () => {

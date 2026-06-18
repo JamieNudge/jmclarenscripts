@@ -144,9 +144,10 @@ Area fraction: ${formatNumber(result.areaFraction * 100)}%`;
           </div>
 
           <div className="space-y-3 text-white">
-            <h3 className="text-lg font-semibold">Export image</h3>
+            <h3 className="text-lg font-semibold">Export finished artwork</h3>
             <p className="text-xs text-white/60">
-              Downloads a PNG, SVG, or PDF using the job name above.
+              For sharing or printing — not for reopening to edit. PDF for print, PNG for
+              screens, SVG for large posters or design tools.
             </p>
             <label className="flex items-center gap-2 text-sm">
               <input

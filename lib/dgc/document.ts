@@ -113,6 +113,11 @@ export function serializeDocument(document: DGCDesignDocument): string {
 
 const DOWNLOAD_REVOKE_DELAY_MS = 1000;
 
+export function jobNameFromFileName(fileName: string): string {
+  const base = fileName.replace(/\.dgcjson$/i, '').trim();
+  return base.replace(/-/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
 export function designDownloadFilename(name: string): string {
   const trimmed = (name.trim() || 'job-settings').replace(/\s+/g, '-');
   return trimmed.toLowerCase().endsWith('.dgcjson') ? trimmed : `${trimmed}.dgcjson`;

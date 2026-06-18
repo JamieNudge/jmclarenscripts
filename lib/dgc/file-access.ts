@@ -11,7 +11,7 @@ const DGC_FILE_TYPES: Array<{
   accept: Record<string, string[]>;
 }> = [
   {
-    description: 'Job settings',
+    description: 'DGC project file',
     accept: { 'application/json': ['.dgcjson'] },
   },
 ];
@@ -41,7 +41,7 @@ export function parseDesignFile(file: File, text: string): DGCDesignDocument {
   const name = file.name.toLowerCase();
   if (name.endsWith('.html') || name.endsWith('.htm')) {
     throw new Error(
-      'That looks like a saved webpage. Use Open design on a file saved with Save design.',
+      'That looks like a saved webpage, not a project file. Use Open from computer and choose a file you saved with Save to computer.',
     );
   }
   return parseDocumentJson(text);
