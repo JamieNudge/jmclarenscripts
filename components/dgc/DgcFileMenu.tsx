@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react';
 import { formatJobSavedAt } from '@/lib/dgc/job-storage';
+import type { ExportFormat } from '@/lib/dgc/build-export-artifacts';
 import type { useDgcPersistence } from '@/lib/dgc/use-dgc-persistence';
 import type { DgcDocumentController } from '@/lib/dgc/use-dgc-document';
 
@@ -16,6 +17,7 @@ export default function DgcFileMenu({
 }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [recentOpen, setRecentOpen] = useState(false);
+  const [saveAsOpen, setSaveAsOpen] = useState(false);
 
   const openDesign = () => {
     if (persistence.supportsNativeFileDialogs) {
@@ -25,6 +27,19 @@ export default function DgcFileMenu({
     fileInputRef.current?.click();
   };
 
+  const saveAsImage = () => {
+    if (persistence.supportsNativeFileDialogs) {
+      void persistence.saveAs();
+      return;
+    }
+    setSaveAsOpen((value) => !value);
+  };
+
+  const saveAsFormat = (format: ExportFormat) => {
+    setSaveAsOpen(false);
+    void persistence.saveAs(format);
+  };
+
   return (
     <div className="flex flex-col items-end gap-2">
       <div className="flex flex-wrap items-center justify-end gap-2">
@@ -32,18 +47,47 @@ export default function DgcFileMenu({
           type="button"
           onClick={() => void persistence.save()}
           disabled={persistence.isBusy}
-          className="rounded-lg bg-sky-600 px-3 py-2 text-sm font-medium text-white hover:bg-sky-500 disabled:opacity-50"
-        >
-          Save
-        </button>
-        <button
-          type="button"
-          onClick={() => void persistence.saveAs()}
-          disabled={persistence.isBusy}
+          title="Save an editable design file to continue working later"
           className="rounded-lg border border-white/20 px-3 py-2 text-sm text-white hover:bg-white/5 disabled:opacity-50"
         >
-          Save As…
+          Save design
         </button>
+        <div className="relative">
+          <button
+            type="button"
+            onClick={saveAsImage}
+            disabled={persistence.isBusy}
+            title="Save as PNG, PDF, or SVG — a picture or document you can share or print"
+            className="rounded-lg bg-sky-600 px-3 py-2 text-sm font-medium text-white hover:bg-sky-500 disabled:opacity-50"
+          >
+            Save As…
+          </button>
+          {saveAsOpen ? (
+            <div className="absolute right-0 z-20 mt-1 w-44 rounded-lg border border-white/15 bg-[#141416] p-1 shadow-lg">
+              <button
+                type="button"
+                onClick={() => saveAsFormat('png')}
+                className="block w-full rounded-md px-3 py-2 text-left text-sm text-white hover:bg-white/5"
+              >
+                PNG image
+              </button>
+              <button
+                type="button"
+                onClick={() => saveAsFormat('pdf')}
+                className="block w-full rounded-md px-3 py-2 text-left text-sm text-white hover:bg-white/5"
+              >
+                PDF document
+              </button>
+              <button
+                type="button"
+                onClick={() => saveAsFormat('svg')}
+                className="block w-full rounded-md px-3 py-2 text-left text-sm text-white hover:bg-white/5"
+              >
+                SVG image
+              </button>
+            </div>
+          ) : null}
+        </div>
         <button
           type="button"
           onClick={openDesign}
@@ -70,6 +114,12 @@ export default function DgcFileMenu({
           </button>
         ) : null}
       </div>
+
+      <p className="max-w-sm text-right text-xs text-white/50">
+        <span className="font-medium text-white/70">Save As</span> → PNG, PDF, or SVG to
+        share or print. <span className="font-medium text-white/70">Save design</span> →
+        reopen and keep editing.
+      </p>
 
       <label className="flex w-full max-w-sm flex-col items-end gap-1">
         <span className="w-full text-right text-xs font-medium text-white/60">

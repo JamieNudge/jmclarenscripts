@@ -8,7 +8,7 @@ import {
   parseDocumentJson,
   serializeDocument,
 } from '../document';
-import { parseDesignFile } from '../file-access';
+import { parseDesignFile, exportFormatFromFileName } from '../file-access';
 
 describe('document I/O', () => {
   it('round-trips documents through JSON', () => {
@@ -44,6 +44,13 @@ describe('document I/O', () => {
     expect(() => parseDesignFile(new File(['<html></html>'], 'page.html'), '<html></html>')).toThrow(
       'saved webpage',
     );
+  });
+
+  it('detects export format from filenames', () => {
+    expect(exportFormatFromFileName('design.png')).toBe('png');
+    expect(exportFormatFromFileName('design.PDF')).toBe('pdf');
+    expect(exportFormatFromFileName('design.svg')).toBe('svg');
+    expect(exportFormatFromFileName('design')).toBe('png');
   });
 });
 

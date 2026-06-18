@@ -18,8 +18,11 @@ import {
   openDesignFromFile,
   openDesignWithPicker,
   saveDesignWithPicker,
+  saveExportWithPicker,
   supportsFileSystemAccess,
 } from './file-access';
+import type { ExportFormat } from './build-export-artifacts';
+import { buildExportArtifacts } from './build-export-artifacts';
 import {
   jobIdFromName,
   listSavedJobs,
@@ -137,7 +140,7 @@ export function useDgcPersistence(
         if (result.handle) fileHandleRef.current = result.handle;
         setComputerFileName(result.fileName);
         syncBrowserBackup(controller.document);
-        setStatus({ type: 'success', message: 'Saved' });
+        setStatus({ type: 'success', message: 'Design saved to edit later' });
       } else if (!result.cancelled) {
         setStatus({ type: 'error', message: result.error });
       }
@@ -146,37 +149,45 @@ export function useDgcPersistence(
     }
   }, [controller.document, syncBrowserBackup]);
 
-  const saveAs = useCallback(async () => {
-    const jobName = requireJobName(controller.document);
-    if (!jobName) {
-      setStatus({
-        type: 'error',
-        message: 'Enter a design name first.',
-      });
-      return;
-    }
-
-    setIsBusy(true);
-    setStatus(null);
-    try {
-      const result = await saveDesignWithPicker(controller.document, {
-        forcePicker: true,
-      });
-      if (result.ok) {
-        fileHandleRef.current = result.handle ?? null;
-        setComputerFileName(result.fileName);
-        syncBrowserBackup(controller.document);
+  const saveAs = useCallback(
+    async (format?: ExportFormat) => {
+      const jobName = requireJobName(controller.document);
+      if (!jobName) {
         setStatus({
-          type: 'success',
-          message: `Saved as ${result.fileName}`,
+          type: 'error',
+          message: 'Enter a design name first.',
         });
-      } else if (!result.cancelled) {
-        setStatus({ type: 'error', message: result.error });
+        return;
       }
-    } finally {
-      setIsBusy(false);
-    }
-  }, [controller.document, syncBrowserBackup]);
+
+      setIsBusy(true);
+      setStatus(null);
+      try {
+        const artifacts = await buildExportArtifacts(controller);
+        const result = await saveExportWithPicker(artifacts, jobName, { format });
+        if (result.ok) {
+          syncBrowserBackup(controller.document);
+          setStatus({
+            type: 'success',
+            message: `Saved as ${result.fileName}`,
+          });
+        } else if (!result.cancelled) {
+          setStatus({ type: 'error', message: result.error });
+        }
+      } catch (error) {
+        setStatus({
+          type: 'error',
+          message:
+            error instanceof Error
+              ? error.message
+              : "Couldn't save the image — try again.",
+        });
+      } finally {
+        setIsBusy(false);
+      }
+    },
+    [controller, syncBrowserBackup],
+  );
 
   const open = useCallback(async () => {
     setIsBusy(true);

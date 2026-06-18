@@ -1,20 +1,43 @@
 import {
   designDownloadFilename,
   downloadBlob,
+  exportDownloadFilename,
   parseDocumentJson,
   serializeDocument,
 } from './document';
+import type { ExportFormat } from './build-export-artifacts';
 import type { DGCDesignDocument } from './types';
 
-const DGC_FILE_TYPES: Array<{
+const DESIGN_FILE_TYPES: Array<{
   description: string;
   accept: Record<string, string[]>;
 }> = [
   {
-    description: 'Field of Wealth design',
+    description: 'Field of Wealth design (edit later)',
     accept: { 'application/json': ['.dgcjson'] },
   },
 ];
+
+export const EXPORT_SAVE_FILE_TYPES: Array<{
+  description: string;
+  accept: Record<string, string[]>;
+}> = [
+  {
+    description: 'PNG image',
+    accept: { 'image/png': ['.png'] },
+  },
+  {
+    description: 'PDF document',
+    accept: { 'application/pdf': ['.pdf'] },
+  },
+  {
+    description: 'SVG image',
+    accept: { 'image/svg+xml': ['.svg'] },
+  },
+];
+
+// Open only accepts editable design files.
+const DGC_FILE_TYPES = DESIGN_FILE_TYPES;
 
 export type FileAccessResult =
   | { ok: true; fileName: string; handle?: FileSystemFileHandle }
@@ -95,12 +118,28 @@ export async function openDesignWithPicker(): Promise<OpenDesignResult> {
   }
 }
 
-async function writeHandle(
+export function exportFormatFromFileName(fileName: string): ExportFormat {
+  const lower = fileName.toLowerCase();
+  if (lower.endsWith('.pdf')) return 'pdf';
+  if (lower.endsWith('.svg')) return 'svg';
+  return 'png';
+}
+
+async function writeDesignHandle(
   handle: FileSystemFileHandle,
   document: DGCDesignDocument,
 ): Promise<void> {
   const writable = await handle.createWritable();
   await writable.write(serializeDocument(document));
+  await writable.close();
+}
+
+async function writeBlobHandle(
+  handle: FileSystemFileHandle,
+  blob: Blob,
+): Promise<void> {
+  const writable = await handle.createWritable();
+  await writable.write(blob);
   await writable.close();
 }
 
@@ -119,7 +158,7 @@ export async function saveDesignWithPicker(
     supportsFileSystemAccess()
   ) {
     try {
-      await writeHandle(options.existingHandle, document);
+      await writeDesignHandle(options.existingHandle, document);
       return { ok: true, fileName: options.existingHandle.name, handle: options.existingHandle };
     } catch {
       // Fall through to picker / download fallback.
@@ -130,9 +169,9 @@ export async function saveDesignWithPicker(
     try {
       const handle = await window.showSaveFilePicker!({
         suggestedName: fileName,
-        types: DGC_FILE_TYPES,
+        types: DESIGN_FILE_TYPES,
       });
-      await writeHandle(handle, document);
+      await writeDesignHandle(handle, document);
       return { ok: true, fileName: handle.name, handle };
     } catch (error) {
       if (error instanceof DOMException && error.name === 'AbortError') {
@@ -149,6 +188,45 @@ export async function saveDesignWithPicker(
     type: 'application/json',
   });
   const downloaded = downloadBlob(blob, fileName);
+  if (!downloaded) {
+    return {
+      ok: false,
+      error: "Couldn't start the download. Check that downloads are allowed for this site.",
+    };
+  }
+  return { ok: true, fileName };
+}
+
+export async function saveExportWithPicker(
+  artifacts: Record<ExportFormat, Blob>,
+  designName: string,
+  options: { format?: ExportFormat } = {},
+): Promise<FileAccessResult> {
+  const suggestedName = exportDownloadFilename(designName, options.format ?? 'png');
+
+  if (supportsFileSystemAccess()) {
+    try {
+      const handle = await window.showSaveFilePicker!({
+        suggestedName,
+        types: EXPORT_SAVE_FILE_TYPES,
+      });
+      const format = exportFormatFromFileName(handle.name);
+      await writeBlobHandle(handle, artifacts[format]);
+      return { ok: true, fileName: handle.name, handle };
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        return { ok: false, error: 'Save cancelled.', cancelled: true };
+      }
+      return {
+        ok: false,
+        error: error instanceof Error ? error.message : "Couldn't save — try again.",
+      };
+    }
+  }
+
+  const format = options.format ?? 'png';
+  const fileName = exportDownloadFilename(designName, format);
+  const downloaded = downloadBlob(artifacts[format], fileName);
   if (!downloaded) {
     return {
       ok: false,
