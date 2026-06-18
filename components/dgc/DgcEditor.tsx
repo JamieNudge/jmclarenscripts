@@ -8,7 +8,7 @@ import { dgcSiteConfig } from '@/lib/dgc/site-config';
 import DgcInputForm from './DgcInputForm';
 import DgcPreview from './DgcPreview';
 import DgcResultExport from './DgcResultExport';
-import DgcSaveSettings from './DgcSaveSettings';
+import DgcFileMenu from './DgcFileMenu';
 
 export default function DgcEditor() {
   const [boot] = useState(() => readInitialSavedJob());
@@ -41,17 +41,20 @@ export default function DgcEditor() {
   return (
     <div className="min-h-screen bg-[#101012] text-white">
       <header className="border-b border-white/10 px-4 py-4 md:px-6">
-        <div className="mx-auto flex max-w-[1500px] items-center justify-between gap-4">
+        <div className="mx-auto flex max-w-[1500px] flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <h1 className="text-2xl font-semibold">{dgcSiteConfig.publicProductName}</h1>
             <p className="text-sm text-white/65">Field of Wealth partition designer</p>
           </div>
-          <a
-            href={`/privacy/${dgcSiteConfig.policySlug}`}
-            className="text-sm text-white/70 hover:text-white"
-          >
-            Privacy
-          </a>
+          <div className="flex flex-col items-start gap-3 lg:items-end">
+            <DgcFileMenu controller={controller} persistence={persistence} />
+            <a
+              href={`/privacy/${dgcSiteConfig.policySlug}`}
+              className="text-sm text-white/70 hover:text-white"
+            >
+              Privacy
+            </a>
+          </div>
         </div>
       </header>
 
@@ -85,7 +88,6 @@ export default function DgcEditor() {
         <aside className="lg:sticky lg:top-6 lg:self-start">
           <div className="overflow-y-auto rounded-2xl border border-white/15 bg-[#1b1b1d] p-4 shadow-lg max-h-[calc(100dvh-6rem)] lg:h-[calc(100dvh-8.25rem)] lg:max-h-[calc(100dvh-8.25rem)]">
             <div className="space-y-4">
-              <DgcSaveSettings controller={controller} persistence={persistence} />
               <DgcInputForm controller={controller} />
             </div>
           </div>

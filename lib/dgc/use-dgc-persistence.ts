@@ -117,33 +117,12 @@ export function useDgcPersistence(
     [controller, markSaved],
   );
 
-  const saveAllSettings = useCallback(() => {
-    setIsBusy(true);
-    setStatus(null);
-    try {
-      const record = saveJob(controller.document);
-      markSaved(record.document, record.id);
-      setStatus({
-        type: 'success',
-        message: `Saved ${record.name} in this browser`,
-      });
-    } catch (error) {
-      setStatus({
-        type: 'error',
-        message:
-          error instanceof Error ? error.message : "Couldn't save — try again.",
-      });
-    } finally {
-      setIsBusy(false);
-    }
-  }, [controller.document, markSaved]);
-
-  const saveToComputer = useCallback(async () => {
+  const save = useCallback(async () => {
     const jobName = requireJobName(controller.document);
     if (!jobName) {
       setStatus({
         type: 'error',
-        message: 'Enter a job name first — it becomes the suggested filename.',
+        message: 'Enter a design name first.',
       });
       return;
     }
@@ -158,10 +137,7 @@ export function useDgcPersistence(
         if (result.handle) fileHandleRef.current = result.handle;
         setComputerFileName(result.fileName);
         syncBrowserBackup(controller.document);
-        setStatus({
-          type: 'success',
-          message: `Saved to your computer: ${result.fileName}`,
-        });
+        setStatus({ type: 'success', message: 'Saved' });
       } else if (!result.cancelled) {
         setStatus({ type: 'error', message: result.error });
       }
@@ -170,12 +146,12 @@ export function useDgcPersistence(
     }
   }, [controller.document, syncBrowserBackup]);
 
-  const saveToComputerAs = useCallback(async () => {
+  const saveAs = useCallback(async () => {
     const jobName = requireJobName(controller.document);
     if (!jobName) {
       setStatus({
         type: 'error',
-        message: 'Enter a job name first — it becomes the suggested filename.',
+        message: 'Enter a design name first.',
       });
       return;
     }
@@ -192,7 +168,7 @@ export function useDgcPersistence(
         syncBrowserBackup(controller.document);
         setStatus({
           type: 'success',
-          message: `Saved copy to your computer: ${result.fileName}`,
+          message: `Saved as ${result.fileName}`,
         });
       } else if (!result.cancelled) {
         setStatus({ type: 'error', message: result.error });
@@ -202,7 +178,7 @@ export function useDgcPersistence(
     }
   }, [controller.document, syncBrowserBackup]);
 
-  const openFromComputer = useCallback(async () => {
+  const open = useCallback(async () => {
     setIsBusy(true);
     setStatus(null);
     try {
@@ -213,7 +189,7 @@ export function useDgcPersistence(
         applyLoadedDocument(
           document,
           jobIdFromName(document.name),
-          `Opened ${result.fileName}`,
+          `Opened ${document.name.trim() || result.fileName}`,
           { computerFileName: result.fileName },
         );
         syncBrowserBackup(document);
@@ -227,7 +203,7 @@ export function useDgcPersistence(
     }
   }, [applyLoadedDocument, syncBrowserBackup]);
 
-  const openFromComputerFile = useCallback(
+  const openFile = useCallback(
     async (file: File) => {
       setIsBusy(true);
       setStatus(null);
@@ -239,7 +215,7 @@ export function useDgcPersistence(
           applyLoadedDocument(
             document,
             jobIdFromName(document.name),
-            `Opened ${result.fileName}`,
+            `Opened ${document.name.trim() || result.fileName}`,
             { computerFileName: result.fileName },
           );
           syncBrowserBackup(document);
@@ -253,7 +229,7 @@ export function useDgcPersistence(
     [applyLoadedDocument, syncBrowserBackup],
   );
 
-  const loadSavedJob = useCallback(
+  const openRecent = useCallback(
     (jobId: string) => {
       setIsBusy(true);
       setStatus(null);
@@ -285,7 +261,7 @@ export function useDgcPersistence(
     [applyLoadedDocument, refreshSavedJobs],
   );
 
-  const startNewJob = useCallback(() => {
+  const newDesign = useCallback(() => {
     const document = makeNewDocument('');
     controller.replaceDocument(document);
     savedBaselineRef.current = serializeDocument(document);
@@ -293,7 +269,7 @@ export function useDgcPersistence(
     fileHandleRef.current = null;
     setComputerFileName(null);
     clearAutosave();
-    setStatus({ type: 'success', message: 'Started a new job.' });
+    setStatus({ type: 'success', message: 'New design started.' });
   }, [controller]);
 
   const restoreAutosave = useCallback(() => {
@@ -353,33 +329,30 @@ export function useDgcPersistence(
   }, [controller.document]);
 
   const saveStatusLabel = (() => {
-    const jobName = controller.document.name.trim();
-    if (computerFileName && !isDirty) {
-      return `Saved on this computer: ${computerFileName}`;
-    }
-    if (isDirty) {
-      return jobName ? `Unsaved changes to ${jobName}` : 'Unsaved changes';
-    }
-    if (jobName) return `Saved in this browser: ${jobName}`;
-    return 'Changes are backed up while you work';
+    if (isDirty) return 'Unsaved changes';
+    if (computerFileName) return 'All changes saved';
+    if (controller.document.name.trim()) return 'All changes saved';
+    return 'Ready';
   })();
+
+  const recentDesigns = savedJobs.slice(0, 10);
 
   return {
     isDirty,
     activeJobId,
     savedJobs,
+    recentDesigns,
     status,
     saveStatusLabel,
     computerFileName,
     isBusy,
     restoreOffer,
-    saveAllSettings,
-    saveToComputer,
-    saveToComputerAs,
-    openFromComputer,
-    openFromComputerFile,
-    loadSavedJob,
-    startNewJob,
+    save,
+    saveAs,
+    open,
+    openFile,
+    openRecent,
+    newDesign,
     restoreAutosave,
     dismissRestore,
     supportsNativeFileDialogs: supportsFileSystemAccess(),
