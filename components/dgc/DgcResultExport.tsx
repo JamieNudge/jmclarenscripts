@@ -18,6 +18,10 @@ import type { DgcDocumentController } from '@/lib/dgc/use-dgc-document';
 import { edgeDisplayName } from '@/lib/dgc/types';
 import { formatNumber } from '@/lib/dgc/document';
 import { dgcSiteConfig } from '@/lib/dgc/site-config';
+import DgcFileMenu from './DgcFileMenu';
+import type { useDgcPersistence } from '@/lib/dgc/use-dgc-persistence';
+
+type Persistence = ReturnType<typeof useDgcPersistence>;
 
 type ExportStatus = {
   type: 'success' | 'error';
@@ -26,8 +30,10 @@ type ExportStatus = {
 
 export default function DgcResultExport({
   controller,
+  persistence,
 }: {
   controller: DgcDocumentController;
+  persistence: Persistence;
 }) {
   const [expanded, setExpanded] = useState(true);
   const [advancedOpen, setAdvancedOpen] = useState(false);
@@ -179,13 +185,22 @@ Area fraction: ${formatNumber(result.areaFraction * 100)}%`;
             >
               Copy Result Summary
             </button>
+
+            <div className="border-t border-white/10 pt-4">
+              <h3 className="mb-3 text-lg font-semibold">Your files</h3>
+              <DgcFileMenu
+                controller={controller}
+                persistence={persistence}
+                variant="embedded"
+              />
+            </div>
           </div>
 
           <div className="space-y-3 text-white">
             <h3 className="text-lg font-semibold">Export finished artwork</h3>
             <p className="text-xs text-white/60">
               Downloads a picture or document you can share or print. Use{' '}
-              <span className="font-medium text-white/80">Save design</span> in the header
+              <span className="font-medium text-white/80">Save design</span> on the left
               if you need to keep editing later.
             </p>
 
@@ -210,7 +225,7 @@ Area fraction: ${formatNumber(result.areaFraction * 100)}%`;
                 </li>
                 <li>
                   <span className="font-medium text-white/80">Keep editing</span> — use
-                  Save design in the header, not Export
+                  Save design on the left, not Export
                 </li>
               </ul>
             </div>

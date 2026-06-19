@@ -8,7 +8,6 @@ import { dgcSiteConfig } from '@/lib/dgc/site-config';
 import DgcInputForm from './DgcInputForm';
 import DgcPreview from './DgcPreview';
 import DgcResultExport from './DgcResultExport';
-import DgcFileMenu from './DgcFileMenu';
 
 export default function DgcEditor() {
   const [boot] = useState(() => readInitialSavedJob());
@@ -41,20 +40,17 @@ export default function DgcEditor() {
   return (
     <div className="min-h-screen bg-[#101012] text-white">
       <header className="border-b border-white/10 px-4 py-4 md:px-6">
-        <div className="mx-auto flex max-w-[1500px] flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div className="mx-auto flex max-w-[1500px] items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-semibold">{dgcSiteConfig.publicProductName}</h1>
             <p className="text-sm text-white/65">Field of Wealth partition designer</p>
           </div>
-          <div className="flex flex-col items-start gap-3 lg:items-end">
-            <DgcFileMenu controller={controller} persistence={persistence} />
-            <a
-              href={`/privacy/${dgcSiteConfig.policySlug}`}
-              className="text-sm text-white/70 hover:text-white"
-            >
-              Privacy
-            </a>
-          </div>
+          <a
+            href={`/privacy/${dgcSiteConfig.policySlug}`}
+            className="text-sm text-white/70 hover:text-white"
+          >
+            Privacy
+          </a>
         </div>
       </header>
 
@@ -98,7 +94,7 @@ export default function DgcEditor() {
             controller={controller}
             onRequestFullscreen={() => setFullscreen(true)}
           />
-          <DgcResultExport controller={controller} />
+          <DgcResultExport controller={controller} persistence={persistence} />
         </div>
       </main>
     </div>

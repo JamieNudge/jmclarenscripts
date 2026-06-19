@@ -11,9 +11,11 @@ type Persistence = ReturnType<typeof useDgcPersistence>;
 export default function DgcFileMenu({
   controller,
   persistence,
+  variant = 'header',
 }: {
   controller: DgcDocumentController;
   persistence: Persistence;
+  variant?: 'header' | 'embedded';
 }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [recentOpen, setRecentOpen] = useState(false);
@@ -40,12 +42,24 @@ export default function DgcFileMenu({
     void persistence.downloadAs(format);
   };
 
+  const isEmbedded = variant === 'embedded';
+  const alignClass = isEmbedded ? 'items-start' : 'items-end';
+  const textAlignClass = isEmbedded ? 'text-left' : 'text-right';
+  const rowAlignClass = isEmbedded
+    ? 'sm:flex-row sm:items-start sm:justify-start'
+    : 'sm:flex-row sm:items-start sm:justify-end';
+  const dropdownPositionClass = isEmbedded ? 'left-0' : 'right-0';
+
   return (
-    <div className="flex flex-col items-end gap-3">
-      <div className="flex w-full max-w-xl flex-col items-end gap-3 sm:flex-row sm:items-start sm:justify-end">
-        <div className="flex flex-col items-end gap-1.5">
-          <p className="text-xs font-medium text-white/55">Keep editing later (on your Mac)</p>
-          <div className="flex flex-wrap items-center justify-end gap-2">
+    <div className={`flex flex-col gap-3 ${alignClass}`}>
+      <div
+        className={`flex w-full flex-col gap-3 ${rowAlignClass} ${isEmbedded ? '' : 'max-w-xl'}`}
+      >
+        <div className={`flex flex-col gap-1.5 ${alignClass}`}>
+          <p className={`text-xs font-medium text-white/55 ${textAlignClass}`}>
+            Keep editing later (on your Mac)
+          </p>
+          <div className={`flex flex-wrap gap-2 ${isEmbedded ? '' : 'justify-end'}`}>
             <button
               type="button"
               onClick={() => void persistence.save()}
@@ -75,9 +89,11 @@ export default function DgcFileMenu({
           </div>
         </div>
 
-        <div className="flex flex-col items-end gap-1.5">
-          <p className="text-xs font-medium text-white/55">Share or print (finished picture)</p>
-          <div className="relative flex flex-wrap items-center justify-end gap-2">
+        <div className={`flex flex-col gap-1.5 ${alignClass}`}>
+          <p className={`text-xs font-medium text-white/55 ${textAlignClass}`}>
+            Share or print (finished picture)
+          </p>
+          <div className={`relative flex flex-wrap gap-2 ${isEmbedded ? '' : 'justify-end'}`}>
             <button
               type="button"
               onClick={downloadAs}
@@ -88,7 +104,9 @@ export default function DgcFileMenu({
               Download as…
             </button>
             {downloadMenuOpen ? (
-              <div className="absolute right-0 top-full z-20 mt-1 w-44 rounded-lg border border-white/15 bg-[#141416] p-1 shadow-lg">
+              <div
+                className={`absolute ${dropdownPositionClass} top-full z-20 mt-1 w-44 rounded-lg border border-white/15 bg-[#141416] p-1 shadow-lg`}
+              >
                 <button
                   type="button"
                   onClick={() => downloadFormat('png')}
@@ -133,14 +151,14 @@ export default function DgcFileMenu({
         </div>
       </div>
 
-      <p className="max-w-xl text-right text-xs text-white/50">
+      <p className={`max-w-xl text-xs text-white/50 ${textAlignClass}`}>
         <span className="font-medium text-white/70">Save design</span> keeps your work
         editable — reopen with Open. <span className="font-medium text-white/70">Download as</span>{' '}
         gives you a PNG, PDF, or SVG to share or print (not for reopening).
       </p>
 
-      <label className="flex w-full max-w-sm flex-col items-end gap-1">
-        <span className="w-full text-right text-xs font-medium text-white/60">
+      <label className={`flex w-full flex-col gap-1 ${isEmbedded ? 'max-w-md' : 'max-w-sm'} ${alignClass}`}>
+        <span className={`w-full text-xs font-medium text-white/60 ${textAlignClass}`}>
           Design name
         </span>
         <input
@@ -152,7 +170,7 @@ export default function DgcFileMenu({
       </label>
 
       <p
-        className={`max-w-sm text-right text-xs ${persistence.isDirty ? 'text-amber-300' : 'text-white/55'}`}
+        className={`max-w-md text-xs ${textAlignClass} ${persistence.isDirty ? 'text-amber-300' : 'text-white/55'}`}
         aria-live="polite"
       >
         {persistence.saveStatusLabel}
@@ -160,7 +178,7 @@ export default function DgcFileMenu({
 
       {persistence.status ? (
         <p
-          className={`max-w-sm text-right text-sm ${
+          className={`max-w-md text-sm ${textAlignClass} ${
             persistence.status.type === 'success' ? 'text-green-400' : 'text-red-300'
           }`}
           role="status"
@@ -170,7 +188,7 @@ export default function DgcFileMenu({
       ) : null}
 
       {recentOpen && persistence.recentDesigns.length > 0 ? (
-        <ul className="w-full max-w-sm space-y-1 rounded-lg border border-white/10 bg-[#141416] p-2">
+        <ul className={`w-full space-y-1 rounded-lg border border-white/10 bg-[#141416] p-2 ${isEmbedded ? 'max-w-md' : 'max-w-sm'}`}>
           {persistence.recentDesigns.map((item) => (
             <li key={item.id}>
               <button
