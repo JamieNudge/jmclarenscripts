@@ -184,9 +184,36 @@ Area fraction: ${formatNumber(result.areaFraction * 100)}%`;
           <div className="space-y-3 text-white">
             <h3 className="text-lg font-semibold">Export finished artwork</h3>
             <p className="text-xs text-white/60">
-              Downloads a picture or document you can share or print. Use Save in the
-              header if you need to keep editing later.
+              Downloads a picture or document you can share or print. Use{' '}
+              <span className="font-medium text-white/80">Save design</span> in the header
+              if you need to keep editing later.
             </p>
+
+            <div className="rounded-lg border border-white/10 bg-[#111] p-3 text-xs text-white/70">
+              <p className="font-medium text-white/85">Which format?</p>
+              <ul className="mt-2 space-y-1.5">
+                <li>
+                  <span className="font-medium text-white/80">Screens</span> — PNG (fast,
+                  email-friendly)
+                </li>
+                <li>
+                  <span className="font-medium text-white/80">Paper / documents</span> —
+                  PDF
+                </li>
+                <li>
+                  <span className="font-medium text-white/80">Large posters</span> — SVG
+                  (stays sharp at any size)
+                </li>
+                <li>
+                  <span className="font-medium text-white/80">T-shirts / print-on-demand</span>{' '}
+                  — PNG with transparent background
+                </li>
+                <li>
+                  <span className="font-medium text-white/80">Keep editing</span> — use
+                  Save design in the header, not Export
+                </li>
+              </ul>
+            </div>
 
             <div className="grid gap-2 sm:grid-cols-2">
               {EXPORT_PRESETS.map((preset) => (

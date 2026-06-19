@@ -149,7 +149,39 @@ export function useDgcPersistence(
     }
   }, [controller.document, syncBrowserBackup]);
 
-  const saveAs = useCallback(
+  const saveDesignAs = useCallback(async () => {
+    const jobName = requireJobName(controller.document);
+    if (!jobName) {
+      setStatus({
+        type: 'error',
+        message: 'Enter a design name first.',
+      });
+      return;
+    }
+
+    setIsBusy(true);
+    setStatus(null);
+    try {
+      const result = await saveDesignWithPicker(controller.document, {
+        forcePicker: true,
+      });
+      if (result.ok) {
+        fileHandleRef.current = result.handle ?? null;
+        setComputerFileName(result.fileName);
+        syncBrowserBackup(controller.document);
+        setStatus({
+          type: 'success',
+          message: `Saved design as ${result.fileName}`,
+        });
+      } else if (!result.cancelled) {
+        setStatus({ type: 'error', message: result.error });
+      }
+    } finally {
+      setIsBusy(false);
+    }
+  }, [controller.document, syncBrowserBackup]);
+
+  const downloadAs = useCallback(
     async (format?: ExportFormat) => {
       const jobName = requireJobName(controller.document);
       if (!jobName) {
@@ -169,7 +201,7 @@ export function useDgcPersistence(
           syncBrowserBackup(controller.document);
           setStatus({
             type: 'success',
-            message: `Saved as ${result.fileName}`,
+            message: `Downloaded ${result.fileName}`,
           });
         } else if (!result.cancelled) {
           setStatus({ type: 'error', message: result.error });
@@ -359,7 +391,8 @@ export function useDgcPersistence(
     isBusy,
     restoreOffer,
     save,
-    saveAs,
+    saveDesignAs,
+    downloadAs,
     open,
     openFile,
     openRecent,

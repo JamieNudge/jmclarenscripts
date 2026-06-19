@@ -291,7 +291,7 @@ function DgcLayersPanel({ controller }: { controller: DgcDocumentController }) {
           Duplicate
         </button>
         <span className="text-xs text-white/60">
-          {controller.document.layers.length}/{MAX_LAYERS} layers
+          {controller.document.layers.length}/{MAX_LAYERS} layers · up to {MAX_LAYERS} per design
         </span>
       </div>
     </Panel>
