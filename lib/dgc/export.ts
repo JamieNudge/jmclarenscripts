@@ -25,8 +25,8 @@ export function makeExportLayout(canvas: CanvasSettings, pngScale: number): Canv
 
 export function exportSvg(
   context: DrawContext,
-  outputWidth = context.layout.screenRect.width,
-  outputHeight = context.layout.screenRect.height,
+  outputWidth = context.layout.outputWidth,
+  outputHeight = context.layout.outputHeight,
 ): string {
   const {
     layout,
@@ -36,8 +36,8 @@ export function exportSvg(
     exportWholeComposition,
     transparentBackground = false,
   } = context;
-  const viewWidth = layout.screenRect.width;
-  const viewHeight = layout.screenRect.height;
+  const viewWidth = layout.outputWidth;
+  const viewHeight = layout.outputHeight;
   const canvas = document.canvas;
 
   let svg = `<?xml version="1.0" encoding="UTF-8"?>
@@ -312,9 +312,8 @@ export async function exportPng(
 ): Promise<Blob> {
   const transparentBackground =
     options.transparentBackground ?? context.transparentBackground ?? true;
-  const { width, height } = context.layout.screenRect;
-  const pixelWidth = Math.max(1, Math.round(width));
-  const pixelHeight = Math.max(1, Math.round(height));
+  const pixelWidth = Math.max(1, Math.round(context.layout.outputWidth));
+  const pixelHeight = Math.max(1, Math.round(context.layout.outputHeight));
 
   const canvas = window.document.createElement('canvas');
   canvas.width = pixelWidth;
@@ -344,7 +343,8 @@ export async function exportPng(
 
 export async function exportPdf(context: DrawContext): Promise<Blob> {
   const { jsPDF } = await import('jspdf');
-  const { width, height } = context.layout.screenRect;
+  const width = context.layout.outputWidth;
+  const height = context.layout.outputHeight;
   const pngBlob = await exportPng(context, { transparentBackground: false });
   const pngUrl = URL.createObjectURL(pngBlob);
   try {

@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { EXPORT_FRAME_PADDING } from '../canvas-layout';
+import { makeExportLayout } from '../export';
 import {
   DEFAULT_CANVAS,
   contentWidth,
@@ -36,5 +38,13 @@ describe('CanvasSettings', () => {
     expect(normalized.totalPopulationHeight).toBe(0.5);
     expect(normalized.leftMargin).toBe(0);
     expect(normalized.fieldWidth).toBe(10);
+  });
+
+  it('insets export layout so border strokes are not clipped', () => {
+    const layout = makeExportLayout(DEFAULT_CANVAS, 1);
+    expect(layout.screenRect.x).toBeGreaterThanOrEqual(EXPORT_FRAME_PADDING);
+    expect(layout.screenRect.y).toBeGreaterThanOrEqual(EXPORT_FRAME_PADDING);
+    expect(layout.outputWidth).toBeGreaterThan(layout.screenRect.width);
+    expect(layout.outputHeight).toBeGreaterThan(layout.screenRect.height);
   });
 });

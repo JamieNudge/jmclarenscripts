@@ -1,6 +1,9 @@
 import type { CanvasSettings, PartitionEdge, Point2D, Rect2D, Size2D } from './types';
 import { canvasHeight, canvasWidth, effectiveFieldWidth, fieldOriginY } from './types';
 
+/** Inset so 1–2px strokes are not clipped on export edges. */
+export const EXPORT_FRAME_PADDING = 2;
+
 function distanceSquared(a: Point2D, b: Point2D): number {
   const dx = a.x - b.x;
   const dy = a.y - b.y;
@@ -10,6 +13,8 @@ function distanceSquared(a: Point2D, b: Point2D): number {
 export class CanvasLayout {
   readonly canvas: CanvasSettings;
   readonly screenRect: Rect2D;
+  readonly outputWidth: number;
+  readonly outputHeight: number;
   readonly canvasWidthValue: number;
   readonly canvasHeightValue: number;
   readonly scale: number;
@@ -18,6 +23,8 @@ export class CanvasLayout {
     this.canvas = canvas;
     this.canvasWidthValue = canvasWidth(canvas);
     this.canvasHeightValue = canvasHeight(canvas);
+    this.outputWidth = size.width;
+    this.outputHeight = size.height;
 
     this.scale = Math.min(
       (size.width - padding * 2) / Math.max(this.canvasWidthValue, 1),
@@ -37,10 +44,11 @@ export class CanvasLayout {
   static fromExportScale(canvas: CanvasSettings, scale: number): CanvasLayout {
     const cw = canvasWidth(canvas);
     const ch = canvasHeight(canvas);
+    const padding = EXPORT_FRAME_PADDING;
     return new CanvasLayout(
-      { width: cw * scale, height: ch * scale },
+      { width: cw * scale + padding * 2, height: ch * scale + padding * 2 },
       canvas,
-      0,
+      padding,
     );
   }
 
