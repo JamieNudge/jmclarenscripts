@@ -4,7 +4,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { LayerAreaPercentInput } from '@/components/dgc/LayerAreaPercentInput';
 import { formatNumber } from '@/lib/dgc/document';
 import type { DgcDocumentController } from '@/lib/dgc/use-dgc-document';
-import { layerHandlePairLabel, MAX_LAYERS } from '@/lib/dgc/layer-handles';
+import { layerHandleLabelsForId, layerHandlePairLabel, layerPanelTitle, MAX_LAYERS } from '@/lib/dgc/layer-handles';
 import { DEFAULT_TOTAL_POPULATION_LABEL, edgeDisplayName } from '@/lib/dgc/types';
 
 function parseNumericInput(raw: string): number | null {
@@ -90,6 +90,17 @@ function AreaTargetField({
 
 export default function DgcInputForm({ controller }: { controller: DgcDocumentController }) {
   const { document, activeLayer } = controller;
+  const activeLayerIndex = document.layers.findIndex(
+    (layer) => layer.id === document.activeLayerID,
+  );
+  const activeLayerTitle =
+    activeLayerIndex >= 0
+      ? layerPanelTitle(activeLayerIndex)
+      : 'Active layer';
+  const activeHandleLabels =
+    activeLayerIndex >= 0
+      ? layerHandleLabelsForId(document.layers, document.activeLayerID)
+      : { start: 'A', end: 'A1' };
 
   return (
     <div className="space-y-4">
@@ -140,9 +151,9 @@ export default function DgcInputForm({ controller }: { controller: DgcDocumentCo
         </p>
       </Panel>
 
-      <Panel title="Active Layer">
+      <Panel title={activeLayerTitle}>
         <EditableNumericField
-          title="Start on Bottom Edge"
+          title={`${activeHandleLabels.start} on bottom edge`}
           value={activeLayer?.startX ?? 0}
           onCommit={controller.updateStartX}
           prompt="e.g. 3"
@@ -153,8 +164,9 @@ export default function DgcInputForm({ controller }: { controller: DgcDocumentCo
           onCommit={controller.updateAreaFraction}
         />
         <p className="text-sm text-white/80">
-          Type an area target (e.g. 66%) and the end handle moves to match. Dragging the end
-          handle updates this value.
+          This is the layer you are editing. Type an area target (e.g. 66%) and the{' '}
+          {activeHandleLabels.end} handle moves to match. Dragging the handle updates this
+          value. Select another layer in the list below to edit it.
         </p>
       </Panel>
 
@@ -232,9 +244,21 @@ function DgcLayersPanel({ controller }: { controller: DgcDocumentController }) {
                     />
                   </div>
                   <div
-                    className="mt-2 flex items-center gap-2"
+                    className="mt-2 flex flex-wrap items-center gap-2"
                     onClick={(event) => event.stopPropagation()}
                   >
+                    <label className="flex items-center gap-2 text-xs text-white/70">
+                      Colour
+                      <input
+                        type="color"
+                        value={layer.colorHex}
+                        onChange={(event) =>
+                          controller.updateLayerColor(layer.id, event.target.value)
+                        }
+                        className="h-8 w-10 cursor-pointer rounded border border-white/15 bg-transparent"
+                        aria-label={`Colour for layer ${handlePair}`}
+                      />
+                    </label>
                     <span className="shrink-0 text-xs text-white/70">Field of Wealth %</span>
                     <LayerAreaPercentInput
                       value={layer.areaFraction}

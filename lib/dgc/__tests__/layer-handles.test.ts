@@ -7,11 +7,11 @@ import {
 } from '../layer-handles';
 
 describe('layerHandles', () => {
-  it('assigns sequential letter pairs per layer index', () => {
-    expect(layerHandleLabels(0)).toEqual({ start: 'A', end: 'B' });
-    expect(layerHandleLabels(1)).toEqual({ start: 'C', end: 'D' });
-    expect(layerHandleLabels(2)).toEqual({ start: 'E', end: 'F' });
-    expect(layerHandlePairLabel(11)).toBe('W/X');
+  it('assigns letter and numbered end label per layer index', () => {
+    expect(layerHandleLabels(0)).toEqual({ start: 'A', end: 'A1' });
+    expect(layerHandleLabels(1)).toEqual({ start: 'B', end: 'B1' });
+    expect(layerHandleLabels(2)).toEqual({ start: 'C', end: 'C1' });
+    expect(layerHandlePairLabel(11)).toBe('L/L1');
   });
 
   it('caps designs at twelve layers', () => {

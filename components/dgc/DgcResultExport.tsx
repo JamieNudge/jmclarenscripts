@@ -188,11 +188,7 @@ Area fraction: ${formatNumber(result.areaFraction * 100)}%`;
 
             <div className="border-t border-white/10 pt-4">
               <h3 className="mb-3 text-lg font-semibold">Your files</h3>
-              <DgcFileMenu
-                controller={controller}
-                persistence={persistence}
-                variant="embedded"
-              />
+              <DgcFileMenu controller={controller} persistence={persistence} />
             </div>
           </div>
 
@@ -208,20 +204,16 @@ Area fraction: ${formatNumber(result.areaFraction * 100)}%`;
               <p className="font-medium text-white/85">Which format?</p>
               <ul className="mt-2 space-y-1.5">
                 <li>
-                  <span className="font-medium text-white/80">Screens</span> — PNG (fast,
-                  email-friendly)
-                </li>
-                <li>
-                  <span className="font-medium text-white/80">Paper / documents</span> —
-                  PDF
+                  <span className="font-medium text-white/80">Solid background</span> — PNG
+                  with white behind the diagram (email, slides)
                 </li>
                 <li>
                   <span className="font-medium text-white/80">Large posters</span> — SVG
                   (stays sharp at any size)
                 </li>
                 <li>
-                  <span className="font-medium text-white/80">T-shirts / print-on-demand</span>{' '}
-                  — PNG with transparent background
+                  <span className="font-medium text-white/80">Transparent background</span>{' '}
+                  — PNG with no background (T-shirts, print-on-demand)
                 </li>
                 <li>
                   <span className="font-medium text-white/80">Keep editing</span> — use
@@ -230,7 +222,7 @@ Area fraction: ${formatNumber(result.areaFraction * 100)}%`;
               </ul>
             </div>
 
-            <div className="grid gap-2 sm:grid-cols-2">
+            <div className="grid gap-2 sm:grid-cols-1">
               {EXPORT_PRESETS.map((preset) => (
                 <button
                   key={preset.id}
@@ -323,20 +315,6 @@ Area fraction: ${formatNumber(result.areaFraction * 100)}%`;
                     className="rounded-lg border border-white/15 px-3 py-2 text-sm disabled:opacity-50"
                   >
                     Custom SVG
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      void runExport({
-                        format: 'pdf',
-                        label: 'PDF',
-                        exportKey: 'custom',
-                      })
-                    }
-                    disabled={isExporting}
-                    className="rounded-lg border border-white/15 px-3 py-2 text-sm disabled:opacity-50"
-                  >
-                    Custom PDF
                   </button>
                 </div>
               </div>

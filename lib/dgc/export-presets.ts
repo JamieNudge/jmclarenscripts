@@ -1,28 +1,20 @@
-export type ExportPresetId = 'screen' | 'print' | 'poster' | 'tshirt';
+export type ExportPresetId = 'solid' | 'poster' | 'transparent';
 
 export type ExportPreset = {
   id: ExportPresetId;
   label: string;
   description: string;
-  format: 'png' | 'svg' | 'pdf';
+  format: 'png' | 'svg';
   pngScale: number;
   transparentBackground: boolean;
 };
 
 export const EXPORT_PRESETS: ExportPreset[] = [
   {
-    id: 'screen',
-    label: 'For screen',
-    description: 'Fast-loading PNG for email, slides, and websites',
+    id: 'solid',
+    label: 'Image with solid background',
+    description: 'PNG with white background — fast for email, slides, and websites',
     format: 'png',
-    pngScale: 2,
-    transparentBackground: false,
-  },
-  {
-    id: 'print',
-    label: 'For print',
-    description: 'PDF for paper handouts and documents',
-    format: 'pdf',
     pngScale: 2,
     transparentBackground: false,
   },
@@ -35,9 +27,9 @@ export const EXPORT_PRESETS: ExportPreset[] = [
     transparentBackground: false,
   },
   {
-    id: 'tshirt',
-    label: 'For cotton T-shirts',
-    description: 'High-res PNG with transparent background for print-on-demand',
+    id: 'transparent',
+    label: 'Image with transparent background',
+    description: 'High-res PNG with no background — T-shirts and print-on-demand',
     format: 'png',
     pngScale: 4,
     transparentBackground: true,

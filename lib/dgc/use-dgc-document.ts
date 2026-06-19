@@ -248,6 +248,17 @@ export function useDgcDocument(initial?: DGCDesignDocument) {
     [mutate],
   );
 
+  const updateLayerColor = useCallback(
+    (id: string, colorHex: string) => {
+      mutate((d) => {
+        const index = d.layers.findIndex((layer) => layer.id === id);
+        if (index < 0) return;
+        d.layers[index].colorHex = colorHex;
+      });
+    },
+    [mutate],
+  );
+
   const updatePngScale = useCallback(
     (scale: number) => {
       mutate((d) => {
@@ -305,6 +316,7 @@ export function useDgcDocument(initial?: DGCDesignDocument) {
     selectLayer,
     toggleLayerVisibility,
     renameLayer,
+    updateLayerColor,
     updatePngScale,
     updatePngTransparentBackground,
     updateJobName,

@@ -2,7 +2,6 @@
 
 import { useRef, useState } from 'react';
 import { formatJobSavedAt } from '@/lib/dgc/job-storage';
-import type { ExportFormat } from '@/lib/dgc/build-export-artifacts';
 import type { useDgcPersistence } from '@/lib/dgc/use-dgc-persistence';
 import type { DgcDocumentController } from '@/lib/dgc/use-dgc-document';
 
@@ -11,15 +10,12 @@ type Persistence = ReturnType<typeof useDgcPersistence>;
 export default function DgcFileMenu({
   controller,
   persistence,
-  variant = 'header',
 }: {
   controller: DgcDocumentController;
   persistence: Persistence;
-  variant?: 'header' | 'embedded';
 }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [recentOpen, setRecentOpen] = useState(false);
-  const [downloadMenuOpen, setDownloadMenuOpen] = useState(false);
 
   const openDesign = () => {
     if (persistence.supportsNativeFileDialogs) {
@@ -29,138 +25,65 @@ export default function DgcFileMenu({
     fileInputRef.current?.click();
   };
 
-  const downloadAs = () => {
-    if (persistence.supportsNativeFileDialogs) {
-      void persistence.downloadAs();
-      return;
-    }
-    setDownloadMenuOpen((value) => !value);
-  };
-
-  const downloadFormat = (format: ExportFormat) => {
-    setDownloadMenuOpen(false);
-    void persistence.downloadAs(format);
-  };
-
-  const isEmbedded = variant === 'embedded';
-  const alignClass = isEmbedded ? 'items-start' : 'items-end';
-  const textAlignClass = isEmbedded ? 'text-left' : 'text-right';
-  const rowAlignClass = isEmbedded
-    ? 'sm:flex-row sm:items-start sm:justify-start'
-    : 'sm:flex-row sm:items-start sm:justify-end';
-  const dropdownPositionClass = isEmbedded ? 'left-0' : 'right-0';
-
   return (
-    <div className={`flex flex-col gap-3 ${alignClass}`}>
-      <div
-        className={`flex w-full flex-col gap-3 ${rowAlignClass} ${isEmbedded ? '' : 'max-w-xl'}`}
-      >
-        <div className={`flex flex-col gap-1.5 ${alignClass}`}>
-          <p className={`text-xs font-medium text-white/55 ${textAlignClass}`}>
-            Keep editing later (on your Mac)
-          </p>
-          <div className={`flex flex-wrap gap-2 ${isEmbedded ? '' : 'justify-end'}`}>
-            <button
-              type="button"
-              onClick={() => void persistence.save()}
-              disabled={persistence.isBusy}
-              title="Save an editable design file to your hard drive"
-              className="rounded-lg border border-white/20 px-3 py-2 text-sm text-white hover:bg-white/5 disabled:opacity-50"
-            >
-              Save design
-            </button>
-            <button
-              type="button"
-              onClick={() => void persistence.saveDesignAs()}
-              disabled={persistence.isBusy}
-              title="Save a copy of the design under a new name"
-              className="rounded-lg border border-white/20 px-3 py-2 text-sm text-white hover:bg-white/5 disabled:opacity-50"
-            >
-              Save design as…
-            </button>
-            <button
-              type="button"
-              onClick={openDesign}
-              disabled={persistence.isBusy}
-              className="rounded-lg border border-white/20 px-3 py-2 text-sm text-white hover:bg-white/5 disabled:opacity-50"
-            >
-              Open…
-            </button>
-          </div>
-        </div>
-
-        <div className={`flex flex-col gap-1.5 ${alignClass}`}>
-          <p className={`text-xs font-medium text-white/55 ${textAlignClass}`}>
-            Share or print (finished picture)
-          </p>
-          <div className={`relative flex flex-wrap gap-2 ${isEmbedded ? '' : 'justify-end'}`}>
-            <button
-              type="button"
-              onClick={downloadAs}
-              disabled={persistence.isBusy}
-              title="Download as PNG, PDF, or SVG"
-              className="rounded-lg bg-sky-600 px-3 py-2 text-sm font-medium text-white hover:bg-sky-500 disabled:opacity-50"
-            >
-              Download as…
-            </button>
-            {downloadMenuOpen ? (
-              <div
-                className={`absolute ${dropdownPositionClass} top-full z-20 mt-1 w-44 rounded-lg border border-white/15 bg-[#141416] p-1 shadow-lg`}
-              >
-                <button
-                  type="button"
-                  onClick={() => downloadFormat('png')}
-                  className="block w-full rounded-md px-3 py-2 text-left text-sm text-white hover:bg-white/5"
-                >
-                  PNG image
-                </button>
-                <button
-                  type="button"
-                  onClick={() => downloadFormat('pdf')}
-                  className="block w-full rounded-md px-3 py-2 text-left text-sm text-white hover:bg-white/5"
-                >
-                  PDF document
-                </button>
-                <button
-                  type="button"
-                  onClick={() => downloadFormat('svg')}
-                  className="block w-full rounded-md px-3 py-2 text-left text-sm text-white hover:bg-white/5"
-                >
-                  SVG image
-                </button>
-              </div>
-            ) : null}
-            <button
-              type="button"
-              onClick={persistence.newDesign}
-              disabled={persistence.isBusy}
-              className="rounded-lg border border-white/20 px-3 py-2 text-sm text-white hover:bg-white/5 disabled:opacity-50"
-            >
-              New
-            </button>
-            {persistence.recentDesigns.length > 0 ? (
-              <button
-                type="button"
-                onClick={() => setRecentOpen((value) => !value)}
-                className="rounded-lg border border-white/20 px-3 py-2 text-sm text-white hover:bg-white/5"
-              >
-                Recent {recentOpen ? '▴' : '▾'}
-              </button>
-            ) : null}
-          </div>
-        </div>
+    <div className="flex flex-col items-start gap-3">
+      <p className="text-xs font-medium text-white/55">
+        Keep editing later (saves to your Mac)
+      </p>
+      <div className="flex flex-wrap gap-2">
+        <button
+          type="button"
+          onClick={() => void persistence.save()}
+          disabled={persistence.isBusy}
+          title="Save an editable design file to your hard drive"
+          className="rounded-lg border border-white/20 px-3 py-2 text-sm text-white hover:bg-white/5 disabled:opacity-50"
+        >
+          Save design
+        </button>
+        <button
+          type="button"
+          onClick={() => void persistence.saveDesignAs()}
+          disabled={persistence.isBusy}
+          title="Save a copy of the design under a new name"
+          className="rounded-lg border border-white/20 px-3 py-2 text-sm text-white hover:bg-white/5 disabled:opacity-50"
+        >
+          Save design as…
+        </button>
+        <button
+          type="button"
+          onClick={openDesign}
+          disabled={persistence.isBusy}
+          className="rounded-lg border border-white/20 px-3 py-2 text-sm text-white hover:bg-white/5 disabled:opacity-50"
+        >
+          Open…
+        </button>
+        <button
+          type="button"
+          onClick={persistence.newDesign}
+          disabled={persistence.isBusy}
+          className="rounded-lg border border-white/20 px-3 py-2 text-sm text-white hover:bg-white/5 disabled:opacity-50"
+        >
+          New
+        </button>
+        {persistence.recentDesigns.length > 0 ? (
+          <button
+            type="button"
+            onClick={() => setRecentOpen((value) => !value)}
+            className="rounded-lg border border-white/20 px-3 py-2 text-sm text-white hover:bg-white/5"
+          >
+            Recent {recentOpen ? '▴' : '▾'}
+          </button>
+        ) : null}
       </div>
 
-      <p className={`max-w-xl text-xs text-white/50 ${textAlignClass}`}>
+      <p className="max-w-md text-xs text-white/50">
         <span className="font-medium text-white/70">Save design</span> keeps your work
-        editable — reopen with Open. <span className="font-medium text-white/70">Download as</span>{' '}
-        gives you a PNG, PDF, or SVG to share or print (not for reopening).
+        editable — reopen with Open. Finished pictures are exported in the panel on the
+        right.
       </p>
 
-      <label className={`flex w-full flex-col gap-1 ${isEmbedded ? 'max-w-md' : 'max-w-sm'} ${alignClass}`}>
-        <span className={`w-full text-xs font-medium text-white/60 ${textAlignClass}`}>
-          Design name
-        </span>
+      <label className="flex w-full max-w-md flex-col gap-1">
+        <span className="text-xs font-medium text-white/60">Design name</span>
         <input
           className="w-full rounded-lg border border-white/15 bg-[#111] px-3 py-2 text-sm text-white"
           value={controller.document.name}
@@ -170,7 +93,7 @@ export default function DgcFileMenu({
       </label>
 
       <p
-        className={`max-w-md text-xs ${textAlignClass} ${persistence.isDirty ? 'text-amber-300' : 'text-white/55'}`}
+        className={`max-w-md text-xs ${persistence.isDirty ? 'text-amber-300' : 'text-white/55'}`}
         aria-live="polite"
       >
         {persistence.saveStatusLabel}
@@ -178,7 +101,7 @@ export default function DgcFileMenu({
 
       {persistence.status ? (
         <p
-          className={`max-w-md text-sm ${textAlignClass} ${
+          className={`max-w-md text-sm ${
             persistence.status.type === 'success' ? 'text-green-400' : 'text-red-300'
           }`}
           role="status"
@@ -188,7 +111,7 @@ export default function DgcFileMenu({
       ) : null}
 
       {recentOpen && persistence.recentDesigns.length > 0 ? (
-        <ul className={`w-full space-y-1 rounded-lg border border-white/10 bg-[#141416] p-2 ${isEmbedded ? 'max-w-md' : 'max-w-sm'}`}>
+        <ul className="w-full max-w-md space-y-1 rounded-lg border border-white/10 bg-[#141416] p-2">
           {persistence.recentDesigns.map((item) => (
             <li key={item.id}>
               <button

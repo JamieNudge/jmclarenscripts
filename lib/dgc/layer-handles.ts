@@ -5,11 +5,12 @@ export interface LayerHandleLabels {
   end: string;
 }
 
+/** Layer 1 → A / A1, layer 2 → B / B1, etc. */
 export function layerHandleLabels(layerIndex: number): LayerHandleLabels {
-  const base = 'A'.charCodeAt(0);
+  const letter = String.fromCharCode('A'.charCodeAt(0) + layerIndex);
   return {
-    start: String.fromCharCode(base + layerIndex * 2),
-    end: String.fromCharCode(base + layerIndex * 2 + 1),
+    start: letter,
+    end: `${letter}1`,
   };
 }
 
@@ -18,13 +19,18 @@ export function layerHandleLabelsForId(
   layerId: string,
 ): LayerHandleLabels {
   const index = layers.findIndex((layer) => layer.id === layerId);
-  if (index < 0) return { start: 'A', end: 'B' };
+  if (index < 0) return { start: 'A', end: 'A1' };
   return layerHandleLabels(index);
 }
 
 export function layerHandlePairLabel(layerIndex: number): string {
   const { start, end } = layerHandleLabels(layerIndex);
   return `${start}/${end}`;
+}
+
+export function layerPanelTitle(layerIndex: number): string {
+  const { start, end } = layerHandleLabels(layerIndex);
+  return `Layer ${layerIndex + 1} (${start} → ${end})`;
 }
 
 export function canAddLayer(layerCount: number): boolean {

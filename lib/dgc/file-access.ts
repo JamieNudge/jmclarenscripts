@@ -143,6 +143,14 @@ async function writeBlobHandle(
   await writable.close();
 }
 
+async function showSaveFilePicker(
+  options: SaveFilePickerOptions & { startIn?: 'desktop' | 'documents' | 'downloads' },
+): Promise<FileSystemFileHandle> {
+  return window.showSaveFilePicker!(
+    options as SaveFilePickerOptions & { startIn?: string },
+  );
+}
+
 export async function saveDesignWithPicker(
   document: DGCDesignDocument,
   options: {
@@ -167,9 +175,10 @@ export async function saveDesignWithPicker(
 
   if (supportsFileSystemAccess()) {
     try {
-      const handle = await window.showSaveFilePicker!({
+      const handle = await showSaveFilePicker({
         suggestedName: fileName,
         types: DESIGN_FILE_TYPES,
+        startIn: 'desktop',
       });
       await writeDesignHandle(handle, document);
       return { ok: true, fileName: handle.name, handle };
