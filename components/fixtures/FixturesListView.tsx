@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
 import { onValue, ref } from 'firebase/database';
 import { HubFootballLink } from '@/components/hub/HubFootballLink';
 import { BestPicksHubWithSideAdLayout } from '@/components/best-picks/BestPicksHubWithSideAdLayout';
@@ -30,7 +29,7 @@ function FixtureListRow({
 }) {
   return (
     <li>
-      <Link
+      <HubFootballLink
         href={fixtureDetailHref(fixture.fixtureId, dateKey)}
         className="flex items-center gap-3 rounded-lg border border-white/10 bg-black/25 px-3 py-2.5 transition-colors hover:border-white/20 hover:bg-white/[0.06]"
       >
@@ -41,7 +40,7 @@ function FixtureListRow({
           <span className="font-medium">{fixture.away}</span>
         </span>
         <span className="shrink-0 text-sm font-semibold tabular-nums text-white/95">{fixture.scoreDisplay}</span>
-      </Link>
+      </HubFootballLink>
     </li>
   );
 }

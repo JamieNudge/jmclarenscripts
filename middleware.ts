@@ -2,7 +2,7 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { shouldInjectAdSenseInInitialHtml } from '@/lib/adsense-initial-html';
 import { isDgcHostname } from '@/lib/dgc-hub-routes';
-import { HUB_FP_SLUG_SET, isHubHostname, parseHubHostList } from '@/lib/hub-football-routes';
+import { HUB_FP_SLUG_SET, footballRouteToGoalLabUrl, isFootballHubPathname, isHubHostname, parseHubHostList } from '@/lib/hub-football-routes';
 
 const DEFAULT_PRIMARY = 'https://jmclarenscripts.vercel.app';
 const DEFAULT_DGC_PUBLIC = 'https://dgc.jmclarenscripts.vercel.app';
@@ -98,6 +98,10 @@ function handleDgcHost(request: NextRequest, forward: { request: { headers: Head
   return NextResponse.rewrite(new URL('/dgc', request.url), forward);
 }
 
+function isLocalDevHost(host: string): boolean {
+  return host === 'localhost' || host === '127.0.0.1';
+}
+
 export function middleware(request: NextRequest) {
   const forward = { request: { headers: buildForwardedRequestHeaders(request) } };
   const { pathname } = request.nextUrl;
@@ -115,10 +119,10 @@ export function middleware(request: NextRequest) {
   }
 
   if (!isHubHost(request)) {
-    if (pathname === '/fixtures' || pathname.startsWith('/fixtures/')) {
-      const u = request.nextUrl.clone();
-      u.pathname = `/football-predictions${pathname}`;
-      return NextResponse.redirect(u, 308);
+    const host = requestHost(request);
+    if (!isLocalDevHost(host) && isFootballHubPathname(pathname)) {
+      const dest = footballRouteToGoalLabUrl(pathname, request.nextUrl.search);
+      return NextResponse.redirect(dest, 308);
     }
     return NextResponse.next(forward);
   }

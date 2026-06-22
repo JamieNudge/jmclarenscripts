@@ -4,6 +4,27 @@
  */
 
 const DEFAULT_HUB_HOSTS = 'thegoallab.net,www.thegoallab.net';
+const DEFAULT_GOAL_LAB_PUBLIC = 'https://thegoallab.net';
+
+/** Canonical public URL for the GoalLab / football hub (short paths). */
+export function goalLabPublicBase(): string {
+  const u = (process.env.GOAL_LAB_PUBLIC_URL ?? DEFAULT_GOAL_LAB_PUBLIC).trim().replace(/\/$/, '');
+  return u || DEFAULT_GOAL_LAB_PUBLIC.replace(/\/$/, '');
+}
+
+/** Portfolio `/football-predictions/...` or `/fixtures/...` → `https://thegoallab.net/...` */
+export function footballRouteToGoalLabUrl(pathname: string, search = ''): string {
+  const base = goalLabPublicBase();
+  const hubPath = longFpPathToPublicHubPath(`${pathname}${search}`, true);
+  if (hubPath === '/' || hubPath === '') return base;
+  return `${base}${hubPath.startsWith('/') ? hubPath : `/${hubPath}`}`;
+}
+
+export function isFootballHubPathname(pathname: string): boolean {
+  if (pathname === '/football-predictions' || pathname.startsWith('/football-predictions/')) return true;
+  if (pathname === '/fixtures' || pathname.startsWith('/fixtures/')) return true;
+  return false;
+}
 
 /** First path segment under `/football-predictions/*` that may appear at the domain root on hub hosts. */
 export const HUB_FP_SEGMENT_SLUGS = [
