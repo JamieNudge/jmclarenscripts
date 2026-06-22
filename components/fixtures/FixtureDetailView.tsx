@@ -19,6 +19,14 @@ import {
   pickForecastDetailLines,
   pickScoreDisplay,
 } from '@/lib/fixtures-browser';
+import {
+  buildKeySignalLines,
+  findSelectionStatsForFixture,
+  fixtureContextRtdbPath,
+  modelScoreFromPick,
+  parseFixtureContextFromRtdb,
+  type KeySignalLine,
+} from '@/lib/fixture-key-signals';
 
 function pickText(v: unknown): string | null {
   if (typeof v === 'string') {
@@ -36,16 +44,21 @@ export function FixtureDetailView() {
   const dateKey = searchParams.get('date')?.trim() || todayKey;
 
   const [exportVal, setExportVal] = useState<unknown>(null);
+  const [selectionVal, setSelectionVal] = useState<unknown>(null);
+  const [contextVal, setContextVal] = useState<unknown>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const { unanimousPath } = statStrikeRtdbPathsFromEnv(dateKey);
+  const { unanimousPath, selectionPath } = statStrikeRtdbPathsFromEnv(dateKey);
+  const contextPath = fixtureId ? fixtureContextRtdbPath(dateKey, fixtureId) : '';
   const configured = isFirebaseClientConfigured();
 
   useEffect(() => {
     if (!configured || !fixtureId) {
       setLoading(false);
       setExportVal(null);
+      setSelectionVal(null);
+      setContextVal(null);
       setError(null);
       return;
     }
@@ -56,23 +69,82 @@ export function FixtureDetailView() {
     }
 
     setLoading(true);
+    let pending = 3;
+    let exportDone = false;
+    let selectionDone = false;
+    let contextDone = false;
+
+    const finishIfReady = () => {
+      pending -= 1;
+      if (pending <= 0) setLoading(false);
+    };
+
     const exportRef = ref(db, unanimousPath);
-    const unsub = onValue(
+    const selectionRef = ref(db, selectionPath);
+    const contextRef = ref(db, contextPath);
+
+    const unsubExport = onValue(
       exportRef,
       (snap) => {
         setError(null);
-        setLoading(false);
         setExportVal(snap.val());
+        if (!exportDone) {
+          exportDone = true;
+          finishIfReady();
+        }
       },
       (err) => {
         setError(err.message);
-        setLoading(false);
         setExportVal(null);
+        if (!exportDone) {
+          exportDone = true;
+          finishIfReady();
+        }
       },
     );
 
-    return () => unsub();
-  }, [configured, fixtureId, unanimousPath]);
+    const unsubSelection = onValue(
+      selectionRef,
+      (snap) => {
+        setSelectionVal(snap.val());
+        if (!selectionDone) {
+          selectionDone = true;
+          finishIfReady();
+        }
+      },
+      () => {
+        setSelectionVal(null);
+        if (!selectionDone) {
+          selectionDone = true;
+          finishIfReady();
+        }
+      },
+    );
+
+    const unsubContext = onValue(
+      contextRef,
+      (snap) => {
+        setContextVal(snap.val());
+        if (!contextDone) {
+          contextDone = true;
+          finishIfReady();
+        }
+      },
+      () => {
+        setContextVal(null);
+        if (!contextDone) {
+          contextDone = true;
+          finishIfReady();
+        }
+      },
+    );
+
+    return () => {
+      unsubExport();
+      unsubSelection();
+      unsubContext();
+    };
+  }, [configured, contextPath, fixtureId, selectionPath, unanimousPath]);
 
   const pick = useMemo(
     () => (fixtureId ? findFixtureInExport(exportVal, fixtureId) : null),
@@ -81,6 +153,16 @@ export function FixtureDetailView() {
 
   const teams = pick ? pickTeams(pick) : null;
   const forecast = pick ? pickForecastDetailLines(pick) : null;
+  const context = useMemo(() => parseFixtureContextFromRtdb(contextVal), [contextVal]);
+  const selectionStats = useMemo(
+    () => (fixtureId ? findSelectionStatsForFixture(selectionVal, fixtureId) : null),
+    [fixtureId, selectionVal],
+  );
+  const keySignals: KeySignalLine[] = useMemo(() => {
+    if (!pick || !teams) return [];
+    return buildKeySignalLines(pick, teams.home, teams.away, context, selectionStats);
+  }, [context, pick, selectionStats, teams]);
+  const modelScore = pick ? modelScoreFromPick(pick) : null;
   const kickoff = pick ? formatKickoffFromPickRecord(pick) : null;
   const country = pick ? pickText(pick.country) : null;
   const league = pick ? pickText(pick.league) : null;
@@ -148,7 +230,7 @@ export function FixtureDetailView() {
             </header>
 
             {forecast ? (
-              <section className="rounded-xl border border-white/15 bg-white/[0.06] px-4 py-4 space-y-3">
+              <section className="rounded-xl border border-white/15 bg-white/[0.06] px-4 py-4 space-y-4">
                 <h2 className="text-xs font-semibold uppercase tracking-wide text-amber-100/90">Forecast</h2>
                 {forecast.primary ? (
                   <p className="text-base font-semibold text-cyan-100/95">{forecast.primary}</p>
@@ -165,19 +247,46 @@ export function FixtureDetailView() {
                     ))}
                   </ul>
                 ) : null}
-                {forecast.significantStats.length > 0 ? (
-                  <ul className="space-y-1 text-sm text-white/92 list-disc list-inside">
-                    {forecast.significantStats.map((s) => (
-                      <li key={s}>{s}</li>
-                    ))}
-                  </ul>
-                ) : null}
                 {forecast.odds ? <p className="text-sm text-amber-100/95 tabular-nums">{forecast.odds}</p> : null}
+
+                {keySignals.length > 0 ? (
+                  <div className="border-t border-white/10 pt-4 space-y-3">
+                    <div className="flex items-baseline justify-between gap-3">
+                      <p className="text-[10px] font-bold uppercase tracking-wide text-white/75">Key signals</p>
+                      {modelScore ? (
+                        <p className="text-xs font-semibold text-white/80 tabular-nums">Model score {modelScore}</p>
+                      ) : null}
+                    </div>
+                    <ul className="space-y-2.5">
+                      {keySignals.map((line) => (
+                        <li key={line.id} className="flex items-start gap-2.5">
+                          <span
+                            className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400"
+                            aria-hidden
+                          />
+                          <div className="min-w-0 text-sm leading-snug">
+                            <span className="text-white/95">
+                              {line.label}: <span className="font-semibold tabular-nums">{line.value}</span>
+                            </span>
+                            {line.meta ? (
+                              <span className="block text-xs text-white/70 tabular-nums mt-0.5">{line.meta}</span>
+                            ) : null}
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                    {!context ? (
+                      <p className="text-[11px] text-white/55 leading-relaxed">
+                        Game counts and date ranges appear after the next Mac upload includes fixture context.
+                      </p>
+                    ) : null}
+                  </div>
+                ) : null}
               </section>
             ) : null}
 
             <p className="text-xs text-white/75 border-t border-white/10 pt-4">
-              Match history tables (H2H and recent form) — coming soon.
+              Full match history tables (H2H and recent form) — coming soon.
             </p>
           </div>
         ) : null}
