@@ -14,6 +14,7 @@ export const HUB_FP_SEGMENT_SLUGS = [
   'how-it-works',
   'research-algorithm-selections',
   'and-another-thing',
+  'fixtures',
 ] as const;
 
 export const HUB_FP_SLUG_SET = new Set<string>(HUB_FP_SEGMENT_SLUGS);

@@ -115,6 +115,11 @@ export function middleware(request: NextRequest) {
   }
 
   if (!isHubHost(request)) {
+    if (pathname === '/fixtures' || pathname.startsWith('/fixtures/')) {
+      const u = request.nextUrl.clone();
+      u.pathname = `/football-predictions${pathname}`;
+      return NextResponse.redirect(u, 308);
+    }
     return NextResponse.next(forward);
   }
 
