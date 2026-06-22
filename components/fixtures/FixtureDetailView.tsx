@@ -22,9 +22,9 @@ import {
 import {
   buildKeySignalLines,
   findSelectionStatsForFixture,
-  fixtureContextRtdbPath,
+  fixtureContextLoadPath,
   modelScoreFromPick,
-  parseFixtureContextFromRtdb,
+  parseFixtureContextForFixture,
   type KeySignalLine,
 } from '@/lib/fixture-key-signals';
 
@@ -46,11 +46,12 @@ export function FixtureDetailView() {
   const [exportVal, setExportVal] = useState<unknown>(null);
   const [selectionVal, setSelectionVal] = useState<unknown>(null);
   const [contextVal, setContextVal] = useState<unknown>(null);
+  const [contextLoadError, setContextLoadError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const { unanimousPath, selectionPath } = statStrikeRtdbPathsFromEnv(dateKey);
-  const contextPath = fixtureId ? fixtureContextRtdbPath(dateKey, fixtureId) : '';
+  const contextPath = fixtureId ? fixtureContextLoadPath(dateKey, fixtureId) : '';
   const configured = isFirebaseClientConfigured();
 
   useEffect(() => {
@@ -59,6 +60,7 @@ export function FixtureDetailView() {
       setExportVal(null);
       setSelectionVal(null);
       setContextVal(null);
+      setContextLoadError(null);
       setError(null);
       return;
     }
@@ -124,13 +126,15 @@ export function FixtureDetailView() {
     const unsubContext = onValue(
       contextRef,
       (snap) => {
+        setContextLoadError(null);
         setContextVal(snap.val());
         if (!contextDone) {
           contextDone = true;
           finishIfReady();
         }
       },
-      () => {
+      (err) => {
+        setContextLoadError(err.message);
         setContextVal(null);
         if (!contextDone) {
           contextDone = true;
@@ -153,7 +157,10 @@ export function FixtureDetailView() {
 
   const teams = pick ? pickTeams(pick) : null;
   const forecast = pick ? pickForecastDetailLines(pick) : null;
-  const context = useMemo(() => parseFixtureContextFromRtdb(contextVal), [contextVal]);
+  const context = useMemo(
+    () => (fixtureId ? parseFixtureContextForFixture(contextVal, fixtureId) : null),
+    [contextVal, fixtureId],
+  );
   const selectionStats = useMemo(
     () => (fixtureId ? findSelectionStatsForFixture(selectionVal, fixtureId) : null),
     [fixtureId, selectionVal],
@@ -277,7 +284,11 @@ export function FixtureDetailView() {
                     </ul>
                     {!context ? (
                       <p className="text-[11px] text-white/55 leading-relaxed">
-                        Game counts and date ranges appear after the next Mac upload includes fixture context.
+                        {contextLoadError
+                          ? `Fixture context could not be loaded (${contextLoadError}). Add read access for fixtureContexts in Firebase rules.`
+                          : selectionStats
+                            ? 'Percentages are from selections. Game counts and date ranges need a Mac upload with fixture context (re-run analysis, then upload).'
+                            : 'Key signal percentages need selections stats on RTDB for this date.'}
                       </p>
                     ) : null}
                   </div>

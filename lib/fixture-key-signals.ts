@@ -194,15 +194,39 @@ export function parseFixtureContextFromRtdb(val: unknown): FixtureContextExport 
   return parseFixtureContextExport(val);
 }
 
+export function fixtureContextsDayRtdbPath(dateKey: string): string {
+  const root = process.env.NEXT_PUBLIC_FIREBASE_FIXTURE_CONTEXTS_ROOT?.trim() || 'fixtureContexts';
+  return `${root}/${dateKey}`;
+}
+
+/** Read one fixture from `fixtureContexts/{date}` map or a direct child node. */
+export function parseFixtureContextForFixture(dayOrNodeVal: unknown, fixtureId: string): FixtureContextExport | null {
+  const direct = parseFixtureContextFromRtdb(dayOrNodeVal);
+  if (direct) return direct;
+  if (dayOrNodeVal == null || typeof dayOrNodeVal !== 'object' || Array.isArray(dayOrNodeVal)) return null;
+  const key = fixtureId.trim();
+  const row = (dayOrNodeVal as Record<string, unknown>)[key];
+  return parseFixtureContextFromRtdb(row);
+}
+
+function selectionStatsRows(selectionVal: unknown): Record<string, unknown>[] {
+  if (selectionVal == null || typeof selectionVal !== 'object' || Array.isArray(selectionVal)) return [];
+  const stats = (selectionVal as Record<string, unknown>).stats;
+  if (Array.isArray(stats)) {
+    return stats.filter((row): row is Record<string, unknown> => row != null && typeof row === 'object' && !Array.isArray(row));
+  }
+  if (stats != null && typeof stats === 'object' && !Array.isArray(stats)) {
+    return Object.values(stats as Record<string, unknown>).filter(
+      (row): row is Record<string, unknown> => row != null && typeof row === 'object' && !Array.isArray(row),
+    );
+  }
+  return [];
+}
+
 /** Fallback stats row from `selections/{date}.stats` when fixtureContexts not uploaded yet. */
 export function findSelectionStatsForFixture(selectionVal: unknown, fixtureId: string): FixtureStatsSummary | null {
-  if (selectionVal == null || typeof selectionVal !== 'object' || Array.isArray(selectionVal)) return null;
-  const stats = (selectionVal as Record<string, unknown>).stats;
-  if (!Array.isArray(stats)) return null;
   const target = fixtureId.trim();
-  for (const row of stats) {
-    if (row == null || typeof row !== 'object' || Array.isArray(row)) continue;
-    const r = row as Record<string, unknown>;
+  for (const r of selectionStatsRows(selectionVal)) {
     const fixture = r.fixture;
     if (fixture == null || typeof fixture !== 'object' || Array.isArray(fixture)) continue;
     const id = num((fixture as Record<string, unknown>).id);
@@ -389,6 +413,11 @@ export function buildKeySignalLines(
 export function fixtureContextRtdbPath(dateKey: string, fixtureId: string): string {
   const root = process.env.NEXT_PUBLIC_FIREBASE_FIXTURE_CONTEXTS_ROOT?.trim() || 'fixtureContexts';
   return `${root}/${dateKey}/${fixtureId}`;
+}
+
+/** Prefer the day map node (Mac upload shape); child path is a fallback. */
+export function fixtureContextLoadPath(dateKey: string, fixtureId: string): string {
+  return fixtureContextsDayRtdbPath(dateKey);
 }
 
 export function modelScoreFromPick(pick: PickRecord): string | null {
