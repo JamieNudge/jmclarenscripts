@@ -124,6 +124,24 @@ export function parseFixturesFromUnanimousExport(val: unknown): FixtureListItem[
   return items;
 }
 
+export function sortFixturesByKickoff(fixtures: FixtureListItem[]): FixtureListItem[] {
+  return [...fixtures].sort((a, b) => {
+    const ta = a.kickoffMs;
+    const tb = b.kickoffMs;
+    if (ta == null && tb == null) {
+      const byLeague = a.leagueKey.localeCompare(b.leagueKey);
+      if (byLeague !== 0) return byLeague;
+      return a.home.localeCompare(b.home);
+    }
+    if (ta == null) return 1;
+    if (tb == null) return -1;
+    if (ta !== tb) return ta - tb;
+    const byLeague = a.leagueKey.localeCompare(b.leagueKey);
+    if (byLeague !== 0) return byLeague;
+    return a.home.localeCompare(b.home);
+  });
+}
+
 export function groupFixturesByLeague(fixtures: FixtureListItem[]): FixtureLeagueGroup[] {
   const map = new Map<string, FixtureListItem[]>();
   for (const f of fixtures) {
@@ -131,9 +149,20 @@ export function groupFixturesByLeague(fixtures: FixtureListItem[]): FixtureLeagu
     list.push(f);
     map.set(f.leagueKey, list);
   }
-  return Array.from(map.entries())
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([leagueKey, groupFixtures]) => ({ leagueKey, fixtures: groupFixtures }));
+  const groups = Array.from(map.entries()).map(([leagueKey, groupFixtures]) => ({
+    leagueKey,
+    fixtures: sortFixturesByKickoff(groupFixtures),
+  }));
+  groups.sort((a, b) => {
+    const ea = a.fixtures[0]?.kickoffMs ?? null;
+    const eb = b.fixtures[0]?.kickoffMs ?? null;
+    if (ea == null && eb == null) return a.leagueKey.localeCompare(b.leagueKey);
+    if (ea == null) return 1;
+    if (eb == null) return -1;
+    if (ea !== eb) return ea - eb;
+    return a.leagueKey.localeCompare(b.leagueKey);
+  });
+  return groups;
 }
 
 export function findFixtureInExport(val: unknown, fixtureId: string): PickRecord | null {

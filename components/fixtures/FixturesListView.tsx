@@ -20,16 +20,16 @@ import {
 import { getFirebaseRealtimeDb, isFirebaseClientConfigured } from '@/lib/firebase-client';
 import {
   fixtureDetailHref,
-  groupFixturesByLeague,
   parseFixturesFromUnanimousExport,
-  type FixtureLeagueGroup,
+  sortFixturesByKickoff,
+  type FixtureListItem,
 } from '@/lib/fixtures-browser';
 
 function FixtureListRow({
   fixture,
   dateKey,
 }: {
-  fixture: FixtureLeagueGroup['fixtures'][number];
+  fixture: FixtureListItem;
   dateKey: string;
 }) {
   const visitorTz = useVisitorTimeZone();
@@ -53,6 +53,7 @@ function FixtureListRow({
           <span className="font-medium">{fixture.home}</span>
           <span className="text-white/80 mx-1.5">v</span>
           <span className="font-medium">{fixture.away}</span>
+          <span className="block text-xs text-white/70 mt-0.5 truncate">{fixture.leagueKey}</span>
         </span>
         <span className="shrink-0 text-sm font-semibold tabular-nums text-white/95">{fixture.scoreDisplay}</span>
       </HubFootballLink>
@@ -101,8 +102,11 @@ export function FixturesListView() {
     return () => unsub();
   }, [configured, unanimousPath]);
 
-  const groups = useMemo(() => groupFixturesByLeague(parseFixturesFromUnanimousExport(exportVal)), [exportVal]);
-  const totalCount = useMemo(() => groups.reduce((n, g) => n + g.fixtures.length, 0), [groups]);
+  const fixtures = useMemo(
+    () => sortFixturesByKickoff(parseFixturesFromUnanimousExport(exportVal)),
+    [exportVal],
+  );
+  const totalCount = fixtures.length;
 
   return (
     <BestPicksHubWithSideAdLayout>
@@ -153,21 +157,12 @@ export function FixturesListView() {
           </p>
         ) : null}
 
-        {configured && !loading && !error && groups.length > 0 ? (
-          <div className="space-y-6">
-            {groups.map((group) => (
-              <section key={group.leagueKey}>
-                <h2 className="text-xs font-semibold uppercase tracking-wide text-amber-100/90 mb-2 px-0.5">
-                  {group.leagueKey}
-                </h2>
-                <ul className="space-y-1.5">
-                  {group.fixtures.map((fixture) => (
-                    <FixtureListRow key={String(fixture.fixtureId)} fixture={fixture} dateKey={dateKey} />
-                  ))}
-                </ul>
-              </section>
+        {configured && !loading && !error && fixtures.length > 0 ? (
+          <ul className="space-y-1.5">
+            {fixtures.map((fixture) => (
+              <FixtureListRow key={String(fixture.fixtureId)} fixture={fixture} dateKey={dateKey} />
             ))}
-          </div>
+          </ul>
         ) : null}
       </div>
     </BestPicksHubWithSideAdLayout>
