@@ -10,7 +10,6 @@ import {
   pickMergeKey,
   pickSignificantStats,
   pickTeams,
-  picksTimeZoneFromEnv,
   sortPicksByKickoffEarliestFirst,
   type PickRecord,
 } from '@/lib/best-picks-firebase';
@@ -32,7 +31,6 @@ export type FixtureListItem = {
   country: string | null;
   league: string | null;
   kickoffMs: number | null;
-  kickoffShort: string;
   scoreDisplay: string;
   pick: PickRecord;
 };
@@ -77,16 +75,6 @@ function mergeFirehosePicks(over: PickRecord[], under: PickRecord[]): PickRecord
   return Array.from(map.values());
 }
 
-function formatKickoffShort(ms: number | null, timeZone: string): string {
-  if (ms == null) return '–';
-  return new Intl.DateTimeFormat('en-GB', {
-    timeZone,
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  }).format(new Date(ms));
-}
-
 export function pickScoreDisplay(p: PickRecord): string {
   const hs = num(p.homeScore ?? p.homeGoals);
   const aws = num(p.awayScore ?? p.awayGoals);
@@ -105,7 +93,7 @@ function leagueKeyForPick(p: PickRecord): string {
   return 'Other';
 }
 
-export function pickToFixtureListItem(p: PickRecord, timeZone: string): FixtureListItem | null {
+export function pickToFixtureListItem(p: PickRecord): FixtureListItem | null {
   const teams = pickTeams(p);
   if (!teams) return null;
   const fixtureId = pickFixtureId(p);
@@ -119,20 +107,18 @@ export function pickToFixtureListItem(p: PickRecord, timeZone: string): FixtureL
     country: pickText(p.country),
     league: pickText(p.league),
     kickoffMs,
-    kickoffShort: formatKickoffShort(kickoffMs, timeZone),
     scoreDisplay: pickScoreDisplay(p),
     pick: p,
   };
 }
 
-export function parseFixturesFromUnanimousExport(val: unknown, timeZone?: string): FixtureListItem[] {
-  const tz = timeZone ?? picksTimeZoneFromEnv();
+export function parseFixturesFromUnanimousExport(val: unknown): FixtureListItem[] {
   const { over, under } = parseUnanimousExport(val);
   const merged = mergeFirehosePicks(over, under);
   const sorted = sortPicksByKickoffEarliestFirst(merged);
   const items: FixtureListItem[] = [];
   for (const p of sorted) {
-    const item = pickToFixtureListItem(p, tz);
+    const item = pickToFixtureListItem(p);
     if (item) items.push(item);
   }
   return items;

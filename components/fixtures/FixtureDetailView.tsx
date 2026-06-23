@@ -8,7 +8,8 @@ import { BestPicksHubWithSideAdLayout } from '@/components/best-picks/BestPicksH
 import { BestPicksSiteNav } from '@/components/best-picks/BestPicksSiteNav';
 import { BEST_PICKS_EXTENDED_SITE_NAV } from '@/components/best-picks/best-picks-site-nav-config';
 import { useBestPicksLondonDateKey } from '@/hooks/useBestPicksLondonDateKey';
-import { formatKickoffFromPickRecord, pickTeams, statStrikeRtdbPathsFromEnv } from '@/lib/best-picks-firebase';
+import { useVisitorTimeZone } from '@/hooks/useVisitorTimeZone';
+import { formatKickoffFromPickRecordLocalAndUtc, pickTeams, statStrikeRtdbPathsFromEnv } from '@/lib/best-picks-firebase';
 import {
   FOOTBALL_PREDICTIONS_FIXTURES_PATH,
   FOOTBALL_PREDICTIONS_FIXTURES_TITLE,
@@ -41,6 +42,7 @@ export function FixtureDetailView() {
   const params = useParams();
   const searchParams = useSearchParams();
   const todayKey = useBestPicksLondonDateKey();
+  const visitorTz = useVisitorTimeZone();
   const fixtureId = typeof params?.fixtureId === 'string' ? params.fixtureId : '';
   const dateKey = searchParams.get('date')?.trim() || todayKey;
 
@@ -171,7 +173,7 @@ export function FixtureDetailView() {
     return buildKeySignalLines(pick, teams.home, teams.away, context, selectionStats);
   }, [context, pick, selectionStats, teams]);
   const modelScore = pick ? modelScoreFromPick(pick) : null;
-  const kickoff = pick ? formatKickoffFromPickRecord(pick) : null;
+  const kickoff = pick ? formatKickoffFromPickRecordLocalAndUtc(pick, visitorTz) : null;
   const country = pick ? pickText(pick.country) : null;
   const league = pick ? pickText(pick.league) : null;
   const venue = pick ? pickText(pick.venue) : null;

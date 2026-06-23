@@ -243,7 +243,7 @@ function formatKickoffUtc(ms: number): string {
 }
 
 /** Same date/time pattern as {@link formatKickoffUtc} but in a wall-clock zone, with short zone name (e.g. GMT / BST). */
-function formatKickoffWallWithZoneName(ms: number, timeZone: string): string {
+export function formatKickoffWallWithZoneName(ms: number, timeZone: string): string {
   const d = new Date(ms);
   if (Number.isNaN(d.getTime())) return '';
   const dmy = new Intl.DateTimeFormat('en-GB', { timeZone, day: '2-digit', month: '2-digit', year: 'numeric' }).format(d);
@@ -253,13 +253,40 @@ function formatKickoffWallWithZoneName(ms: number, timeZone: string): string {
   return zName ? `${dmy} ${hm} ${zName}` : `${dmy} ${hm}`;
 }
 
-/** e.g. `29/04/2026 01:00 BST (29/04/2026 00:00 UTC)` for UK visitors plus a conversion anchor. */
-function formatKickoffUkAndUtc(ms: number, ukTimeZone: string): string {
-  const uk = formatKickoffWallWithZoneName(ms, ukTimeZone);
+function formatKickoffUtcShort(ms: number): string {
+  const d = new Date(ms);
+  if (Number.isNaN(d.getTime())) return '';
+  const hh = String(d.getUTCHours()).padStart(2, '0');
+  const min = String(d.getUTCMinutes()).padStart(2, '0');
+  return `${hh}:${min} UTC`;
+}
+
+function formatKickoffWallShortWithZoneName(ms: number, timeZone: string): string {
+  const d = new Date(ms);
+  if (Number.isNaN(d.getTime())) return '';
+  const hm = new Intl.DateTimeFormat('en-GB', { timeZone, hour: '2-digit', minute: '2-digit', hour12: false }).format(d);
+  const parts = new Intl.DateTimeFormat('en-GB', { timeZone, timeZoneName: 'short' }).formatToParts(d);
+  const zName = parts.find((p) => p.type === 'timeZoneName')?.value?.trim() || '';
+  return zName ? `${hm} ${zName}` : hm;
+}
+
+/** e.g. `29/04/2026 01:00 BST (29/04/2026 00:00 UTC)` — visitor wall clock plus UTC anchor. */
+export function formatKickoffLocalAndUtc(ms: number, timeZone: string): string {
+  const local = formatKickoffWallWithZoneName(ms, timeZone);
   const utc = formatKickoffUtc(ms);
   if (!utc) return '';
-  if (!uk) return utc;
-  return `${uk} (${utc})`;
+  if (!local) return utc;
+  return `${local} (${utc})`;
+}
+
+/** Compact list row: `15:30 BST (14:30 UTC)`. */
+export function formatKickoffShortLocalAndUtc(ms: number | null, timeZone: string): string {
+  if (ms == null) return '–';
+  const local = formatKickoffWallShortWithZoneName(ms, timeZone);
+  const utc = formatKickoffUtcShort(ms);
+  if (!utc) return '–';
+  if (!local) return utc;
+  return `${local} (${utc})`;
 }
 
 function formatKickoffField(v: unknown): string | null {
@@ -475,12 +502,17 @@ export function formatKickoffFromPickRecord(p: PickRecord): string | null {
  * name and the UTC time in parentheses; otherwise same fallbacks as {@link formatKickoffFromPickRecord}.
  */
 function formatKickoffFromPickRecordUkAndUtc(p: PickRecord): string | null {
+  return formatKickoffFromPickRecordLocalAndUtc(p, picksDateTimeZoneId());
+}
+
+/** Kick-off from pick fields in visitor local zone with UTC in parentheses. */
+export function formatKickoffFromPickRecordLocalAndUtc(p: PickRecord, timeZone: string): string | null {
   for (const k of KICKOFF_SORT_FIELD_KEYS) {
     const v = p[k];
     if (isEmptyKickoffSlot(v)) continue;
     const ms = timeUnknownToSortMs(v);
     if (ms != null) {
-      const s = formatKickoffUkAndUtc(ms, picksDateTimeZoneId());
+      const s = formatKickoffLocalAndUtc(ms, timeZone);
       if (s) return s;
     }
     const legacy = formatKickoffField(v);

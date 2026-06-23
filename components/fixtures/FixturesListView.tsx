@@ -7,11 +7,16 @@ import { BestPicksHubWithSideAdLayout } from '@/components/best-picks/BestPicksH
 import { BestPicksSiteNav } from '@/components/best-picks/BestPicksSiteNav';
 import { BEST_PICKS_EXTENDED_SITE_NAV } from '@/components/best-picks/best-picks-site-nav-config';
 import { useBestPicksLondonDateKey } from '@/hooks/useBestPicksLondonDateKey';
+import { useVisitorTimeZone } from '@/hooks/useVisitorTimeZone';
 import {
   FOOTBALL_PREDICTIONS_FIXTURES_TITLE,
   FOOTBALL_PREDICTIONS_HUB_PATH,
 } from '@/lib/football-predictions-brand';
-import { statStrikeRtdbPathsFromEnv } from '@/lib/best-picks-firebase';
+import {
+  formatKickoffLocalAndUtc,
+  formatKickoffShortLocalAndUtc,
+  statStrikeRtdbPathsFromEnv,
+} from '@/lib/best-picks-firebase';
 import { getFirebaseRealtimeDb, isFirebaseClientConfigured } from '@/lib/firebase-client';
 import {
   fixtureDetailHref,
@@ -27,13 +32,23 @@ function FixtureListRow({
   fixture: FixtureLeagueGroup['fixtures'][number];
   dateKey: string;
 }) {
+  const visitorTz = useVisitorTimeZone();
+  const kickoffShort = formatKickoffShortLocalAndUtc(fixture.kickoffMs, visitorTz);
+  const kickoffTitle =
+    fixture.kickoffMs != null ? formatKickoffLocalAndUtc(fixture.kickoffMs, visitorTz) : undefined;
+
   return (
     <li>
       <HubFootballLink
         href={fixtureDetailHref(fixture.fixtureId, dateKey)}
         className="flex items-center gap-3 rounded-lg border border-white/10 bg-black/25 px-3 py-2.5 transition-colors hover:border-white/20 hover:bg-white/[0.06]"
       >
-        <span className="shrink-0 w-12 text-xs tabular-nums text-white/90 text-right">{fixture.kickoffShort}</span>
+        <span
+          className="shrink-0 min-w-[9rem] text-xs tabular-nums text-white/90 text-right leading-snug"
+          title={kickoffTitle}
+        >
+          {kickoffShort}
+        </span>
         <span className="min-w-0 flex-1 text-sm text-white leading-snug">
           <span className="font-medium">{fixture.home}</span>
           <span className="text-white/80 mx-1.5">v</span>
