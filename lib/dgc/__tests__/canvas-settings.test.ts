@@ -35,6 +35,7 @@ describe('CanvasSettings', () => {
     expect(normalized.totalPopulationWidth).toBe(10);
     expect(normalized.fieldOfWealthWidthPercent).toBe(100);
     expect(normalized.totalPopulationLabel).toBe('Total Population');
+    expect(normalized.totalPopulationColorHex).toBe('#FF9500');
     expect(normalized.totalPopulationHeight).toBe(0.5);
     expect(normalized.leftMargin).toBe(0);
     expect(normalized.fieldWidth).toBe(10);

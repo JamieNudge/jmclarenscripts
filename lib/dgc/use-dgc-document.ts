@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   activeLayer,
   makeDefaultLayer,
@@ -14,6 +14,14 @@ import {
   layerHandlePairLabel,
   MAX_LAYERS,
 } from './layer-handles';
+import {
+  addCustomSketchPreset,
+  deleteCustomSketchPreset,
+  loadCustomSketchPresets,
+  newCustomSketchPresetId,
+  updateCustomSketchPreset,
+  type CustomSketchPreset,
+} from './sketch-preset-store';
 import { areaForRegion, solve } from './partition-solver';
 import type {
   DGCDesignDocument,
@@ -30,6 +38,12 @@ export function useDgcDocument(initial?: DGCDesignDocument) {
     initial ?? makeNewDocument(),
   );
   const [exportWholeComposition, setExportWholeComposition] = useState(true);
+  const [customSketchPresets, setCustomSketchPresets] = useState<CustomSketchPreset[]>([]);
+  const [copyResultConfirmationVisible, setCopyResultConfirmationVisible] = useState(false);
+
+  useEffect(() => {
+    setCustomSketchPresets(loadCustomSketchPresets());
+  }, []);
 
   const layerStates = useMemo(
     () => recalculateLayerStates(document),
@@ -83,6 +97,15 @@ export function useDgcDocument(initial?: DGCDesignDocument) {
     (label: string) => {
       mutate((d) => {
         d.canvas.totalPopulationLabel = label;
+      });
+    },
+    [mutate],
+  );
+
+  const updateTotalPopulationColorHex = useCallback(
+    (colorHex: string) => {
+      mutate((d) => {
+        d.canvas.totalPopulationColorHex = colorHex;
       });
     },
     [mutate],
@@ -145,6 +168,46 @@ export function useDgcDocument(initial?: DGCDesignDocument) {
     [mutate],
   );
 
+  const updateLayerStartX = useCallback(
+    (layerId: string, value: number) => {
+      mutate((d) => {
+        const index = d.layers.findIndex((layer) => layer.id === layerId);
+        if (index < 0) return;
+        d.layers[index].startX = Math.min(
+          Math.max(value, 0),
+          maxStartX(d.canvas),
+        );
+      });
+    },
+    [mutate],
+  );
+
+  const moveLayerTowardFront = useCallback(
+    (layerId: string) => {
+      mutate((d) => {
+        const index = d.layers.findIndex((layer) => layer.id === layerId);
+        if (index < 0 || index >= d.layers.length - 1) return;
+        const next = [...d.layers];
+        [next[index], next[index + 1]] = [next[index + 1], next[index]];
+        d.layers = next;
+      });
+    },
+    [mutate],
+  );
+
+  const moveLayerTowardBack = useCallback(
+    (layerId: string) => {
+      mutate((d) => {
+        const index = d.layers.findIndex((layer) => layer.id === layerId);
+        if (index <= 0) return;
+        const next = [...d.layers];
+        [next[index - 1], next[index]] = [next[index], next[index - 1]];
+        d.layers = next;
+      });
+    },
+    [mutate],
+  );
+
   const updateAreaFromPreview = useCallback(
     (endX: number, endY: number, edge: PartitionEdge) => {
       const layer = activeLayer(document);
@@ -178,6 +241,42 @@ export function useDgcDocument(initial?: DGCDesignDocument) {
     },
     [mutate],
   );
+
+  const applyCustomPreset = useCallback(
+    (preset: CustomSketchPreset) => {
+      mutate((d) => {
+        const index = d.layers.findIndex((layer) => layer.id === d.activeLayerID);
+        if (index < 0) return;
+        d.layers[index].startX = preset.startX;
+        d.layers[index].areaFraction = preset.areaPercent / 100;
+      });
+    },
+    [mutate],
+  );
+
+  const saveActiveLayerAsCustomPreset = useCallback(
+    (title: string) => {
+      const layer = activeLayer(document);
+      const trimmed = title.trim();
+      if (!layer || !trimmed) return;
+      const preset: CustomSketchPreset = {
+        id: newCustomSketchPresetId(),
+        title: trimmed,
+        startX: layer.startX,
+        areaPercent: layer.areaFraction * 100,
+      };
+      setCustomSketchPresets(addCustomSketchPreset(preset));
+    },
+    [document],
+  );
+
+  const updateCustomPreset = useCallback((preset: CustomSketchPreset) => {
+    setCustomSketchPresets(updateCustomSketchPreset(preset));
+  }, []);
+
+  const deleteCustomPreset = useCallback((id: string) => {
+    setCustomSketchPresets(deleteCustomSketchPreset(id));
+  }, []);
 
   const addLayer = useCallback(() => {
     mutate((d) => {
@@ -302,13 +401,24 @@ export function useDgcDocument(initial?: DGCDesignDocument) {
     updateTotalPopulationWidth,
     updateFieldOfWealthWidthPercent,
     updateTotalPopulationLabel,
+    updateTotalPopulationColorHex,
     updateTotalPopulationHeight,
     updateFieldHeight,
     updateStartX,
     updateAreaFraction,
     updateLayerAreaFraction,
+    updateLayerStartX,
+    moveLayerTowardFront,
+    moveLayerTowardBack,
     updateAreaFromPreview,
     applyPreset,
+    applyCustomPreset,
+    saveActiveLayerAsCustomPreset,
+    updateCustomPreset,
+    deleteCustomPreset,
+    customSketchPresets,
+    copyResultConfirmationVisible,
+    setCopyResultConfirmationVisible,
     applySampleValues: () => applyPreset(SKETCH_PRESETS[1]),
     addLayer,
     duplicateActiveLayer,

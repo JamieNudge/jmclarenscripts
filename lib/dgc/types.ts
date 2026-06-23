@@ -30,6 +30,7 @@ export interface LayerSolveState {
 }
 
 export const DEFAULT_TOTAL_POPULATION_LABEL = 'Total Population';
+export const DEFAULT_TOTAL_POPULATION_COLOR_HEX = '#FF9500';
 
 export interface CanvasSettings {
   /** Derived from totalPopulationWidth × fieldOfWealthWidthPercent; kept for document compatibility. */
@@ -44,6 +45,7 @@ export interface CanvasSettings {
   totalPopulationHeight: number;
   fieldOfWealthWidthPercent: number;
   totalPopulationLabel: string;
+  totalPopulationColorHex: string;
 }
 
 export const DEFAULT_CANVAS: CanvasSettings = {
@@ -57,6 +59,7 @@ export const DEFAULT_CANVAS: CanvasSettings = {
   totalPopulationHeight: 0.5,
   fieldOfWealthWidthPercent: 100,
   totalPopulationLabel: DEFAULT_TOTAL_POPULATION_LABEL,
+  totalPopulationColorHex: DEFAULT_TOTAL_POPULATION_COLOR_HEX,
 };
 
 export function fieldOriginY(canvas: CanvasSettings): number {
@@ -86,6 +89,8 @@ export function normalizeCanvas(canvas: CanvasSettings): CanvasSettings {
         : 100;
   const totalPopulationLabel =
     canvas.totalPopulationLabel?.trim() || DEFAULT_TOTAL_POPULATION_LABEL;
+  const totalPopulationColorHex =
+    canvas.totalPopulationColorHex?.trim() || DEFAULT_TOTAL_POPULATION_COLOR_HEX;
   const totalPopulationHeight =
     canvas.totalPopulationHeight > 0
       ? canvas.totalPopulationHeight
@@ -101,6 +106,7 @@ export function normalizeCanvas(canvas: CanvasSettings): CanvasSettings {
     bottomMargin: totalPopulationHeight,
     fieldOfWealthWidthPercent,
     totalPopulationLabel,
+    totalPopulationColorHex,
   });
 }
 

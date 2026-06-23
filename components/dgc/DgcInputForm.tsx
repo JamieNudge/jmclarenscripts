@@ -4,8 +4,13 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { LayerAreaPercentInput } from '@/components/dgc/LayerAreaPercentInput';
 import { formatNumber } from '@/lib/dgc/document';
 import type { DgcDocumentController } from '@/lib/dgc/use-dgc-document';
-import { layerHandleLabelsForId, layerHandlePairLabel, layerPanelTitle, MAX_LAYERS } from '@/lib/dgc/layer-handles';
-import { DEFAULT_TOTAL_POPULATION_LABEL, edgeDisplayName } from '@/lib/dgc/types';
+import { layerHandleLabelsForId, layerHandlePairLabel, MAX_LAYERS } from '@/lib/dgc/layer-handles';
+import type { CustomSketchPreset } from '@/lib/dgc/sketch-preset-store';
+import {
+  DEFAULT_TOTAL_POPULATION_COLOR_HEX,
+  DEFAULT_TOTAL_POPULATION_LABEL,
+  edgeDisplayName,
+} from '@/lib/dgc/types';
 
 function parseNumericInput(raw: string): number | null {
   const cleaned = raw.trim().replace(/%/g, '').replace(/,/g, '.');
@@ -70,37 +75,15 @@ function EditableNumericField({
   );
 }
 
-function AreaTargetField({
-  value,
-  onCommit,
-}: {
-  value: number;
-  onCommit: (fraction: number) => void;
-}) {
-  return (
-    <EditableNumericField
-      title="Area Target (%)"
-      value={value * 100}
-      prompt="e.g. 66"
-      suffix="%"
-      onCommit={(percent) => onCommit(percent / 100)}
-    />
-  );
-}
-
 export default function DgcInputForm({ controller }: { controller: DgcDocumentController }) {
-  const { document, activeLayer } = controller;
-  const activeLayerIndex = document.layers.findIndex(
-    (layer) => layer.id === document.activeLayerID,
-  );
-  const activeLayerTitle =
-    activeLayerIndex >= 0
-      ? layerPanelTitle(activeLayerIndex)
-      : 'Active layer';
-  const activeHandleLabels =
-    activeLayerIndex >= 0
-      ? layerHandleLabelsForId(document.layers, document.activeLayerID)
-      : { start: 'A', end: 'A1' };
+  const { document } = controller;
+  const [newPresetTitle, setNewPresetTitle] = useState('');
+  const [editingPreset, setEditingPreset] = useState<CustomSketchPreset | null>(null);
+  const [editPresetTitle, setEditPresetTitle] = useState('');
+  const [editPresetStartX, setEditPresetStartX] = useState('');
+  const [editPresetAreaPercent, setEditPresetAreaPercent] = useState('');
+
+  const displayLayerIndices = Array.from(document.layers.keys()).reverse();
 
   return (
     <div className="space-y-4">
@@ -128,6 +111,16 @@ export default function DgcInputForm({ controller }: { controller: DgcDocumentCo
             onChange={(event) => controller.updateTotalPopulationLabel(event.target.value)}
           />
         </label>
+        <label className="flex items-center gap-3">
+          <span className="text-base font-semibold text-white">Colour</span>
+          <input
+            type="color"
+            value={document.canvas.totalPopulationColorHex || DEFAULT_TOTAL_POPULATION_COLOR_HEX}
+            onChange={(event) => controller.updateTotalPopulationColorHex(event.target.value)}
+            className="h-10 w-14 cursor-pointer rounded border border-white/15 bg-transparent"
+            aria-label="Total Population colour"
+          />
+        </label>
       </Panel>
 
       <Panel title="Field of Wealth">
@@ -151,34 +144,7 @@ export default function DgcInputForm({ controller }: { controller: DgcDocumentCo
         </p>
       </Panel>
 
-      <Panel title={activeLayerTitle}>
-        <EditableNumericField
-          title={`${activeHandleLabels.start} on bottom edge`}
-          value={activeLayer?.startX ?? 0}
-          onCommit={controller.updateStartX}
-          prompt="e.g. 3"
-        />
-        <AreaTargetField
-          key={activeLayer?.id ?? 'none'}
-          value={activeLayer?.areaFraction ?? 0}
-          onCommit={controller.updateAreaFraction}
-        />
-        <p className="text-sm text-white/80">
-          This is the layer you are editing. Type an area target (e.g. 66%) and the{' '}
-          {activeHandleLabels.end} handle moves to match. Dragging the handle updates this
-          value. Select another layer in the list below to edit it.
-        </p>
-      </Panel>
-
-      <button
-        type="button"
-        onClick={controller.applySampleValues}
-        className="rounded-lg bg-sky-600 px-4 py-2 font-medium text-white hover:bg-sky-500"
-      >
-        Use Sample
-      </button>
-
-      <Panel title="Client Sketch Presets">
+      <Panel title="Built-in Sketch Cases">
         <div className="space-y-2">
           {controller.sketchPresets.map((preset) => (
             <button
@@ -194,21 +160,152 @@ export default function DgcInputForm({ controller }: { controller: DgcDocumentCo
             </button>
           ))}
         </div>
+        <p className="text-xs text-white/60">
+          Applies start position and area target to the active layer.
+        </p>
       </Panel>
 
-      <DgcLayersPanel controller={controller} />
+      <Panel title="My Presets">
+        {controller.customSketchPresets.length === 0 ? (
+          <p className="text-sm text-white/70">
+            No custom presets yet. Save the active layer&apos;s settings below.
+          </p>
+        ) : (
+          <div className="space-y-2">
+            {controller.customSketchPresets.map((preset) => (
+              <div key={preset.id} className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => controller.applyCustomPreset(preset)}
+                  className="min-w-0 flex-1 rounded-lg border border-white/15 px-3 py-2 text-left text-white hover:bg-white/5"
+                >
+                  <span className="block font-semibold">{preset.title}</span>
+                  <span className="text-xs text-white/70">
+                    start {formatNumber(preset.startX)} · {formatNumber(preset.areaPercent)}%
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  className="text-sm text-white/80"
+                  onClick={() => {
+                    setEditingPreset(preset);
+                    setEditPresetTitle(preset.title);
+                    setEditPresetStartX(formatNumber(preset.startX));
+                    setEditPresetAreaPercent(formatNumber(preset.areaPercent));
+                  }}
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  className="text-sm text-red-300"
+                  onClick={() => controller.deleteCustomPreset(preset.id)}
+                >
+                  Delete
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+        <div className="flex flex-wrap gap-2">
+          <input
+            className="min-w-0 flex-1 rounded-lg border border-white/15 bg-[#111] px-3 py-2 text-white"
+            value={newPresetTitle}
+            placeholder="Preset name"
+            onChange={(event) => setNewPresetTitle(event.target.value)}
+          />
+          <button
+            type="button"
+            disabled={!newPresetTitle.trim()}
+            onClick={() => {
+              controller.saveActiveLayerAsCustomPreset(newPresetTitle);
+              setNewPresetTitle('');
+            }}
+            className="rounded-lg bg-sky-600 px-3 py-2 text-sm font-medium text-white disabled:opacity-40"
+          >
+            Save Active Layer as Preset
+          </button>
+        </div>
+      </Panel>
+
+      <DgcLayersPanel controller={controller} displayLayerIndices={displayLayerIndices} />
+
+      {editingPreset ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="w-full max-w-md space-y-3 rounded-2xl border border-white/15 bg-[#1b1b1d] p-4 text-white">
+            <h3 className="text-lg font-semibold">Edit Preset</h3>
+            <input
+              className="w-full rounded-lg border border-white/15 bg-[#111] px-3 py-2"
+              value={editPresetTitle}
+              onChange={(event) => setEditPresetTitle(event.target.value)}
+              placeholder="Name"
+            />
+            <input
+              className="w-full rounded-lg border border-white/15 bg-[#111] px-3 py-2"
+              value={editPresetStartX}
+              onChange={(event) => setEditPresetStartX(event.target.value)}
+              placeholder="Start on bottom edge"
+            />
+            <input
+              className="w-full rounded-lg border border-white/15 bg-[#111] px-3 py-2"
+              value={editPresetAreaPercent}
+              onChange={(event) => setEditPresetAreaPercent(event.target.value)}
+              placeholder="Area target (%)"
+            />
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                className="rounded-lg border border-white/15 px-3 py-2"
+                onClick={() => setEditingPreset(null)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="rounded-lg bg-sky-600 px-3 py-2"
+                onClick={() => {
+                  const startX = parseNumericInput(editPresetStartX);
+                  const areaPercent = parseNumericInput(editPresetAreaPercent);
+                  if (!editPresetTitle.trim() || startX === null || areaPercent === null) return;
+                  controller.updateCustomPreset({
+                    id: editingPreset.id,
+                    title: editPresetTitle.trim(),
+                    startX,
+                    areaPercent,
+                  });
+                  setEditingPreset(null);
+                }}
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
 
-function DgcLayersPanel({ controller }: { controller: DgcDocumentController }) {
+function DgcLayersPanel({
+  controller,
+  displayLayerIndices,
+}: {
+  controller: DgcDocumentController;
+  displayLayerIndices: number[];
+}) {
   return (
     <Panel title="Layers">
+      <p className="text-xs text-white/60">Top of the list is front-most on the canvas.</p>
       <div className="space-y-2">
-        {controller.document.layers.map((layer, index) => {
+        {displayLayerIndices.map((index) => {
+          const layer = controller.document.layers[index];
           const isActive = layer.id === controller.document.activeLayerID;
           const state = controller.layerStates[layer.id];
+          const handleLabels = layerHandleLabelsForId(controller.document.layers, layer.id);
           const handlePair = layerHandlePairLabel(index);
+          const canMoveTowardFront = index < controller.document.layers.length - 1;
+          const canMoveTowardBack = index > 0;
+
           return (
             <div
               key={layer.id}
@@ -219,6 +316,33 @@ function DgcLayersPanel({ controller }: { controller: DgcDocumentController }) {
               tabIndex={0}
             >
               <div className="flex items-start gap-2">
+                <div className="flex flex-col gap-1">
+                  <button
+                    type="button"
+                    disabled={!canMoveTowardFront}
+                    className="text-white/80 disabled:opacity-30"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      controller.moveLayerTowardFront(layer.id);
+                    }}
+                    aria-label="Move toward front"
+                  >
+                    ▲
+                  </button>
+                  <button
+                    type="button"
+                    disabled={!canMoveTowardBack}
+                    className="text-white/80 disabled:opacity-30"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      controller.moveLayerTowardBack(layer.id);
+                    }}
+                    aria-label="Move toward back"
+                  >
+                    ▼
+                  </button>
+                </div>
+
                 <button
                   type="button"
                   className="text-white/80"
@@ -229,6 +353,7 @@ function DgcLayersPanel({ controller }: { controller: DgcDocumentController }) {
                 >
                   {layer.isVisible ? '👁' : '🚫'}
                 </button>
+
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <span className="rounded bg-white/10 px-2 py-0.5 font-mono text-xs font-bold text-white">
@@ -243,10 +368,35 @@ function DgcLayersPanel({ controller }: { controller: DgcDocumentController }) {
                       }
                     />
                   </div>
+
                   <div
-                    className="mt-2 flex flex-wrap items-center gap-2"
+                    className="mt-2 space-y-2"
                     onClick={(event) => event.stopPropagation()}
                   >
+                    <label className="flex items-center gap-2 text-xs text-white/70">
+                      <span className="w-28 shrink-0">{handleLabels.start} on bottom edge</span>
+                      <input
+                        className="w-24 rounded border border-white/15 bg-[#111] px-2 py-1 text-white"
+                        defaultValue={formatNumber(layer.startX)}
+                        onBlur={(event) => {
+                          const parsed = parseNumericInput(event.target.value);
+                          if (parsed !== null) {
+                            controller.updateLayerStartX(layer.id, parsed);
+                          }
+                        }}
+                      />
+                    </label>
+
+                    <label className="flex items-center gap-2 text-xs text-white/70">
+                      <span className="w-28 shrink-0">Field of Wealth %</span>
+                      <LayerAreaPercentInput
+                        value={layer.areaFraction}
+                        onCommit={(fraction) =>
+                          controller.updateLayerAreaFraction(layer.id, fraction)
+                        }
+                      />
+                    </label>
+
                     <label className="flex items-center gap-2 text-xs text-white/70">
                       Colour
                       <input
@@ -259,14 +409,8 @@ function DgcLayersPanel({ controller }: { controller: DgcDocumentController }) {
                         aria-label={`Colour for layer ${handlePair}`}
                       />
                     </label>
-                    <span className="shrink-0 text-xs text-white/70">Field of Wealth %</span>
-                    <LayerAreaPercentInput
-                      value={layer.areaFraction}
-                      onCommit={(fraction) =>
-                        controller.updateLayerAreaFraction(layer.id, fraction)
-                      }
-                    />
                   </div>
+
                   {state?.result ? (
                     <p className="mt-1 text-sm text-white/75">
                       {edgeDisplayName(state.result.edge)}
@@ -275,11 +419,13 @@ function DgcLayersPanel({ controller }: { controller: DgcDocumentController }) {
                     <p className="mt-1 text-sm text-red-300">{state?.errorMessage}</p>
                   )}
                 </div>
+
                 {isActive ? (
                   <span className="rounded-full bg-sky-500/20 px-2 py-1 text-xs font-semibold text-sky-200">
                     Active
                   </span>
                 ) : null}
+
                 {controller.document.layers.length > 1 ? (
                   <button
                     type="button"
@@ -297,6 +443,7 @@ function DgcLayersPanel({ controller }: { controller: DgcDocumentController }) {
           );
         })}
       </div>
+
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <button
           type="button"

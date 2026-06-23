@@ -2,7 +2,16 @@ import * as CanvasGeometry from './canvas-geometry';
 import { CanvasLayout } from './canvas-layout';
 import { layerHandleLabelsForId } from './layer-handles';
 import type { CanvasSettings, DrawContext } from './types';
-import { contentWidth, fieldOriginY } from './types';
+import { contentWidth, fieldOriginY, DEFAULT_TOTAL_POPULATION_COLOR_HEX } from './types';
+
+function hexWithAlpha(hex: string, alpha: number): string {
+  const normalized = hex.replace('#', '').trim();
+  if (normalized.length !== 6) return `rgba(255, 149, 0, ${alpha})`;
+  const r = Number.parseInt(normalized.slice(0, 2), 16);
+  const g = Number.parseInt(normalized.slice(2, 4), 16);
+  const b = Number.parseInt(normalized.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
 
 function escapeXml(text: string): string {
   return text
@@ -57,7 +66,9 @@ export function exportSvg(
 
   const band = layout.totalPopulationBandScreenRect;
   if (band) {
-    svg += `<rect x="${band.x}" y="${band.y}" width="${band.width}" height="${band.height}" fill="#FF9500" fill-opacity="0.16" stroke="#FF9500" stroke-opacity="0.65" stroke-width="2"/>\n`;
+    const bandColor =
+      document.canvas.totalPopulationColorHex || DEFAULT_TOTAL_POPULATION_COLOR_HEX;
+    svg += `<rect x="${band.x}" y="${band.y}" width="${band.width}" height="${band.height}" fill="${bandColor}" fill-opacity="0.16" stroke="${bandColor}" stroke-opacity="0.65" stroke-width="2"/>\n`;
     const label =
       document.canvas.totalPopulationLabel.trim() || 'Total Population';
     svg += `<text x="${band.x + band.width / 2}" y="${band.y + band.height / 2}" text-anchor="middle" dominant-baseline="middle" font-size="12" fill="#333">${escapeXml(label)}</text>\n`;
@@ -156,9 +167,11 @@ function drawExportToCanvas(
 
   const band = layout.totalPopulationBandScreenRect;
   if (band) {
-    ctx.fillStyle = 'rgba(255, 149, 0, 0.16)';
+    const bandColor =
+      document.canvas.totalPopulationColorHex || DEFAULT_TOTAL_POPULATION_COLOR_HEX;
+    ctx.fillStyle = hexWithAlpha(bandColor, 0.16);
     ctx.fillRect(band.x, band.y, band.width, band.height);
-    ctx.strokeStyle = 'rgba(255, 149, 0, 0.65)';
+    ctx.strokeStyle = hexWithAlpha(bandColor, 0.65);
     ctx.lineWidth = 2;
     ctx.strokeRect(band.x, band.y, band.width, band.height);
     const label =

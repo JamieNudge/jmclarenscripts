@@ -144,6 +144,8 @@ export default function DgcResultExport({
 Endpoint: (${formatNumber(result.endX)}, ${formatNumber(result.endY)})
 Area fraction: ${formatNumber(result.areaFraction * 100)}%`;
     await navigator.clipboard.writeText(summary);
+    controller.setCopyResultConfirmationVisible(true);
+    window.setTimeout(() => controller.setCopyResultConfirmationVisible(false), 2000);
   };
 
   const isExporting = exportingId !== null;
@@ -183,8 +185,14 @@ Area fraction: ${formatNumber(result.areaFraction * 100)}%`;
               onClick={copyResult}
               className="rounded-lg border border-white/15 px-3 py-2 text-sm text-white disabled:opacity-40"
             >
-              Copy Result Summary
+              Copy to Clipboard
             </button>
+            <p className="text-xs text-white/60">
+              Pastes into Notes, Word, email, etc.
+            </p>
+            {controller.copyResultConfirmationVisible ? (
+              <p className="text-sm font-semibold text-green-400">Copied to clipboard.</p>
+            ) : null}
 
             <div className="border-t border-white/10 pt-4">
               <h3 className="mb-3 text-lg font-semibold">Your files</h3>

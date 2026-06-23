@@ -7,9 +7,8 @@ import {
   layerHandleLabelsForId,
   layerHandlePairLabel,
 } from '@/lib/dgc/layer-handles';
-import { LayerAreaPercentInput } from '@/components/dgc/LayerAreaPercentInput';
 import type { DgcDocumentController } from '@/lib/dgc/use-dgc-document';
-import { edgeDisplayName, effectiveFieldWidth, fieldOriginY, contentWidth } from '@/lib/dgc/types';
+import { edgeDisplayName, effectiveFieldWidth, fieldOriginY, contentWidth, DEFAULT_TOTAL_POPULATION_COLOR_HEX } from '@/lib/dgc/types';
 
 type PreviewHandle = 'start' | 'end';
 
@@ -61,6 +60,9 @@ export default function DgcPreview({
   const activeLabels = active
     ? layerHandleLabelsForId(controller.document.layers, active.id)
     : { start: 'A', end: 'B' };
+  const bandColor =
+    controller.document.canvas.totalPopulationColorHex || DEFAULT_TOTAL_POPULATION_COLOR_HEX;
+  const displayLayerIndices = Array.from(controller.document.layers.keys()).reverse();
 
   const layerPickerLayout = useMemo(() => {
     const canvasRight = layout.screenRect.x + layout.screenRect.width;
@@ -236,8 +238,10 @@ export default function DgcPreview({
                 y={band.y}
                 width={band.width}
                 height={band.height}
-                fill="rgba(255,149,0,0.16)"
-                stroke="rgba(255,149,0,0.65)"
+                fill={bandColor}
+                fillOpacity={0.16}
+                stroke={bandColor}
+                strokeOpacity={0.65}
                 strokeWidth={2}
               />
               <text
@@ -380,7 +384,8 @@ export default function DgcPreview({
             maxHeight: layerPickerLayout.maxHeight,
           }}
         >
-          {controller.document.layers.map((layer, index) => {
+          {displayLayerIndices.map((index) => {
+            const layer = controller.document.layers[index];
             const isActive = layer.id === controller.document.activeLayerID;
             return (
               <div
@@ -400,20 +405,6 @@ export default function DgcPreview({
                   <span className="font-mono text-[11px] font-bold">{layerHandlePairLabel(index)}</span>
                   <span className="mt-0.5 block truncate text-[10px] opacity-80">{layer.name}</span>
                 </button>
-                <label
-                  className="mt-1 flex items-center gap-1"
-                  onClick={(event) => event.stopPropagation()}
-                  onPointerDown={(event) => event.stopPropagation()}
-                >
-                  <span className="shrink-0 text-[10px] opacity-70">Field %</span>
-                  <LayerAreaPercentInput
-                    value={layer.areaFraction}
-                    className="w-14 min-w-0 rounded border border-white/15 bg-[#111] px-1.5 py-0.5 text-[11px] text-white"
-                    onCommit={(fraction) =>
-                      controller.updateLayerAreaFraction(layer.id, fraction)
-                    }
-                  />
-                </label>
               </div>
             );
           })}
