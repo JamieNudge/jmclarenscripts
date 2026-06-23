@@ -19,6 +19,7 @@ import {
   pickForecastDetailLines,
   pickScoreDisplay,
 } from '@/lib/fixtures-browser';
+import { FixtureMatchHistorySection } from '@/components/fixtures/FixtureMatchHistorySection';
 import {
   buildKeySignalLines,
   findSelectionStatsForFixture,
@@ -296,9 +297,17 @@ export function FixtureDetailView() {
               </section>
             ) : null}
 
-            <p className="text-xs text-white/75 border-t border-white/10 pt-4">
-              Full match history tables (H2H and recent form) — coming soon.
-            </p>
+            {context ? (
+              <div className="border-t border-white/10 pt-6">
+                <FixtureMatchHistorySection context={context} homeTeam={teams.home} awayTeam={teams.away} />
+              </div>
+            ) : (
+              <p className="text-xs text-white/75 border-t border-white/10 pt-4 leading-relaxed">
+                {contextLoadError
+                  ? 'Match history unavailable — fixture context could not be loaded.'
+                  : 'Match history appears after the uploader writes fixture context for this date.'}
+              </p>
+            )}
           </div>
         ) : null}
       </div>
