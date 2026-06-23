@@ -1,12 +1,14 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { MatchHistoryTable } from '@/components/fixtures/MatchHistoryTable';
 import {
+  contextHasMatchHistory,
   defaultH2hFilter,
   defaultTeamFormFilter,
   h2hPickerOptions,
   matchHistorySummary,
+  resolveInitialFilter,
   teamFormPickerOptions,
   type H2hFilter,
   type MatchHistoryPickerOption,
@@ -36,10 +38,10 @@ function HistoryPicker<T extends string>({
         <option
           key={opt.id}
           value={opt.id}
-          disabled={opt.comingSoon || opt.matches.length === 0}
+          disabled={opt.matches.length === 0}
         >
           {opt.label}
-          {opt.comingSoon ? ' (soon)' : opt.matches.length === 0 ? ' (none)' : ''}
+          {opt.matches.length === 0 ? ' (none)' : ''}
         </option>
       ))}
     </select>
@@ -121,6 +123,18 @@ export function FixtureMatchHistorySection({
   const [homeFormFilter, setHomeFormFilter] = useState<TeamFormFilter>(() => defaultTeamFormFilter('home'));
   const [awayFormFilter, setAwayFormFilter] = useState<TeamFormFilter>(() => defaultTeamFormFilter('away'));
 
+  useEffect(() => {
+    setH2hFilter((current) => resolveInitialFilter(h2hOptions, current));
+  }, [h2hOptions]);
+
+  useEffect(() => {
+    setHomeFormFilter((current) => resolveInitialFilter(homeFormOptions, current));
+  }, [homeFormOptions]);
+
+  useEffect(() => {
+    setAwayFormFilter((current) => resolveInitialFilter(awayFormOptions, current));
+  }, [awayFormOptions]);
+
   const h2hMatches = useMemo(
     () => h2hOptions.find((o) => o.id === h2hFilter)?.matches ?? [],
     [h2hFilter, h2hOptions],
@@ -134,13 +148,7 @@ export function FixtureMatchHistorySection({
     [awayFormFilter, awayFormOptions],
   );
 
-  const hasAnyData =
-    context.h2hLast6.length > 0 ||
-    context.h2hHomeVenueLast6.length > 0 ||
-    context.homeLast6.length > 0 ||
-    context.awayLast6.length > 0;
-
-  if (!hasAnyData) {
+  if (!contextHasMatchHistory(context)) {
     return (
       <p className="text-sm text-white/65 leading-relaxed">
         Match history is not available for this fixture yet.

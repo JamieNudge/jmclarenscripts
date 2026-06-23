@@ -15,8 +15,6 @@ export type MatchHistoryPickerOption<T extends string> = {
   id: T;
   label: string;
   matches: WebMatchRow[];
-  /** Shown when RTDB slice not uploaded yet (Phase 2 Mac). */
-  comingSoon?: boolean;
 };
 
 export type TeamMatchOutcome = 'w' | 'd' | 'l';
@@ -86,12 +84,7 @@ export function h2hPickerOptions(
   return [
     { id: 'all', label: 'All', matches: context.h2hLast6 },
     { id: 'homeVenue', label: `@${homeTeam}`, matches: context.h2hHomeVenueLast6 },
-    {
-      id: 'awayVenue',
-      label: `@${awayTeam}`,
-      matches: [],
-      comingSoon: true,
-    },
+    { id: 'awayVenue', label: `@${awayTeam}`, matches: context.h2hAwayVenueLast6 },
   ];
 }
 
@@ -100,23 +93,21 @@ export function teamFormPickerOptions(
   side: 'home' | 'away',
 ): MatchHistoryPickerOption<TeamFormFilter>[] {
   const homeSlices = {
-    all: [] as WebMatchRow[],
+    all: context.homeAllLast6,
     home: context.homeLast6,
-    away: [] as WebMatchRow[],
+    away: context.homeAwayLast6,
   };
   const awaySlices = {
-    all: [] as WebMatchRow[],
-    home: [] as WebMatchRow[],
+    all: context.awayAllLast6,
+    home: context.awayHomeLast6,
     away: context.awayLast6,
   };
   const slices = side === 'home' ? homeSlices : awaySlices;
-  const defaultFilter: TeamFormFilter = side === 'home' ? 'home' : 'away';
 
   return (['all', 'home', 'away'] as const).map((id) => ({
     id,
     label: id === 'all' ? 'All' : id === 'home' ? 'Home' : 'Away',
     matches: slices[id],
-    comingSoon: slices[id].length === 0 && id !== defaultFilter,
   }));
 }
 
@@ -126,4 +117,29 @@ export function defaultH2hFilter(): H2hFilter {
 
 export function defaultTeamFormFilter(side: 'home' | 'away'): TeamFormFilter {
   return side === 'home' ? 'home' : 'away';
+}
+
+/** Pick first filter option that has rows (fallback when default slice missing on older uploads). */
+export function resolveInitialFilter<T extends string>(
+  options: MatchHistoryPickerOption<T>[],
+  preferred: T,
+): T {
+  const preferredOption = options.find((o) => o.id === preferred);
+  if (preferredOption && preferredOption.matches.length > 0) return preferred;
+  const withData = options.find((o) => o.matches.length > 0);
+  return withData?.id ?? preferred;
+}
+
+export function contextHasMatchHistory(context: FixtureContextExport): boolean {
+  return (
+    context.h2hLast6.length > 0 ||
+    context.h2hHomeVenueLast6.length > 0 ||
+    context.h2hAwayVenueLast6.length > 0 ||
+    context.homeLast6.length > 0 ||
+    context.homeAwayLast6.length > 0 ||
+    context.homeAllLast6.length > 0 ||
+    context.awayLast6.length > 0 ||
+    context.awayHomeLast6.length > 0 ||
+    context.awayAllLast6.length > 0
+  );
 }

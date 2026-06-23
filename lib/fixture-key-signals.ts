@@ -38,8 +38,13 @@ export type FixtureContextExport = {
   };
   h2hLast6: WebMatchRow[];
   h2hHomeVenueLast6: WebMatchRow[];
+  h2hAwayVenueLast6: WebMatchRow[];
   homeLast6: WebMatchRow[];
+  homeAwayLast6: WebMatchRow[];
+  homeAllLast6: WebMatchRow[];
   awayLast6: WebMatchRow[];
+  awayHomeLast6: WebMatchRow[];
+  awayAllLast6: WebMatchRow[];
   statsSummary: FixtureStatsSummary;
 };
 
@@ -172,8 +177,13 @@ function parseFixtureContextExport(val: unknown): FixtureContextExport | null {
         : undefined,
     h2hLast6: readMatches('h2hLast6'),
     h2hHomeVenueLast6: readMatches('h2hHomeVenueLast6'),
+    h2hAwayVenueLast6: readMatches('h2hAwayVenueLast6'),
     homeLast6: readMatches('homeLast6'),
+    homeAwayLast6: readMatches('homeAwayLast6'),
+    homeAllLast6: readMatches('homeAllLast6'),
     awayLast6: readMatches('awayLast6'),
+    awayHomeLast6: readMatches('awayHomeLast6'),
+    awayAllLast6: readMatches('awayAllLast6'),
     statsSummary: {
       h2hLast6Over25Percent: pickNum('h2hLast6Over25Percent'),
       h2hHomeVenueLast6Over25Percent: pickNum('h2hHomeVenueLast6Over25Percent'),
