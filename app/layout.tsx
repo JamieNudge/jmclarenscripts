@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/react";
 import { AdSenseGlobalPlaceholder } from "@/components/AdSenseGlobalPlaceholder";
 import { AdSenseRouteCleanup } from "@/components/AdSenseRouteCleanup";
 import { AdSenseScriptGate } from "@/components/AdSenseScriptGate";
@@ -71,6 +72,7 @@ export default async function RootLayout({
           <AdSenseRouteCleanup />
           {children}
           <AdSenseGlobalPlaceholder />
+          <Analytics />
         </HubNavProvider>
       </body>
     </html>

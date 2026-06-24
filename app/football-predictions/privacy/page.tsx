@@ -57,6 +57,28 @@ export default function BestPicksPrivacyPage() {
           and reliability, under the host’s policies.
         </p>
         <p>
+          <span className="font-semibold text-white/95">Web analytics:</span> We use{' '}
+          <a
+            href="https://vercel.com/docs/analytics/privacy-policy"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-amber-200/80 underline hover:text-amber-100/90"
+          >
+            Vercel Web Analytics
+          </a>{' '}
+          on these pages to count visits and see which routes are used. It records anonymized page-view
+          data (for example path and referrer) and does not use cookies for that purpose. See{' '}
+          <a
+            href="https://vercel.com/legal/privacy-policy"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-amber-200/80 underline hover:text-amber-100/90"
+          >
+            Vercel’s privacy policy
+          </a>
+          .
+        </p>
+        <p>
           These areas are not designed to collect special categories of data. Do not share unnecessary
           sensitive information by email.
         </p>
