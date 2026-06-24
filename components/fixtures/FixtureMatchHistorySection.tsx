@@ -59,6 +59,7 @@ function MatchHistoryBlock<T extends string>({
   fixtureHome,
   fixtureAway,
   subjectTeam,
+  density = 'default',
 }: {
   title: string;
   summary: string | null;
@@ -70,13 +71,24 @@ function MatchHistoryBlock<T extends string>({
   fixtureHome: string;
   fixtureAway: string;
   subjectTeam?: string;
+  density?: 'default' | 'compact';
 }) {
+  const compact = density === 'compact';
+
   return (
-    <section className="rounded-xl border border-white/15 bg-white/[0.06] overflow-hidden">
-      <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-b border-white/10 bg-black/20">
-        <div className="min-w-0">
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-white/90">{title}</h2>
-          {summary ? <p className="text-[11px] text-white/55 tabular-nums mt-0.5">{summary}</p> : null}
+    <section className="rounded-xl border border-white/15 bg-white/[0.06] overflow-hidden h-full">
+      <div
+        className={`flex flex-wrap items-center justify-between gap-2 border-b border-white/10 bg-black/20 ${
+          compact ? 'px-3 py-2.5' : 'px-4 py-3 gap-3'
+        }`}
+      >
+        <div className="min-w-0 flex-1">
+          <h2 className={`font-semibold uppercase tracking-wide text-white/90 ${compact ? 'text-[11px] leading-snug' : 'text-xs'}`}>
+            {title}
+          </h2>
+          {summary ? (
+            <p className={`text-white/55 tabular-nums mt-0.5 ${compact ? 'text-[10px]' : 'text-[11px]'}`}>{summary}</p>
+          ) : null}
         </div>
         <HistoryPicker
           value={pickerValue}
@@ -85,12 +97,13 @@ function MatchHistoryBlock<T extends string>({
           ariaLabel={pickerAriaLabel}
         />
       </div>
-      <div className="px-4 py-3">
+      <div className={compact ? 'px-3 py-2' : 'px-4 py-3'}>
         <MatchHistoryTable
           matches={matches}
           fixtureHome={fixtureHome}
           fixtureAway={fixtureAway}
           subjectTeam={subjectTeam}
+          density={density}
         />
       </div>
     </section>
@@ -172,31 +185,35 @@ export function FixtureMatchHistorySection({
         fixtureAway={awayTeam}
       />
 
-      <MatchHistoryBlock
-        title={`${homeTeam} results`}
-        summary={matchHistorySummary(homeMatches)}
-        pickerValue={homeFormFilter}
-        pickerOptions={homeFormOptions}
-        onPickerChange={setHomeFormFilter}
-        pickerAriaLabel={`${homeTeam} form filter`}
-        matches={homeMatches}
-        fixtureHome={homeTeam}
-        fixtureAway={awayTeam}
-        subjectTeam={homeTeam}
-      />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+        <MatchHistoryBlock
+          title={`${homeTeam} results`}
+          summary={matchHistorySummary(homeMatches)}
+          pickerValue={homeFormFilter}
+          pickerOptions={homeFormOptions}
+          onPickerChange={setHomeFormFilter}
+          pickerAriaLabel={`${homeTeam} form filter`}
+          matches={homeMatches}
+          fixtureHome={homeTeam}
+          fixtureAway={awayTeam}
+          subjectTeam={homeTeam}
+          density="compact"
+        />
 
-      <MatchHistoryBlock
-        title={`${awayTeam} results`}
-        summary={matchHistorySummary(awayMatches)}
-        pickerValue={awayFormFilter}
-        pickerOptions={awayFormOptions}
-        onPickerChange={setAwayFormFilter}
-        pickerAriaLabel={`${awayTeam} form filter`}
-        matches={awayMatches}
-        fixtureHome={homeTeam}
-        fixtureAway={awayTeam}
-        subjectTeam={awayTeam}
-      />
+        <MatchHistoryBlock
+          title={`${awayTeam} results`}
+          summary={matchHistorySummary(awayMatches)}
+          pickerValue={awayFormFilter}
+          pickerOptions={awayFormOptions}
+          onPickerChange={setAwayFormFilter}
+          pickerAriaLabel={`${awayTeam} form filter`}
+          matches={awayMatches}
+          fixtureHome={homeTeam}
+          fixtureAway={awayTeam}
+          subjectTeam={awayTeam}
+          density="compact"
+        />
+      </div>
     </div>
   );
 }

@@ -15,9 +15,12 @@ function outcomeStyles(outcome: TeamMatchOutcome): string {
   return 'bg-white/35';
 }
 
-function TeamCell({ name, emphasize }: { name: string; emphasize: boolean }) {
+function TeamCell({ name, emphasize, compact }: { name: string; emphasize: boolean; compact?: boolean }) {
   return (
-    <span className={emphasize ? 'font-semibold text-white' : 'text-white/88'}>
+    <span
+      className={`block truncate ${emphasize ? 'font-semibold text-white' : 'text-white/88'}`}
+      title={compact ? name : undefined}
+    >
       {name}
     </span>
   );
@@ -51,30 +54,35 @@ export function MatchHistoryTable({
   fixtureHome,
   fixtureAway,
   subjectTeam,
+  density = 'default',
 }: {
   matches: WebMatchRow[];
   fixtureHome: string;
   fixtureAway: string;
   /** When set, show W/D/L indicator for this team per row. */
   subjectTeam?: string;
+  density?: 'default' | 'compact';
 }) {
   if (matches.length === 0) {
-    return <p className="text-sm text-white/65 py-2">No games in this sample.</p>;
+    return <p className={`text-white/65 py-2 ${density === 'compact' ? 'text-xs' : 'text-sm'}`}>No games in this sample.</p>;
   }
 
   const groups = groupMatchesByMonth(matches);
+  const compact = density === 'compact';
 
   return (
     <div className="overflow-x-auto -mx-1 px-1">
-      <table className="w-full min-w-[520px] text-sm border-collapse">
+      <table
+        className={`w-full border-collapse ${compact ? 'min-w-0 table-fixed text-xs' : 'min-w-[520px] text-sm'}`}
+      >
         <thead>
           <tr className="text-left text-[10px] uppercase tracking-wide text-white/55 border-b border-white/10">
-            <th className="pb-2 pr-3 font-semibold w-[88px]">Date</th>
-            <th className="pb-2 pr-3 font-semibold w-[72px]">League</th>
-            <th className="pb-2 pr-3 font-semibold">Home</th>
-            <th className="pb-2 pr-2 font-semibold w-[52px] text-center">Score</th>
-            <th className="pb-2 pr-2 font-semibold">Away</th>
-            {subjectTeam ? <th className="pb-2 w-8" aria-label="Result" /> : null}
+            <th className={`pb-2 pr-2 font-semibold ${compact ? 'w-[72px]' : 'w-[88px] pr-3'}`}>Date</th>
+            <th className={`pb-2 pr-2 font-semibold ${compact ? 'w-[44px]' : 'w-[72px] pr-3'}`}>League</th>
+            <th className={`pb-2 pr-2 font-semibold ${compact ? 'w-[28%]' : ''}`}>Home</th>
+            <th className={`pb-2 pr-1 font-semibold text-center ${compact ? 'w-[44px]' : 'w-[52px] pr-2'}`}>Score</th>
+            <th className={`pb-2 pr-1 font-semibold ${compact ? 'w-[28%]' : 'pr-2'}`}>Away</th>
+            {subjectTeam ? <th className={`pb-2 ${compact ? 'w-6' : 'w-8'}`} aria-label="Result" /> : null}
           </tr>
         </thead>
         <tbody>
@@ -86,6 +94,7 @@ export function MatchHistoryTable({
               fixtureHome={fixtureHome}
               fixtureAway={fixtureAway}
               subjectTeam={subjectTeam}
+              compact={compact}
             />
           ))}
         </tbody>
@@ -100,19 +109,23 @@ function MonthGroupRows({
   fixtureHome,
   fixtureAway,
   subjectTeam,
+  compact = false,
 }: {
   monthKey: string;
   matches: WebMatchRow[];
   fixtureHome: string;
   fixtureAway: string;
   subjectTeam?: string;
+  compact?: boolean;
 }) {
+  const cellPy = compact ? 'py-1.5' : 'py-2';
+
   return (
     <>
       <tr>
         <td
           colSpan={subjectTeam ? 6 : 5}
-          className="pt-3 pb-1 text-[11px] font-semibold text-white/50 tabular-nums"
+          className={`pt-2 pb-0.5 text-[10px] font-semibold text-white/50 tabular-nums ${compact ? '' : 'pt-3 pb-1 text-[11px]'}`}
         >
           {monthKey}
         </td>
@@ -122,24 +135,34 @@ function MonthGroupRows({
         const rowKey = `${row.dateCompact}-${row.homeTeam}-${row.awayTeam}-${row.homeGoals}-${row.awayGoals}`;
         return (
           <tr key={rowKey} className="border-b border-white/[0.06] last:border-0">
-            <td className="py-2 pr-3 tabular-nums text-white/85 whitespace-nowrap">
+            <td className={`${cellPy} pr-2 tabular-nums text-white/85 whitespace-nowrap`}>
               {formatCompactMatchDate(row.dateCompact)}
             </td>
-            <td className="py-2 pr-3 text-xs text-white/75 whitespace-nowrap">{row.leagueCode}</td>
-            <td className="py-2 pr-3 min-w-0">
-              <TeamCell name={row.homeTeam} emphasize={isFixtureTeam(row.homeTeam, fixtureHome)} />
+            <td className={`${cellPy} pr-2 text-white/75 whitespace-nowrap truncate`} title={row.leagueCode}>
+              {row.leagueCode}
             </td>
-            <td className="py-2 pr-2 text-center">
+            <td className={`${cellPy} pr-2 min-w-0`}>
+              <TeamCell
+                name={row.homeTeam}
+                emphasize={isFixtureTeam(row.homeTeam, fixtureHome)}
+                compact={compact}
+              />
+            </td>
+            <td className={`${cellPy} pr-1 text-center`}>
               <ScoreCell row={row} fixtureHome={fixtureHome} fixtureAway={fixtureAway} />
             </td>
-            <td className="py-2 pr-2 min-w-0">
-              <TeamCell name={row.awayTeam} emphasize={isFixtureTeam(row.awayTeam, fixtureAway)} />
+            <td className={`${cellPy} pr-1 min-w-0`}>
+              <TeamCell
+                name={row.awayTeam}
+                emphasize={isFixtureTeam(row.awayTeam, fixtureAway)}
+                compact={compact}
+              />
             </td>
             {subjectTeam ? (
-              <td className="py-2 text-center">
+              <td className={`${cellPy} text-center`}>
                 {outcome ? (
                   <span
-                    className={`inline-block h-2.5 w-2.5 rounded-sm ${outcomeStyles(outcome)}`}
+                    className={`inline-block rounded-sm ${outcomeStyles(outcome)} ${compact ? 'h-2 w-2' : 'h-2.5 w-2.5'}`}
                     title={outcome === 'w' ? 'Win' : outcome === 'l' ? 'Loss' : 'Draw'}
                     aria-label={outcome === 'w' ? 'Win' : outcome === 'l' ? 'Loss' : 'Draw'}
                   />
