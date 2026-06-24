@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { FixtureFormComparePanel } from '@/components/fixtures/FixtureFormComparePanel';
 import { MatchHistoryTable } from '@/components/fixtures/MatchHistoryTable';
 import {
   contextHasMatchHistory,
@@ -161,6 +162,16 @@ export function FixtureMatchHistorySection({
     [awayFormFilter, awayFormOptions],
   );
 
+  const homeCompareLabel = useMemo(() => {
+    const filterLabel = homeFormOptions.find((o) => o.id === homeFormFilter)?.label ?? 'Home';
+    return `${filterLabel} · ${homeMatches.length} game${homeMatches.length === 1 ? '' : 's'}`;
+  }, [homeFormFilter, homeFormOptions, homeMatches.length]);
+
+  const awayCompareLabel = useMemo(() => {
+    const filterLabel = awayFormOptions.find((o) => o.id === awayFormFilter)?.label ?? 'Away';
+    return `${filterLabel} · ${awayMatches.length} game${awayMatches.length === 1 ? '' : 's'}`;
+  }, [awayFormFilter, awayFormOptions, awayMatches.length]);
+
   if (!contextHasMatchHistory(context)) {
     return (
       <p className="text-sm text-white/65 leading-relaxed">
@@ -173,17 +184,43 @@ export function FixtureMatchHistorySection({
     <div className="space-y-4">
       <h2 className="text-xs font-semibold uppercase tracking-wide text-amber-100/90">Match history</h2>
 
-      <MatchHistoryBlock
-        title="Head to head"
-        summary={matchHistorySummary(h2hMatches)}
-        pickerValue={h2hFilter}
-        pickerOptions={h2hOptions}
-        onPickerChange={setH2hFilter}
-        pickerAriaLabel="Head to head venue filter"
-        matches={h2hMatches}
-        fixtureHome={homeTeam}
-        fixtureAway={awayTeam}
-      />
+      <section className="rounded-xl border border-white/15 bg-white/[0.06] overflow-hidden">
+        <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-b border-white/10 bg-black/20">
+          <div className="min-w-0 flex-1">
+            <h2 className="text-xs font-semibold uppercase tracking-wide text-white/90">Head to head</h2>
+            {matchHistorySummary(h2hMatches) ? (
+              <p className="text-[11px] text-white/55 tabular-nums mt-0.5">{matchHistorySummary(h2hMatches)}</p>
+            ) : null}
+          </div>
+          <HistoryPicker
+            value={h2hFilter}
+            options={h2hOptions}
+            onChange={setH2hFilter}
+            ariaLabel="Head to head venue filter"
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(220px,280px)] md:items-start">
+          <div className="px-4 py-3 md:border-r border-white/10 min-w-0">
+            <MatchHistoryTable
+              matches={h2hMatches}
+              fixtureHome={homeTeam}
+              fixtureAway={awayTeam}
+            />
+          </div>
+          <div className="p-3 md:p-3 border-t md:border-t-0 border-white/10">
+            <FixtureFormComparePanel
+              homeTeam={homeTeam}
+              awayTeam={awayTeam}
+              homeMatches={homeMatches}
+              awayMatches={awayMatches}
+              homeSampleLabel={homeCompareLabel}
+              awaySampleLabel={awayCompareLabel}
+              embedded
+            />
+          </div>
+        </div>
+      </section>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
         <MatchHistoryBlock
