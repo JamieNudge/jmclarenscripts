@@ -11,9 +11,9 @@ import {
 } from '@/lib/best-picks-firebase';
 import { AdminAndAnotherThingSection } from '@/components/admin/AdminAndAnotherThingSection';
 import { AdminBlogSection } from '@/components/admin/AdminBlogSection';
+import { AdminHubVideoSection } from '@/components/admin/AdminHubVideoSection';
 import { AdminPredictionEmailBlocklist } from '@/components/admin/AdminPredictionEmailBlocklist';
 import { AdminPredictionSubmissions } from '@/components/admin/AdminPredictionSubmissions';
-import { parseYoutubeIdFromInput } from '@/lib/youtube-embed';
 import { normalizePicksCalendarDateInput } from '@/lib/picks-date-input';
 
 const STORAGE_KEY = 'bestpicks_admin_bearer';
@@ -70,8 +70,6 @@ export default function AdminPicksPage() {
   const [rememberKey, setRememberKey] = useState(false);
   const [overPicks, setOverPicks] = useState<PickRecord[]>([]);
   const [underPicks, setUnderPicks] = useState<PickRecord[]>([]);
-  const [youtubeRaw, setYoutubeRaw] = useState('');
-  const [videoTitle, setVideoTitle] = useState('');
   const [band, setBand] = useState<Band>('over');
   const [draft, setDraft] = useState<PickRecord>(emptyPick);
   /** When set, Add/Update applies to this row (same or new band after you change the dropdown). */
@@ -155,13 +153,9 @@ export default function AdminPicksPage() {
         const o = d as Record<string, unknown>;
         setOverPicks(rtdbValueToPickList(o.overForecasts));
         setUnderPicks(rtdbValueToPickList(o.underForecasts));
-        setYoutubeRaw(typeof o.youtubeId === 'string' ? o.youtubeId : '');
-        setVideoTitle(typeof o.videoTitle === 'string' ? o.videoTitle : '');
       } else {
         setOverPicks([]);
         setUnderPicks([]);
-        setYoutubeRaw('');
-        setVideoTitle('');
       }
       setLastLoadedDateKey(used ?? dateNorm);
       setEditing(null);
@@ -255,19 +249,6 @@ export default function AdminPicksPage() {
       );
       return;
     }
-    const trimmedYt = youtubeRaw.trim();
-    let youtubeId: string | null;
-    if (trimmedYt === '') {
-      youtubeId = null;
-    } else {
-      const parsed = parseYoutubeIdFromInput(trimmedYt);
-      if (!parsed) {
-        setStatus('YouTube field: paste a watch URL, youtu.be link, or an 11-character video ID (or clear the field).');
-        return;
-      }
-      youtubeId = parsed;
-    }
-
     setLoading(true);
     try {
       const loadRes = await fetch(
@@ -295,31 +276,10 @@ export default function AdminPicksPage() {
           ' Merged with what was already in Firebase for this date (use Load first if you want the lists on screen to fully replace the server).';
       }
 
-      let youtubeIdOut = youtubeId;
-      let videoTitleOut = videoTitle.trim() || null;
-      if (lastLoadedDateKey !== dateNorm && existing) {
-        if (
-          youtubeIdOut === null &&
-          typeof existing.youtubeId === 'string' &&
-          existing.youtubeId.trim()
-        ) {
-          youtubeIdOut = existing.youtubeId.trim();
-        }
-        if (
-          !videoTitleOut &&
-          typeof existing.videoTitle === 'string' &&
-          existing.videoTitle.trim()
-        ) {
-          videoTitleOut = existing.videoTitle.trim();
-        }
-      }
-
       const body = {
         date: dateNorm,
         overForecasts: finalOver,
         underForecasts: finalUnder,
-        youtubeId: youtubeIdOut,
-        videoTitle: videoTitleOut,
       };
       const res = await fetch('/api/admin/manual-picks', {
         method: 'POST',
@@ -430,7 +390,7 @@ export default function AdminPicksPage() {
           <p className="text-xs text-white/45 leading-relaxed">
             <strong className="text-white/55">Load from Firebase</strong> for this date before editing if you want the
             lists here to be the full source of truth. If you save without loading, new rows are{' '}
-            <strong className="text-white/55">merged</strong> onto what is already stored (other band and video are
+            <strong className="text-white/55">merged</strong> onto what is already stored (the other band is
             kept). <strong className="text-white/55">Remove</strong> drops a row from the list;{' '}
             <strong className="text-white/55">Save everything to Firebase</strong> updates the live site.{' '}
             <strong className="text-white/55">Edit</strong> / <strong className="text-white/55">Update pick</strong> for
@@ -583,27 +543,7 @@ export default function AdminPicksPage() {
           </div>
         </section>
 
-        <section className="rounded-2xl border border-white/15 bg-white/5 p-6 space-y-4">
-          <h2 className="text-lg font-semibold">4. Video (YouTube)</h2>
-          <p className="text-xs text-white/50">
-            Paste a full watch URL or the 11-character video ID. Leave empty and save to remove the video for this
-            date.
-          </p>
-          <input
-            className={inputCls}
-            placeholder="https://www.youtube.com/watch?v=…"
-            value={youtubeRaw}
-            onChange={(e) => setYoutubeRaw(e.target.value)}
-          />
-          <div>
-            <label className="text-xs text-white/45">Title (optional, shown above the player)</label>
-            <input
-              className={`${inputCls} mt-1`}
-              value={videoTitle}
-              onChange={(e) => setVideoTitle(e.target.value)}
-            />
-          </div>
-        </section>
+        <AdminHubVideoSection adminKey={adminKey} />
 
         <AdminBlogSection adminKey={adminKey} />
 

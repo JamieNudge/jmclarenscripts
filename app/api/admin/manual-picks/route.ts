@@ -94,9 +94,9 @@ export async function POST(req: NextRequest) {
 
   const has = (k: string) => Object.prototype.hasOwnProperty.call(body, k);
 
-  if (!has('overForecasts') && !has('underForecasts') && !has('youtubeId') && !has('videoTitle')) {
+  if (!has('overForecasts') && !has('underForecasts')) {
     return NextResponse.json(
-      { error: 'Provide at least one of: overForecasts, underForecasts, youtubeId, videoTitle' },
+      { error: 'Provide at least one of: overForecasts, underForecasts' },
       { status: 400 },
     );
   }
@@ -115,27 +115,6 @@ export async function POST(req: NextRequest) {
     if (has('underForecasts')) {
       next.underForecasts = normalizeForecastsList(body.underForecasts);
     }
-    if (has('youtubeId')) {
-      const y = body.youtubeId;
-      if (y === null || y === '') {
-        next.youtubeId = null;
-      } else if (typeof y === 'string' && y.trim()) {
-        next.youtubeId = y.trim();
-      } else {
-        return NextResponse.json({ error: 'youtubeId must be string, empty string, or null' }, { status: 400 });
-      }
-    }
-    if (has('videoTitle')) {
-      const vt = body.videoTitle;
-      if (vt === null || vt === '') {
-        next.videoTitle = null;
-      } else if (typeof vt === 'string') {
-        next.videoTitle = vt.trim() || null;
-      } else {
-        return NextResponse.json({ error: 'videoTitle must be string or null' }, { status: 400 });
-      }
-    }
-
     await r.set(next);
     return NextResponse.json({ ok: true, path: `${manualRoot()}/${date}`, dateUsed: date });
   } catch (e) {
