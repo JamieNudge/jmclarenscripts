@@ -45,12 +45,20 @@ export default function DgcEditor() {
             <h1 className="text-2xl font-semibold">{dgcSiteConfig.publicProductName}</h1>
             <p className="text-sm text-white/65">Field of Wealth partition designer</p>
           </div>
-          <a
-            href={`/privacy/${dgcSiteConfig.policySlug}`}
-            className="text-sm text-white/70 hover:text-white"
-          >
-            Privacy
-          </a>
+          <div className="flex items-center gap-4">
+            <a
+              href="/dgc/data"
+              className="text-sm text-white/70 hover:text-white"
+            >
+              Historical data
+            </a>
+            <a
+              href={`/privacy/${dgcSiteConfig.policySlug}`}
+              className="text-sm text-white/70 hover:text-white"
+            >
+              Privacy
+            </a>
+          </div>
         </div>
       </header>
 
