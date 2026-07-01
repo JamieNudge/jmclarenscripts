@@ -392,9 +392,10 @@ export default function AdminPicksPage() {
             lists here to be the full source of truth. If you save without loading, new rows are{' '}
             <strong className="text-white/55">merged</strong> onto what is already stored (the other band is
             kept). <strong className="text-white/55">Remove</strong> drops a row from the list;{' '}
-            <strong className="text-white/55">Save everything to Firebase</strong> updates the live site.{' '}
-            <strong className="text-white/55">Edit</strong> / <strong className="text-white/55">Update pick</strong> for
-            changes; you can switch band to move Over ↔ Under.
+            <strong className="text-white/55">Save picks to Firebase</strong> updates picks on the live site (hub video
+            is section 4). <strong className="text-white/55">Edit</strong> /{' '}
+            <strong className="text-white/55">Update pick</strong> for changes; you can switch band to move Over ↔
+            Under.
           </p>
           {editing && (
             <div className="flex flex-wrap items-center gap-3 rounded-lg bg-amber-500/15 border border-amber-400/30 px-3 py-2 text-sm text-amber-100/95">
@@ -554,7 +555,7 @@ export default function AdminPicksPage() {
             onClick={() => void save()}
             className="rounded-lg bg-cyan-600/90 hover:bg-cyan-600 px-5 py-2.5 text-sm font-semibold disabled:opacity-50"
           >
-            Save everything to Firebase
+            Save picks to Firebase
           </button>
         </div>
 

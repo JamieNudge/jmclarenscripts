@@ -255,14 +255,16 @@ FIREBASE_SERVICE_ACCOUNT_JSON={"type":"service_account",...one line...}
    - Click **Add pick to list**.  
    - Repeat as needed. **Remove** clears one row from the list (only in the form until you Save).
 
-5. **Section “4. Video (YouTube)”**  
+5. **Section “4. Hub video (YouTube)”**  
    - Paste a full **YouTube watch URL**, a **`youtu.be/...`** link, or the **11-character video ID**.  
    - Optional **Title** shows above the player on `/football-predictions`.  
-   - Leave the URL **empty** and Save to **remove** the video for that date.
+   - Click **Publish video to hub** (separate from daily picks; stored at **`hubVideo`** in RTDB).  
+   - Use **Clear video from hub** to remove it.
 
-6. Click **Save everything to Firebase**.  
+6. **Section “3” — save picks only**  
+   - Click **Save picks to Firebase**.  
    - You should see **Saved to manualExports/…**.  
-   - Open **`/football-predictions`** in another tab: your picks and video should show (may take a second).
+   - Open **`/football-predictions`** in another tab: picks should show (may take a second). Hub video updates via its own publish button in step 5.
 
 ### D8 — If something goes wrong
 

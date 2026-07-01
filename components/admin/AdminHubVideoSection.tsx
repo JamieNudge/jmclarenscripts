@@ -48,7 +48,7 @@ export function AdminHubVideoSection({ adminKey }: Props) {
       setStatus(
         json.video?.youtubeId
           ? 'Loaded current hub video.'
-          : 'No hub video set yet — paste a YouTube link and save.',
+          : 'No hub video set yet — paste a YouTube link and publish.',
       );
     } catch (e) {
       setStatus(e instanceof Error ? e.message : 'Load failed');
@@ -102,7 +102,7 @@ export function AdminHubVideoSection({ adminKey }: Props) {
       setStatus(
         clear || !youtubeId
           ? `Hub video removed${json.path ? ` (${json.path})` : ''}.`
-          : `Hub video saved${json.path ? ` to ${json.path}` : ''}. It stays live until you change or clear it.`,
+          : `Published to the GoalLab hub${json.path ? ` (${json.path})` : ''}. Video stays live until you change or clear it.`,
       );
     } catch (e) {
       setStatus(e instanceof Error ? e.message : 'Save failed');
@@ -119,61 +119,75 @@ export function AdminHubVideoSection({ adminKey }: Props) {
         <strong className="text-white/65">persists until you update or clear it</strong> — same idea as
         blog posts. Stored at <code className="text-white/70">hubVideo</code> in Realtime Database.
       </p>
-      <input
-        className={inputCls}
-        placeholder="https://www.youtube.com/watch?v=…"
-        value={youtubeRaw}
-        onChange={(e) => setYoutubeRaw(e.target.value)}
-      />
-      <div>
-        <label className="text-xs text-white/45">Title (optional, shown above the player)</label>
-        <input
-          className={`${inputCls} mt-1`}
-          value={videoTitle}
-          onChange={(e) => setVideoTitle(e.target.value)}
-        />
-      </div>
-      <div className="flex flex-wrap gap-2">
+      <p className="text-xs text-white/55 leading-relaxed">
+        Separate from daily picks — use <strong className="text-white/70">Publish video to hub</strong>{' '}
+        below, not <strong className="text-white/70">Save picks to Firebase</strong> further down the page.
+      </p>
+      <div className="rounded-xl border border-white/20 bg-white/[0.03] p-4 space-y-3">
+        <div>
+          <label className="block text-xs font-medium text-white/45 uppercase tracking-wide">
+            YouTube URL
+          </label>
+          <input
+            className={`${inputCls} mt-1`}
+            placeholder="https://www.youtube.com/watch?v=…"
+            value={youtubeRaw}
+            onChange={(e) => setYoutubeRaw(e.target.value)}
+          />
+        </div>
+        <div>
+          <label className="text-xs text-white/45">Title (optional, shown above the player)</label>
+          <input
+            className={`${inputCls} mt-1`}
+            value={videoTitle}
+            onChange={(e) => setVideoTitle(e.target.value)}
+          />
+        </div>
         <button
           type="button"
-          disabled={loading}
-          onClick={() => void load()}
-          className="rounded-lg bg-white/15 hover:bg-white/25 px-4 py-2 text-sm font-medium disabled:opacity-50"
-        >
-          Reload
-        </button>
-        <button
-          type="button"
-          disabled={loading}
+          disabled={loading || !canUse}
           onClick={() => void save(false)}
-          className="rounded-lg bg-emerald-600/90 hover:bg-emerald-600 px-4 py-2 text-sm font-medium disabled:opacity-50"
+          className="w-full rounded-lg bg-emerald-600/90 hover:bg-emerald-600 px-5 py-2.5 text-sm font-semibold disabled:opacity-50"
         >
-          Save hub video
+          Publish video to hub
         </button>
-        <button
-          type="button"
-          disabled={loading}
-          onClick={() => void save(true)}
-          className="rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 px-4 py-2 text-sm font-medium disabled:opacity-50"
-        >
-          Clear video
-        </button>
+        {!canUse ? (
+          <p className="text-xs text-amber-100/90">Paste your admin key in section 1 to publish.</p>
+        ) : null}
+        {status ? (
+          <p
+            className={`text-sm rounded-lg px-4 py-3 border ${
+              status.includes('Published') ||
+              status.includes('removed') ||
+              status.includes('Loaded') ||
+              status.includes('No hub video')
+                ? 'bg-emerald-500/10 border-emerald-400/30 text-emerald-100'
+                : 'bg-amber-500/10 border-amber-400/30 text-amber-100'
+            }`}
+            role="status"
+          >
+            {status}
+          </p>
+        ) : null}
+        <div className="flex flex-wrap gap-2 pt-1">
+          <button
+            type="button"
+            disabled={loading || !canUse}
+            onClick={() => void load()}
+            className="rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 px-3 py-1.5 text-xs font-medium disabled:opacity-50"
+          >
+            Reload current video
+          </button>
+          <button
+            type="button"
+            disabled={loading || !canUse}
+            onClick={() => void save(true)}
+            className="rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 px-3 py-1.5 text-xs font-medium text-red-200/90 disabled:opacity-50"
+          >
+            Clear video from hub
+          </button>
+        </div>
       </div>
-      {status ? (
-        <p
-          className={`text-sm rounded-lg px-4 py-3 border ${
-            status.includes('saved') ||
-            status.includes('removed') ||
-            status.includes('Loaded') ||
-            status.includes('No hub video')
-              ? 'bg-emerald-500/10 border-emerald-400/30 text-emerald-100'
-              : 'bg-amber-500/10 border-amber-400/30 text-amber-100'
-          }`}
-          role="status"
-        >
-          {status}
-        </p>
-      ) : null}
     </section>
   );
 }
