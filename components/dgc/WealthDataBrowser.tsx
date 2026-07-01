@@ -24,17 +24,17 @@ export default function WealthDataBrowser() {
         <div className="mx-auto flex max-w-[1500px] flex-wrap items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-semibold">US Household Wealth Data</h1>
-            <p className="text-sm text-white/65">
+            <p className="text-sm text-white/85">
               {dgcSiteConfig.publicProductName} — historical statistics (1920–2025, every 5th year)
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-3 text-sm">
-            <a href="/dgc" className="text-white/70 hover:text-white">
+            <a href="/dgc" className="text-white/90 hover:text-white">
               ← Design tool
             </a>
             <a
               href={`/privacy/${dgcSiteConfig.policySlug}`}
-              className="text-white/70 hover:text-white"
+              className="text-white/90 hover:text-white"
             >
               Privacy
             </a>
@@ -46,10 +46,10 @@ export default function WealthDataBrowser() {
         <section className="rounded-2xl border border-white/15 bg-[#1b1b1d] p-4 md:p-6">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="max-w-3xl space-y-2">
-              <p className="text-xs uppercase tracking-wide text-white/45">
+              <p className="text-xs uppercase tracking-wide text-white/75">
                 Dataset version {dataset.version}
               </p>
-              <p className="text-sm text-white/75">{dataset.methodology}</p>
+              <p className="text-sm leading-relaxed text-white/90">{dataset.methodology}</p>
             </div>
             <div className="flex flex-wrap gap-2">
               <button
@@ -61,7 +61,7 @@ export default function WealthDataBrowser() {
                     'application/json',
                   )
                 }
-                className="rounded-lg border border-white/15 px-3 py-2 text-sm hover:bg-white/10"
+                className="rounded-lg border border-white/20 px-3 py-2 text-sm text-white/95 hover:bg-white/10"
               >
                 Download JSON
               </button>
@@ -74,7 +74,7 @@ export default function WealthDataBrowser() {
                     'text/csv',
                   )
                 }
-                className="rounded-lg border border-white/15 px-3 py-2 text-sm hover:bg-white/10"
+                className="rounded-lg border border-white/20 px-3 py-2 text-sm text-white/95 hover:bg-white/10"
               >
                 Download CSV
               </button>
@@ -84,16 +84,16 @@ export default function WealthDataBrowser() {
 
         <section className="rounded-2xl border border-white/15 bg-[#1b1b1d] p-4 md:p-6">
           <details className="group">
-            <summary className="cursor-pointer text-sm font-semibold text-white/90">
+            <summary className="cursor-pointer text-sm font-semibold text-white">
               Definitions — household wealth &amp; household
             </summary>
-            <div className="mt-4 space-y-4 text-sm leading-relaxed text-white/70">
+            <div className="mt-4 space-y-4 text-sm leading-relaxed text-white/90">
               <div>
-                <h3 className="font-medium text-white/90">Household wealth</h3>
+                <h3 className="font-medium text-white">Household wealth</h3>
                 <p className="mt-1">{dataset.definitions.householdWealth}</p>
               </div>
               <div>
-                <h3 className="font-medium text-white/90">Household</h3>
+                <h3 className="font-medium text-white">Household</h3>
                 <p className="mt-1">{dataset.definitions.household}</p>
               </div>
             </div>

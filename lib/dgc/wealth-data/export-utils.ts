@@ -57,6 +57,6 @@ export function confidenceBadgeClass(confidence: StatCell['confidence']): string
     case 'low':
       return 'bg-orange-500/20 text-orange-100 ring-orange-400/30';
     default:
-      return 'bg-white/10 text-white/50 ring-white/15';
+      return 'bg-white/15 text-white/80 ring-white/25';
   }
 }
