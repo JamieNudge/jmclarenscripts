@@ -14,6 +14,10 @@ import { statstrikeAndroidBetaMeta } from '@/lib/statstrike-android-beta-meta';
 import type { AnotherThingPost } from '@/lib/and-another-thing';
 import { isFirebaseClientConfigured } from '@/lib/firebase-client';
 
+/** Floated icon — title beside icon; body copy wraps full width underneath (matches How apps work). */
+const comingSoonIconFloatClass =
+  'shrink-0 float-left mt-0.5 mr-3 mb-1.5 rounded-2xl overflow-hidden border border-amber-200/30 bg-zinc-900/90 w-14 h-14 md:w-16 md:h-16';
+
 /** Right column: StatStrike Android beta + PopGoals teaser + ProphIt in one tile (md: spans both rows). */
 function BestPicksComingSoonAndProphitPanel() {
   const ss = statstrikeAndroidBetaMeta;
@@ -24,17 +28,17 @@ function BestPicksComingSoonAndProphitPanel() {
         Coming Soon!
       </h2>
       <section className="shrink-0 space-y-3 pb-4 border-b border-white/15">
-        <div className="flex gap-3 min-w-0">
-          <div className="shrink-0 rounded-2xl overflow-hidden border border-amber-200/30 bg-zinc-900/90 w-14 h-14 md:w-16 md:h-16">
+        <div className="min-w-0 [&:after]:content-[''] [&:after]:block [&:after]:clear-both">
+          <div className={comingSoonIconFloatClass} aria-hidden>
             <Image
               src={ss.iconSrc}
-              alt={`${ss.displayName} app icon`}
+              alt=""
               width={144}
               height={144}
               className="w-full h-full object-cover"
             />
           </div>
-          <div className="min-w-0 flex-1 space-y-2">
+          <div className="min-w-0 space-y-2">
             <div className="flex flex-wrap items-center gap-2 gap-y-1">
               <h3 className="text-base md:text-lg font-semibold text-white tracking-tight min-w-0">
                 {ss.displayName}
@@ -95,17 +99,17 @@ function BestPicksComingSoonAndProphitPanel() {
         </details>
       </section>
       <section className="shrink-0 space-y-3 pb-4 border-b border-white/15">
-        <div className="flex gap-3 min-w-0">
-          <div className="shrink-0 rounded-2xl overflow-hidden border border-amber-200/30 bg-zinc-900/90 w-14 h-14 md:w-16 md:h-16">
+        <div className="min-w-0 [&:after]:content-[''] [&:after]:block [&:after]:clear-both">
+          <div className={comingSoonIconFloatClass} aria-hidden>
             <Image
               src={m.iconSrc}
-              alt={`${m.displayName} app icon`}
+              alt=""
               width={144}
               height={144}
               className="w-full h-full object-cover"
             />
           </div>
-          <div className="min-w-0 flex-1 space-y-2">
+          <div className="min-w-0 space-y-2">
             <div className="flex flex-wrap items-center gap-2 gap-y-1">
               <h3 className="text-base md:text-lg font-semibold text-white tracking-tight min-w-0">
                 {m.displayName}
