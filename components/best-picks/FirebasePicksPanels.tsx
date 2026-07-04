@@ -6,20 +6,89 @@ import { AndAnotherThingHubPreview } from '@/components/best-picks/AndAnotherThi
 import { BestPicksBlogPreviewsRail } from '@/components/best-picks/BestPicksBlogPreviewsRail';
 import { BestPicksNewProductPanel } from '@/components/best-picks/BestPicksExtraPanels';
 import { BestPicksHowAppsWorkPanel } from '@/components/best-picks/BestPicksHowAppsWorkPanel';
+import { StatStrikeBetaFeedbackForm } from '@/components/best-picks/StatStrikeBetaFeedbackForm';
 import { BestPicksVideo } from '@/components/best-picks/BestPicksVideo';
 import { bestPicksGridTileClassName } from '@/lib/best-picks-panel-shell';
 import { bestPicksPopgoalsComingSoonMeta } from '@/lib/best-picks-popgoals-coming-soon-meta';
+import { statstrikeAndroidBetaMeta } from '@/lib/statstrike-android-beta-meta';
 import type { AnotherThingPost } from '@/lib/and-another-thing';
 import { isFirebaseClientConfigured } from '@/lib/firebase-client';
 
-/** Right column: PopGoals teaser + ProphIt in one tile (md: spans both rows). */
+/** Right column: StatStrike Android beta + PopGoals teaser + ProphIt in one tile (md: spans both rows). */
 function BestPicksComingSoonAndProphitPanel() {
+  const ss = statstrikeAndroidBetaMeta;
   const m = bestPicksPopgoalsComingSoonMeta;
   return (
     <div className={`${bestPicksGridTileClassName} gap-0`}>
       <h2 className="text-lg md:text-xl font-semibold text-white tracking-tight shrink-0 mb-3">
         Coming Soon!
       </h2>
+      <section className="shrink-0 space-y-3 pb-4 border-b border-white/15">
+        <div className="flex gap-3 min-w-0">
+          <div className="shrink-0 rounded-2xl overflow-hidden border border-amber-200/30 bg-zinc-900/90 w-14 h-14 md:w-16 md:h-16">
+            <Image
+              src={ss.iconSrc}
+              alt={`${ss.displayName} app icon`}
+              width={144}
+              height={144}
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div className="min-w-0 flex-1 space-y-2">
+            <div className="flex flex-wrap items-center gap-2 gap-y-1">
+              <h3 className="text-base md:text-lg font-semibold text-white tracking-tight min-w-0">
+                {ss.displayName}
+              </h3>
+              <span className="shrink-0 rounded-full border border-emerald-400/35 bg-emerald-500/12 px-2.5 py-1 text-[11px] font-bold tracking-wide text-emerald-100/95">
+                Android closed test
+              </span>
+            </div>
+            <p className="text-sm text-white/93 leading-relaxed">
+              StatStrike for Android is in closed testing. Use the link below to join on the web and install the
+              test build from Google Play.
+            </p>
+            <p className="text-sm">
+              <a
+                href={ss.playStoreJoinUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-amber-100/95 underline underline-offset-2 hover:text-amber-50/95"
+              >
+                {ss.playStoreJoinLabel}
+              </a>
+            </p>
+            <p className="text-xs text-white/80">
+              <a
+                href={ss.googleGroupUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-amber-200/75 underline underline-offset-2 hover:text-amber-100/90"
+              >
+                {ss.googleGroupLabel}
+              </a>
+              {' '}
+              — tester updates and discussion
+            </p>
+          </div>
+        </div>
+        <details className="group rounded-xl border border-white/18 bg-zinc-950/80 overflow-hidden">
+          <summary className="cursor-pointer list-none flex items-center justify-between gap-3 px-3 py-2.5 text-sm font-semibold text-white hover:bg-white/[0.07] [&::-webkit-details-marker]:hidden">
+            <span>Questions or feedback?</span>
+            <svg
+              className="w-4 h-4 text-white/94 shrink-0 transition-transform duration-200 group-open:rotate-180"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              aria-hidden
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </summary>
+          <div className="px-3 pb-3 pt-2 border-t border-white/10">
+            <StatStrikeBetaFeedbackForm collapsibleTrigger />
+          </div>
+        </details>
+      </section>
       <section className="shrink-0 space-y-3 pb-4 border-b border-white/15">
         <div className="flex gap-3 min-w-0">
           <div className="shrink-0 rounded-2xl overflow-hidden border border-amber-200/30 bg-zinc-900/90 w-14 h-14 md:w-16 md:h-16">
