@@ -14,6 +14,7 @@ import { AdminBlogSection } from '@/components/admin/AdminBlogSection';
 import { AdminHubVideoSection } from '@/components/admin/AdminHubVideoSection';
 import { AdminPredictionEmailBlocklist } from '@/components/admin/AdminPredictionEmailBlocklist';
 import { AdminPredictionSubmissions } from '@/components/admin/AdminPredictionSubmissions';
+import { AdminStatstrikeBetaFeedbackSubmissions } from '@/components/admin/AdminStatstrikeBetaFeedbackSubmissions';
 import { normalizePicksCalendarDateInput } from '@/lib/picks-date-input';
 
 const STORAGE_KEY = 'bestpicks_admin_bearer';
@@ -581,6 +582,10 @@ export default function AdminPicksPage() {
             <AdminPredictionEmailBlocklist
               adminKey={adminKey}
               refreshSignal={predictionBlocklistRefreshSignal}
+            />
+            <AdminStatstrikeBetaFeedbackSubmissions
+              adminKey={adminKey}
+              onBlockedEmail={() => setPredictionBlocklistRefreshSignal((n) => n + 1)}
             />
             <AdminPredictionSubmissions
               adminKey={adminKey}
