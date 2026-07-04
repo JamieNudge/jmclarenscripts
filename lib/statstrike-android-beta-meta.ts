@@ -4,6 +4,8 @@
 export const statstrikeAndroidBetaMeta = {
   displayName: 'StatStrike',
   iconSrc: '/images/stat-strike-icon.png',
+  /** Hide once Play closed testing is approved and the join link is live. */
+  showComingSoonBadge: true,
   /** Primary CTA — join closed test on the web (Google Play). */
   playStoreJoinUrl: 'https://play.google.com/apps/testing/com.jamienudge.statstrike',
   playStoreJoinLabel: 'Join the Android closed test',

@@ -39,6 +39,11 @@ function BestPicksComingSoonAndProphitPanel() {
               <h3 className="text-base md:text-lg font-semibold text-white tracking-tight min-w-0">
                 {ss.displayName}
               </h3>
+              {ss.showComingSoonBadge ? (
+                <span className="shrink-0 rounded-full border border-amber-400/35 bg-amber-500/12 px-2.5 py-1 text-[11px] font-bold tracking-wide text-amber-100/95">
+                  Coming Soon!
+                </span>
+              ) : null}
               <span className="shrink-0 rounded-full border border-emerald-400/35 bg-emerald-500/12 px-2.5 py-1 text-[11px] font-bold tracking-wide text-emerald-100/95">
                 Android closed test
               </span>
