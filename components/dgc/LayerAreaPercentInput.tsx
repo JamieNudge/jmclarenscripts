@@ -3,6 +3,13 @@
 import { useEffect, useState } from 'react';
 import { formatNumber } from '@/lib/dgc/document';
 
+function parsePercentInput(raw: string): number | null {
+  const cleaned = raw.trim().replace(/%/g, '').replace(/,/g, '.');
+  if (cleaned === '' || cleaned === '-' || cleaned === '.') return null;
+  const parsed = Number(cleaned);
+  return Number.isNaN(parsed) ? null : parsed;
+}
+
 export function LayerAreaPercentInput({
   value,
   onCommit,
@@ -21,13 +28,13 @@ export function LayerAreaPercentInput({
     }
   }, [value, focused]);
 
-  const commit = () => {
-    const cleaned = draft.trim().replace(/%/g, '').replace(/,/g, '.');
-    const parsed = Number(cleaned);
-    if (!Number.isNaN(parsed)) {
+  const commit = (raw: string) => {
+    const parsed = parsePercentInput(raw);
+    if (parsed !== null) {
       onCommit(parsed / 100);
+      return true;
     }
-    setFocused(false);
+    return false;
   };
 
   return (
@@ -39,13 +46,20 @@ export function LayerAreaPercentInput({
         setFocused(true);
         setDraft(formatNumber(value * 100));
       }}
-      onBlur={commit}
+      onBlur={() => {
+        commit(draft);
+        setFocused(false);
+      }}
       onKeyDown={(event) => {
         if (event.key === 'Enter') {
           event.currentTarget.blur();
         }
       }}
-      onChange={(event) => setDraft(event.target.value)}
+      onChange={(event) => {
+        const next = event.target.value;
+        setDraft(next);
+        commit(next);
+      }}
     />
   );
 }

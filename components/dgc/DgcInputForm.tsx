@@ -139,8 +139,8 @@ export default function DgcInputForm({ controller }: { controller: DgcDocumentCo
         />
         <p className="text-sm text-white/80">
           Field of Wealth sits above Total Population, left-aligned at the width percentage you
-          set. Each layer starts on the bottom edge of the field; drag the end handle to the left,
-          top, or right edge to set the target area from the bottom-left corner.
+          set. Each layer starts on the bottom edge of the field; drag the end handle or type that
+          layer&apos;s Field of Wealth % to move the endpoint on the preview.
         </p>
       </Panel>
 

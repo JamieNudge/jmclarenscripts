@@ -208,8 +208,8 @@ export default function DgcPreview({
       </div>
 
       <p className="mb-3 rounded-full border border-white/15 bg-black/50 px-4 py-2 text-center text-sm text-white/90">
-        Drag {activeLabels.start} along the bottom edge. Drag {activeLabels.end} to the left, top,
-        or right edge to set the target area.
+        Drag {activeLabels.start} along the bottom edge. Drag {activeLabels.end}, or type that
+        layer&apos;s Field of Wealth %, to set the target area.
       </p>
 
       <div
