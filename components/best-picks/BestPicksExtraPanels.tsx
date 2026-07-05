@@ -6,8 +6,16 @@ const scrollArea =
 
 const hr = 'border-0 border-t border-white/15 my-5';
 
-function BestPicksProphitPanelBody({ headingLevel = 'h2' }: { headingLevel?: 'h2' | 'h3' }) {
+function BestPicksProphitPanelBody({
+  headingLevel = 'h2',
+  scrollInParent = false,
+}: {
+  headingLevel?: 'h2' | 'h3';
+  /** When true, content flows in a parent scroll region (e.g. combined Coming Soon tile). */
+  scrollInParent?: boolean;
+}) {
   const TitleTag = headingLevel;
+  const bodyScrollClass = scrollInParent ? 'min-w-0' : scrollArea;
   return (
     <>
       <div className="flex flex-wrap items-center gap-2 mb-2 shrink-0 pr-2">
@@ -21,7 +29,7 @@ function BestPicksProphitPanelBody({ headingLevel = 'h2' }: { headingLevel?: 'h2
           Coming Soon!
         </span>
       </div>
-      <div className={scrollArea}>
+      <div className={bodyScrollClass}>
         <div className="space-y-4 text-sm text-white/93 leading-relaxed pb-1">
           <p>Have a theory for predicting goal band outcomes?</p>
           <p>
@@ -143,11 +151,17 @@ function BestPicksProphitPanelBody({ headingLevel = 'h2' }: { headingLevel?: 'h2
  * @param embedded When true, omits the outer tile shell so this can sit inside a combined grid cell
  * (e.g. with PopGoals above it). Parent must be a flex column with `min-h-0` + `flex-1` for the scroll region.
  */
-export function BestPicksNewProductPanel({ embedded = false }: { embedded?: boolean }) {
+export function BestPicksNewProductPanel({
+  embedded = false,
+  scrollInParent = false,
+}: {
+  embedded?: boolean;
+  scrollInParent?: boolean;
+}) {
   if (embedded) {
     return (
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-        <BestPicksProphitPanelBody headingLevel="h3" />
+      <div className={scrollInParent ? 'min-w-0' : 'flex min-h-0 min-w-0 flex-1 flex-col'}>
+        <BestPicksProphitPanelBody headingLevel="h3" scrollInParent={scrollInParent} />
       </div>
     );
   }

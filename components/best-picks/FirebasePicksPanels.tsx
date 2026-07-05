@@ -22,16 +22,20 @@ import { isFirebaseClientConfigured } from '@/lib/firebase-client';
 const comingSoonIconFloatClass =
   'shrink-0 float-left mt-0.5 mr-3 mb-1.5 rounded-2xl overflow-hidden border border-amber-200/30 bg-zinc-900/90 w-14 h-14 md:w-16 md:h-16';
 
+const comingSoonScrollArea =
+  'min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-1 -mr-0.5 [scrollbar-gutter:stable] scroll-smooth overscroll-y-contain touch-pan-y';
+
 /** Right column: StatStrike Android beta + PopGoals teaser + ProphIt in one tile (md: spans both rows). */
 function BestPicksComingSoonAndProphitPanel() {
   const ss = statstrikeAndroidBetaMeta;
   const m = bestPicksPopgoalsComingSoonMeta;
   return (
-    <div className={`${bestPicksGridTileClassName} gap-0`}>
+    <div className={`${bestPicksGridTileClassName} min-h-0 h-full gap-0`}>
       <h2 className="text-lg md:text-xl font-semibold text-white tracking-tight shrink-0 mb-3">
         Coming Soon!
       </h2>
-      <section className="shrink-0 space-y-3 pb-4 border-b border-white/15">
+      <div className={comingSoonScrollArea}>
+      <section className="space-y-3 pb-4 border-b border-white/15">
         <div className="min-w-0 [&:after]:content-[''] [&:after]:block [&:after]:clear-both">
           <div className={comingSoonIconFloatClass} aria-hidden>
             <Image
@@ -111,7 +115,7 @@ function BestPicksComingSoonAndProphitPanel() {
           </div>
         </details>
       </section>
-      <section className="shrink-0 space-y-3 pb-4 border-b border-white/15">
+      <section className="space-y-3 pb-4 border-b border-white/15">
         <div className="min-w-0 [&:after]:content-[''] [&:after]:block [&:after]:clear-both">
           <div className={comingSoonIconFloatClass} aria-hidden>
             <Image
@@ -138,9 +142,10 @@ function BestPicksComingSoonAndProphitPanel() {
         </div>
       </section>
 
-      <section className="flex min-h-0 min-w-0 flex-1 flex-col pt-5 -mx-1 px-1">
-        <BestPicksNewProductPanel embedded />
+      <section className="pt-5 pb-1 -mx-1 px-1">
+        <BestPicksNewProductPanel embedded scrollInParent />
       </section>
+      </div>
     </div>
   );
 }
@@ -197,7 +202,7 @@ export function FirebasePicksPanels({
             <AndAnotherThingHubPreview initialPosts={andAnotherThingInitialPosts} variant="gridCompact" />
           ) : null}
         </div>
-        <div className="flex min-h-0 min-w-0 flex-col max-md:order-5 md:order-none md:col-start-3 md:row-start-1 md:row-span-2 md:h-full md:min-h-0">
+        <div className="flex min-h-0 min-w-0 h-full flex-col max-md:order-5 md:order-none md:col-start-3 md:row-start-1 md:row-span-2 md:h-full">
           <BestPicksComingSoonAndProphitPanel />
         </div>
       </div>
