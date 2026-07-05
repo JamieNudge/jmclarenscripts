@@ -10,7 +10,11 @@ import { StatStrikeBetaFeedbackForm } from '@/components/best-picks/StatStrikeBe
 import { BestPicksVideo } from '@/components/best-picks/BestPicksVideo';
 import { bestPicksGridTileClassName } from '@/lib/best-picks-panel-shell';
 import { bestPicksPopgoalsComingSoonMeta } from '@/lib/best-picks-popgoals-coming-soon-meta';
-import { statstrikeAndroidBetaMeta } from '@/lib/statstrike-android-beta-meta';
+import {
+  statstrikeAndroidBetaHref,
+  statstrikeAndroidBetaMeta,
+  type StatStrikeAndroidBetaHrefKey,
+} from '@/lib/statstrike-android-beta-meta';
 import type { AnotherThingPost } from '@/lib/and-another-thing';
 import { isFirebaseClientConfigured } from '@/lib/firebase-client';
 
@@ -53,30 +57,39 @@ function BestPicksComingSoonAndProphitPanel() {
               </span>
             </div>
             <p className="text-sm text-white/93 leading-relaxed">
-              StatStrike for Android is in closed testing. Use the link below to join on the web and install the
-              test build from Google Play.
+              StatStrike for Android is in closed testing. Follow these steps in order — joining the group alone
+              does not install the app.
             </p>
-            <p className="text-sm">
-              <a
-                href={ss.playStoreJoinUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-semibold text-amber-100/95 underline underline-offset-2 hover:text-amber-50/95"
-              >
-                {ss.playStoreJoinLabel}
-              </a>
-            </p>
-            <p className="text-xs text-white/80">
-              <a
-                href={ss.googleGroupUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-amber-200/75 underline underline-offset-2 hover:text-amber-100/90"
-              >
-                {ss.googleGroupLabel}
-              </a>
-              {' '}
-              — tester updates and discussion
+            <ol className="space-y-2.5 text-sm text-white/93 leading-relaxed list-none pl-0">
+              {ss.installSteps.map((step, index) => (
+                <li key={step.title} className="flex gap-2.5">
+                  <span
+                    className="shrink-0 flex h-6 w-6 items-center justify-center rounded-full border border-emerald-400/35 bg-emerald-500/12 text-[11px] font-bold text-emerald-100/95"
+                    aria-hidden
+                  >
+                    {index + 1}
+                  </span>
+                  <div className="min-w-0 space-y-0.5">
+                    <p className="font-semibold text-white">{step.title}</p>
+                    <p className="text-white/88">{step.body}</p>
+                    {'hrefKey' in step && step.hrefKey ? (
+                      <p>
+                        <a
+                          href={statstrikeAndroidBetaHref(step.hrefKey as StatStrikeAndroidBetaHrefKey)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-semibold text-amber-100/95 underline underline-offset-2 hover:text-amber-50/95"
+                        >
+                          {step.linkLabel}
+                        </a>
+                      </p>
+                    ) : null}
+                  </div>
+                </li>
+              ))}
+            </ol>
+            <p className="rounded-lg border border-amber-400/25 bg-amber-500/10 px-3 py-2 text-xs text-amber-50/95 leading-relaxed">
+              {ss.accountNote}
             </p>
           </div>
         </div>
