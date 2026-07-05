@@ -2,10 +2,10 @@
  * Visitor-facing metadata for the StatStrike Android closed-test strip on the GoalLab hub home.
  */
 export const statstrikeAndroidBetaMeta = {
-  displayName: 'StatStrike',
+  displayName: 'StatStrike on Android',
   iconSrc: '/images/stat-strike-icon.png',
-  /** Hide once Play closed testing is approved and the join link is live. */
-  showComingSoonBadge: true,
+  /** Set false once Play closed testing is live (badge hidden). */
+  showComingSoonBadge: false,
   /** Primary CTA — join closed test on the web (Google Play). */
   playStoreJoinUrl: 'https://play.google.com/apps/testing/com.jamienudge.statstrike',
   playStoreJoinLabel: 'Join the Android closed test',
