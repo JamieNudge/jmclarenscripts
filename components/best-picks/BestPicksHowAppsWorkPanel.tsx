@@ -98,9 +98,9 @@ export function BestPicksHowAppsWorkPanel() {
                   <div>
                     <p className="font-semibold text-amber-100/95 mt-3">Each forecast includes:</p>
                     <ul className="list-disc pl-4 space-y-0.5 mt-1">
-                      <li>Model confidence score</li>
-                      <li>Supporting fixture statistics</li>
-                      <li>Historical league performance metrics</li>
+                      <li>Goal band forecast (Over 2.5 / Under 2.5)</li>
+                      <li>League track record for the band</li>
+                      <li>Key statistical signals behind the pick</li>
                       <li>Aggregate market odds (when available)</li>
                       <li>Transparent track record data</li>
                     </ul>
@@ -137,13 +137,11 @@ export function BestPicksHowAppsWorkPanel() {
                 'GoalLab',
                 goalLab?.icon,
                 <>
-                  GoalLab forecasts the majority of published global fixtures daily. The algorithm uses an 11 criteria
-                  model to forecast Over 2.5 and Under 2.5 football goal bands. It will forecast with all 11 criteria,
-                  if available for the fixture, or whatever it can get - forecast confidence is reflected in the volume
-                  of criteria available for any given fixture. This doesn&apos;t mean a lower confidence forecast is
-                  necessarily less accurate than one with more criteria - it depends on the criteria mix and how they
-                  interact. Historical win rates of every confidence level is listed as tracked by a rich and growing
-                  archive.
+                  GoalLab forecasts the majority of published global fixtures daily. The algorithm uses an 11-criteria
+                  model to forecast Over 2.5 and Under 2.5 football goal bands. It will forecast with all 11 criteria
+                  when available for the fixture, or whatever data exists for that match — fewer checks means less
+                  supporting detail, not necessarily a weaker pick. Historical win rates by league and band are tracked
+                  in a rich and growing archive.
                 </>,
               )}
             </ul>

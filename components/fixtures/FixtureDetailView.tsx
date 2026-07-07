@@ -9,7 +9,7 @@ import { BestPicksSiteNav } from '@/components/best-picks/BestPicksSiteNav';
 import { BEST_PICKS_EXTENDED_SITE_NAV } from '@/components/best-picks/best-picks-site-nav-config';
 import { useBestPicksLondonDateKey } from '@/hooks/useBestPicksLondonDateKey';
 import { useVisitorTimeZone } from '@/hooks/useVisitorTimeZone';
-import { formatKickoffFromPickRecordLocalAndUtc, pickTeams, statStrikeRtdbPathsFromEnv } from '@/lib/best-picks-firebase';
+import { formatKickoffFromPickRecordLocalAndUtc, pickTeams, statStrikeRtdbPathsFromEnv, trackRecordDisplayForPick } from '@/lib/best-picks-firebase';
 import {
   FOOTBALL_PREDICTIONS_FIXTURES_PATH,
   FOOTBALL_PREDICTIONS_FIXTURES_TITLE,
@@ -25,7 +25,6 @@ import {
   buildKeySignalLines,
   findSelectionStatsForFixture,
   fixtureContextLoadPath,
-  modelScoreFromPick,
   parseFixtureContextForFixture,
   type KeySignalLine,
 } from '@/lib/fixture-key-signals';
@@ -172,7 +171,10 @@ export function FixtureDetailView() {
     if (!pick || !teams) return [];
     return buildKeySignalLines(pick, teams.home, teams.away, context, selectionStats);
   }, [context, pick, selectionStats, teams]);
-  const modelScore = pick ? modelScoreFromPick(pick) : null;
+  const trackRecordDisplay = useMemo(
+    () => (pick ? trackRecordDisplayForPick(pick, selectionVal) : null),
+    [pick, selectionVal],
+  );
   const kickoff = pick ? formatKickoffFromPickRecordLocalAndUtc(pick, visitorTz) : null;
   const country = pick ? pickText(pick.country) : null;
   const league = pick ? pickText(pick.league) : null;
@@ -245,28 +247,57 @@ export function FixtureDetailView() {
                 {forecast.primary ? (
                   <p className="text-base font-semibold text-cyan-100/95">{forecast.primary}</p>
                 ) : null}
-                {forecast.bands.length > 0 ? (
-                  <ul className="flex flex-wrap gap-2">
-                    {forecast.bands.map((b) => (
-                      <li
-                        key={b.label}
-                        className="text-xs font-medium px-2 py-1 rounded-md border border-white/15 bg-black/30 text-white/95 tabular-nums"
-                      >
-                        {b.label} {b.value}
-                      </li>
-                    ))}
-                  </ul>
+
+                <div className="space-y-2">
+                  {trackRecordDisplay ? (
+                    <>
+                      <p className="text-[10px] font-bold uppercase tracking-wide text-white/75">
+                        {trackRecordDisplay.title}
+                      </p>
+                      <p className="text-sm text-white/92 tabular-nums">
+                        {trackRecordDisplay.trackRecord.forecastCount} archived forecast
+                        {trackRecordDisplay.trackRecord.forecastCount === 1 ? '' : 's'}
+                      </p>
+                      <p className="text-sm text-white/92 tabular-nums">
+                        {Math.round(trackRecordDisplay.trackRecord.winRate)}% recent performance
+                      </p>
+                      <p className="text-sm font-semibold text-white/95">
+                        {trackRecordDisplay.trackRecord.isQualified ? 'Qualified League ✓' : 'League tracked'}
+                      </p>
+                      {trackRecordDisplay.helperText ? (
+                        <p className="text-xs text-white/70">{trackRecordDisplay.helperText}</p>
+                      ) : null}
+                      <div className="h-1 w-full overflow-hidden rounded-full bg-cyan-400/20">
+                        <div
+                          className="h-full rounded-full bg-cyan-300/90"
+                          style={{
+                            width: `${Math.max(4, Math.min(100, trackRecordDisplay.trackRecord.winRate))}%`,
+                          }}
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-[10px] font-bold uppercase tracking-wide text-white/75">
+                        League track record
+                      </p>
+                      <p className="text-sm text-white/80">Building — no archived forecasts yet</p>
+                    </>
+                  )}
+                </div>
+
+                {forecast.oddsDecimal != null ? (
+                  <div className="flex items-end justify-between gap-3 border-t border-white/10 pt-3">
+                    <p className="text-[10px] font-bold uppercase tracking-wide text-white/75">ODDS</p>
+                    <p className="text-sm font-semibold tabular-nums text-amber-100/95">
+                      @{forecast.oddsDecimal.toFixed(2)}
+                    </p>
+                  </div>
                 ) : null}
-                {forecast.odds ? <p className="text-sm text-amber-100/95 tabular-nums">{forecast.odds}</p> : null}
 
                 {keySignals.length > 0 ? (
                   <div className="border-t border-white/10 pt-4 space-y-3">
-                    <div className="flex items-baseline justify-between gap-3">
-                      <p className="text-[10px] font-bold uppercase tracking-wide text-white/75">Key signals</p>
-                      {modelScore ? (
-                        <p className="text-xs font-semibold text-white/80 tabular-nums">Model score {modelScore}</p>
-                      ) : null}
-                    </div>
+                    <p className="text-[10px] font-bold uppercase tracking-wide text-white/75">KEY SIGNALS</p>
                     <ul className="space-y-2.5">
                       {keySignals.map((line) => (
                         <li key={line.id} className="flex items-start gap-2.5">

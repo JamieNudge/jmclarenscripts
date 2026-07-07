@@ -106,6 +106,133 @@ export function parseLeaguePerformanceFromSelection(val: unknown): Record<string
   return out;
 }
 
+export type LeagueTrackRecord = {
+  forecastCount: number;
+  winRate: number;
+  avgCriteria: number;
+  isQualified: boolean;
+};
+
+export type FixtureTrackRecordDisplay = {
+  trackRecord: LeagueTrackRecord;
+  title: string;
+  helperText: string | null;
+};
+
+function parseLeagueTrackRecordEntry(v: unknown): LeagueTrackRecord | null {
+  if (v == null || typeof v !== 'object' || Array.isArray(v)) return null;
+  const o = v as PickRecord;
+  const forecastCount =
+    typeof o.forecastCount === 'number' && Number.isFinite(o.forecastCount) ? o.forecastCount : null;
+  const winRate = typeof o.winRate === 'number' && Number.isFinite(o.winRate) ? o.winRate : null;
+  if (forecastCount == null || winRate == null) return null;
+  const avgCriteria =
+    typeof o.avgCriteria === 'number' && Number.isFinite(o.avgCriteria) ? o.avgCriteria : 0;
+  return {
+    forecastCount,
+    winRate,
+    avgCriteria,
+    isQualified: o.isQualified === true,
+  };
+}
+
+function parseLeagueTrackRecordMap(raw: unknown): Record<string, LeagueTrackRecord> {
+  if (raw == null || typeof raw !== 'object' || Array.isArray(raw)) return {};
+  const out: Record<string, LeagueTrackRecord> = {};
+  for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
+    const record = parseLeagueTrackRecordEntry(v);
+    if (record) out[k] = record;
+  }
+  return out;
+}
+
+/** Same sanitization as Swift `PredictionLevel.archiveBandLookupKey`. */
+export function archiveBandLookupKey(bandLabel: string): string {
+  return bandLabel
+    .replace(/\./g, '_')
+    .replace(/\//g, '_')
+    .replace(/#/g, '_')
+    .replace(/\$/g, '_')
+    .replace(/\[/g, '(')
+    .replace(/\]/g, ')');
+}
+
+/**
+ * Candidate keys when API league labels and upload archive keys differ
+ * (mirrors iOS `FixtureListView.leaguePerformanceLookupKeys`).
+ */
+export function leaguePerformanceLookupKeysForPick(p: PickRecord): string[] {
+  const country = pickPrimitiveText(p.country)?.trim() ?? '';
+  const name = pickPrimitiveText(p.league)?.trim() ?? '';
+  const keys: string[] = [];
+  const append = (c: string, n: string) => {
+    const k = leaguePerformanceLookupKey(c, n);
+    if (!keys.includes(k)) keys.push(k);
+  };
+  append(country, name);
+  if (country === 'USA' || country === 'United States') {
+    append(country === 'USA' ? 'United States' : 'USA', name);
+  }
+  const lowerName = name.toLowerCase();
+  const isMLSName = lowerName === 'mls' || lowerName.includes('major league soccer');
+  if ((country === 'USA' || country === 'United States') && isMLSName) {
+    append('USA', 'MLS');
+    append('USA', 'Major League Soccer');
+    append('United States', 'MLS');
+    append('United States', 'Major League Soccer');
+  }
+  return keys;
+}
+
+/** Recommended O2.5 / U2.5 band label for track-record lookup (no confidence %). */
+export function recommendedBandLabelForPick(p: PickRecord): string | null {
+  const ft = pickPrimitiveText(p.forecastType);
+  if (ft) return formatBandAsGoalsPhrase(ft);
+  const band = pickPrimitiveText(p.predictedBand);
+  if (band) return formatBandAsGoalsPhrase(band);
+  const side = pickGoalsSideFromBandOrFallback(p);
+  if (side === 'over') return 'Over 2.5 Goals';
+  if (side === 'under') return 'Under 2.5 Goals';
+  return null;
+}
+
+/** Band-specific league track record when available; otherwise league-wide fallback. */
+export function trackRecordDisplayForPick(p: PickRecord, selectionRoot: unknown): FixtureTrackRecordDisplay | null {
+  if (selectionRoot == null || typeof selectionRoot !== 'object' || Array.isArray(selectionRoot)) return null;
+  const root = selectionRoot as PickRecord;
+  const leagueTrackRecord = parseLeagueTrackRecordMap(root.leagueTrackRecord);
+  const leagueBandTrackRecord = parseLeagueTrackRecordMap(root.leagueBandTrackRecord);
+  const leagueKeys = leaguePerformanceLookupKeysForPick(p);
+  const bandLabel = recommendedBandLabelForPick(p);
+
+  if (bandLabel) {
+    const bandKey = archiveBandLookupKey(bandLabel);
+    for (const leagueKey of leagueKeys) {
+      const record = leagueBandTrackRecord[`${leagueKey}|${bandKey}`];
+      if (record && record.forecastCount > 0) {
+        return {
+          trackRecord: record,
+          title: `League track record — ${bandLabel}`,
+          helperText: null,
+        };
+      }
+    }
+  }
+
+  for (const leagueKey of leagueKeys) {
+    const record = leagueTrackRecord[leagueKey];
+    if (record && record.forecastCount > 0) {
+      return {
+        trackRecord: record,
+        title: 'League track record (league-wide)',
+        helperText: 'All bands combined',
+      };
+    }
+  }
+
+  return null;
+}
+
 /** `unanimousExports/{date}` — UnanimousExport from the Mac app. */
 export function parseUnanimousExport(val: unknown): { over: PickRecord[]; under: PickRecord[] } {
   if (val == null || typeof val !== 'object' || Array.isArray(val)) {
@@ -1535,13 +1662,6 @@ export function pickExpandedMetaLines(p: PickRecord): string[] {
 
   const ft = typeof p.forecastType === 'string' ? p.forecastType.trim() : '';
   if (ft) lines.push(`Forecast type: ${ft}`);
-
-  const minO = numOrNull(p.minOverConfidence);
-  if (minO != null && minO > 0) lines.push(`Min over confidence: ${Math.round(minO)}%`);
-
-  const mc = numOrNull(p.matchedCriteria);
-  const tc = numOrNull(p.totalCriteria);
-  if (mc != null && tc != null) lines.push(`Criteria: ${mc} / ${tc} matched`);
 
   const odds = numOrNull(p.bookmakerOdds);
   if (odds != null && odds > 0) {

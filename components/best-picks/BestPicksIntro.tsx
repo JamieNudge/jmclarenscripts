@@ -81,8 +81,8 @@ export function BestPicksIntro({ dateKey }: { dateKey: string }) {
           <div className="mt-3 pt-3 border-t border-white/15 space-y-4 text-sm text-white/93 leading-relaxed">
             <ul className="space-y-2.5 list-none pl-0 border-l-2 border-amber-400/20 pl-3">
               <li>
-                {appStoreLink(statStrike?.appStoreUrl, 'StatStrike')} — In-app daily selection with criteria-style
-                confidence on goal bands.
+                {appStoreLink(statStrike?.appStoreUrl, 'StatStrike')} — In-app daily selection with league track
+                record, key signals, and odds on goal-band forecasts.
               </li>
               <li>
                 {appStoreLink(goalLab?.appStoreUrl, 'GoalLab')} — An 11-criteria algorithm forecasting Over 2.5 and

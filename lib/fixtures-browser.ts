@@ -3,13 +3,12 @@
  */
 
 import {
-  formatBandAsGoalsPhrase,
   parseUnanimousExport,
-  pickGoalBandValues,
   pickKickoffSortTimeMs,
   pickMergeKey,
   pickSignificantStats,
   pickTeams,
+  recommendedBandLabelForPick,
   sortPicksByKickoffEarliestFirst,
   type PickRecord,
 } from '@/lib/best-picks-firebase';
@@ -53,13 +52,8 @@ export function pickFixtureId(p: PickRecord): number | string | null {
   return null;
 }
 
-function pickPeakConfidence(p: PickRecord): number {
-  let peak = 0;
-  for (const { value } of pickGoalBandValues(p)) {
-    const n = Number.parseInt(value.replace(/%/g, ''), 10);
-    if (!Number.isNaN(n) && n > peak) peak = n;
-  }
-  return peak;
+function pickMergePriority(p: PickRecord): number {
+  return recommendedBandLabelForPick(p) ? 1 : 0;
 }
 
 function mergeFirehosePicks(over: PickRecord[], under: PickRecord[]): PickRecord[] {
@@ -68,7 +62,7 @@ function mergeFirehosePicks(over: PickRecord[], under: PickRecord[]): PickRecord
     const id = pickFixtureId(p);
     const key = id != null ? `id:${id}` : pickMergeKey(p);
     const existing = map.get(key);
-    if (!existing || pickPeakConfidence(p) > pickPeakConfidence(existing)) {
+    if (!existing || pickMergePriority(p) > pickMergePriority(existing)) {
       map.set(key, p);
     }
   }
@@ -177,40 +171,20 @@ export function findFixtureInExport(val: unknown, fixtureId: string): PickRecord
 }
 
 export function pickPrimaryForecastLabel(p: PickRecord): string | null {
-  const ft = pickText(p.forecastType);
-  if (ft) return formatBandAsGoalsPhrase(ft);
-  const band = pickText(p.predictedBand);
-  if (band) return formatBandAsGoalsPhrase(band);
-  const bands = pickGoalBandValues(p);
-  if (bands.length === 0) return null;
-  let best = bands[0];
-  for (const b of bands.slice(1)) {
-    const n = Number.parseInt(b.value, 10);
-    const bestN = Number.parseInt(best.value, 10);
-    if (!Number.isNaN(n) && (Number.isNaN(bestN) || n > bestN)) best = b;
-  }
-  return `${best.label} ${best.value}`;
+  return recommendedBandLabelForPick(p);
 }
 
 export function pickForecastDetailLines(p: PickRecord): {
   primary: string | null;
-  bands: { label: string; value: string }[];
   significantStats: string[];
-  odds: string | null;
+  oddsDecimal: number | null;
 } {
-  const bands = pickGoalBandValues(p);
   const oddsN = num(p.bookmakerOdds);
-  const imp = num(p.impliedProbability);
-  let odds: string | null = null;
-  if (oddsN != null && oddsN > 1) {
-    odds = `@${oddsN.toFixed(2)}`;
-    if (imp != null && imp > 0) odds += ` · ~${Math.round(imp)}% implied`;
-  }
+  const oddsDecimal = oddsN != null && oddsN > 1 ? oddsN : null;
   return {
     primary: pickPrimaryForecastLabel(p),
-    bands,
     significantStats: pickSignificantStats(p),
-    odds,
+    oddsDecimal,
   };
 }
 

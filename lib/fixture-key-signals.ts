@@ -429,10 +429,3 @@ export function fixtureContextRtdbPath(dateKey: string, fixtureId: string): stri
 export function fixtureContextLoadPath(dateKey: string, fixtureId: string): string {
   return fixtureContextsDayRtdbPath(dateKey);
 }
-
-export function modelScoreFromPick(pick: PickRecord): string | null {
-  const matched = num(pick.matchedCriteria);
-  const total = num(pick.totalCriteria);
-  if (matched != null && total != null && total > 0) return `${matched} / ${total}`;
-  return null;
-}
