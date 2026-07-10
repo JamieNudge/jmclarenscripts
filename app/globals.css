@@ -90,6 +90,10 @@ body.best-picks-route .bp-best-picks-surface {
   --dgc-hover-strong: rgba(255, 255, 255, 0.1);
   --dgc-overlay: rgba(0, 0, 0, 0.6);
   --dgc-chip: rgba(255, 255, 255, 0.1);
+  --dgc-accent-surface: rgba(14, 165, 233, 0.22);
+  --dgc-accent-border: rgba(56, 189, 248, 0.45);
+  --dgc-accent-text: #e0f2fe;
+  --dgc-danger-text: #fca5a5;
   --dgc-preview-stage: #111111;
   --dgc-preview-canvas: #2a2a2c;
   --dgc-preview-field: #0d0d0f;
@@ -121,6 +125,10 @@ body.best-picks-route .bp-best-picks-surface {
   --dgc-hover-strong: rgba(17, 17, 19, 0.08);
   --dgc-overlay: rgba(17, 17, 19, 0.45);
   --dgc-chip: rgba(17, 17, 19, 0.08);
+  --dgc-accent-surface: rgba(14, 165, 233, 0.12);
+  --dgc-accent-border: rgba(14, 165, 233, 0.3);
+  --dgc-accent-text: #075985;
+  --dgc-danger-text: #dc2626;
   --dgc-preview-stage: #e8e8ea;
   --dgc-preview-canvas: #d8d8dc;
   --dgc-preview-field: #ffffff;

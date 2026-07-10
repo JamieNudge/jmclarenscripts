@@ -42,6 +42,7 @@ export function LayerAreaPercentInput({
       className={className}
       value={focused ? draft : `${formatNumber(value * 100)}%`}
       inputMode="decimal"
+      onPointerDown={(event) => event.stopPropagation()}
       onFocus={() => {
         setFocused(true);
         setDraft(formatNumber(value * 100));
@@ -51,6 +52,7 @@ export function LayerAreaPercentInput({
         setFocused(false);
       }}
       onKeyDown={(event) => {
+        event.stopPropagation();
         if (event.key === 'Enter') {
           event.currentTarget.blur();
         }

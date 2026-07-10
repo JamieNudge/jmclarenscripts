@@ -75,6 +75,54 @@ function EditableNumericField({
   );
 }
 
+function InlineNumericInput({
+  value,
+  onCommit,
+  className = 'w-28 rounded border border-[var(--dgc-border)] bg-[var(--dgc-input)] px-2 py-1 text-[var(--dgc-text)]',
+}: {
+  value: number;
+  onCommit: (value: number) => void;
+  className?: string;
+}) {
+  const [draft, setDraft] = useState(formatNumber(value));
+  const [focused, setFocused] = useState(false);
+
+  useEffect(() => {
+    if (!focused) {
+      setDraft(formatNumber(value));
+    }
+  }, [value, focused]);
+
+  const commit = () => {
+    const parsed = parseNumericInput(draft);
+    if (parsed !== null) {
+      onCommit(parsed);
+    }
+    setFocused(false);
+  };
+
+  return (
+    <input
+      className={className}
+      value={focused ? draft : formatNumber(value)}
+      inputMode="decimal"
+      onPointerDown={(event) => event.stopPropagation()}
+      onFocus={() => {
+        setFocused(true);
+        setDraft(formatNumber(value));
+      }}
+      onBlur={commit}
+      onKeyDown={(event) => {
+        event.stopPropagation();
+        if (event.key === 'Enter') {
+          event.currentTarget.blur();
+        }
+      }}
+      onChange={(event) => setDraft(event.target.value)}
+    />
+  );
+}
+
 export default function DgcInputForm({ controller }: { controller: DgcDocumentController }) {
   const { document } = controller;
   const [newPresetTitle, setNewPresetTitle] = useState('');
@@ -309,9 +357,19 @@ function DgcLayersPanel({
           return (
             <div
               key={layer.id}
-              className={`rounded-xl border p-3 ${isActive ? 'border-sky-400/40 bg-sky-500/10' : 'border-[var(--dgc-border-soft)]'}`}
+              className={`rounded-xl border p-3 ${
+                isActive
+                  ? 'border-[var(--dgc-accent-border)] bg-[var(--dgc-accent-surface)]'
+                  : 'border-[var(--dgc-border-soft)]'
+              }`}
               onClick={() => controller.selectLayer(layer.id)}
-              onKeyDown={() => controller.selectLayer(layer.id)}
+              onKeyDown={(event) => {
+                if (event.target !== event.currentTarget) return;
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  controller.selectLayer(layer.id);
+                }
+              }}
               role="button"
               tabIndex={0}
             >
@@ -362,7 +420,9 @@ function DgcLayersPanel({
                     <input
                       className="min-w-0 flex-1 rounded border border-[var(--dgc-border)] bg-[var(--dgc-input)] px-2 py-1 text-[var(--dgc-text)]"
                       value={layer.name}
+                      onPointerDown={(event) => event.stopPropagation()}
                       onClick={(event) => event.stopPropagation()}
+                      onKeyDown={(event) => event.stopPropagation()}
                       onChange={(event) =>
                         controller.renameLayer(layer.id, event.target.value)
                       }
@@ -372,18 +432,15 @@ function DgcLayersPanel({
                   <div
                     className="mt-2 space-y-2"
                     onClick={(event) => event.stopPropagation()}
+                    onPointerDown={(event) => event.stopPropagation()}
+                    onKeyDown={(event) => event.stopPropagation()}
                   >
                     <label className="flex items-center gap-2 text-xs text-[var(--dgc-text-muted)]">
                       <span className="w-28 shrink-0">{handleLabels.start} on bottom edge</span>
-                      <input
-                        className="w-24 rounded border border-[var(--dgc-border)] bg-[var(--dgc-input)] px-2 py-1 text-[var(--dgc-text)]"
-                        defaultValue={formatNumber(layer.startX)}
-                        onBlur={(event) => {
-                          const parsed = parseNumericInput(event.target.value);
-                          if (parsed !== null) {
-                            controller.updateLayerStartX(layer.id, parsed);
-                          }
-                        }}
+                      <InlineNumericInput
+                        value={layer.startX}
+                        onCommit={(value) => controller.updateLayerStartX(layer.id, value)}
+                        className="w-32 rounded border border-[var(--dgc-border)] bg-[var(--dgc-input)] px-2 py-1 text-[var(--dgc-text)]"
                       />
                     </label>
 
@@ -394,6 +451,7 @@ function DgcLayersPanel({
                         onCommit={(fraction) =>
                           controller.updateLayerAreaFraction(layer.id, fraction)
                         }
+                        className="w-32 rounded border border-[var(--dgc-border)] bg-[var(--dgc-input)] px-2 py-1 text-sm text-[var(--dgc-text)]"
                       />
                     </label>
 
@@ -421,7 +479,7 @@ function DgcLayersPanel({
                 </div>
 
                 {isActive ? (
-                  <span className="rounded-full bg-sky-500/20 px-2 py-1 text-xs font-semibold text-sky-200">
+                  <span className="rounded-full bg-[var(--dgc-accent-surface)] px-2 py-1 text-xs font-semibold text-[var(--dgc-accent-text)]">
                     Active
                   </span>
                 ) : null}
@@ -429,7 +487,7 @@ function DgcLayersPanel({
                 {controller.document.layers.length > 1 ? (
                   <button
                     type="button"
-                    className="text-red-300"
+                    className="text-[var(--dgc-danger-text)]"
                     onClick={(event) => {
                       event.stopPropagation();
                       controller.deleteLayer(layer.id);

@@ -392,7 +392,7 @@ export default function DgcPreview({
                 key={layer.id}
                 className={`rounded-lg px-2 py-1.5 text-left text-xs transition ${
                   isActive
-                    ? 'bg-sky-500/25 font-semibold text-sky-100 ring-1 ring-sky-400/40'
+                    ? 'bg-[var(--dgc-accent-surface)] font-semibold text-[var(--dgc-accent-text)] ring-1 ring-[var(--dgc-accent-border)]'
                     : 'text-[var(--dgc-text-soft)] hover:bg-[var(--dgc-hover-strong)]'
                 } ${!layer.isVisible ? 'opacity-50' : ''}`}
               >
@@ -403,7 +403,9 @@ export default function DgcPreview({
                   title={layer.name}
                 >
                   <span className="font-mono text-[11px] font-bold">{layerHandlePairLabel(index)}</span>
-                  <span className="mt-0.5 block truncate text-[10px] opacity-80">{layer.name}</span>
+                  <span className={`mt-0.5 block truncate text-[10px] ${isActive ? '' : 'opacity-80'}`}>
+                    {layer.name}
+                  </span>
                 </button>
               </div>
             );
