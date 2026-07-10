@@ -103,6 +103,40 @@ export default function DgcPreview({
     };
   }, [field, layout.screenRect, size.width]);
 
+  const visibleLayerPolygons = useMemo(() => {
+    return controller.document.layers
+      .map((layer) => {
+        if (!layer.isVisible) return null;
+        const state = controller.layerStates[layer.id];
+        if (!state?.result) return null;
+        const { result } = state;
+
+        const vertices = CanvasGeometry.partitionPolygonInsideField(
+          state.input.width,
+          state.input.height,
+          state.input.startX,
+          result.endX,
+          result.endY,
+          result.edge,
+        );
+        if (vertices.length < 3) return null;
+
+        const screenPoints = vertices.map((vertex) => layout.screenPointField(vertex.x, vertex.y));
+        return {
+          layer,
+          state,
+          result,
+          isActive: layer.id === controller.document.activeLayerID,
+          vertices,
+          screenPoints,
+          points: screenPoints.map((point) => `${point.x},${point.y}`).join(' '),
+          area: CanvasGeometry.polygonArea(vertices),
+        };
+      })
+      .filter((entry): entry is NonNullable<typeof entry> => entry !== null)
+      .sort((left, right) => right.area - left.area);
+  }, [controller.document.activeLayerID, controller.document.layers, controller.layerStates, layout]);
+
   const pointerToScreen = useCallback((event: React.PointerEvent | PointerEvent) => {
     const rect = containerRef.current?.getBoundingClientRect();
     if (!rect) return { x: 0, y: 0 };
@@ -150,9 +184,19 @@ export default function DgcPreview({
   const onPointerDown = (event: React.PointerEvent) => {
     const point = pointerToScreen(event);
     const hit = nearestHandle(point);
-    if (!hit) return;
-    event.currentTarget.setPointerCapture(event.pointerId);
-    beginHandleInteraction(hit);
+    if (hit) {
+      event.currentTarget.setPointerCapture(event.pointerId);
+      beginHandleInteraction(hit);
+      return;
+    }
+
+    const containingLayers = visibleLayerPolygons.filter(({ screenPoints }) =>
+      isPointInPolygon(point, screenPoints),
+    );
+    if (containingLayers.length > 0) {
+      const selected = containingLayers[containingLayers.length - 1];
+      controller.selectLayer(selected.layer.id);
+    }
   };
 
   const onPointerMove = (event: React.PointerEvent) => {
@@ -294,61 +338,33 @@ export default function DgcPreview({
             Field of Wealth
           </text>
 
-          {controller.document.layers.map((layer) => {
-            if (!layer.isVisible) return null;
-            const state = controller.layerStates[layer.id];
-            if (!state?.result) return null;
-            const isActive = layer.id === controller.document.activeLayerID;
-            const vertices = CanvasGeometry.partitionPolygonInsideField(
-              state.input.width,
-              state.input.height,
-              state.input.startX,
-              state.result.endX,
-              state.result.endY,
-              state.result.edge,
-            );
-            if (vertices.length < 3) return null;
-            const points = vertices
-              .map((v) => layout.screenPointField(v.x, v.y))
-              .map((p) => `${p.x},${p.y}`)
-              .join(' ');
+          {visibleLayerPolygons.map(({ layer, isActive, points }) => {
             return (
-              <polygon
-                key={`fill-${layer.id}`}
-                points={points}
-                fill={layer.colorHex}
-                fillOpacity={isActive ? 0.28 : 0.14}
-              />
+              <g key={`fill-${layer.id}`}>
+                {isActive ? (
+                  <polygon
+                    points={points}
+                    fill="none"
+                    stroke="var(--dgc-preview-stroke)"
+                    strokeOpacity={0.9}
+                    strokeWidth={7}
+                    strokeLinejoin="round"
+                  />
+                ) : null}
+                <polygon
+                  points={points}
+                  fill={layer.colorHex}
+                  fillOpacity={isActive ? 0.24 : 0.14}
+                  stroke={layer.colorHex}
+                  strokeOpacity={isActive ? 1 : 0.55}
+                  strokeWidth={isActive ? 3.25 : 1.75}
+                  strokeLinejoin="round"
+                />
+              </g>
             );
           })}
 
-          {controller.document.layers.map((layer) => {
-            if (!layer.isVisible) return null;
-            const state = controller.layerStates[layer.id];
-            if (!state?.result) return null;
-            const isActive = layer.id === controller.document.activeLayerID;
-            const start = layout.screenPointField(state.input.startX, 0);
-            const end = layout.screenPointField(state.result.endX, state.result.endY);
-            const lineEnd = layout.partitionLineDrawEndpoint(end, start);
-            return (
-              <line
-                key={`line-${layer.id}`}
-                x1={end.x}
-                y1={end.y}
-                x2={lineEnd.x}
-                y2={lineEnd.y}
-                stroke={layer.colorHex}
-                strokeWidth={isActive ? 3 : 1.5}
-                strokeLinecap="round"
-              />
-            );
-          })}
-
-          {controller.document.layers.map((layer) => {
-            if (!layer.isVisible) return null;
-            const state = controller.layerStates[layer.id];
-            if (!state?.result) return null;
-            const isActive = layer.id === controller.document.activeLayerID;
+          {visibleLayerPolygons.map(({ layer, state, result, isActive }) => {
             const labels = layerHandleLabelsForId(controller.document.layers, layer.id);
             const startHovered =
               hoveredHit?.layerId === layer.id && hoveredHit.handle === 'start';
@@ -357,7 +373,7 @@ export default function DgcPreview({
             const startDragging = isActive && draggingHandle === 'start';
             const endDragging = isActive && draggingHandle === 'end';
             const startPoint = layout.screenPointField(state.input.startX, 0);
-            const endPoint = layout.screenPointField(state.result.endX, state.result.endY);
+            const endPoint = layout.screenPointField(result.endX, result.endY);
 
             return (
               <g key={`handles-${layer.id}`}>
@@ -529,6 +545,21 @@ function distanceSquared(a: { x: number; y: number }, b: { x: number; y: number 
   const dx = a.x - b.x;
   const dy = a.y - b.y;
   return dx * dx + dy * dy;
+}
+
+function isPointInPolygon(point: { x: number; y: number }, polygon: { x: number; y: number }[]) {
+  let inside = false;
+  for (let index = 0, previous = polygon.length - 1; index < polygon.length; previous = index++) {
+    const current = polygon[index];
+    const prior = polygon[previous];
+    const intersects =
+      current.y > point.y !== prior.y > point.y &&
+      point.x < ((prior.x - current.x) * (point.y - current.y)) / (prior.y - current.y) + current.x;
+    if (intersects) {
+      inside = !inside;
+    }
+  }
+  return inside;
 }
 
 function formatNumber(value: number) {
