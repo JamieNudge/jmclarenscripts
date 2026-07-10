@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { dgcSiteConfig } from '@/lib/dgc/site-config';
+import DgcThemeRoot from '@/components/dgc/DgcThemeRoot';
 
 export const metadata: Metadata = {
   title: dgcSiteConfig.pageTitle,
@@ -11,5 +12,5 @@ export const metadata: Metadata = {
 };
 
 export default function DgcLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return <DgcThemeRoot>{children}</DgcThemeRoot>;
 }

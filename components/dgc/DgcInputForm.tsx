@@ -51,10 +51,10 @@ function EditableNumericField({
 
   return (
     <label className="block space-y-1">
-      <span className="text-base font-semibold text-white">{title}</span>
+      <span className="text-base font-semibold text-[var(--dgc-text)]">{title}</span>
       <div className="relative">
         <input
-          className="w-full rounded-lg border border-white/15 bg-[#111] px-3 py-2 text-white"
+          className="w-full rounded-lg border border-[var(--dgc-border)] bg-[var(--dgc-input)] px-3 py-2 text-[var(--dgc-text)]"
           value={focused ? draft : `${formatNumber(value)}${suffix}`}
           placeholder={prompt}
           inputMode="decimal"
@@ -87,7 +87,7 @@ export default function DgcInputForm({ controller }: { controller: DgcDocumentCo
 
   return (
     <div className="space-y-4">
-      <h2 className="text-2xl font-semibold text-white">Inputs</h2>
+      <h2 className="text-2xl font-semibold text-[var(--dgc-text)]">Inputs</h2>
 
       <Panel title="Total Population">
         <EditableNumericField
@@ -103,21 +103,21 @@ export default function DgcInputForm({ controller }: { controller: DgcDocumentCo
           prompt="e.g. 1"
         />
         <label className="block space-y-1">
-          <span className="text-base font-semibold text-white">Label</span>
+          <span className="text-base font-semibold text-[var(--dgc-text)]">Label</span>
           <input
-            className="w-full rounded-lg border border-white/15 bg-[#111] px-3 py-2 text-white"
+            className="w-full rounded-lg border border-[var(--dgc-border)] bg-[var(--dgc-input)] px-3 py-2 text-[var(--dgc-text)]"
             value={document.canvas.totalPopulationLabel}
             placeholder={DEFAULT_TOTAL_POPULATION_LABEL}
             onChange={(event) => controller.updateTotalPopulationLabel(event.target.value)}
           />
         </label>
         <label className="flex items-center gap-3">
-          <span className="text-base font-semibold text-white">Colour</span>
+          <span className="text-base font-semibold text-[var(--dgc-text)]">Colour</span>
           <input
             type="color"
             value={document.canvas.totalPopulationColorHex || DEFAULT_TOTAL_POPULATION_COLOR_HEX}
             onChange={(event) => controller.updateTotalPopulationColorHex(event.target.value)}
-            className="h-10 w-14 cursor-pointer rounded border border-white/15 bg-transparent"
+            className="h-10 w-14 cursor-pointer rounded border border-[var(--dgc-border)] bg-transparent"
             aria-label="Total Population colour"
           />
         </label>
@@ -137,7 +137,7 @@ export default function DgcInputForm({ controller }: { controller: DgcDocumentCo
           onCommit={controller.updateFieldHeight}
           prompt="e.g. 8"
         />
-        <p className="text-sm text-white/80">
+        <p className="text-sm text-[var(--dgc-text-soft)]">
           Field of Wealth sits above Total Population, left-aligned at the width percentage you
           set. Each layer starts on the bottom edge of the field; drag the end handle or type that
           layer&apos;s Field of Wealth % to move the endpoint on the preview.
@@ -151,23 +151,23 @@ export default function DgcInputForm({ controller }: { controller: DgcDocumentCo
               key={preset.id}
               type="button"
               onClick={() => controller.applyPreset(preset)}
-              className="flex w-full items-center justify-between rounded-lg border border-white/15 px-3 py-2 text-left text-white hover:bg-white/5"
+              className="flex w-full items-center justify-between rounded-lg border border-[var(--dgc-border)] px-3 py-2 text-left text-[var(--dgc-text)] hover:bg-[var(--dgc-hover)]"
             >
               <span className="font-semibold">{preset.title}</span>
-              <span className="text-sm text-white/70">
+              <span className="text-sm text-[var(--dgc-text-muted)]">
                 start {formatNumber(preset.startX)} · {formatNumber(preset.areaPercent)}%
               </span>
             </button>
           ))}
         </div>
-        <p className="text-xs text-white/60">
+        <p className="text-xs text-[var(--dgc-text-faint)]">
           Applies start position and area target to the active layer.
         </p>
       </Panel>
 
       <Panel title="My Presets">
         {controller.customSketchPresets.length === 0 ? (
-          <p className="text-sm text-white/70">
+          <p className="text-sm text-[var(--dgc-text-muted)]">
             No custom presets yet. Save the active layer&apos;s settings below.
           </p>
         ) : (
@@ -177,16 +177,16 @@ export default function DgcInputForm({ controller }: { controller: DgcDocumentCo
                 <button
                   type="button"
                   onClick={() => controller.applyCustomPreset(preset)}
-                  className="min-w-0 flex-1 rounded-lg border border-white/15 px-3 py-2 text-left text-white hover:bg-white/5"
+                  className="min-w-0 flex-1 rounded-lg border border-[var(--dgc-border)] px-3 py-2 text-left text-[var(--dgc-text)] hover:bg-[var(--dgc-hover)]"
                 >
                   <span className="block font-semibold">{preset.title}</span>
-                  <span className="text-xs text-white/70">
+                  <span className="text-xs text-[var(--dgc-text-muted)]">
                     start {formatNumber(preset.startX)} · {formatNumber(preset.areaPercent)}%
                   </span>
                 </button>
                 <button
                   type="button"
-                  className="text-sm text-white/80"
+                  className="text-sm text-[var(--dgc-text-soft)]"
                   onClick={() => {
                     setEditingPreset(preset);
                     setEditPresetTitle(preset.title);
@@ -209,7 +209,7 @@ export default function DgcInputForm({ controller }: { controller: DgcDocumentCo
         )}
         <div className="flex flex-wrap gap-2">
           <input
-            className="min-w-0 flex-1 rounded-lg border border-white/15 bg-[#111] px-3 py-2 text-white"
+            className="min-w-0 flex-1 rounded-lg border border-[var(--dgc-border)] bg-[var(--dgc-input)] px-3 py-2 text-[var(--dgc-text)]"
             value={newPresetTitle}
             placeholder="Preset name"
             onChange={(event) => setNewPresetTitle(event.target.value)}
@@ -231,23 +231,23 @@ export default function DgcInputForm({ controller }: { controller: DgcDocumentCo
       <DgcLayersPanel controller={controller} displayLayerIndices={displayLayerIndices} />
 
       {editingPreset ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="w-full max-w-md space-y-3 rounded-2xl border border-white/15 bg-[#1b1b1d] p-4 text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--dgc-overlay)] p-4">
+          <div className="w-full max-w-md space-y-3 rounded-2xl border border-[var(--dgc-border)] bg-[var(--dgc-panel)] p-4 text-[var(--dgc-text)]">
             <h3 className="text-lg font-semibold">Edit Preset</h3>
             <input
-              className="w-full rounded-lg border border-white/15 bg-[#111] px-3 py-2"
+              className="w-full rounded-lg border border-[var(--dgc-border)] bg-[var(--dgc-input)] px-3 py-2"
               value={editPresetTitle}
               onChange={(event) => setEditPresetTitle(event.target.value)}
               placeholder="Name"
             />
             <input
-              className="w-full rounded-lg border border-white/15 bg-[#111] px-3 py-2"
+              className="w-full rounded-lg border border-[var(--dgc-border)] bg-[var(--dgc-input)] px-3 py-2"
               value={editPresetStartX}
               onChange={(event) => setEditPresetStartX(event.target.value)}
               placeholder="Start on bottom edge"
             />
             <input
-              className="w-full rounded-lg border border-white/15 bg-[#111] px-3 py-2"
+              className="w-full rounded-lg border border-[var(--dgc-border)] bg-[var(--dgc-input)] px-3 py-2"
               value={editPresetAreaPercent}
               onChange={(event) => setEditPresetAreaPercent(event.target.value)}
               placeholder="Area target (%)"
@@ -255,14 +255,14 @@ export default function DgcInputForm({ controller }: { controller: DgcDocumentCo
             <div className="flex justify-end gap-2">
               <button
                 type="button"
-                className="rounded-lg border border-white/15 px-3 py-2"
+                className="rounded-lg border border-[var(--dgc-border)] px-3 py-2"
                 onClick={() => setEditingPreset(null)}
               >
                 Cancel
               </button>
               <button
                 type="button"
-                className="rounded-lg bg-sky-600 px-3 py-2"
+                className="rounded-lg bg-sky-600 px-3 py-2 text-white"
                 onClick={() => {
                   const startX = parseNumericInput(editPresetStartX);
                   const areaPercent = parseNumericInput(editPresetAreaPercent);
@@ -295,7 +295,7 @@ function DgcLayersPanel({
 }) {
   return (
     <Panel title="Layers">
-      <p className="text-xs text-white/60">Top of the list is front-most on the canvas.</p>
+      <p className="text-xs text-[var(--dgc-text-faint)]">Top of the list is front-most on the canvas.</p>
       <div className="space-y-2">
         {displayLayerIndices.map((index) => {
           const layer = controller.document.layers[index];
@@ -309,7 +309,7 @@ function DgcLayersPanel({
           return (
             <div
               key={layer.id}
-              className={`rounded-xl border p-3 ${isActive ? 'border-sky-400/40 bg-sky-500/10' : 'border-white/10'}`}
+              className={`rounded-xl border p-3 ${isActive ? 'border-sky-400/40 bg-sky-500/10' : 'border-[var(--dgc-border-soft)]'}`}
               onClick={() => controller.selectLayer(layer.id)}
               onKeyDown={() => controller.selectLayer(layer.id)}
               role="button"
@@ -320,7 +320,7 @@ function DgcLayersPanel({
                   <button
                     type="button"
                     disabled={!canMoveTowardFront}
-                    className="text-white/80 disabled:opacity-30"
+                    className="text-[var(--dgc-text-soft)] disabled:opacity-30"
                     onClick={(event) => {
                       event.stopPropagation();
                       controller.moveLayerTowardFront(layer.id);
@@ -332,7 +332,7 @@ function DgcLayersPanel({
                   <button
                     type="button"
                     disabled={!canMoveTowardBack}
-                    className="text-white/80 disabled:opacity-30"
+                    className="text-[var(--dgc-text-soft)] disabled:opacity-30"
                     onClick={(event) => {
                       event.stopPropagation();
                       controller.moveLayerTowardBack(layer.id);
@@ -345,7 +345,7 @@ function DgcLayersPanel({
 
                 <button
                   type="button"
-                  className="text-white/80"
+                  className="text-[var(--dgc-text-soft)]"
                   onClick={(event) => {
                     event.stopPropagation();
                     controller.toggleLayerVisibility(layer.id);
@@ -356,11 +356,11 @@ function DgcLayersPanel({
 
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="rounded bg-white/10 px-2 py-0.5 font-mono text-xs font-bold text-white">
+                    <span className="rounded bg-[var(--dgc-chip)] px-2 py-0.5 font-mono text-xs font-bold text-[var(--dgc-text)]">
                       {handlePair}
                     </span>
                     <input
-                      className="min-w-0 flex-1 rounded border border-white/15 bg-[#111] px-2 py-1 text-white"
+                      className="min-w-0 flex-1 rounded border border-[var(--dgc-border)] bg-[var(--dgc-input)] px-2 py-1 text-[var(--dgc-text)]"
                       value={layer.name}
                       onClick={(event) => event.stopPropagation()}
                       onChange={(event) =>
@@ -373,10 +373,10 @@ function DgcLayersPanel({
                     className="mt-2 space-y-2"
                     onClick={(event) => event.stopPropagation()}
                   >
-                    <label className="flex items-center gap-2 text-xs text-white/70">
+                    <label className="flex items-center gap-2 text-xs text-[var(--dgc-text-muted)]">
                       <span className="w-28 shrink-0">{handleLabels.start} on bottom edge</span>
                       <input
-                        className="w-24 rounded border border-white/15 bg-[#111] px-2 py-1 text-white"
+                        className="w-24 rounded border border-[var(--dgc-border)] bg-[var(--dgc-input)] px-2 py-1 text-[var(--dgc-text)]"
                         defaultValue={formatNumber(layer.startX)}
                         onBlur={(event) => {
                           const parsed = parseNumericInput(event.target.value);
@@ -387,7 +387,7 @@ function DgcLayersPanel({
                       />
                     </label>
 
-                    <label className="flex items-center gap-2 text-xs text-white/70">
+                    <label className="flex items-center gap-2 text-xs text-[var(--dgc-text-muted)]">
                       <span className="w-28 shrink-0">Field of Wealth %</span>
                       <LayerAreaPercentInput
                         value={layer.areaFraction}
@@ -397,7 +397,7 @@ function DgcLayersPanel({
                       />
                     </label>
 
-                    <label className="flex items-center gap-2 text-xs text-white/70">
+                    <label className="flex items-center gap-2 text-xs text-[var(--dgc-text-muted)]">
                       Colour
                       <input
                         type="color"
@@ -405,14 +405,14 @@ function DgcLayersPanel({
                         onChange={(event) =>
                           controller.updateLayerColor(layer.id, event.target.value)
                         }
-                        className="h-8 w-10 cursor-pointer rounded border border-white/15 bg-transparent"
+                        className="h-8 w-10 cursor-pointer rounded border border-[var(--dgc-border)] bg-transparent"
                         aria-label={`Colour for layer ${handlePair}`}
                       />
                     </label>
                   </div>
 
                   {state?.result ? (
-                    <p className="mt-1 text-sm text-white/75">
+                    <p className="mt-1 text-sm text-[var(--dgc-text-muted)]">
                       {edgeDisplayName(state.result.edge)}
                     </p>
                   ) : (
@@ -457,11 +457,11 @@ function DgcLayersPanel({
           type="button"
           onClick={controller.duplicateActiveLayer}
           disabled={!controller.canAddLayer}
-          className="rounded-lg border border-white/15 px-3 py-2 text-sm text-white disabled:cursor-not-allowed disabled:opacity-40"
+          className="rounded-lg border border-[var(--dgc-border)] px-3 py-2 text-sm text-[var(--dgc-text)] disabled:cursor-not-allowed disabled:opacity-40"
         >
           Duplicate
         </button>
-        <span className="text-xs text-white/60">
+        <span className="text-xs text-[var(--dgc-text-faint)]">
           {controller.document.layers.length}/{MAX_LAYERS} layers · up to {MAX_LAYERS} per design
         </span>
       </div>
@@ -471,8 +471,8 @@ function DgcLayersPanel({
 
 function Panel({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <section className="space-y-3 rounded-2xl border border-white/15 bg-[#1b1b1d] p-4">
-      <h3 className="text-lg font-semibold text-white">{title}</h3>
+    <section className="space-y-3 rounded-2xl border border-[var(--dgc-border)] bg-[var(--dgc-panel)] p-4">
+      <h3 className="text-lg font-semibold text-[var(--dgc-text)]">{title}</h3>
       {children}
     </section>
   );

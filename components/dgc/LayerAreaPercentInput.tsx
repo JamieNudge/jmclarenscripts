@@ -13,7 +13,7 @@ function parsePercentInput(raw: string): number | null {
 export function LayerAreaPercentInput({
   value,
   onCommit,
-  className = 'w-full min-w-0 rounded border border-white/15 bg-[#111] px-2 py-1 text-sm text-white',
+  className = 'w-full min-w-0 rounded border border-[var(--dgc-border)] bg-[var(--dgc-input)] px-2 py-1 text-sm text-[var(--dgc-text)]',
 }: {
   value: number;
   onCommit: (fraction: number) => void;

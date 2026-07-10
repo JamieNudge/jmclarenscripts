@@ -193,28 +193,28 @@ export default function DgcPreview({
   };
 
   return (
-    <section className="rounded-2xl border border-white/15 bg-[#1b1b1d] p-3 shadow-lg">
+    <section className="rounded-2xl border border-[var(--dgc-border)] bg-[var(--dgc-panel)] p-3 shadow-lg">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <h2 className="text-xl font-semibold text-white">Field of Wealth - Preview</h2>
+        <h2 className="text-xl font-semibold text-[var(--dgc-text)]">Field of Wealth - Preview</h2>
         {onRequestFullscreen && !fullscreen ? (
           <button
             type="button"
             onClick={onRequestFullscreen}
-            className="rounded-lg border border-white/20 px-3 py-2 text-sm font-medium text-white hover:bg-white/10"
+            className="rounded-lg border border-[var(--dgc-border-strong)] px-3 py-2 text-sm font-medium text-[var(--dgc-text)] hover:bg-[var(--dgc-hover-strong)]"
           >
             Present Full Screen Preview
           </button>
         ) : null}
       </div>
 
-      <p className="mb-3 rounded-full border border-white/15 bg-black/50 px-4 py-2 text-center text-sm text-white/90">
+      <p className="mb-3 rounded-full border border-[var(--dgc-border)] bg-[var(--dgc-preview-pill)] px-4 py-2 text-center text-sm text-[var(--dgc-text-soft)]">
         Drag {activeLabels.start} along the bottom edge. Drag {activeLabels.end}, or type that
         layer&apos;s Field of Wealth %, to set the target area.
       </p>
 
       <div
         ref={containerRef}
-        className={`relative w-full overflow-hidden rounded-xl bg-[#111] ${fullscreen ? 'min-h-[70vh]' : 'min-h-[420px]'}`}
+        className={`relative w-full overflow-hidden rounded-xl bg-[var(--dgc-preview-stage)] ${fullscreen ? 'min-h-[70vh]' : 'min-h-[420px]'}`}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -226,8 +226,8 @@ export default function DgcPreview({
             y={layout.screenRect.y}
             width={layout.screenRect.width}
             height={layout.screenRect.height}
-            fill="#2a2a2c"
-            stroke="rgba(255,255,255,0.35)"
+            fill="var(--dgc-preview-canvas)"
+            stroke="var(--dgc-border)"
             strokeWidth={1}
           />
 
@@ -249,7 +249,7 @@ export default function DgcPreview({
                 y={band.y + band.height / 2}
                 textAnchor="middle"
                 dominantBaseline="middle"
-                fill="white"
+                fill="var(--dgc-preview-label)"
                 fontSize={12}
                 fontWeight={500}
               >
@@ -264,7 +264,7 @@ export default function DgcPreview({
             y1={layout.screenPointCanvas(0, fieldOriginY(controller.document.canvas)).y}
             x2={layout.screenPointCanvas(contentWidth(controller.document.canvas), fieldOriginY(controller.document.canvas)).x}
             y2={layout.screenPointCanvas(contentWidth(controller.document.canvas), fieldOriginY(controller.document.canvas)).y}
-            stroke="#888"
+            stroke="var(--dgc-preview-axis)"
             strokeWidth={2}
             strokeLinecap="round"
           />
@@ -274,15 +274,15 @@ export default function DgcPreview({
             y={field.y}
             width={field.width}
             height={field.height}
-            fill="#0d0d0f"
-            stroke="white"
+            fill="var(--dgc-preview-field)"
+            stroke="var(--dgc-preview-stroke)"
             strokeWidth={2}
           />
           <text
             x={field.x + field.width / 2}
             y={field.y - 10}
             textAnchor="middle"
-            fill="white"
+            fill="var(--dgc-preview-label)"
             fontSize={12}
             fontWeight={600}
           >
@@ -376,7 +376,7 @@ export default function DgcPreview({
         </svg>
 
         <div
-          className="pointer-events-auto absolute z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col gap-1 overflow-y-auto rounded-xl border border-white/15 bg-black/75 p-1.5"
+          className="pointer-events-auto absolute z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col gap-1 overflow-y-auto rounded-xl border border-[var(--dgc-border)] bg-[var(--dgc-preview-overlay)] p-1.5"
           style={{
             left: layerPickerLayout.left,
             top: layerPickerLayout.top,
@@ -393,7 +393,7 @@ export default function DgcPreview({
                 className={`rounded-lg px-2 py-1.5 text-left text-xs transition ${
                   isActive
                     ? 'bg-sky-500/25 font-semibold text-sky-100 ring-1 ring-sky-400/40'
-                    : 'text-white/80 hover:bg-white/10'
+                    : 'text-[var(--dgc-text-soft)] hover:bg-[var(--dgc-hover-strong)]'
                 } ${!layer.isVisible ? 'opacity-50' : ''}`}
               >
                 <button
@@ -411,7 +411,7 @@ export default function DgcPreview({
         </div>
 
         {readout ? (
-          <div className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full border border-white/15 bg-black/80 px-4 py-2 text-sm font-semibold text-white">
+          <div className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full border border-[var(--dgc-border)] bg-[var(--dgc-preview-overlay-strong)] px-4 py-2 text-sm font-semibold text-[var(--dgc-text)]">
             {readout}
           </div>
         ) : null}
@@ -438,14 +438,14 @@ function renderHandle(
         cy={point.y}
         r={active ? 8 : 6}
         fill={color}
-        stroke="white"
+        stroke="var(--dgc-preview-stroke)"
         strokeWidth={1.5}
       />
       <text
         x={point.x}
         y={point.y + (role === 'start' ? 24 : -24)}
         textAnchor="middle"
-        fill="white"
+        fill="var(--dgc-preview-label)"
         fontSize={12}
         fontWeight={700}
       >

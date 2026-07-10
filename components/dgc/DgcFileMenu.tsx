@@ -27,8 +27,8 @@ export default function DgcFileMenu({
 
   return (
     <div className="flex flex-col items-start gap-3">
-      <p className="text-xs font-medium text-white/55">
-        Keep editing later (saves to your Mac)
+      <p className="text-xs font-medium text-[var(--dgc-text-faint)]">
+        Save editable design files to your Mac
       </p>
       <div className="flex flex-wrap gap-2">
         <button
@@ -36,7 +36,7 @@ export default function DgcFileMenu({
           onClick={() => void persistence.save()}
           disabled={persistence.isBusy}
           title="Save an editable design file to your hard drive"
-          className="rounded-lg border border-white/20 px-3 py-2 text-sm text-white hover:bg-white/5 disabled:opacity-50"
+          className="rounded-lg border border-[var(--dgc-border-strong)] px-3 py-2 text-sm text-[var(--dgc-text)] hover:bg-[var(--dgc-hover)] disabled:opacity-50"
         >
           Save design
         </button>
@@ -45,7 +45,7 @@ export default function DgcFileMenu({
           onClick={() => void persistence.saveDesignAs()}
           disabled={persistence.isBusy}
           title="Save a copy of the design under a new name"
-          className="rounded-lg border border-white/20 px-3 py-2 text-sm text-white hover:bg-white/5 disabled:opacity-50"
+          className="rounded-lg border border-[var(--dgc-border-strong)] px-3 py-2 text-sm text-[var(--dgc-text)] hover:bg-[var(--dgc-hover)] disabled:opacity-50"
         >
           Save design as…
         </button>
@@ -53,7 +53,7 @@ export default function DgcFileMenu({
           type="button"
           onClick={openDesign}
           disabled={persistence.isBusy}
-          className="rounded-lg border border-white/20 px-3 py-2 text-sm text-white hover:bg-white/5 disabled:opacity-50"
+          className="rounded-lg border border-[var(--dgc-border-strong)] px-3 py-2 text-sm text-[var(--dgc-text)] hover:bg-[var(--dgc-hover)] disabled:opacity-50"
         >
           Open…
         </button>
@@ -61,7 +61,7 @@ export default function DgcFileMenu({
           type="button"
           onClick={persistence.newDesign}
           disabled={persistence.isBusy}
-          className="rounded-lg border border-white/20 px-3 py-2 text-sm text-white hover:bg-white/5 disabled:opacity-50"
+          className="rounded-lg border border-[var(--dgc-border-strong)] px-3 py-2 text-sm text-[var(--dgc-text)] hover:bg-[var(--dgc-hover)] disabled:opacity-50"
         >
           New
         </button>
@@ -69,23 +69,23 @@ export default function DgcFileMenu({
           <button
             type="button"
             onClick={() => setRecentOpen((value) => !value)}
-            className="rounded-lg border border-white/20 px-3 py-2 text-sm text-white hover:bg-white/5"
+            className="rounded-lg border border-[var(--dgc-border-strong)] px-3 py-2 text-sm text-[var(--dgc-text)] hover:bg-[var(--dgc-hover)]"
           >
             Recent {recentOpen ? '▴' : '▾'}
           </button>
         ) : null}
       </div>
 
-      <p className="max-w-md text-xs text-white/50">
-        <span className="font-medium text-white/70">Save design</span> keeps your work
-        editable — reopen with Open. Finished pictures are exported in the panel on the
-        right.
+      <p className="max-w-md text-xs text-[var(--dgc-text-faint)]">
+        <span className="font-medium text-[var(--dgc-text-muted)]">Save design</span> keeps your work
+        editable on your Mac and Open brings it back later. Named work is also backed up in this
+        browser for convenience. Finished pictures are exported in the panel on the right.
       </p>
 
       <label className="flex w-full max-w-md flex-col gap-1">
-        <span className="text-xs font-medium text-white/60">Design name</span>
+        <span className="text-xs font-medium text-[var(--dgc-text-faint)]">Design name</span>
         <input
-          className="w-full rounded-lg border border-white/15 bg-[#111] px-3 py-2 text-sm text-white"
+          className="w-full rounded-lg border border-[var(--dgc-border)] bg-[var(--dgc-input)] px-3 py-2 text-sm text-[var(--dgc-text)]"
           value={controller.document.name}
           placeholder="e.g. Diana 8% sketch"
           onChange={(event) => controller.updateJobName(event.target.value)}
@@ -93,7 +93,7 @@ export default function DgcFileMenu({
       </label>
 
       <p
-        className={`max-w-md text-xs ${persistence.isDirty ? 'text-amber-300' : 'text-white/55'}`}
+        className={`max-w-md text-xs ${persistence.isDirty ? 'text-amber-300' : 'text-[var(--dgc-text-faint)]'}`}
         aria-live="polite"
       >
         {persistence.saveStatusLabel}
@@ -111,7 +111,7 @@ export default function DgcFileMenu({
       ) : null}
 
       {recentOpen && persistence.recentDesigns.length > 0 ? (
-        <ul className="w-full max-w-md space-y-1 rounded-lg border border-white/10 bg-[#141416] p-2">
+        <ul className="w-full max-w-md space-y-1 rounded-lg border border-[var(--dgc-border-soft)] bg-[var(--dgc-elevated)] p-2">
           {persistence.recentDesigns.map((item) => (
             <li key={item.id}>
               <button
@@ -121,10 +121,10 @@ export default function DgcFileMenu({
                   setRecentOpen(false);
                 }}
                 disabled={persistence.isBusy}
-                className="flex w-full items-center justify-between gap-2 rounded-md px-2 py-2 text-left text-sm hover:bg-white/5 disabled:opacity-50"
+                className="flex w-full items-center justify-between gap-2 rounded-md px-2 py-2 text-left text-sm hover:bg-[var(--dgc-hover)] disabled:opacity-50"
               >
-                <span className="truncate font-medium text-white">{item.name}</span>
-                <span className="shrink-0 text-xs text-white/45">
+                <span className="truncate font-medium text-[var(--dgc-text)]">{item.name}</span>
+                <span className="shrink-0 text-xs text-[var(--dgc-text-dim)]">
                   {formatJobSavedAt(item.savedAt)}
                 </span>
               </button>

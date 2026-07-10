@@ -69,3 +69,70 @@ body.best-picks-route .bp-best-picks-surface {
     'Segoe UI Symbol', 'Noto Color Emoji', monospace;
 }
 
+/* DGC designer: light/dark chrome tokens (export drawing stays separate). */
+[data-dgc-theme='dark'] {
+  color-scheme: dark;
+  --dgc-page: #101012;
+  --dgc-page-fullscreen: #0b0b0c;
+  --dgc-panel: #1b1b1d;
+  --dgc-elevated: #141416;
+  --dgc-input: #111111;
+  --dgc-input-deep: #0d0d0f;
+  --dgc-text: #ffffff;
+  --dgc-text-muted: rgba(255, 255, 255, 0.65);
+  --dgc-text-soft: rgba(255, 255, 255, 0.85);
+  --dgc-text-faint: rgba(255, 255, 255, 0.55);
+  --dgc-text-dim: rgba(255, 255, 255, 0.45);
+  --dgc-border: rgba(255, 255, 255, 0.15);
+  --dgc-border-strong: rgba(255, 255, 255, 0.2);
+  --dgc-border-soft: rgba(255, 255, 255, 0.1);
+  --dgc-hover: rgba(255, 255, 255, 0.05);
+  --dgc-hover-strong: rgba(255, 255, 255, 0.1);
+  --dgc-overlay: rgba(0, 0, 0, 0.6);
+  --dgc-chip: rgba(255, 255, 255, 0.1);
+  --dgc-preview-stage: #111111;
+  --dgc-preview-canvas: #2a2a2c;
+  --dgc-preview-field: #0d0d0f;
+  --dgc-preview-stroke: #ffffff;
+  --dgc-preview-axis: #888888;
+  --dgc-preview-label: #ffffff;
+  --dgc-preview-overlay: rgba(0, 0, 0, 0.75);
+  --dgc-preview-overlay-strong: rgba(0, 0, 0, 0.8);
+  --dgc-preview-pill: rgba(0, 0, 0, 0.5);
+}
+
+[data-dgc-theme='light'] {
+  color-scheme: light;
+  --dgc-page: #f4f4f6;
+  --dgc-page-fullscreen: #ffffff;
+  --dgc-panel: #ffffff;
+  --dgc-elevated: #ececef;
+  --dgc-input: #ffffff;
+  --dgc-input-deep: #f7f7f8;
+  --dgc-text: #111113;
+  --dgc-text-muted: rgba(17, 17, 19, 0.65);
+  --dgc-text-soft: rgba(17, 17, 19, 0.85);
+  --dgc-text-faint: rgba(17, 17, 19, 0.55);
+  --dgc-text-dim: rgba(17, 17, 19, 0.45);
+  --dgc-border: rgba(17, 17, 19, 0.14);
+  --dgc-border-strong: rgba(17, 17, 19, 0.2);
+  --dgc-border-soft: rgba(17, 17, 19, 0.1);
+  --dgc-hover: rgba(17, 17, 19, 0.05);
+  --dgc-hover-strong: rgba(17, 17, 19, 0.08);
+  --dgc-overlay: rgba(17, 17, 19, 0.45);
+  --dgc-chip: rgba(17, 17, 19, 0.08);
+  --dgc-preview-stage: #e8e8ea;
+  --dgc-preview-canvas: #d8d8dc;
+  --dgc-preview-field: #ffffff;
+  --dgc-preview-stroke: #333333;
+  --dgc-preview-axis: #666666;
+  --dgc-preview-label: #111113;
+  --dgc-preview-overlay: rgba(255, 255, 255, 0.92);
+  --dgc-preview-overlay-strong: rgba(255, 255, 255, 0.95);
+  --dgc-preview-pill: rgba(255, 255, 255, 0.85);
+}
+
+.dgc-root {
+  background: var(--dgc-page);
+  color: var(--dgc-text);
+}

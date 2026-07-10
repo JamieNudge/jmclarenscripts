@@ -151,22 +151,22 @@ Area fraction: ${formatNumber(result.areaFraction * 100)}%`;
   const isExporting = exportingId !== null;
 
   return (
-    <section className="rounded-2xl border border-white/15 bg-[#1b1b1d] p-4">
+    <section className="rounded-2xl border border-[var(--dgc-border)] bg-[var(--dgc-panel)] p-4">
       <button
         type="button"
         className="flex w-full items-center justify-between text-left"
         onClick={() => setExpanded((value) => !value)}
       >
-        <span className="text-xl font-semibold text-white">Result & Export</span>
-        <span className="text-sm text-white/70">{expanded ? 'Hide controls' : 'Show controls'}</span>
+        <span className="text-xl font-semibold text-[var(--dgc-text)]">Result & Export</span>
+        <span className="text-sm text-[var(--dgc-text-muted)]">{expanded ? 'Hide controls' : 'Show controls'}</span>
       </button>
 
       {expanded ? (
         <div className="mt-4 grid gap-6 md:grid-cols-2">
-          <div className="space-y-3 text-white">
+          <div className="space-y-3 text-[var(--dgc-text)]">
             <h3 className="text-lg font-semibold">Result</h3>
             {result ? (
-              <div className="space-y-1 text-sm text-white/85">
+              <div className="space-y-1 text-sm text-[var(--dgc-text-soft)]">
                 <p>Edge: {edgeDisplayName(result.edge)}</p>
                 <p>
                   Endpoint: ({formatNumber(result.endX)}, {formatNumber(result.endY)})
@@ -183,48 +183,48 @@ Area fraction: ${formatNumber(result.areaFraction * 100)}%`;
               type="button"
               disabled={!controller.canCopyResult}
               onClick={copyResult}
-              className="rounded-lg border border-white/15 px-3 py-2 text-sm text-white disabled:opacity-40"
+              className="rounded-lg border border-[var(--dgc-border)] px-3 py-2 text-sm text-[var(--dgc-text)] disabled:opacity-40"
             >
               Copy to Clipboard
             </button>
-            <p className="text-xs text-white/60">
+            <p className="text-xs text-[var(--dgc-text-faint)]">
               Pastes into Notes, Word, email, etc.
             </p>
             {controller.copyResultConfirmationVisible ? (
               <p className="text-sm font-semibold text-green-400">Copied to clipboard.</p>
             ) : null}
 
-            <div className="border-t border-white/10 pt-4">
+            <div className="border-t border-[var(--dgc-border-soft)] pt-4">
               <h3 className="mb-3 text-lg font-semibold">Your files</h3>
               <DgcFileMenu controller={controller} persistence={persistence} />
             </div>
           </div>
 
-          <div className="space-y-3 text-white">
+          <div className="space-y-3 text-[var(--dgc-text)]">
             <h3 className="text-lg font-semibold">Export finished artwork</h3>
-            <p className="text-xs text-white/60">
+            <p className="text-xs text-[var(--dgc-text-faint)]">
               Downloads a picture or document you can share or print. Use{' '}
-              <span className="font-medium text-white/80">Save design</span> on the left
+              <span className="font-medium text-[var(--dgc-text-soft)]">Save design</span> on the left
               if you need to keep editing later.
             </p>
 
-            <div className="rounded-lg border border-white/10 bg-[#111] p-3 text-xs text-white/70">
-              <p className="font-medium text-white/85">Which format?</p>
+            <div className="rounded-lg border border-[var(--dgc-border-soft)] bg-[var(--dgc-input)] p-3 text-xs text-[var(--dgc-text-muted)]">
+              <p className="font-medium text-[var(--dgc-text-soft)]">Which format?</p>
               <ul className="mt-2 space-y-1.5">
                 <li>
-                  <span className="font-medium text-white/80">Solid background</span> — PNG
+                  <span className="font-medium text-[var(--dgc-text-soft)]">Solid background</span> — PNG
                   with white behind the diagram (email, slides)
                 </li>
                 <li>
-                  <span className="font-medium text-white/80">Large posters</span> — SVG
+                  <span className="font-medium text-[var(--dgc-text-soft)]">Large posters</span> — SVG
                   (stays sharp at any size)
                 </li>
                 <li>
-                  <span className="font-medium text-white/80">Transparent background</span>{' '}
+                  <span className="font-medium text-[var(--dgc-text-soft)]">Transparent background</span>{' '}
                   — PNG with no background (T-shirts, print-on-demand)
                 </li>
                 <li>
-                  <span className="font-medium text-white/80">Keep editing</span> — use
+                  <span className="font-medium text-[var(--dgc-text-soft)]">Keep editing</span> — use
                   Save design on the left, not Export
                 </li>
               </ul>
@@ -237,12 +237,12 @@ Area fraction: ${formatNumber(result.areaFraction * 100)}%`;
                   type="button"
                   onClick={() => exportPresetChoice(preset.id)}
                   disabled={isExporting}
-                  className="rounded-lg border border-white/15 bg-[#111] px-3 py-3 text-left hover:border-sky-500/40 disabled:opacity-50"
+                  className="rounded-lg border border-[var(--dgc-border)] bg-[var(--dgc-input)] px-3 py-3 text-left hover:border-sky-500/40 disabled:opacity-50"
                 >
-                  <span className="block text-sm font-medium text-white">
+                  <span className="block text-sm font-medium text-[var(--dgc-text)]">
                     {exportingId === preset.id ? 'Exporting…' : preset.label}
                   </span>
-                  <span className="mt-1 block text-xs text-white/55">
+                  <span className="mt-1 block text-xs text-[var(--dgc-text-faint)]">
                     {preset.description}
                   </span>
                 </button>
@@ -252,13 +252,13 @@ Area fraction: ${formatNumber(result.areaFraction * 100)}%`;
             <button
               type="button"
               onClick={() => setAdvancedOpen((value) => !value)}
-              className="text-sm text-white/70 hover:text-white"
+              className="text-sm text-[var(--dgc-text-muted)] hover:text-[var(--dgc-text)]"
             >
               {advancedOpen ? 'Hide advanced options' : 'Advanced options'}
             </button>
 
             {advancedOpen ? (
-              <div className="space-y-3 rounded-lg border border-white/10 bg-[#111] p-3">
+              <div className="space-y-3 rounded-lg border border-[var(--dgc-border-soft)] bg-[var(--dgc-input)] p-3">
                 <label className="flex items-center gap-2 text-sm">
                   <input
                     type="checkbox"
@@ -272,7 +272,7 @@ Area fraction: ${formatNumber(result.areaFraction * 100)}%`;
                 <label className="block text-sm">
                   PNG scale
                   <select
-                    className="mt-1 w-full rounded-lg border border-white/15 bg-[#0d0d0f] px-3 py-2"
+                    className="mt-1 w-full rounded-lg border border-[var(--dgc-border)] bg-[var(--dgc-input-deep)] px-3 py-2"
                     value={controller.document.exportPreferences.pngScale}
                     onChange={(event) =>
                       controller.updatePngScale(Number(event.target.value))
@@ -306,7 +306,7 @@ Area fraction: ${formatNumber(result.areaFraction * 100)}%`;
                       })
                     }
                     disabled={isExporting}
-                    className="rounded-lg border border-white/15 px-3 py-2 text-sm disabled:opacity-50"
+                    className="rounded-lg border border-[var(--dgc-border)] px-3 py-2 text-sm disabled:opacity-50"
                   >
                     {exportingId === 'custom' ? 'Exporting…' : 'Custom PNG'}
                   </button>
@@ -320,7 +320,7 @@ Area fraction: ${formatNumber(result.areaFraction * 100)}%`;
                       })
                     }
                     disabled={isExporting}
-                    className="rounded-lg border border-white/15 px-3 py-2 text-sm disabled:opacity-50"
+                    className="rounded-lg border border-[var(--dgc-border)] px-3 py-2 text-sm disabled:opacity-50"
                   >
                     Custom SVG
                   </button>
@@ -339,7 +339,7 @@ Area fraction: ${formatNumber(result.areaFraction * 100)}%`;
               </p>
             ) : null}
 
-            <p className="text-xs text-white/45">
+            <p className="text-xs text-[var(--dgc-text-dim)]">
               {dgcSiteConfig.publicProductName} web beta · works with the Mac app.
             </p>
           </div>

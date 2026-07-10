@@ -8,6 +8,7 @@ import { dgcSiteConfig } from '@/lib/dgc/site-config';
 import DgcInputForm from './DgcInputForm';
 import DgcPreview from './DgcPreview';
 import DgcResultExport from './DgcResultExport';
+import DgcAppearanceToggle from './DgcAppearanceToggle';
 
 export default function DgcEditor() {
   const [boot] = useState(() => readInitialSavedJob());
@@ -19,15 +20,15 @@ export default function DgcEditor() {
 
   if (fullscreen) {
     return (
-      <div className="fixed inset-0 z-50 bg-[#0b0b0c] p-4">
+      <div className="fixed inset-0 z-50 bg-[var(--dgc-page-fullscreen)] p-4 text-[var(--dgc-text)]">
         <div className="mb-3 flex items-center justify-between">
-          <h1 className="text-xl font-semibold text-white">
+          <h1 className="text-xl font-semibold text-[var(--dgc-text)]">
             {dgcSiteConfig.publicProductName} — Full Screen Preview
           </h1>
           <button
             type="button"
             onClick={() => setFullscreen(false)}
-            className="rounded-lg border border-white/20 px-3 py-2 text-sm text-white"
+            className="rounded-lg border border-[var(--dgc-border-strong)] px-3 py-2 text-sm text-[var(--dgc-text)]"
           >
             Exit Full Screen
           </button>
@@ -38,23 +39,24 @@ export default function DgcEditor() {
   }
 
   return (
-    <div className="min-h-screen bg-[#101012] text-white">
-      <header className="border-b border-white/10 px-4 py-4 md:px-6">
+    <div className="min-h-screen bg-[var(--dgc-page)] text-[var(--dgc-text)]">
+      <header className="border-b border-[var(--dgc-border-soft)] px-4 py-4 md:px-6">
         <div className="mx-auto flex max-w-[1500px] items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-semibold">{dgcSiteConfig.publicProductName}</h1>
-            <p className="text-sm text-white/65">Field of Wealth partition designer</p>
+            <p className="text-sm text-[var(--dgc-text-muted)]">Field of Wealth partition designer</p>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-4">
+            <DgcAppearanceToggle />
             <a
               href="/dgc/data"
-              className="text-sm text-white/70 hover:text-white"
+              className="text-sm text-[var(--dgc-text-muted)] hover:text-[var(--dgc-text)]"
             >
               Historical data
             </a>
             <a
               href={`/privacy/${dgcSiteConfig.policySlug}`}
-              className="text-sm text-white/70 hover:text-white"
+              className="text-sm text-[var(--dgc-text-muted)] hover:text-[var(--dgc-text)]"
             >
               Privacy
             </a>
@@ -90,7 +92,7 @@ export default function DgcEditor() {
 
       <main className="mx-auto grid max-w-[1500px] gap-4 px-4 py-4 lg:grid-cols-[380px_minmax(0,1fr)] md:px-6 md:py-6">
         <aside className="lg:sticky lg:top-6 lg:self-start">
-          <div className="overflow-y-auto rounded-2xl border border-white/15 bg-[#1b1b1d] p-4 shadow-lg max-h-[calc(100dvh-6rem)] lg:h-[calc(100dvh-8.25rem)] lg:max-h-[calc(100dvh-8.25rem)]">
+          <div className="overflow-y-auto rounded-2xl border border-[var(--dgc-border)] bg-[var(--dgc-panel)] p-4 shadow-lg max-h-[calc(100dvh-6rem)] lg:h-[calc(100dvh-8.25rem)] lg:max-h-[calc(100dvh-8.25rem)]">
             <div className="space-y-4">
               <DgcInputForm controller={controller} />
             </div>

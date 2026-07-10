@@ -12,41 +12,41 @@ import {
 function CellDetail({ cell, label }: { cell: StatCell; label: string }) {
   if (cell.value === null) {
     return (
-      <div className="rounded-lg border border-white/10 bg-white/5 p-3 text-sm">
-        <p className="font-medium text-white">{label}</p>
-        <p className="mt-1 text-white/80">N/A</p>
+      <div className="rounded-lg border border-[var(--dgc-border-soft)] bg-[var(--dgc-hover)] p-3 text-sm">
+        <p className="font-medium text-[var(--dgc-text)]">{label}</p>
+        <p className="mt-1 text-[var(--dgc-text-soft)]">N/A</p>
         {cell.methodologyNote ? (
-          <p className="mt-2 text-xs leading-relaxed text-white/85">{cell.methodologyNote}</p>
+          <p className="mt-2 text-xs leading-relaxed text-[var(--dgc-text-soft)]">{cell.methodologyNote}</p>
         ) : null}
       </div>
     );
   }
 
   return (
-    <div className="rounded-lg border border-white/10 bg-white/5 p-3 text-sm">
+    <div className="rounded-lg border border-[var(--dgc-border-soft)] bg-[var(--dgc-hover)] p-3 text-sm">
       <div className="flex flex-wrap items-center gap-2">
-        <p className="font-medium text-white">{label}</p>
+        <p className="font-medium text-[var(--dgc-text)]">{label}</p>
         <span
           className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ring-1 ${confidenceBadgeClass(cell.confidence)}`}
         >
           {cell.confidence}
         </span>
       </div>
-      <p className="mt-1 text-lg font-semibold text-white">{formatStatValue(cell)}</p>
+      <p className="mt-1 text-lg font-semibold text-[var(--dgc-text)]">{formatStatValue(cell)}</p>
       {cell.observationYear && cell.observationYear !== undefined ? (
-        <p className="mt-1 text-xs text-white/85">
+        <p className="mt-1 text-xs text-[var(--dgc-text-soft)]">
           Observation year: {cell.observationYear}
           {cell.isInterpolated ? ' (interpolated or nearest year)' : ''}
         </p>
       ) : null}
       {cell.definition ? (
-        <p className="mt-2 text-xs leading-relaxed text-white/90">{cell.definition}</p>
+        <p className="mt-2 text-xs leading-relaxed text-[var(--dgc-text-soft)]">{cell.definition}</p>
       ) : null}
       {cell.methodologyNote ? (
-        <p className="mt-1 text-xs leading-relaxed text-white/85">{cell.methodologyNote}</p>
+        <p className="mt-1 text-xs leading-relaxed text-[var(--dgc-text-soft)]">{cell.methodologyNote}</p>
       ) : null}
       {cell.source ? (
-        <p className="mt-2 text-xs text-white/90">
+        <p className="mt-2 text-xs text-[var(--dgc-text-soft)]">
           Source:{' '}
           <a
             href={cell.source.url}
@@ -69,10 +69,10 @@ export default function WealthDataTable({ rows }: { rows: WealthSnapshotRow[] })
 
   return (
     <div className="space-y-4">
-      <div className="overflow-x-auto rounded-2xl border border-white/15 bg-[#1b1b1d]">
+      <div className="overflow-x-auto rounded-2xl border border-[var(--dgc-border)] bg-[var(--dgc-panel)]">
         <table className="min-w-[1100px] w-full text-left text-sm">
           <thead>
-            <tr className="border-b border-white/10 text-xs uppercase tracking-wide text-white/80">
+            <tr className="border-b border-[var(--dgc-border-soft)] text-xs uppercase tracking-wide text-[var(--dgc-text-soft)]">
               <th className="px-3 py-3">Year</th>
               <th className="px-3 py-3">Tier</th>
               {COLUMN_KEYS.map((key) => (
@@ -90,26 +90,26 @@ export default function WealthDataTable({ rows }: { rows: WealthSnapshotRow[] })
               return (
                 <Fragment key={row.reportYear}>
                   <tr
-                    className="border-b border-white/5 hover:bg-white/5 cursor-pointer"
+                    className="border-b border-[var(--dgc-border-soft)] hover:bg-[var(--dgc-hover)] cursor-pointer"
                     onClick={() =>
                       setExpandedYear(isOpen ? null : row.reportYear)
                     }
                   >
-                    <td className="px-3 py-2.5 font-semibold text-white">{row.reportYear}</td>
-                    <td className="px-3 py-2.5 text-white/90">{row.tier}</td>
+                    <td className="px-3 py-2.5 font-semibold text-[var(--dgc-text)]">{row.reportYear}</td>
+                    <td className="px-3 py-2.5 text-[var(--dgc-text-soft)]">{row.tier}</td>
                     {COLUMN_KEYS.map((key) => (
-                      <td key={key} className="px-3 py-2.5 text-white">
+                      <td key={key} className="px-3 py-2.5 text-[var(--dgc-text)]">
                         {formatStatValue(row[key])}
                       </td>
                     ))}
-                    <td className="px-3 py-2.5 text-white/85">
+                    <td className="px-3 py-2.5 text-[var(--dgc-text-soft)]">
                       {sum !== null ? `${sum.toFixed(1)}%` : '—'}
                     </td>
                   </tr>
                   {isOpen ? (
-                    <tr className="border-b border-white/10 bg-[#141416]">
+                    <tr className="border-b border-[var(--dgc-border-soft)] bg-[var(--dgc-elevated)]">
                       <td colSpan={COLUMN_KEYS.length + 3} className="px-4 py-4">
-                        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-white/85">
+                        <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-[var(--dgc-text-soft)]">
                           Sources &amp; notes — {row.reportYear}
                         </p>
                         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
@@ -126,7 +126,7 @@ export default function WealthDataTable({ rows }: { rows: WealthSnapshotRow[] })
           </tbody>
         </table>
       </div>
-      <p className="rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-sm text-white/90">
+      <p className="rounded-lg border border-[var(--dgc-border)] bg-[var(--dgc-hover)] px-3 py-2 text-sm text-[var(--dgc-text-soft)]">
         Click a row to expand source citations and methodology notes for each field.
       </p>
     </div>
