@@ -373,7 +373,7 @@ function DgcLayersPanel({
               role="button"
               tabIndex={0}
             >
-              <div className="flex items-start gap-2">
+              <div className="flex flex-wrap items-start gap-2">
                 <div className="flex flex-col gap-1">
                   <button
                     type="button"
@@ -412,9 +412,9 @@ function DgcLayersPanel({
                   {layer.isVisible ? '👁' : '🚫'}
                 </button>
 
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="rounded bg-[var(--dgc-chip)] px-2 py-0.5 font-mono text-xs font-bold text-[var(--dgc-text)]">
+                <div className="min-w-0 flex-[1_1_15rem]">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <span className="shrink-0 rounded bg-[var(--dgc-chip)] px-2 py-0.5 font-mono text-xs font-bold text-[var(--dgc-text)]">
                       {handlePair}
                     </span>
                     <input
@@ -435,28 +435,28 @@ function DgcLayersPanel({
                     onPointerDown={(event) => event.stopPropagation()}
                     onKeyDown={(event) => event.stopPropagation()}
                   >
-                    <label className="flex items-center gap-2 text-xs text-[var(--dgc-text-muted)]">
-                      <span className="w-28 shrink-0">{handleLabels.start} on bottom edge</span>
+                    <label className="grid grid-cols-[minmax(0,1fr)_minmax(4.75rem,8rem)] items-center gap-2 text-xs text-[var(--dgc-text-muted)]">
+                      <span className="min-w-0">{handleLabels.start} on bottom edge</span>
                       <InlineNumericInput
                         value={layer.startX}
                         onCommit={(value) => controller.updateLayerStartX(layer.id, value)}
-                        className="w-32 rounded border border-[var(--dgc-border)] bg-[var(--dgc-input)] px-2 py-1 text-[var(--dgc-text)]"
+                        className="min-w-0 w-full rounded border border-[var(--dgc-border)] bg-[var(--dgc-input)] px-2 py-1 text-[var(--dgc-text)]"
                       />
                     </label>
 
-                    <label className="flex items-center gap-2 text-xs text-[var(--dgc-text-muted)]">
-                      <span className="w-28 shrink-0">Field of Wealth %</span>
+                    <label className="grid grid-cols-[minmax(0,1fr)_minmax(4.75rem,8rem)] items-center gap-2 text-xs text-[var(--dgc-text-muted)]">
+                      <span className="min-w-0">Field of Wealth %</span>
                       <LayerAreaPercentInput
                         value={layer.areaFraction}
                         onCommit={(fraction) =>
                           controller.updateLayerAreaFraction(layer.id, fraction)
                         }
-                        className="w-32 rounded border border-[var(--dgc-border)] bg-[var(--dgc-input)] px-2 py-1 text-sm text-[var(--dgc-text)]"
+                        className="min-w-0 w-full rounded border border-[var(--dgc-border)] bg-[var(--dgc-input)] px-2 py-1 text-sm text-[var(--dgc-text)]"
                       />
                     </label>
 
-                    <label className="flex items-center gap-2 text-xs text-[var(--dgc-text-muted)]">
-                      Colour
+                    <label className="flex flex-wrap items-center gap-2 text-xs text-[var(--dgc-text-muted)]">
+                      <span className="min-w-0">Colour</span>
                       <input
                         type="color"
                         value={layer.colorHex}
@@ -478,23 +478,27 @@ function DgcLayersPanel({
                   )}
                 </div>
 
-                {isActive ? (
-                  <span className="rounded-full bg-[var(--dgc-accent-surface)] px-2 py-1 text-xs font-semibold text-[var(--dgc-accent-text)]">
-                    Active
-                  </span>
-                ) : null}
+                {isActive || controller.document.layers.length > 1 ? (
+                  <div className="ml-auto flex shrink-0 items-center gap-2 self-start">
+                    {isActive ? (
+                      <span className="rounded-full bg-[var(--dgc-accent-surface)] px-2 py-1 text-xs font-semibold text-[var(--dgc-accent-text)]">
+                        Active
+                      </span>
+                    ) : null}
 
-                {controller.document.layers.length > 1 ? (
-                  <button
-                    type="button"
-                    className="text-[var(--dgc-danger-text)]"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      controller.deleteLayer(layer.id);
-                    }}
-                  >
-                    Delete
-                  </button>
+                    {controller.document.layers.length > 1 ? (
+                      <button
+                        type="button"
+                        className="text-[var(--dgc-danger-text)]"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          controller.deleteLayer(layer.id);
+                        }}
+                      >
+                        Delete
+                      </button>
+                    ) : null}
+                  </div>
                 ) : null}
               </div>
             </div>
