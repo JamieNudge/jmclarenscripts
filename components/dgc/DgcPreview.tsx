@@ -344,7 +344,7 @@ export default function DgcPreview({
             );
           })}
 
-          {controller.document.layers.map((layer, layerIndex) => {
+          {controller.document.layers.map((layer) => {
             if (!layer.isVisible) return null;
             const state = controller.layerStates[layer.id];
             if (!state?.result) return null;
@@ -364,20 +364,20 @@ export default function DgcPreview({
                 {renderHandle(
                   startPoint,
                   '#FF9500',
-                  labels.start,
+                  isActive ? labels.start : null,
                   'start',
                   startHovered || startDragging,
                   !isActive,
-                  handleLabelPlacement(startPoint, 'start', layerIndex, field),
+                  handleLabelPlacement(startPoint, 'start', field),
                 )}
                 {renderHandle(
                   endPoint,
                   layer.colorHex,
-                  labels.end,
+                  isActive ? labels.end : null,
                   'end',
                   endHovered || endDragging,
                   !isActive,
-                  handleLabelPlacement(endPoint, 'end', layerIndex, field),
+                  handleLabelPlacement(endPoint, 'end', field),
                 )}
               </g>
             );
@@ -411,7 +411,12 @@ export default function DgcPreview({
                   className="w-full text-left"
                   title={layer.name}
                 >
-                  <span className="font-mono text-xs font-bold">{layerHandlePairLabel(index)}</span>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-mono text-xs font-bold">{layerHandlePairLabel(index)}</span>
+                    <span className={`text-xs font-semibold ${isActive ? '' : 'opacity-80'}`}>
+                      {formatNumber(layer.areaFraction * 100)}%
+                    </span>
+                  </div>
                   <span className={`mt-1 block truncate text-xs ${isActive ? '' : 'opacity-80'}`}>
                     {layer.name}
                   </span>
@@ -434,7 +439,7 @@ export default function DgcPreview({
 function renderHandle(
   point: { x: number; y: number },
   color: string,
-  label: string,
+  label: string | null,
   role: PreviewHandle,
   active: boolean,
   dimmed: boolean,
@@ -453,16 +458,18 @@ function renderHandle(
         stroke="var(--dgc-preview-stroke)"
         strokeWidth={1.5}
       />
-      <text
-        x={labelPlacement.x}
-        y={labelPlacement.y}
-        textAnchor={labelPlacement.textAnchor}
-        fill="var(--dgc-preview-label)"
-        fontSize={14}
-        fontWeight={700}
-      >
-        {label}
-      </text>
+      {label ? (
+        <text
+          x={labelPlacement.x}
+          y={labelPlacement.y}
+          textAnchor={labelPlacement.textAnchor}
+          fill="var(--dgc-preview-label)"
+          fontSize={14}
+          fontWeight={700}
+        >
+          {label}
+        </text>
+      ) : null}
     </g>
   );
 }
@@ -470,10 +477,8 @@ function renderHandle(
 function handleLabelPlacement(
   point: { x: number; y: number },
   role: PreviewHandle,
-  layerIndex: number,
   field: { x: number; y: number; width: number; height: number },
 ): PreviewLabelPlacement {
-  const stagger = layerIndex % 3;
   const centerX = field.x + field.width / 2;
   const fieldRight = field.x + field.width;
   const nearTop = Math.abs(point.y - field.y) < 20;
@@ -482,8 +487,8 @@ function handleLabelPlacement(
 
   if (role === 'start') {
     return {
-      x: point.x + (stagger - 1) * 18,
-      y: point.y + 28 + stagger * 10,
+      x: point.x,
+      y: point.y + 32,
       textAnchor: 'middle',
     };
   }
@@ -491,7 +496,7 @@ function handleLabelPlacement(
   if (nearTop) {
     const placeRight = point.x >= centerX;
     return {
-      x: point.x + (placeRight ? 22 + stagger * 12 : -(22 + stagger * 12)),
+      x: point.x + (placeRight ? 24 : -24),
       y: point.y - 10,
       textAnchor: placeRight ? 'start' : 'end',
     };
@@ -500,7 +505,7 @@ function handleLabelPlacement(
   if (nearRight) {
     return {
       x: point.x + 18,
-      y: point.y - 10 + stagger * 12,
+      y: point.y - 10,
       textAnchor: 'start',
     };
   }
@@ -508,14 +513,14 @@ function handleLabelPlacement(
   if (nearLeft) {
     return {
       x: point.x - 18,
-      y: point.y - 10 + stagger * 12,
+      y: point.y - 10,
       textAnchor: 'end',
     };
   }
 
   return {
-    x: point.x + (stagger - 1) * 18,
-    y: point.y - 22 - stagger * 10,
+    x: point.x,
+    y: point.y - 22,
     textAnchor: 'middle',
   };
 }
