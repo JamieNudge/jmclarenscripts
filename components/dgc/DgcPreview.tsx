@@ -11,6 +11,11 @@ import type { DgcDocumentController } from '@/lib/dgc/use-dgc-document';
 import { edgeDisplayName, effectiveFieldWidth, fieldOriginY, contentWidth, DEFAULT_TOTAL_POPULATION_COLOR_HEX } from '@/lib/dgc/types';
 
 type PreviewHandle = 'start' | 'end';
+type PreviewLabelPlacement = {
+  x: number;
+  y: number;
+  textAnchor: 'start' | 'middle' | 'end';
+};
 
 interface HandleHit {
   layerId: string;
@@ -433,7 +438,7 @@ function renderHandle(
   role: PreviewHandle,
   active: boolean,
   dimmed: boolean,
-  labelPlacement: { x: number; y: number; textAnchor: 'start' | 'middle' | 'end' },
+  labelPlacement: PreviewLabelPlacement,
 ) {
   const radius = active ? 18 : dimmed ? 12 : 16;
   const opacity = dimmed ? 0.45 : 1;
@@ -467,7 +472,7 @@ function handleLabelPlacement(
   role: PreviewHandle,
   layerIndex: number,
   field: { x: number; y: number; width: number; height: number },
-) {
+): PreviewLabelPlacement {
   const stagger = layerIndex % 3;
   const centerX = field.x + field.width / 2;
   const fieldRight = field.x + field.width;
@@ -479,7 +484,7 @@ function handleLabelPlacement(
     return {
       x: point.x + (stagger - 1) * 18,
       y: point.y + 28 + stagger * 10,
-      textAnchor: 'middle' as const,
+      textAnchor: 'middle',
     };
   }
 
@@ -488,7 +493,7 @@ function handleLabelPlacement(
     return {
       x: point.x + (placeRight ? 22 + stagger * 12 : -(22 + stagger * 12)),
       y: point.y - 10,
-      textAnchor: (placeRight ? 'start' : 'end') as const,
+      textAnchor: placeRight ? 'start' : 'end',
     };
   }
 
@@ -496,7 +501,7 @@ function handleLabelPlacement(
     return {
       x: point.x + 18,
       y: point.y - 10 + stagger * 12,
-      textAnchor: 'start' as const,
+      textAnchor: 'start',
     };
   }
 
@@ -504,14 +509,14 @@ function handleLabelPlacement(
     return {
       x: point.x - 18,
       y: point.y - 10 + stagger * 12,
-      textAnchor: 'end' as const,
+      textAnchor: 'end',
     };
   }
 
   return {
     x: point.x + (stagger - 1) * 18,
     y: point.y - 22 - stagger * 10,
-    textAnchor: 'middle' as const,
+    textAnchor: 'middle',
   };
 }
 
