@@ -70,14 +70,14 @@ export default function DgcPreview({
     const outerMarginWidth = size.width - canvasRight;
     const innerMarginWidth = canvasRight - fieldRight;
     const edgePadding = 12;
-    const preferredWidth = 148;
+    const preferredWidth = 168;
     const gapAfterField = 8;
 
     // Prefer the black margin outside the gray canvas (original right-3 placement).
     const sideMarginWidth = Math.max(outerMarginWidth, innerMarginWidth);
     const maxWidth = Math.min(
       preferredWidth,
-      Math.max(96, size.width - fieldRight - gapAfterField - edgePadding),
+      Math.max(110, size.width - fieldRight - gapAfterField - edgePadding),
     );
 
     let left = size.width - edgePadding - maxWidth / 2;
@@ -250,7 +250,7 @@ export default function DgcPreview({
                 textAnchor="middle"
                 dominantBaseline="middle"
                 fill="var(--dgc-preview-label)"
-                fontSize={12}
+                fontSize={14}
                 fontWeight={500}
               >
                 {controller.document.canvas.totalPopulationLabel.trim() ||
@@ -280,10 +280,10 @@ export default function DgcPreview({
           />
           <text
             x={field.x + field.width / 2}
-            y={field.y - 10}
+            y={field.y - 16}
             textAnchor="middle"
             fill="var(--dgc-preview-label)"
-            fontSize={12}
+            fontSize={14}
             fontWeight={600}
           >
             Field of Wealth
@@ -339,7 +339,7 @@ export default function DgcPreview({
             );
           })}
 
-          {controller.document.layers.map((layer) => {
+          {controller.document.layers.map((layer, layerIndex) => {
             if (!layer.isVisible) return null;
             const state = controller.layerStates[layer.id];
             if (!state?.result) return null;
@@ -351,24 +351,28 @@ export default function DgcPreview({
               hoveredHit?.layerId === layer.id && hoveredHit.handle === 'end';
             const startDragging = isActive && draggingHandle === 'start';
             const endDragging = isActive && draggingHandle === 'end';
+            const startPoint = layout.screenPointField(state.input.startX, 0);
+            const endPoint = layout.screenPointField(state.result.endX, state.result.endY);
 
             return (
               <g key={`handles-${layer.id}`}>
                 {renderHandle(
-                  layout.screenPointField(state.input.startX, 0),
+                  startPoint,
                   '#FF9500',
                   labels.start,
                   'start',
                   startHovered || startDragging,
                   !isActive,
+                  handleLabelPlacement(startPoint, 'start', layerIndex, field),
                 )}
                 {renderHandle(
-                  layout.screenPointField(state.result.endX, state.result.endY),
+                  endPoint,
                   layer.colorHex,
                   labels.end,
                   'end',
                   endHovered || endDragging,
                   !isActive,
+                  handleLabelPlacement(endPoint, 'end', layerIndex, field),
                 )}
               </g>
             );
@@ -376,7 +380,7 @@ export default function DgcPreview({
         </svg>
 
         <div
-          className="pointer-events-auto absolute z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col gap-1 overflow-y-auto rounded-xl border border-[var(--dgc-border)] bg-[var(--dgc-preview-overlay)] p-1.5"
+          className="pointer-events-auto absolute z-10 flex -translate-x-1/2 -translate-y-1/2 flex-col gap-1 overflow-y-auto rounded-xl border border-[var(--dgc-border)] bg-[var(--dgc-preview-overlay)] p-2"
           style={{
             left: layerPickerLayout.left,
             top: layerPickerLayout.top,
@@ -390,7 +394,7 @@ export default function DgcPreview({
             return (
               <div
                 key={layer.id}
-                className={`rounded-lg px-2 py-1.5 text-left text-xs transition ${
+                className={`rounded-lg px-2.5 py-2 text-left text-sm transition ${
                   isActive
                     ? 'bg-[var(--dgc-accent-surface)] font-semibold text-[var(--dgc-accent-text)] ring-1 ring-[var(--dgc-accent-border)]'
                     : 'text-[var(--dgc-text-soft)] hover:bg-[var(--dgc-hover-strong)]'
@@ -402,8 +406,8 @@ export default function DgcPreview({
                   className="w-full text-left"
                   title={layer.name}
                 >
-                  <span className="font-mono text-[11px] font-bold">{layerHandlePairLabel(index)}</span>
-                  <span className={`mt-0.5 block truncate text-[10px] ${isActive ? '' : 'opacity-80'}`}>
+                  <span className="font-mono text-xs font-bold">{layerHandlePairLabel(index)}</span>
+                  <span className={`mt-1 block truncate text-xs ${isActive ? '' : 'opacity-80'}`}>
                     {layer.name}
                   </span>
                 </button>
@@ -429,6 +433,7 @@ function renderHandle(
   role: PreviewHandle,
   active: boolean,
   dimmed: boolean,
+  labelPlacement: { x: number; y: number; textAnchor: 'start' | 'middle' | 'end' },
 ) {
   const radius = active ? 18 : dimmed ? 12 : 16;
   const opacity = dimmed ? 0.45 : 1;
@@ -444,17 +449,70 @@ function renderHandle(
         strokeWidth={1.5}
       />
       <text
-        x={point.x}
-        y={point.y + (role === 'start' ? 24 : -24)}
-        textAnchor="middle"
+        x={labelPlacement.x}
+        y={labelPlacement.y}
+        textAnchor={labelPlacement.textAnchor}
         fill="var(--dgc-preview-label)"
-        fontSize={12}
+        fontSize={14}
         fontWeight={700}
       >
         {label}
       </text>
     </g>
   );
+}
+
+function handleLabelPlacement(
+  point: { x: number; y: number },
+  role: PreviewHandle,
+  layerIndex: number,
+  field: { x: number; y: number; width: number; height: number },
+) {
+  const stagger = layerIndex % 3;
+  const centerX = field.x + field.width / 2;
+  const fieldRight = field.x + field.width;
+  const nearTop = Math.abs(point.y - field.y) < 20;
+  const nearLeft = Math.abs(point.x - field.x) < 20;
+  const nearRight = Math.abs(point.x - fieldRight) < 20;
+
+  if (role === 'start') {
+    return {
+      x: point.x + (stagger - 1) * 18,
+      y: point.y + 28 + stagger * 10,
+      textAnchor: 'middle' as const,
+    };
+  }
+
+  if (nearTop) {
+    const placeRight = point.x >= centerX;
+    return {
+      x: point.x + (placeRight ? 22 + stagger * 12 : -(22 + stagger * 12)),
+      y: point.y - 10,
+      textAnchor: (placeRight ? 'start' : 'end') as const,
+    };
+  }
+
+  if (nearRight) {
+    return {
+      x: point.x + 18,
+      y: point.y - 10 + stagger * 12,
+      textAnchor: 'start' as const,
+    };
+  }
+
+  if (nearLeft) {
+    return {
+      x: point.x - 18,
+      y: point.y - 10 + stagger * 12,
+      textAnchor: 'end' as const,
+    };
+  }
+
+  return {
+    x: point.x + (stagger - 1) * 18,
+    y: point.y - 22 - stagger * 10,
+    textAnchor: 'middle' as const,
+  };
 }
 
 function distanceSquared(a: { x: number; y: number }, b: { x: number; y: number }) {
