@@ -339,7 +339,42 @@ export function BestPicksResearchAlgorithmPanel({
 
         {configured && (
           <div className="space-y-8">
-            <section className="space-y-2" aria-label="Daily consensus">
+            <section className="space-y-2" aria-label="Goal Band Cascade">
+              <p className="text-xs font-semibold uppercase tracking-wide text-[var(--hub-text)]">
+                Goal Band Cascade
+              </p>
+              {cascadeError ? (
+                <p className="text-sm text-[var(--hub-danger)] leading-relaxed" role="alert">
+                  {cascadeError}
+                </p>
+              ) : null}
+              {!cascadeError && cascadeLoading ? (
+                <p className="text-sm text-[var(--hub-text)] leading-relaxed">Loading Goal Band Cascade…</p>
+              ) : null}
+              {!cascadeError && !cascadeLoading && cascadeRecordLine ? (
+                <p className="text-sm text-[var(--hub-text)] leading-snug">{cascadeRecordLine}</p>
+              ) : null}
+              {!cascadeError && !cascadeLoading && !hasCascadeContent ? (
+                <p className="text-sm text-[var(--hub-text)] leading-relaxed">
+                  No Goal Band Cascade picks for <span className="tabular-nums">{dateKey}</span> yet.
+                </p>
+              ) : null}
+              {showCascadeTeaser && hasCascadeContent ? (
+                <TeaserListBlock
+                  visiblePicks={visibleCascadePicks}
+                  blurredPicks={blurredCascadePicks}
+                  placeholderCount={0}
+                  hiddenCount={hiddenCascadeCount}
+                  label="cascade picks"
+                  visibleCount={CASCADE_TEASER_VISIBLE_COUNT}
+                />
+              ) : null}
+            </section>
+
+            <section
+              className="space-y-2 border-t border-[var(--hub-border-soft)] pt-4"
+              aria-label="Daily consensus"
+            >
               <p className="text-xs font-semibold uppercase tracking-wide text-[var(--hub-text)]">Daily consensus</p>
               {consensusError ? (
                 <p className="text-sm text-[var(--hub-danger)] leading-relaxed" role="alert">
@@ -368,41 +403,6 @@ export function BestPicksResearchAlgorithmPanel({
                   hiddenCount={hiddenConsensusCount}
                   label="consensus picks"
                   visibleCount={CONSENSUS_TEASER_VISIBLE_COUNT}
-                />
-              ) : null}
-            </section>
-
-            <section
-              className="space-y-2 border-t border-[var(--hub-border-soft)] pt-4"
-              aria-label="Goal Band Cascade"
-            >
-              <p className="text-xs font-semibold uppercase tracking-wide text-[var(--hub-text)]">
-                Goal Band Cascade
-              </p>
-              {cascadeError ? (
-                <p className="text-sm text-[var(--hub-danger)] leading-relaxed" role="alert">
-                  {cascadeError}
-                </p>
-              ) : null}
-              {!cascadeError && cascadeLoading ? (
-                <p className="text-sm text-[var(--hub-text)] leading-relaxed">Loading Goal Band Cascade…</p>
-              ) : null}
-              {!cascadeError && !cascadeLoading && cascadeRecordLine ? (
-                <p className="text-sm text-[var(--hub-text)] leading-snug">{cascadeRecordLine}</p>
-              ) : null}
-              {!cascadeError && !cascadeLoading && !hasCascadeContent ? (
-                <p className="text-sm text-[var(--hub-text)] leading-relaxed">
-                  No Goal Band Cascade picks for <span className="tabular-nums">{dateKey}</span> yet.
-                </p>
-              ) : null}
-              {showCascadeTeaser && hasCascadeContent ? (
-                <TeaserListBlock
-                  visiblePicks={visibleCascadePicks}
-                  blurredPicks={blurredCascadePicks}
-                  placeholderCount={0}
-                  hiddenCount={hiddenCascadeCount}
-                  label="cascade picks"
-                  visibleCount={CASCADE_TEASER_VISIBLE_COUNT}
                 />
               ) : null}
             </section>
