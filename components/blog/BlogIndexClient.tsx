@@ -24,8 +24,8 @@ function BlogCardParts({
 }) {
   const excerptCls =
     excerptTone === 'hero'
-      ? 'text-sm text-white/85 mt-2 leading-relaxed line-clamp-3'
-      : 'text-sm text-white/75 mt-2 leading-relaxed line-clamp-3';
+      ? 'text-sm text-[var(--hub-text-soft)] mt-2 leading-relaxed line-clamp-3'
+      : 'text-sm text-[var(--hub-text-muted)] mt-2 leading-relaxed line-clamp-3';
 
   return (
     <>
@@ -33,16 +33,16 @@ function BlogCardParts({
         <p className="text-[11px] font-semibold uppercase tracking-wider text-amber-200/90 mb-2">{categoryLine}</p>
       ) : null}
       {titleAs === 'h2' ? (
-        <h2 className="text-2xl font-bold leading-tight text-white md:text-3xl md:leading-tight group-hover:text-amber-50/95 transition-colors">
+        <h2 className="text-2xl font-bold leading-tight text-[var(--hub-text)] md:text-3xl md:leading-tight group-hover:text-[var(--hub-accent-link-hover)] transition-colors">
           {title}
         </h2>
       ) : (
-        <h3 className="text-lg font-semibold leading-snug text-white group-hover:text-amber-100/95 transition-colors">
+        <h3 className="text-lg font-semibold leading-snug text-[var(--hub-text)] group-hover:text-[var(--hub-accent-link)] transition-colors">
           {title}
         </h3>
       )}
       {excerpt ? <p className={excerptCls}>{excerpt}</p> : null}
-      <p className="text-xs text-white/55 mt-2 tabular-nums">{dateStr}</p>
+      <p className="text-xs text-[var(--hub-text-faint)] mt-2 tabular-nums">{dateStr}</p>
     </>
   );
 }
@@ -53,15 +53,15 @@ export function BlogIndexClient() {
 
   if (!configured) {
     return (
-      <p className="text-sm text-white/80 leading-relaxed">
-        Firebase is not configured — add keys in <code className="text-xs text-white/70">.env.local</code> to load
+      <p className="text-sm text-[var(--hub-text-soft)] leading-relaxed">
+        Firebase is not configured — add keys in <code className="text-xs text-[var(--hub-text-muted)]">.env.local</code> to load
         posts here.
       </p>
     );
   }
 
   if (loading) {
-    return <p className="text-sm text-white/78">Loading posts…</p>;
+    return <p className="text-sm text-[var(--hub-text-muted)]">Loading posts…</p>;
   }
 
   if (err) {
@@ -73,7 +73,7 @@ export function BlogIndexClient() {
   }
 
   if (posts.length === 0) {
-    return <p className="text-sm text-white/72 italic">No posts yet — check back soon.</p>;
+    return <p className="text-sm text-[var(--hub-text-muted)] italic">No posts yet — check back soon.</p>;
   }
 
   const hero = posts[0]!;
@@ -87,7 +87,7 @@ export function BlogIndexClient() {
       <article>
         <Link
           href={`/blog/${hero.slug}`}
-          className="group block rounded-2xl border border-white/10 bg-black/30 shadow-lg shadow-black/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/45 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 md:overflow-hidden"
+          className="group block rounded-2xl border border-[var(--hub-border-soft)] bg-[var(--hub-inset)] shadow-lg shadow-black/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/45 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 md:overflow-hidden"
         >
           {hero.headerImageUrl ? (
             <>
@@ -96,7 +96,7 @@ export function BlogIndexClient() {
                 md+: gradient overlay on image (unchanged).
               */}
               <div className="flex flex-col md:hidden">
-                <div className="aspect-[16/9] w-full overflow-hidden rounded-t-2xl bg-black/40">
+                <div className="aspect-[16/9] w-full overflow-hidden rounded-t-2xl bg-[var(--hub-inset)]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={hero.headerImageUrl}
@@ -104,7 +104,7 @@ export function BlogIndexClient() {
                     className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                   />
                 </div>
-                <div className="rounded-b-2xl border-t border-white/10 bg-[#0b1426] px-5 py-5">
+                <div className="rounded-b-2xl border-t border-[var(--hub-border-soft)] bg-[#0b1426] px-5 py-5">
                   <BlogCardParts
                     categoryLine={heroCategory}
                     title={hero.title}
@@ -119,7 +119,7 @@ export function BlogIndexClient() {
                 </div>
               </div>
               <div className="relative hidden md:block">
-                <div className="aspect-[21/9] min-h-[200px] max-h-[min(380px,48vh)] w-full bg-black/40">
+                <div className="aspect-[21/9] min-h-[200px] max-h-[min(380px,48vh)] w-full bg-[var(--hub-inset)]">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={hero.headerImageUrl}
@@ -169,7 +169,7 @@ export function BlogIndexClient() {
         <section aria-labelledby="blog-latest-heading">
           <h2
             id="blog-latest-heading"
-            className="mb-6 text-center font-serif text-2xl font-semibold uppercase tracking-[0.12em] text-white/95 md:text-left md:text-3xl"
+            className="mb-6 text-center font-serif text-2xl font-semibold uppercase tracking-[0.12em] text-[var(--hub-text-soft)] md:text-left md:text-3xl"
           >
             Latest articles
           </h2>
@@ -181,7 +181,7 @@ export function BlogIndexClient() {
                 <li key={p.slug}>
                   <Link href={`/blog/${p.slug}`} className="group flex h-full flex-col">
                     {p.headerImageUrl ? (
-                      <div className="mb-3 aspect-[16/9] overflow-hidden rounded-xl border border-white/10 bg-black/30">
+                      <div className="mb-3 aspect-[16/9] overflow-hidden rounded-xl border border-[var(--hub-border-soft)] bg-[var(--hub-inset)]">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={p.headerImageUrl}

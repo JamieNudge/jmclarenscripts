@@ -4,6 +4,6 @@
  * Row heights come from the parent grid (`grid-template-rows` on mobile and md+).
  * Tiles always `h-full min-h-0` so inner `flex-1 overflow-y-auto` regions scroll.
  */
-/** Elevated zinc shell on black page background (stronger border than translucent white on slate). */
+/** Elevated panel shell on hub page background. */
 export const bestPicksGridTileClassName =
-  'box-border rounded-2xl border border-zinc-600/55 bg-zinc-950/95 shadow-lg shadow-black/50 ring-1 ring-white/[0.06] p-6 md:p-8 flex flex-col overflow-hidden min-w-0 min-h-0 h-full max-h-full';
+  'box-border rounded-2xl border border-[var(--hub-border-zinc)] bg-[var(--hub-panel)] shadow-lg shadow-[var(--hub-shadow)] ring-1 ring-[var(--hub-ring)] p-6 md:p-8 flex flex-col overflow-hidden min-w-0 min-h-0 h-full max-h-full';

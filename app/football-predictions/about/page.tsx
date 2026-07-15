@@ -28,7 +28,7 @@ export default function BestPicksAboutPage() {
         </p>
         <p>
           The site is a technical and product showcase — not a tipping service, not financial advice, and not gambling.
-          Picks and forecasts shown here are <strong className="font-medium text-white">informational</strong> only —
+          Picks and forecasts shown here are <strong className="font-medium text-[var(--hub-text)]">informational</strong> only —
           not betting tips, promises, or guarantees of future results.
         </p>
         <p>
@@ -42,7 +42,7 @@ export default function BestPicksAboutPage() {
           </HubFootballLink>
           .
         </p>
-        <p className="text-xs text-white/85">
+        <p className="text-xs text-[var(--hub-text-soft)]">
           Questions about this website: see{' '}
           <HubFootballLink
             href="/football-predictions/contact"

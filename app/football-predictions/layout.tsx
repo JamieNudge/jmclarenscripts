@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
+import { HubThemeRoot } from '@/components/hub/HubThemeRoot';
 
 /**
  * Tab / bookmark icon for `/football-predictions` only (not the same as `og:image` for link previews).
@@ -14,5 +15,5 @@ export const metadata: Metadata = {
 };
 
 export default function BestPicksLayout({ children }: { children: ReactNode }) {
-  return children;
+  return <HubThemeRoot>{children}</HubThemeRoot>;
 }

@@ -4,7 +4,7 @@ import { bestPicksGridTileClassName } from '@/lib/best-picks-panel-shell';
 const scrollArea =
   'min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-1 -mr-0.5 [scrollbar-gutter:stable] scroll-smooth';
 
-const hr = 'border-0 border-t border-white/15 my-5';
+const hr = 'border-0 border-t border-[var(--hub-border-soft)] my-5';
 
 function BestPicksProphitPanelBody({
   headingLevel = 'h2',
@@ -19,18 +19,18 @@ function BestPicksProphitPanelBody({
   return (
     <>
       <div className="flex flex-wrap items-center gap-2 mb-2 shrink-0 pr-2">
-        <TitleTag className="text-lg md:text-xl font-bold text-white tracking-tight min-w-0 flex-1">
+        <TitleTag className="text-lg md:text-xl font-bold text-[var(--hub-text)] tracking-tight min-w-0 flex-1">
           ProphIt — Test Your Own Prediction Ideas in a living app!
         </TitleTag>
         <span
-          className="shrink-0 rounded-full border border-amber-400/40 bg-amber-500/15 px-2.5 py-1 text-[11px] font-bold tracking-wide text-amber-100/95 shadow-sm shadow-amber-900/20"
+          className="shrink-0 rounded-full border border-amber-400/40 bg-amber-500/15 px-2.5 py-1 text-[11px] font-bold tracking-wide text-[var(--hub-accent-link)] shadow-sm shadow-amber-900/20"
           title="This project is in the research stage"
         >
           Coming Soon!
         </span>
       </div>
       <div className={bodyScrollClass}>
-        <div className="space-y-4 text-sm text-white/93 leading-relaxed pb-1">
+        <div className="space-y-4 text-sm text-[var(--hub-text-soft)] leading-relaxed pb-1">
           <p>Have a theory for predicting goal band outcomes?</p>
           <p>
             This service lets you test your approach using real data, live execution, and transparent tracking
@@ -39,32 +39,32 @@ function BestPicksProphitPanelBody({
 
           <hr className={hr} />
 
-          <h3 className="text-base font-semibold text-white/95">How the research service works</h3>
-          <ol className="list-decimal list-outside pl-5 space-y-4 marker:text-white/93">
+          <h3 className="text-base font-semibold text-[var(--hub-text-soft)]">How the research service works</h3>
+          <ol className="list-decimal list-outside pl-5 space-y-4 marker:text-[var(--hub-text-soft)]">
             <li>
-              <span className="font-semibold text-white/92">You define your idea</span>
-              <span className="block text-white/94 mt-1 pl-0">
+              <span className="font-semibold text-[var(--hub-text-soft)]">You define your idea</span>
+              <span className="block text-[var(--hub-text-soft)] mt-1 pl-0">
                 Describe your logic — from simple rules to more detailed concepts.
               </span>
             </li>
             <li>
-              <span className="font-semibold text-white/92">I build your model</span>
-              <span className="block text-white/94 mt-1 pl-0">
+              <span className="font-semibold text-[var(--hub-text-soft)]">I build your model</span>
+              <span className="block text-[var(--hub-text-soft)] mt-1 pl-0">
                 Your idea is translated into a working forecasting algorithm.
               </span>
             </li>
             <li>
-              <span className="font-semibold text-white/92">We run it live</span>
-              <span className="block text-white/94 mt-1 pl-0">
+              <span className="font-semibold text-[var(--hub-text-soft)]">We run it live</span>
+              <span className="block text-[var(--hub-text-soft)] mt-1 pl-0">
                 Your model is executed against real matches over a fixed research period.
               </span>
             </li>
             <li>
-              <span className="font-semibold text-white/92">You track the results</span>
-              <span className="block text-white/94 mt-1 pl-0">
+              <span className="font-semibold text-[var(--hub-text-soft)]">You track the results</span>
+              <span className="block text-[var(--hub-text-soft)] mt-1 pl-0">
                 You get access to a dedicated app/dashboard showing:
               </span>
-              <ul className="list-disc list-outside pl-5 mt-2 space-y-1 text-white/92">
+              <ul className="list-disc list-outside pl-5 mt-2 space-y-1 text-[var(--hub-text-soft)]">
                 <li>Predictions</li>
                 <li>Results (W/L)</li>
                 <li>Performance over time</li>
@@ -74,8 +74,8 @@ function BestPicksProphitPanelBody({
 
           <hr className={hr} />
 
-          <h3 className="text-base font-semibold text-white/95">What you get</h3>
-          <ul className="list-disc list-outside pl-5 space-y-2 text-white/93">
+          <h3 className="text-base font-semibold text-[var(--hub-text-soft)]">What you get</h3>
+          <ul className="list-disc list-outside pl-5 space-y-2 text-[var(--hub-text-soft)]">
             <li>A working version of your idea as a live model</li>
             <li>A private dashboard to track performance</li>
             <li>Real-world validation (not just backtested theory)</li>
@@ -84,9 +84,9 @@ function BestPicksProphitPanelBody({
 
           <hr className={hr} />
 
-          <h3 className="text-base font-semibold text-white/95">After the research period</h3>
-          <p className="text-white/93">When the initial research period ends, you can:</p>
-          <ul className="list-disc list-outside pl-5 space-y-2 text-white/93">
+          <h3 className="text-base font-semibold text-[var(--hub-text-soft)]">After the research period</h3>
+          <p className="text-[var(--hub-text-soft)]">When the initial research period ends, you can:</p>
+          <ul className="list-disc list-outside pl-5 space-y-2 text-[var(--hub-text-soft)]">
             <li>Extend testing for an additional fee, or</li>
             <li>
               Have your algorithm deployed in a dedicated app for your personal use, for a one-off fixed cost
@@ -100,10 +100,10 @@ function BestPicksProphitPanelBody({
 
           <hr className={hr} />
 
-          <h3 className="text-base font-semibold text-white/95">Important</h3>
-          <ul className="list-disc list-outside pl-5 space-y-2 text-white/93">
+          <h3 className="text-base font-semibold text-[var(--hub-text-soft)]">Important</h3>
+          <ul className="list-disc list-outside pl-5 space-y-2 text-[var(--hub-text-soft)]">
             <li>
-              This is a <strong className="font-semibold text-white/95">research and testing service</strong>, not
+              This is a <strong className="font-semibold text-[var(--hub-text-soft)]">research and testing service</strong>, not
               financial advice
             </li>
             <li>No outcomes or profitability are guaranteed</li>
@@ -114,20 +114,20 @@ function BestPicksProphitPanelBody({
 
           <hr className={hr} />
 
-          <h3 className="text-base font-semibold text-white/95">Pricing</h3>
+          <h3 className="text-base font-semibold text-[var(--hub-text-soft)]">Pricing</h3>
           <p>Flat fee depending on complexity and duration.</p>
           <p>No ongoing commitment required.</p>
 
           <hr className={hr} />
 
-          <details className="group rounded-xl border border-white/18 bg-zinc-950/80 overflow-hidden -mx-1">
-            <summary className="cursor-pointer list-none flex items-center justify-between gap-3 px-3 py-3 text-sm font-semibold text-white hover:bg-white/[0.07] [&::-webkit-details-marker]:hidden">
+          <details className="group rounded-xl border border-[var(--hub-border-soft)] bg-[var(--hub-panel)] overflow-hidden -mx-1">
+            <summary className="cursor-pointer list-none flex items-center justify-between gap-3 px-3 py-3 text-sm font-semibold text-[var(--hub-text)] hover:bg-[var(--hub-hover)] [&::-webkit-details-marker]:hidden">
               <span>Submit your idea</span>
               <span className="flex items-center gap-2 text-xs font-medium text-sky-200/93 shrink-0">
                 <span className="max-sm:hidden">Click to expand</span>
                 <span className="sm:hidden">Tap to expand</span>
                 <svg
-                  className="w-4 h-4 text-white/94 transition-transform duration-200 group-open:rotate-180"
+                  className="w-4 h-4 text-[var(--hub-text-soft)] transition-transform duration-200 group-open:rotate-180"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -137,7 +137,7 @@ function BestPicksProphitPanelBody({
                 </svg>
               </span>
             </summary>
-            <div className="px-3 pb-3 pt-2 border-t border-white/10">
+            <div className="px-3 pb-3 pt-2 border-t border-[var(--hub-border-soft)]">
               <PredictionIdeaForm collapsibleTrigger />
             </div>
           </details>

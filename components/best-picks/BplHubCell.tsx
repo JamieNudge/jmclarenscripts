@@ -12,8 +12,8 @@ function resultPillClass(r: BplCompactFixture['result']): string {
   if (r === 'win') return 'text-emerald-200/95 border-emerald-400/35 bg-emerald-500/10';
   if (r === 'loss') return 'text-red-200/95 border-red-400/35 bg-red-500/10';
   if (r === 'void' || r === 'push') return 'text-amber-200/93 border-amber-400/30 bg-amber-500/10';
-  if (r === 'dropped' || r === 'pending' || r === null) return 'text-white/94 border-white/15 bg-white/5';
-  return 'text-white/93 border-white/10 bg-white/5';
+  if (r === 'dropped' || r === 'pending' || r === null) return 'text-[var(--hub-text-soft)] border-[var(--hub-border-soft)] bg-white/5';
+  return 'text-[var(--hub-text-soft)] border-[var(--hub-border-soft)] bg-white/5';
 }
 
 function formatYmdForDisplay(ymd: string): string {
@@ -58,12 +58,12 @@ function fixturePendingLabel(fixture: BplCompactFixture): string {
 function BplFixtureRow({ fixture, className = '' }: { fixture: BplCompactFixture; className?: string }) {
   return (
     <li
-      className={`rounded-lg border border-white/10 bg-black/25 px-3 py-2 flex items-start justify-between gap-2 ${className}`.trim()}
+      className={`rounded-lg border border-[var(--hub-border-soft)] bg-[var(--hub-inset)] px-3 py-2 flex items-start justify-between gap-2 ${className}`.trim()}
     >
       <div className="min-w-0 flex-1 space-y-0.5">
-        <p className="text-sm font-medium text-white leading-snug line-clamp-2">{fixture.title}</p>
+        <p className="text-sm font-medium text-[var(--hub-text)] leading-snug line-clamp-2">{fixture.title}</p>
         {fixture.league?.trim() || fixture.kickoff?.trim() ? (
-          <p className="text-[10px] text-white/92 leading-snug line-clamp-2">
+          <p className="text-[10px] text-[var(--hub-text-soft)] leading-snug line-clamp-2">
             {[fixture.league, fixture.kickoff]
               .map((x) => (x == null ? '' : x.trim()))
               .filter(Boolean)
@@ -78,8 +78,8 @@ function BplFixtureRow({ fixture, className = '' }: { fixture: BplCompactFixture
         <span
           className={
             fixture.odds != null
-              ? 'text-xs tabular-nums text-amber-100/95'
-              : 'text-[10px] font-medium text-white/78 tabular-nums'
+              ? 'text-xs tabular-nums text-[var(--hub-accent-link)]'
+              : 'text-[10px] font-medium text-[var(--hub-text-muted)] tabular-nums'
           }
         >
           {fixture.odds != null ? `@${fixture.odds.toFixed(2)}` : '—'}
@@ -96,9 +96,9 @@ function BplFixtureRow({ fixture, className = '' }: { fixture: BplCompactFixture
 
 function DownloadAppTeaser({ hiddenCount }: { hiddenCount: number }) {
   return (
-    <div className="rounded-xl border border-amber-200/35 bg-black/72 backdrop-blur-sm px-4 py-3 text-center shadow-lg shadow-black/25">
-      <p className="text-sm font-semibold text-amber-100/95">Unlock the full daily list in StatStrike</p>
-      <p className="mt-1 text-xs leading-relaxed text-white/90">
+    <div className="rounded-xl border border-amber-200/35 bg-[var(--hub-inset)] backdrop-blur-sm px-4 py-3 text-center shadow-lg shadow-black/25">
+      <p className="text-sm font-semibold text-[var(--hub-accent-link)]">Unlock the full daily list in StatStrike</p>
+      <p className="mt-1 text-xs leading-relaxed text-[var(--hub-text-soft)]">
         Showing the first {TEASER_VISIBLE_COUNT} best-performing lines
         {hiddenCount > 0 ? ` with ${hiddenCount} more available in the app today.` : '.'}
       </p>
@@ -107,7 +107,7 @@ function DownloadAppTeaser({ hiddenCount }: { hiddenCount: number }) {
           href={statStrikeAppStoreUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-3 inline-flex items-center justify-center rounded-lg border border-amber-200/45 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-100/95 transition-colors hover:bg-amber-500/15 hover:border-amber-200/60"
+          className="mt-3 inline-flex items-center justify-center rounded-lg border border-amber-200/45 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-[var(--hub-accent-link)] transition-colors hover:bg-amber-500/15 hover:border-amber-200/60"
         >
           Download StatStrike on iOS
         </a>
@@ -179,13 +179,13 @@ export function BplHubCell({ showTodayFixtures = true }: { showTodayFixtures?: b
   return (
     <div id="bpl-statstrike" className={`${bestPicksGridTileClassName} gap-3`}>
       <div className="shrink-0 space-y-1.5">
-        <h2 className="text-lg md:text-xl font-semibold text-white tracking-tight">
+        <h2 className="text-lg md:text-xl font-semibold text-[var(--hub-text)] tracking-tight">
           {statStrikeAppStoreUrl ? (
             <a
               href={statStrikeAppStoreUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-amber-200/93 underline underline-offset-2 hover:text-amber-100/95"
+              className="text-amber-200/93 underline underline-offset-2 hover:text-[var(--hub-accent-link)]"
             >
               StatStrike - Best Performing - As seen in iOS app
             </a>
@@ -194,12 +194,12 @@ export function BplHubCell({ showTodayFixtures = true }: { showTodayFixtures?: b
           )}
         </h2>
         {data?.allTimeDateRange && (
-          <p className="text-xs text-white/93 tabular-nums">
+          <p className="text-xs text-[var(--hub-text-soft)] tabular-nums">
             All Time: {formatYmdForDisplay(data.allTimeDateRange.startYyyyMmDd)} –{' '}
             {formatYmdForDisplay(data.allTimeDateRange.endYyyyMmDd)} (London)
           </p>
         )}
-        {loading && <p className="text-sm text-white/94">Loading…</p>}
+        {loading && <p className="text-sm text-[var(--hub-text-soft)]">Loading…</p>}
         {err && (
           <p className="text-sm text-amber-200/93" role="alert">
             {err}
@@ -214,41 +214,41 @@ export function BplHubCell({ showTodayFixtures = true }: { showTodayFixtures?: b
 
       {data && allBplLines && (
         <>
-          <div className="shrink-0 rounded-xl border border-amber-200/25 bg-zinc-900/70 p-3 space-y-2">
+          <div className="shrink-0 rounded-xl border border-amber-200/25 bg-[var(--hub-elevated)] p-3 space-y-2">
             <div className="space-y-0.5">
               <p className="text-[10px] font-bold uppercase tracking-wide text-amber-100/88">
                 All time · BPL, every best line (incl. no on-file odds)
               </p>
-              <p className="text-sm tabular-nums text-white/95">
+              <p className="text-sm tabular-nums text-[var(--hub-text-soft)]">
                 <span className="text-emerald-200/95">{allBplLines.wins}W</span>
-                <span className="text-white/72"> — </span>
+                <span className="text-[var(--hub-text-muted)]"> — </span>
                 <span className="text-red-200/95">{allBplLines.losses}L</span>
                 {allBplLines.voids > 0 ? (
-                  <span className="text-white/93">
+                  <span className="text-[var(--hub-text-soft)]">
                     {' '}
                     · {allBplLines.voids} void/push
                   </span>
                 ) : null}
               </p>
-              <p className="text-[10px] text-white/92">
+              <p className="text-[10px] text-[var(--hub-text-soft)]">
                 {allBplLines.settledLineCount} settled line
                 {allBplLines.settledLineCount === 1 ? '' : 's'} in BPL (all) ledger
               </p>
             </div>
-            <div className="pt-1 border-t border-white/10">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-white/92">
+            <div className="pt-1 border-t border-[var(--hub-border-soft)]">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--hub-text-soft)]">
                 All time · BPL, bookmaker odds on the hub (FT)
               </p>
               {/* W/L, ROI, and settled count hidden pending manual check; API still returns allTime + settledPickCount. */}
             </div>
             {data.allTimeWithPreKoOdds ? (
-              <div className="pt-2 mt-2 border-t border-white/10 space-y-0.5">
-                <p className="text-[10px] font-bold uppercase tracking-wide text-white/92">
+              <div className="pt-2 mt-2 border-t border-[var(--hub-border-soft)] space-y-0.5">
+                <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--hub-text-soft)]">
                   All time · pre-KO odds (provable on the row)
                 </p>
-                <p className="text-sm tabular-nums text-white/94">
+                <p className="text-sm tabular-nums text-[var(--hub-text-soft)]">
                   <span className="text-emerald-200/95">{data.allTimeWithPreKoOdds.wins}W</span>
-                  <span className="text-white/72"> — </span>
+                  <span className="text-[var(--hub-text-muted)]"> — </span>
                   <span className="text-red-200/95">{data.allTimeWithPreKoOdds.losses}L</span>
                 </p>
                 <p className="text-lg font-semibold text-cyan-100/95 tabular-nums">
@@ -266,11 +266,11 @@ export function BplHubCell({ showTodayFixtures = true }: { showTodayFixtures?: b
               id="bpl-statstrike-fixtures"
               className="flex-1 min-h-0 min-w-0 flex flex-col overflow-y-auto [scrollbar-gutter:stable] scroll-mt-4"
             >
-              <p className="text-xs font-bold uppercase tracking-wide text-white/93 mb-1">
+              <p className="text-xs font-bold uppercase tracking-wide text-[var(--hub-text-soft)] mb-1">
                 Selection day (London){' '}
                 <span className="tabular-nums text-amber-200/88">{data.current.dateKey}</span>
               </p>
-              <p className="text-[10px] text-white/92 mb-2">
+              <p className="text-[10px] text-[var(--hub-text-soft)] mb-2">
                 {data.current.bestPerformingFixtureCount} best (BPL) line
                 {data.current.bestPerformingFixtureCount === 1 ? '' : 's'}
                 {data.current.withBookmakerOddsFixtureCount < data.current.bestPerformingFixtureCount
@@ -280,7 +280,7 @@ export function BplHubCell({ showTodayFixtures = true }: { showTodayFixtures?: b
                     : ' · no bookmaker odds on the hub for these lines yet'}
               </p>
               {data.current.fixtures.length === 0 ? (
-                <p className="text-sm text-white/94">No BPL lines for this date (or not uploaded yet).</p>
+                <p className="text-sm text-[var(--hub-text-soft)]">No BPL lines for this date (or not uploaded yet).</p>
               ) : (
                 <div className="space-y-2 pb-1">
                   <ul className="space-y-2">
@@ -311,7 +311,7 @@ export function BplHubCell({ showTodayFixtures = true }: { showTodayFixtures?: b
             <div className="shrink-0 pt-1">
               <Link
                 href={todayBplFixturesHref}
-                className="block w-full text-center rounded-xl border border-amber-200/40 bg-amber-500/10 px-4 py-3 text-sm font-semibold text-amber-100/95 tracking-tight shadow-sm shadow-black/20 transition-colors hover:bg-amber-500/15 hover:border-amber-200/55 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/50"
+                className="block w-full text-center rounded-xl border border-amber-200/40 bg-amber-500/10 px-4 py-3 text-sm font-semibold text-[var(--hub-accent-link)] tracking-tight shadow-sm shadow-black/20 transition-colors hover:bg-amber-500/15 hover:border-amber-200/55 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/50"
               >
                 Click for today&apos;s BPL fixtures preview
               </Link>

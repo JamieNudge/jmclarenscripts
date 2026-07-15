@@ -39,12 +39,12 @@ function CompareRow({ row }: { row: FormCompareRow }) {
 
   return (
     <div className="grid grid-cols-[2.5rem_1fr_2.5rem] gap-x-1.5 gap-y-1 items-center">
-      <span className="text-xs font-semibold tabular-nums text-white text-right">{homeDisplay}</span>
+      <span className="text-xs font-semibold tabular-nums text-[var(--hub-text)] text-right">{homeDisplay}</span>
       <div className="min-w-0 space-y-1">
-        <p className="text-[10px] text-center text-white/60 leading-tight truncate">{row.label}</p>
+        <p className="text-[10px] text-center text-[var(--hub-text-muted)] leading-tight truncate">{row.label}</p>
         <CompareBar homeValue={row.homeValue} awayValue={row.awayValue} />
       </div>
-      <span className="text-xs font-semibold tabular-nums text-white text-left">{awayDisplay}</span>
+      <span className="text-xs font-semibold tabular-nums text-[var(--hub-text)] text-left">{awayDisplay}</span>
     </div>
   );
 }
@@ -76,36 +76,36 @@ export function FixtureFormComparePanel({
       className={
         embedded
           ? 'overflow-hidden h-full'
-          : 'rounded-xl border border-white/15 bg-white/[0.06] overflow-hidden h-full'
+          : 'rounded-xl border border-[var(--hub-border-soft)] bg-white/[0.06] overflow-hidden h-full'
       }
     >
       <div
-        className={`border-b border-white/10 bg-black/20 ${embedded ? 'px-0 py-2' : 'px-3 py-2.5'}`}
+        className={`border-b border-[var(--hub-border-soft)] bg-[var(--hub-inset)] ${embedded ? 'px-0 py-2' : 'px-3 py-2.5'}`}
       >
-        <h3 className="text-[11px] font-semibold uppercase tracking-wide text-white/90 text-center">Compare</h3>
-        <p className="text-[10px] text-white/50 text-center mt-0.5 leading-snug">Form samples for manual check</p>
+        <h3 className="text-[11px] font-semibold uppercase tracking-wide text-[var(--hub-text-soft)] text-center">Compare</h3>
+        <p className="text-[10px] text-[var(--hub-text-faint)] text-center mt-0.5 leading-snug">Form samples for manual check</p>
       </div>
 
-      <div className={`border-b border-white/10 bg-black/10 ${embedded ? 'px-0 py-2' : 'px-3 py-2.5'}`}>
+      <div className={`border-b border-[var(--hub-border-soft)] bg-[var(--hub-hover)] ${embedded ? 'px-0 py-2' : 'px-3 py-2.5'}`}>
         <div className="grid grid-cols-2 gap-2 text-[10px] leading-snug">
           <div className="min-w-0 text-center">
-            <p className="font-semibold text-white truncate" title={homeTeam}>
+            <p className="font-semibold text-[var(--hub-text)] truncate" title={homeTeam}>
               {homeTeam}
             </p>
-            <p className="text-white/50 tabular-nums">{homeSampleLabel}</p>
+            <p className="text-[var(--hub-text-faint)] tabular-nums">{homeSampleLabel}</p>
           </div>
           <div className="min-w-0 text-center">
-            <p className="font-semibold text-white truncate" title={awayTeam}>
+            <p className="font-semibold text-[var(--hub-text)] truncate" title={awayTeam}>
               {awayTeam}
             </p>
-            <p className="text-white/50 tabular-nums">{awaySampleLabel}</p>
+            <p className="text-[var(--hub-text-faint)] tabular-nums">{awaySampleLabel}</p>
           </div>
         </div>
       </div>
 
       <div className={`space-y-3 ${embedded ? 'px-0 py-2' : 'px-3 py-3'}`}>
         {!hasData ? (
-          <p className="text-xs text-white/60 leading-relaxed">No form sample for compare yet.</p>
+          <p className="text-xs text-[var(--hub-text-muted)] leading-relaxed">No form sample for compare yet.</p>
         ) : (
           rows.map((row) => <CompareRow key={row.id} row={row} />)
         )}

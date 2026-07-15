@@ -22,19 +22,19 @@ export default function BestPicksMethodologyPage() {
           modelling and thresholds; this site surfaces those outputs for the calendar day shown on the page.
         </p>
         <p>
-          <strong className="font-medium text-white">Consensus vs per-model lines.</strong> Where a daily consensus
+          <strong className="font-medium text-[var(--hub-text)]">Consensus vs per-model lines.</strong> Where a daily consensus
           feed exists, it reflects agreement rules and filters defined in upload tooling (for example minimum sources
           or caps). Per-model lines list individual contributing sources for the same day so readers can see alignment
           or disagreement at a glance.
         </p>
         <p>
-          <strong className="font-medium text-white">Limitations.</strong> Past patterns and model outputs are not
+          <strong className="font-medium text-[var(--hub-text)]">Limitations.</strong> Past patterns and model outputs are not
           guarantees of future results. Match status, data quality, and late changes can affect what was true at upload
           time versus kickoff. The page does not offer financial advice, real-money gambling, prizes, or simulated
           gambling. Past performance is no guarantee of future results. All fixture forecasts, blog content, and other
           site material on this page are for informational purposes only.
         </p>
-        <p className="text-xs text-white/85">
+        <p className="text-xs text-[var(--hub-text-soft)]">
           For how each app is described for visitors, see{' '}
           <HubFootballLink
             href="/football-predictions#how-apps-work"
@@ -46,8 +46,8 @@ export default function BestPicksMethodologyPage() {
         </p>
       </section>
 
-      <section className="space-y-4 border-t border-white/10 pt-6">
-        <h2 className="text-xl font-semibold text-white">How PopGoals works</h2>
+      <section className="space-y-4 border-t border-[var(--hub-border-soft)] pt-6">
+        <h2 className="text-xl font-semibold text-[var(--hub-text)]">How PopGoals works</h2>
         <p>
           PopGoals is designed as a live match-intelligence product rather than a generic prediction feed. The
           app focuses on fixtures with historically interesting scoring patterns, especially matches that can
@@ -65,7 +65,7 @@ export default function BestPicksMethodologyPage() {
           per-strategy comparisons, and fixture lifecycle states are used to make the product more transparent,
           but none of these are guarantees of future outcomes.
         </p>
-        <p className="text-sm text-white/80">
+        <p className="text-sm text-[var(--hub-text-soft)]">
           In practical terms, users may see fixtures move through stages such as qualified, watching, trigger,
           and settled, with detail views explaining the target window and the current state of the setup.
         </p>

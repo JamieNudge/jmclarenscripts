@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function FixtureDetailPage() {
   return (
-    <Suspense fallback={<p className="text-sm text-white p-10">Loading fixture…</p>}>
+    <Suspense fallback={<p className="text-sm text-[var(--hub-text)] p-10">Loading fixture…</p>}>
       <FixtureDetailView />
     </Suspense>
   );

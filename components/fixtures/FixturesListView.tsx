@@ -41,21 +41,21 @@ function FixtureListRow({
     <li>
       <HubFootballLink
         href={fixtureDetailHref(fixture.fixtureId, dateKey)}
-        className="flex items-center gap-3 rounded-lg border border-white/10 bg-black/25 px-3 py-2.5 transition-colors hover:border-white/20 hover:bg-white/[0.06]"
+        className="flex items-center gap-3 rounded-lg border border-[var(--hub-border-soft)] bg-[var(--hub-inset)] px-3 py-2.5 transition-colors hover:border-[var(--hub-border)] hover:bg-white/[0.06]"
       >
         <span
-          className="shrink-0 min-w-[9rem] text-xs tabular-nums text-white/90 text-right leading-snug"
+          className="shrink-0 min-w-[9rem] text-xs tabular-nums text-[var(--hub-text-soft)] text-right leading-snug"
           title={kickoffTitle}
         >
           {kickoffShort}
         </span>
-        <span className="min-w-0 flex-1 text-sm text-white leading-snug">
+        <span className="min-w-0 flex-1 text-sm text-[var(--hub-text)] leading-snug">
           <span className="font-medium">{fixture.home}</span>
-          <span className="text-white/80 mx-1.5">v</span>
+          <span className="text-[var(--hub-text-soft)] mx-1.5">v</span>
           <span className="font-medium">{fixture.away}</span>
-          <span className="block text-xs text-white/70 mt-0.5 truncate">{fixture.leagueKey}</span>
+          <span className="block text-xs text-[var(--hub-text-muted)] mt-0.5 truncate">{fixture.leagueKey}</span>
         </span>
-        <span className="shrink-0 text-sm font-semibold tabular-nums text-white/95">{fixture.scoreDisplay}</span>
+        <span className="shrink-0 text-sm font-semibold tabular-nums text-[var(--hub-text-soft)]">{fixture.scoreDisplay}</span>
       </HubFootballLink>
     </li>
   );
@@ -116,7 +116,7 @@ export function FixturesListView() {
         <div className={BEST_PICKS_EXTENDED_SITE_NAV ? 'mt-6' : 'mt-0'}>
           <HubFootballLink
             href={FOOTBALL_PREDICTIONS_HUB_PATH}
-            className="inline-flex items-center gap-2 text-white/93 hover:text-white transition-colors mb-8 text-sm"
+            className="inline-flex items-center gap-2 text-[var(--hub-text-soft)] hover:text-[var(--hub-text)] transition-colors mb-8 text-sm"
           >
             <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden>
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -126,14 +126,14 @@ export function FixturesListView() {
         </div>
 
         <h1 className="text-3xl md:text-4xl font-bold mb-3">{FOOTBALL_PREDICTIONS_FIXTURES_TITLE}</h1>
-        <p className="text-sm text-white/93 mb-8 leading-relaxed">
-          Day <span className="tabular-nums text-amber-100/95">{dateKey}</span> from your daily upload. Tap a fixture
+        <p className="text-sm text-[var(--hub-text-soft)] mb-8 leading-relaxed">
+          Day <span className="tabular-nums text-[var(--hub-accent-link)]">{dateKey}</span> from your daily upload. Tap a fixture
           for forecast detail.
         </p>
 
         {!configured ? (
-          <p className="text-sm text-white leading-relaxed">
-            Firebase is not configured — add keys in <code className="text-xs text-white/94">.env.local</code>.
+          <p className="text-sm text-[var(--hub-text)] leading-relaxed">
+            Firebase is not configured — add keys in <code className="text-xs text-[var(--hub-text-soft)]">.env.local</code>.
           </p>
         ) : null}
 
@@ -144,15 +144,15 @@ export function FixturesListView() {
         ) : null}
 
         {configured && loading ? (
-          <p className="text-sm text-white/90">Loading fixtures…</p>
+          <p className="text-sm text-[var(--hub-text-soft)]">Loading fixtures…</p>
         ) : null}
 
         {configured && !loading && !error && totalCount === 0 ? (
-          <p className="text-sm text-white leading-relaxed">No fixtures for {dateKey} yet.</p>
+          <p className="text-sm text-[var(--hub-text)] leading-relaxed">No fixtures for {dateKey} yet.</p>
         ) : null}
 
         {configured && !loading && !error && totalCount > 0 ? (
-          <p className="text-xs text-white/85 mb-4 tabular-nums">
+          <p className="text-xs text-[var(--hub-text-soft)] mb-4 tabular-nums">
             {totalCount} fixture{totalCount === 1 ? '' : 's'}
           </p>
         ) : null}

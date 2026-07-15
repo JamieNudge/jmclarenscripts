@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
+import { HubThemeRoot } from '@/components/hub/HubThemeRoot';
 
 /**
  * Tab / bookmark icon for `/blog` and `/blog/*` (same hub as football-predictions).
@@ -14,5 +15,5 @@ export const metadata: Metadata = {
 };
 
 export default function BlogLayout({ children }: { children: ReactNode }) {
-  return children;
+  return <HubThemeRoot>{children}</HubThemeRoot>;
 }

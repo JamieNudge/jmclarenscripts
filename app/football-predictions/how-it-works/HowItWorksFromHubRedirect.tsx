@@ -10,7 +10,7 @@ export function HowItWorksFromHubRedirect() {
     window.location.replace(longFpPathToPublicHubPath('/football-predictions#how-apps-work', hub));
   }, []);
   return (
-    <p className="text-sm text-white/90 px-4 py-6" role="status">
+    <p className="text-sm text-[var(--hub-text-soft)] px-4 py-6" role="status">
       Taking you to How apps work on the home page…
     </p>
   );

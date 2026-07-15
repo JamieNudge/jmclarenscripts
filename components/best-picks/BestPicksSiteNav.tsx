@@ -3,8 +3,10 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useGoalLabHubNav } from '@/components/hub/HubNavContext';
+import HubAppearanceToggle from '@/components/hub/HubAppearanceToggle';
 import { bestPicksSiteNavFooterExtra, bestPicksSiteNavPrimary } from '@/components/best-picks/best-picks-site-nav-links';
 import { hubPublicHref, pathnameToLongFpPath } from '@/lib/hub-football-routes';
+import { hubNavLink, hubNavLinkActive, hubTextFaint } from '@/lib/hub/ui';
 
 function linkActive(pathname: string, href: string, hostname: string): boolean {
   const longPath = pathnameToLongFpPath(pathname, hostname) ?? pathname;
@@ -13,10 +15,6 @@ function linkActive(pathname: string, href: string, hostname: string): boolean {
   if (href === '/football-predictions/privacy') return longPath === '/football-predictions/privacy';
   return longPath === href || longPath.startsWith(`${href}/`);
 }
-
-const linkClass =
-  'text-xs md:text-sm font-medium text-amber-100/95 hover:text-amber-50/95 underline-offset-4 hover:underline rounded-md px-1.5 py-1 -mx-1.5 transition-colors';
-const linkActiveClass = 'text-white underline decoration-amber-200/80';
 
 export function BestPicksSiteNav({ variant }: { variant: 'header' | 'footer' }) {
   const pathname = usePathname() ?? '';
@@ -42,13 +40,13 @@ export function BestPicksSiteNav({ variant }: { variant: 'header' | 'footer' }) 
         return (
           <span key={href} className="inline-flex items-center gap-x-2">
             {i > 0 ? (
-              <span className="text-white/68 select-none text-[10px] tabular-nums" aria-hidden>
+              <span className={`${hubTextFaint} select-none text-[10px] tabular-nums`} aria-hidden>
                 ·
               </span>
             ) : null}
             <Link
               href={hubPublicHref(href, isGoalLabHub)}
-              className={`${linkClass} ${active ? linkActiveClass : ''}`}
+              className={`${hubNavLink} ${active ? hubNavLinkActive : ''}`}
               aria-current={active ? 'page' : undefined}
             >
               {label}
@@ -56,6 +54,11 @@ export function BestPicksSiteNav({ variant }: { variant: 'header' | 'footer' }) 
           </span>
         );
       })}
+      {variant === 'header' ? (
+        <span className="ml-auto inline-flex items-center pl-2">
+          <HubAppearanceToggle />
+        </span>
+      ) : null}
     </nav>
   );
 }

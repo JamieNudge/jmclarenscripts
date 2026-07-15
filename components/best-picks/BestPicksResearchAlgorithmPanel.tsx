@@ -32,7 +32,7 @@ function bandPillClass(band: string): string {
   if (b.includes('under')) {
     return 'text-orange-200 border-orange-400/30 bg-orange-500/15';
   }
-  return 'text-white/93 border-white/20 bg-white/10';
+  return 'text-[var(--hub-text-soft)] border-[var(--hub-border)] bg-[var(--hub-chip)]';
 }
 
 function outcomeClass(outcome: string): string {
@@ -44,7 +44,7 @@ function outcomeClass(outcome: string): string {
     case 'void':
       return 'text-amber-200 border-amber-400/35 bg-amber-500/15';
     default:
-      return 'text-white/92 border-white/20 bg-white/10';
+      return 'text-[var(--hub-text-soft)] border-[var(--hub-border)] bg-[var(--hub-chip)]';
   }
 }
 
@@ -58,18 +58,18 @@ function ConsensusPickRow({ pick, className = '' }: { pick: DailyConsensusPickPa
   const kickoffLine = pick.kickoff?.trim() || null;
 
   return (
-    <li className={`rounded-xl border border-white/15 bg-white/[0.06] px-3 py-2.5 shrink-0 ${className}`.trim()}>
+    <li className={`rounded-xl border border-[var(--hub-border-soft)] bg-white/[0.06] px-3 py-2.5 shrink-0 ${className}`.trim()}>
       {/* Stacked: full-width fixture + context first; model / outcome chips on a second row (no side-by-side squeeze). */}
       <div className="flex w-full min-w-0 flex-col gap-2.5">
         <div className="w-full min-w-0">
-          <p className="text-sm font-medium text-white leading-relaxed text-pretty">
+          <p className="text-sm font-medium text-[var(--hub-text)] leading-relaxed text-pretty">
             {pick.home}
-            <span className="text-white/93 font-normal mx-1">v</span>
+            <span className="text-[var(--hub-text-soft)] font-normal mx-1">v</span>
             {pick.away}
           </p>
-          {venueLine ? <p className="text-xs text-white/94 mt-1.5 leading-relaxed text-pretty">{venueLine}</p> : null}
+          {venueLine ? <p className="text-xs text-[var(--hub-text-soft)] mt-1.5 leading-relaxed text-pretty">{venueLine}</p> : null}
           {kickoffLine ? (
-            <p className="text-xs text-white/94 leading-relaxed text-pretty">{kickoffLine}</p>
+            <p className="text-xs text-[var(--hub-text-soft)] leading-relaxed text-pretty">{kickoffLine}</p>
           ) : null}
         </div>
         <div className="flex w-full min-w-0 flex-row flex-wrap items-center gap-1.5">
@@ -82,7 +82,7 @@ function ConsensusPickRow({ pick, className = '' }: { pick: DailyConsensusPickPa
             {pick.sources} models
           </span>
           {score ? (
-            <span className="text-xs font-bold tabular-nums text-white whitespace-nowrap">{score}</span>
+            <span className="text-xs font-bold tabular-nums text-[var(--hub-text)] whitespace-nowrap">{score}</span>
           ) : null}
           <span
             className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-md border whitespace-nowrap ${outcomeClass(pick.outcome)}`}
@@ -97,18 +97,18 @@ function ConsensusPickRow({ pick, className = '' }: { pick: DailyConsensusPickPa
 
 function LockedConsensusPlaceholderRow({ className = '' }: { className?: string }) {
   return (
-    <li className={`rounded-xl border border-white/15 bg-white/[0.06] px-3 py-2.5 shrink-0 ${className}`.trim()}>
+    <li className={`rounded-xl border border-[var(--hub-border-soft)] bg-white/[0.06] px-3 py-2.5 shrink-0 ${className}`.trim()}>
       <div className="flex w-full min-w-0 flex-col gap-2.5">
         <div className="w-full min-w-0 space-y-1.5">
           <div className="h-4 w-3/4 rounded bg-white/16" />
-          <div className="h-3 w-2/3 rounded bg-white/10" />
-          <div className="h-3 w-1/2 rounded bg-white/10" />
+          <div className="h-3 w-2/3 rounded bg-[var(--hub-chip)]" />
+          <div className="h-3 w-1/2 rounded bg-[var(--hub-chip)]" />
         </div>
         <div className="flex w-full min-w-0 flex-row flex-wrap items-center gap-1.5">
-          <span className="h-6 w-20 rounded-md border border-white/15 bg-white/10" />
-          <span className="h-5 w-24 rounded-md border border-white/15 bg-white/10" />
-          <span className="h-4 w-10 rounded bg-white/10" />
-          <span className="h-5 w-14 rounded-md border border-white/15 bg-white/10" />
+          <span className="h-6 w-20 rounded-md border border-[var(--hub-border-soft)] bg-[var(--hub-chip)]" />
+          <span className="h-5 w-24 rounded-md border border-[var(--hub-border-soft)] bg-[var(--hub-chip)]" />
+          <span className="h-4 w-10 rounded bg-[var(--hub-chip)]" />
+          <span className="h-5 w-14 rounded-md border border-[var(--hub-border-soft)] bg-[var(--hub-chip)]" />
         </div>
       </div>
     </li>
@@ -117,9 +117,9 @@ function LockedConsensusPlaceholderRow({ className = '' }: { className?: string 
 
 function DownloadAppTeaser({ hiddenCount, label }: { hiddenCount: number; label: string }) {
   return (
-    <div className="rounded-xl border border-amber-200/35 bg-black/72 backdrop-blur-sm px-4 py-3 text-center shadow-lg shadow-black/25">
-      <p className="text-sm font-semibold text-amber-100/95">Unlock the full daily list in GoalLab</p>
-      <p className="mt-1 text-xs leading-relaxed text-white/90">
+    <div className="rounded-xl border border-amber-200/35 bg-[var(--hub-inset)] backdrop-blur-sm px-4 py-3 text-center shadow-lg shadow-black/25">
+      <p className="text-sm font-semibold text-[var(--hub-accent-link)]">Unlock the full daily list in GoalLab</p>
+      <p className="mt-1 text-xs leading-relaxed text-[var(--hub-text-soft)]">
         Showing the first {TEASER_VISIBLE_COUNT} {label}
         {hiddenCount > 0 ? ` with ${hiddenCount} more available in the app today.` : '.'}
       </p>
@@ -128,7 +128,7 @@ function DownloadAppTeaser({ hiddenCount, label }: { hiddenCount: number; label:
           href={GOALLAB_APP_STORE_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-3 inline-flex items-center justify-center rounded-lg border border-amber-200/45 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-100/95 transition-colors hover:bg-amber-500/15 hover:border-amber-200/60"
+          className="mt-3 inline-flex items-center justify-center rounded-lg border border-amber-200/45 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-[var(--hub-accent-link)] transition-colors hover:bg-amber-500/15 hover:border-amber-200/60"
         >
           Download GoalLab on iOS
         </a>
@@ -220,34 +220,34 @@ export function BestPicksResearchAlgorithmPanel({
       <div className="shrink-0 mb-3 space-y-4">
         <div>
           {showPanelHeading ? (
-            <h2 className="text-lg md:text-xl font-semibold text-white">{bestPicksResearchAlgorithmPanelTitle}</h2>
+            <h2 className="text-lg md:text-xl font-semibold text-[var(--hub-text)]">{bestPicksResearchAlgorithmPanelTitle}</h2>
           ) : null}
           <p
-            className={`text-sm text-white leading-relaxed ${showPanelHeading ? 'mt-2' : ''}`}
+            className={`text-sm text-[var(--hub-text)] leading-relaxed ${showPanelHeading ? 'mt-2' : ''}`}
           >
             Selections are driven by multi-model consensus in an attempt to determine a highly reliable list every day.
           </p>
         </div>
 
         {configured ? (
-          <div className="space-y-2 border-t border-white/15 pt-3">
-            <p className="text-xs font-semibold uppercase tracking-wide text-white">Daily consensus</p>
+          <div className="space-y-2 border-t border-[var(--hub-border-soft)] pt-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--hub-text)]">Daily consensus</p>
             {consensusError ? (
               <p className="text-sm text-red-300 leading-relaxed" role="alert">
                 {consensusError}
               </p>
             ) : null}
             {!consensusError && consensusLoading ? (
-              <p className="text-sm text-white leading-relaxed">Loading consensus…</p>
+              <p className="text-sm text-[var(--hub-text)] leading-relaxed">Loading consensus…</p>
             ) : null}
             {!consensusError && !consensusLoading && sourcesCapLine ? (
-              <p className="text-sm text-white tabular-nums leading-snug">{sourcesCapLine}</p>
+              <p className="text-sm text-[var(--hub-text)] tabular-nums leading-snug">{sourcesCapLine}</p>
             ) : null}
             {!consensusError && !consensusLoading && recordLine ? (
-              <p className="text-sm text-white leading-snug">{recordLine}</p>
+              <p className="text-sm text-[var(--hub-text)] leading-snug">{recordLine}</p>
             ) : null}
             {!consensusError && !consensusLoading && !hasConsensusContent ? (
-              <p className="text-sm text-white leading-relaxed">
+              <p className="text-sm text-[var(--hub-text)] leading-relaxed">
                 No consensus picks for <span className="tabular-nums">{dateKey}</span> yet.
               </p>
             ) : null}
@@ -257,8 +257,8 @@ export function BestPicksResearchAlgorithmPanel({
 
       <div className={scrollArea}>
         {!configured && (
-          <p className="text-sm text-white leading-relaxed">
-            Firebase is not configured — add keys in <code className="text-xs text-white/94">.env.local</code>.
+          <p className="text-sm text-[var(--hub-text)] leading-relaxed">
+            Firebase is not configured — add keys in <code className="text-xs text-[var(--hub-text-soft)]">.env.local</code>.
           </p>
         )}
 

@@ -18,7 +18,7 @@ function outcomeStyles(outcome: TeamMatchOutcome): string {
 function TeamCell({ name, emphasize, compact }: { name: string; emphasize: boolean; compact?: boolean }) {
   return (
     <span
-      className={`block truncate ${emphasize ? 'font-semibold text-white' : 'text-white/88'}`}
+      className={`block truncate ${emphasize ? 'font-semibold text-[var(--hub-text)]' : 'text-[var(--hub-text-soft)]'}`}
       title={compact ? name : undefined}
     >
       {name}
@@ -42,9 +42,9 @@ function ScoreCell({
 
   return (
     <span className="tabular-nums whitespace-nowrap">
-      <span className={homeBold ? 'font-bold text-white' : 'text-white/90'}>{row.homeGoals}</span>
-      <span className="text-white/70 mx-0.5">-</span>
-      <span className={awayBold ? 'font-bold text-white' : 'text-white/90'}>{row.awayGoals}</span>
+      <span className={homeBold ? 'font-bold text-[var(--hub-text)]' : 'text-[var(--hub-text-soft)]'}>{row.homeGoals}</span>
+      <span className="text-[var(--hub-text-muted)] mx-0.5">-</span>
+      <span className={awayBold ? 'font-bold text-[var(--hub-text)]' : 'text-[var(--hub-text-soft)]'}>{row.awayGoals}</span>
     </span>
   );
 }
@@ -64,7 +64,7 @@ export function MatchHistoryTable({
   density?: 'default' | 'compact';
 }) {
   if (matches.length === 0) {
-    return <p className={`text-white/65 py-2 ${density === 'compact' ? 'text-xs' : 'text-sm'}`}>No games in this sample.</p>;
+    return <p className={`text-[var(--hub-text-muted)] py-2 ${density === 'compact' ? 'text-xs' : 'text-sm'}`}>No games in this sample.</p>;
   }
 
   const groups = groupMatchesByMonth(matches);
@@ -76,7 +76,7 @@ export function MatchHistoryTable({
         className={`w-full border-collapse ${compact ? 'min-w-0 table-fixed text-xs' : 'min-w-[520px] text-sm'}`}
       >
         <thead>
-          <tr className="text-left text-[10px] uppercase tracking-wide text-white/55 border-b border-white/10">
+          <tr className="text-left text-[10px] uppercase tracking-wide text-[var(--hub-text-faint)] border-b border-[var(--hub-border-soft)]">
             <th className={`pb-2 pr-2 font-semibold ${compact ? 'w-[72px]' : 'w-[88px] pr-3'}`}>Date</th>
             <th className={`pb-2 pr-2 font-semibold ${compact ? 'w-[44px]' : 'w-[72px] pr-3'}`}>League</th>
             <th className={`pb-2 pr-2 font-semibold ${compact ? 'w-[28%]' : ''}`}>Home</th>
@@ -125,7 +125,7 @@ function MonthGroupRows({
       <tr>
         <td
           colSpan={subjectTeam ? 6 : 5}
-          className={`pt-2 pb-0.5 text-[10px] font-semibold text-white/50 tabular-nums ${compact ? '' : 'pt-3 pb-1 text-[11px]'}`}
+          className={`pt-2 pb-0.5 text-[10px] font-semibold text-[var(--hub-text-faint)] tabular-nums ${compact ? '' : 'pt-3 pb-1 text-[11px]'}`}
         >
           {monthKey}
         </td>
@@ -134,11 +134,11 @@ function MonthGroupRows({
         const outcome = subjectTeam ? subjectOutcome(row, subjectTeam) : null;
         const rowKey = `${row.dateCompact}-${row.homeTeam}-${row.awayTeam}-${row.homeGoals}-${row.awayGoals}`;
         return (
-          <tr key={rowKey} className="border-b border-white/[0.06] last:border-0">
-            <td className={`${cellPy} pr-2 tabular-nums text-white/85 whitespace-nowrap`}>
+          <tr key={rowKey} className="border-b border-[var(--hub-border)] last:border-0">
+            <td className={`${cellPy} pr-2 tabular-nums text-[var(--hub-text-soft)] whitespace-nowrap`}>
               {formatCompactMatchDate(row.dateCompact)}
             </td>
-            <td className={`${cellPy} pr-2 text-white/75 whitespace-nowrap truncate`} title={row.leagueCode}>
+            <td className={`${cellPy} pr-2 text-[var(--hub-text-muted)] whitespace-nowrap truncate`} title={row.leagueCode}>
               {row.leagueCode}
             </td>
             <td className={`${cellPy} pr-2 min-w-0`}>

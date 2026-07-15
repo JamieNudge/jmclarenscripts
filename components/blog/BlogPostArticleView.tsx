@@ -28,12 +28,12 @@ export function BlogPostArticleView({
     <article style={{ fontFamily: blogTextFontFamily }}>
       <Link
         href={backHref}
-        className="text-sm text-white/60 hover:text-white underline-offset-2 mb-6 inline-block"
+        className="text-sm text-[var(--hub-text-muted)] hover:text-[var(--hub-text)] underline-offset-2 mb-6 inline-block"
       >
         {backLabel}
       </Link>
       {post.headerImageUrl ? (
-        <div className="mb-6 rounded-xl overflow-hidden border border-white/10">
+        <div className="mb-6 rounded-xl overflow-hidden border border-[var(--hub-border-soft)]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={post.headerImageUrl} alt="" className="w-full max-h-[min(420px,50vh)] object-cover" />
         </div>
@@ -42,8 +42,8 @@ export function BlogPostArticleView({
         {categoryLine ? (
           <p className="text-[11px] font-semibold uppercase tracking-wider text-amber-200/90 mb-3">{categoryLine}</p>
         ) : null}
-        <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">{post.title}</h1>
-        <p className="text-xs text-white/70 tabular-nums">
+        <h1 className="text-3xl md:text-4xl font-bold text-[var(--hub-text)] mb-3">{post.title}</h1>
+        <p className="text-xs text-[var(--hub-text-muted)] tabular-nums">
           {post.publishedAt?.slice(0, 10) ?? post.updatedAt.slice(0, 10)}
         </p>
       </header>
@@ -58,7 +58,7 @@ export function BlogPostArticleView({
           >
             <AdSenseAutoPlaceholder
               orientation="horizontal"
-              className="w-full min-h-[90px] !border-white/30 !bg-zinc-900/50 !text-white/70"
+              className="w-full min-h-[90px] !border-[var(--hub-border-strong)] !bg-[var(--hub-elevated)] !text-[var(--hub-text-muted)]"
             />
           </div>
         );

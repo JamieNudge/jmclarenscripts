@@ -20,7 +20,7 @@ import { isFirebaseClientConfigured } from '@/lib/firebase-client';
 
 /** Floated icon — title beside icon; body copy wraps full width underneath (matches How apps work). */
 const comingSoonIconFloatClass =
-  'shrink-0 float-left mt-0.5 mr-3 mb-1.5 rounded-2xl overflow-hidden border border-amber-200/30 bg-zinc-900/90 w-14 h-14 md:w-16 md:h-16';
+  'shrink-0 float-left mt-0.5 mr-3 mb-1.5 rounded-2xl overflow-hidden border border-amber-200/30 bg-[var(--hub-elevated)] w-14 h-14 md:w-16 md:h-16';
 
 const comingSoonScrollArea =
   'min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-1 -mr-0.5 [scrollbar-gutter:stable] scroll-smooth overscroll-y-contain touch-pan-y';
@@ -31,11 +31,11 @@ function BestPicksComingSoonAndProphitPanel() {
   const m = bestPicksPopgoalsComingSoonMeta;
   return (
     <div className={`${bestPicksGridTileClassName} min-h-0 h-full gap-0`}>
-      <h2 className="text-lg md:text-xl font-semibold text-white tracking-tight shrink-0 mb-3">
+      <h2 className="text-lg md:text-xl font-semibold text-[var(--hub-text)] tracking-tight shrink-0 mb-3">
         Coming Soon!
       </h2>
       <div className={comingSoonScrollArea}>
-      <section className="space-y-3 pb-4 border-b border-white/15">
+      <section className="space-y-3 pb-4 border-b border-[var(--hub-border-soft)]">
         <div className="min-w-0 [&:after]:content-[''] [&:after]:block [&:after]:clear-both">
           <div className={comingSoonIconFloatClass} aria-hidden>
             <Image
@@ -48,11 +48,11 @@ function BestPicksComingSoonAndProphitPanel() {
           </div>
           <div className="min-w-0 space-y-2">
             <div className="flex flex-wrap items-center gap-2 gap-y-1">
-              <h3 className="text-base md:text-lg font-semibold text-white tracking-tight min-w-0">
+              <h3 className="text-base md:text-lg font-semibold text-[var(--hub-text)] tracking-tight min-w-0">
                 {ss.displayName}
               </h3>
               {ss.showComingSoonBadge ? (
-                <span className="shrink-0 rounded-full border border-amber-400/35 bg-amber-500/12 px-2.5 py-1 text-[11px] font-bold tracking-wide text-amber-100/95">
+                <span className="shrink-0 rounded-full border border-amber-400/35 bg-amber-500/12 px-2.5 py-1 text-[11px] font-bold tracking-wide text-[var(--hub-accent-link)]">
                   Coming Soon!
                 </span>
               ) : null}
@@ -60,11 +60,11 @@ function BestPicksComingSoonAndProphitPanel() {
                 Android closed test
               </span>
             </div>
-            <p className="text-sm text-white/93 leading-relaxed">
+            <p className="text-sm text-[var(--hub-text-soft)] leading-relaxed">
               StatStrike for Android is in closed testing. Follow these steps in order — joining the group alone
               does not install the app.
             </p>
-            <ol className="space-y-2.5 text-sm text-white/93 leading-relaxed list-none pl-0">
+            <ol className="space-y-2.5 text-sm text-[var(--hub-text-soft)] leading-relaxed list-none pl-0">
               {ss.installSteps.map((step, index) => (
                 <li key={step.title} className="flex gap-2.5">
                   <span
@@ -74,15 +74,15 @@ function BestPicksComingSoonAndProphitPanel() {
                     {index + 1}
                   </span>
                   <div className="min-w-0 space-y-0.5">
-                    <p className="font-semibold text-white">{step.title}</p>
-                    <p className="text-white/88">{step.body}</p>
+                    <p className="font-semibold text-[var(--hub-text)]">{step.title}</p>
+                    <p className="text-[var(--hub-text-soft)]">{step.body}</p>
                     {'hrefKey' in step && step.hrefKey ? (
                       <p>
                         <a
                           href={statstrikeAndroidBetaHref(step.hrefKey as StatStrikeAndroidBetaHrefKey)}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="font-semibold text-amber-100/95 underline underline-offset-2 hover:text-amber-50/95"
+                          className="font-semibold text-[var(--hub-accent-link)] underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)]"
                         >
                           {step.linkLabel}
                         </a>
@@ -97,11 +97,11 @@ function BestPicksComingSoonAndProphitPanel() {
             </p>
           </div>
         </div>
-        <details className="group rounded-xl border border-white/18 bg-zinc-950/80 overflow-hidden">
-          <summary className="cursor-pointer list-none flex items-center justify-between gap-3 px-3 py-2.5 text-sm font-semibold text-white hover:bg-white/[0.07] [&::-webkit-details-marker]:hidden">
+        <details className="group rounded-xl border border-[var(--hub-border-soft)] bg-[var(--hub-panel)] overflow-hidden">
+          <summary className="cursor-pointer list-none flex items-center justify-between gap-3 px-3 py-2.5 text-sm font-semibold text-[var(--hub-text)] hover:bg-[var(--hub-hover)] [&::-webkit-details-marker]:hidden">
             <span>Questions or feedback?</span>
             <svg
-              className="w-4 h-4 text-white/94 shrink-0 transition-transform duration-200 group-open:rotate-180"
+              className="w-4 h-4 text-[var(--hub-text-soft)] shrink-0 transition-transform duration-200 group-open:rotate-180"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -110,12 +110,12 @@ function BestPicksComingSoonAndProphitPanel() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </summary>
-          <div className="px-3 pb-3 pt-2 border-t border-white/10">
+          <div className="px-3 pb-3 pt-2 border-t border-[var(--hub-border-soft)]">
             <StatStrikeBetaFeedbackForm collapsibleTrigger />
           </div>
         </details>
       </section>
-      <section className="space-y-3 pb-4 border-b border-white/15">
+      <section className="space-y-3 pb-4 border-b border-[var(--hub-border-soft)]">
         <div className="min-w-0 [&:after]:content-[''] [&:after]:block [&:after]:clear-both">
           <div className={comingSoonIconFloatClass} aria-hidden>
             <Image
@@ -128,14 +128,14 @@ function BestPicksComingSoonAndProphitPanel() {
           </div>
           <div className="min-w-0 space-y-2">
             <div className="flex flex-wrap items-center gap-2 gap-y-1">
-              <h3 className="text-base md:text-lg font-semibold text-white tracking-tight min-w-0">
+              <h3 className="text-base md:text-lg font-semibold text-[var(--hub-text)] tracking-tight min-w-0">
                 {m.displayName}
               </h3>
-              <span className="shrink-0 rounded-full border border-amber-400/35 bg-amber-500/12 px-2.5 py-1 text-[11px] font-bold tracking-wide text-amber-100/95">
+              <span className="shrink-0 rounded-full border border-amber-400/35 bg-amber-500/12 px-2.5 py-1 text-[11px] font-bold tracking-wide text-[var(--hub-accent-link)]">
                 Coming soon
               </span>
             </div>
-            <p className="text-sm text-white/93 leading-relaxed">
+            <p className="text-sm text-[var(--hub-text-soft)] leading-relaxed">
               iOS app in development. App Store listing and preview copy will follow.
             </p>
           </div>
@@ -167,10 +167,10 @@ export function FirebasePicksPanels({
       {configHint && (
         <div className="rounded-xl border border-amber-400/40 bg-amber-500/15 px-4 py-3 text-sm text-amber-50/95 leading-relaxed">
           Firebase is not configured. Copy{' '}
-          <code className="text-xs bg-black/30 px-1.5 py-0.5 rounded">.env.example</code> to{' '}
-          <code className="text-xs bg-black/30 px-1.5 py-0.5 rounded">.env.local</code>, add your
+          <code className="text-xs bg-[var(--hub-inset)] px-1.5 py-0.5 rounded">.env.example</code> to{' '}
+          <code className="text-xs bg-[var(--hub-inset)] px-1.5 py-0.5 rounded">.env.local</code>, add your
           web app keys and Realtime Database URL, then restart{' '}
-          <code className="text-xs bg-black/30 px-1.5 py-0.5 rounded">npm run dev</code>.
+          <code className="text-xs bg-[var(--hub-inset)] px-1.5 py-0.5 rounded">npm run dev</code>.
         </div>
       )}
       {/*

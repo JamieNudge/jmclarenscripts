@@ -52,28 +52,28 @@ export function BestPicksVideo() {
     <>
       <div className={bestPicksGridTileClassName}>
         <div className="flex items-start justify-between gap-3 mb-2 shrink-0">
-          <h2 className="text-lg md:text-xl font-semibold text-white">Video</h2>
+          <h2 className="text-lg md:text-xl font-semibold text-[var(--hub-text)]">Video</h2>
           {configured && youtubeId ? (
             <button
               type="button"
               onClick={openExpanded}
-              className="shrink-0 rounded-lg border border-white/25 bg-white/10 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/20"
+              className="shrink-0 rounded-lg border border-[var(--hub-border)] bg-[var(--hub-chip)] px-3 py-1.5 text-xs font-semibold text-[var(--hub-text)] hover:bg-[var(--hub-hover)]"
             >
               Expand
             </button>
           ) : null}
         </div>
         {videoTitle ? (
-          <p className="text-sm text-white/93 leading-relaxed mb-3 shrink-0">{videoTitle}</p>
+          <p className="text-sm text-[var(--hub-text-soft)] leading-relaxed mb-3 shrink-0">{videoTitle}</p>
         ) : null}
         <div className="flex-1 min-h-0 flex flex-col justify-center">
           {!configured && (
-            <div className="aspect-video w-full max-h-full rounded-xl bg-zinc-900/90 border border-white/15 flex items-center justify-center text-white/92 text-sm">
+            <div className="aspect-video w-full max-h-full rounded-xl bg-[var(--hub-elevated)] border border-[var(--hub-border-soft)] flex items-center justify-center text-[var(--hub-text-soft)] text-sm">
               Firebase not configured
             </div>
           )}
           {configured && !youtubeId && (
-            <div className="aspect-video w-full max-h-full rounded-xl bg-zinc-900/90 border border-white/15 flex items-center justify-center text-white/92 text-sm">
+            <div className="aspect-video w-full max-h-full rounded-xl bg-[var(--hub-elevated)] border border-[var(--hub-border-soft)] flex items-center justify-center text-[var(--hub-text-soft)] text-sm">
               No video yet
             </div>
           )}
@@ -81,7 +81,7 @@ export function BestPicksVideo() {
             <button
               type="button"
               onClick={openExpanded}
-              className="group relative aspect-video w-full max-h-full rounded-xl overflow-hidden border border-white/15 bg-zinc-950 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/70"
+              className="group relative aspect-video w-full max-h-full rounded-xl overflow-hidden border border-[var(--hub-border-soft)] bg-[var(--hub-panel)] text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/70"
               aria-label={videoTitle ? `Play video: ${videoTitle}` : 'Play hub video'}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -90,7 +90,7 @@ export function BestPicksVideo() {
                 alt=""
                 className="absolute inset-0 h-full w-full object-cover"
               />
-              <span className="absolute inset-0 bg-black/35 transition group-hover:bg-black/25" aria-hidden />
+              <span className="absolute inset-0 bg-black/35 transition group-hover:bg-[var(--hub-inset)]" aria-hidden />
               <span className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-4 text-center">
                 <span className="flex h-14 w-14 items-center justify-center rounded-full bg-white/90 text-zinc-900 shadow-lg transition group-hover:scale-105">
                   <svg className="ml-1 h-7 w-7" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
@@ -119,14 +119,14 @@ export function BestPicksVideo() {
             <button
               type="button"
               onClick={closeExpanded}
-              className="absolute -top-2 right-0 z-10 translate-y-[-100%] rounded-lg border border-white/25 bg-zinc-900/95 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-800"
+              className="absolute -top-2 right-0 z-10 translate-y-[-100%] rounded-lg border border-[var(--hub-border)] bg-[var(--hub-elevated)] px-3 py-1.5 text-sm font-medium text-[var(--hub-text)] hover:bg-[var(--hub-hover)]"
             >
               Close
             </button>
             {videoTitle ? (
-              <p className="mb-3 text-base font-semibold text-white md:text-lg">{videoTitle}</p>
+              <p className="mb-3 text-base font-semibold text-[var(--hub-text)] md:text-lg">{videoTitle}</p>
             ) : null}
-            <div className="aspect-video w-full overflow-hidden rounded-xl border border-white/20 bg-black shadow-2xl">
+            <div className="aspect-video w-full overflow-hidden rounded-xl border border-[var(--hub-border)] bg-[var(--hub-footer)] shadow-2xl">
               <iframe
                 title={videoTitle || 'YouTube video'}
                 src={youtubeEmbedSrc(youtubeId, { autoplay: true, origin: pageOrigin || undefined })}
@@ -136,12 +136,12 @@ export function BestPicksVideo() {
                 referrerPolicy="strict-origin-when-cross-origin"
               />
             </div>
-            <p className="mt-3 text-center text-xs text-white/55">
+            <p className="mt-3 text-center text-xs text-[var(--hub-text-faint)]">
               <a
                 href={youtubeWatchUrl(youtubeId)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="underline underline-offset-2 hover:text-white/80"
+                className="underline underline-offset-2 hover:text-[var(--hub-text-soft)]"
               >
                 Open on YouTube
               </a>

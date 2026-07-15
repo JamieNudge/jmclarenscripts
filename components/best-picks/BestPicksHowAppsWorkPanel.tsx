@@ -11,7 +11,7 @@ const goalLab = apps.find((a) => a.id === 'goallab');
 
 /** Floated in copy so the first line sits beside the icon; later lines can run full width under it. */
 const iconFloatClass =
-  'shrink-0 float-left mt-0.5 mr-3 sm:mr-3.5 mb-1.5 rounded-2xl overflow-hidden border border-amber-200/20 bg-black/30 w-16 h-16 sm:w-[4.5rem] sm:h-[4.5rem]';
+  'shrink-0 float-left mt-0.5 mr-3 sm:mr-3.5 mb-1.5 rounded-2xl overflow-hidden border border-amber-200/20 bg-[var(--hub-inset)] w-16 h-16 sm:w-[4.5rem] sm:h-[4.5rem]';
 
 const scrollArea =
   'min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-1 -mr-0.5 [scrollbar-gutter:stable] scroll-smooth overscroll-y-contain';
@@ -42,13 +42,13 @@ function storeAppLink(
         </div>
       )}
       <div className="min-w-0 space-y-1.5">
-        <p className="font-semibold text-amber-100/95 text-sm sm:text-base">
+        <p className="font-semibold text-[var(--hub-accent-link)] text-sm sm:text-base">
           {href ? (
             <Link
               href={href}
               target="_blank"
               rel="noopener noreferrer"
-              className="underline underline-offset-2 hover:text-amber-50/95"
+              className="underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)]"
             >
               {label}
             </Link>
@@ -56,7 +56,7 @@ function storeAppLink(
             <span>{label}</span>
           )}
         </p>
-        <div className="text-xs sm:text-sm leading-relaxed text-white/92">{description}</div>
+        <div className="text-xs sm:text-sm leading-relaxed text-[var(--hub-text-soft)]">{description}</div>
       </div>
     </li>
   );
@@ -73,8 +73,8 @@ export function BestPicksHowAppsWorkPanel() {
       id="how-apps-work"
     >
       <div className="shrink-0 mb-2 space-y-1.5">
-        <h2 className="text-lg md:text-xl font-semibold text-white">How apps work</h2>
-        <p className="text-sm text-white/93 leading-relaxed">
+        <h2 className="text-lg md:text-xl font-semibold text-[var(--hub-text)]">How apps work</h2>
+        <p className="text-sm text-[var(--hub-text-soft)] leading-relaxed">
           What each product does. Live apps link to the App Store; coming-soon items are described here only.
         </p>
       </div>
@@ -82,7 +82,7 @@ export function BestPicksHowAppsWorkPanel() {
       <div className={scrollArea}>
         <div className="space-y-5 pb-1">
           <div>
-            <h3 className="text-sm font-semibold text-amber-100/95 mb-2">Live on the App Store</h3>
+            <h3 className="text-sm font-semibold text-[var(--hub-accent-link)] mb-2">Live on the App Store</h3>
             <ul className="space-y-4 list-none pl-0">
               {storeAppLink(
                 statStrike?.appStoreUrl,
@@ -96,7 +96,7 @@ export function BestPicksHowAppsWorkPanel() {
                     app focuses on fixtures supported by historical league performance and statistical criteria.
                   </p>
                   <div>
-                    <p className="font-semibold text-amber-100/95 mt-3">Each forecast includes:</p>
+                    <p className="font-semibold text-[var(--hub-accent-link)] mt-3">Each forecast includes:</p>
                     <ul className="list-disc pl-4 space-y-0.5 mt-1">
                       <li>Goal band forecast (Over 2.5 / Under 2.5)</li>
                       <li>League track record for the band</li>
@@ -106,7 +106,7 @@ export function BestPicksHowAppsWorkPanel() {
                     </ul>
                   </div>
                   <div>
-                    <p className="font-semibold text-amber-100/95 mt-3">FEATURES</p>
+                    <p className="font-semibold text-[var(--hub-accent-link)] mt-3">FEATURES</p>
                     <ul className="list-disc pl-4 space-y-0.5 mt-1">
                       <li>Daily Over 2.5 forecasts</li>
                       <li>Daily Under 2.5 forecasts</li>
@@ -119,7 +119,7 @@ export function BestPicksHowAppsWorkPanel() {
                     </ul>
                   </div>
                   <div>
-                    <p className="font-semibold text-amber-100/95 mt-3">TRANSPARENCY FIRST</p>
+                    <p className="font-semibold text-[var(--hub-accent-link)] mt-3">TRANSPARENCY FIRST</p>
                     <p className="mt-1">Every forecast is archived and tracked.</p>
                     <p>
                       Users can review historical performance, win rates and prediction history directly within the
@@ -148,7 +148,7 @@ export function BestPicksHowAppsWorkPanel() {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-amber-100/95 mb-2">Coming soon</h3>
+            <h3 className="text-sm font-semibold text-[var(--hub-accent-link)] mb-2">Coming soon</h3>
             <ul className="space-y-4 list-none pl-0">
               <li className="list-none pl-0 [&:after]:content-[''] [&:after]:block [&:after]:clear-both">
                 <div className={iconFloatClass} aria-hidden>
@@ -161,16 +161,16 @@ export function BestPicksHowAppsWorkPanel() {
                   />
                 </div>
                 <div className="min-w-0 space-y-1">
-                  <p className="font-semibold text-amber-100/95 text-sm sm:text-base">PopGoals</p>
-                  <p className="text-xs sm:text-sm text-white/92 leading-relaxed">
+                  <p className="font-semibold text-[var(--hub-accent-link)] text-sm sm:text-base">PopGoals</p>
+                  <p className="text-xs sm:text-sm text-[var(--hub-text-soft)] leading-relaxed">
                     A calm bubble-lake app for live hot-zone targets, alerts, and settled win/loss tracking. Not on
                     the App Store yet.
                   </p>
                 </div>
               </li>
-              <li className="space-y-1.5 text-xs sm:text-sm text-white/92">
+              <li className="space-y-1.5 text-xs sm:text-sm text-[var(--hub-text-soft)]">
                 <p>
-                  <span className="font-semibold text-amber-100/95">ProphIt </span>
+                  <span className="font-semibold text-[var(--hub-accent-link)]">ProphIt </span>
                   <span className="font-medium text-amber-200/86 text-sm normal-case">Coming Soon!</span>
                 </p>
                 <p>A new service! Have a theory for predicting goal band outcomes?</p>

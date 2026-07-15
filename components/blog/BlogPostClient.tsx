@@ -65,14 +65,14 @@ export function BlogPostClient({ slug }: { slug: string }) {
 
   if (!isFirebaseClientConfigured()) {
     return (
-      <p className="text-sm text-white/78">
+      <p className="text-sm text-[var(--hub-text-muted)]">
         Firebase is not configured — this post cannot be loaded here.
       </p>
     );
   }
 
   if (loading) {
-    return <p className="text-sm text-white/60">Loading…</p>;
+    return <p className="text-sm text-[var(--hub-text-muted)]">Loading…</p>;
   }
 
   if (err) {
@@ -86,16 +86,16 @@ export function BlogPostClient({ slug }: { slug: string }) {
   if (!post) {
     return (
       <div className="space-y-4">
-        <p className="text-sm text-white/70">This post is not available or is still a draft.</p>
-        <p className="text-xs text-white/72 leading-relaxed max-w-xl">
-          To preview a <strong className="text-white/65">draft</strong> before publishing, open{' '}
-          <Link href="/admin/picks" className="text-amber-200/85 underline underline-offset-2 hover:text-amber-50/95">
+        <p className="text-sm text-[var(--hub-text-muted)]">This post is not available or is still a draft.</p>
+        <p className="text-xs text-[var(--hub-text-muted)] leading-relaxed max-w-xl">
+          To preview a <strong className="text-[var(--hub-text-muted)]">draft</strong> before publishing, open{' '}
+          <Link href="/admin/picks" className="text-amber-200/85 underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)]">
             Admin picks
           </Link>
-          , paste your admin key, find the post in the list, and use <strong className="text-white/65">Preview</strong>{' '}
-          (opens <code className="text-[11px] text-white/70">/admin/blog-preview/…</code>).
+          , paste your admin key, find the post in the list, and use <strong className="text-[var(--hub-text-muted)]">Preview</strong>{' '}
+          (opens <code className="text-[11px] text-[var(--hub-text-muted)]">/admin/blog-preview/…</code>).
         </p>
-        <Link href="/blog" className="text-sm text-amber-200/85 underline underline-offset-2 hover:text-amber-50/95">
+        <Link href="/blog" className="text-sm text-amber-200/85 underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)]">
           ← Back to blogs
         </Link>
       </div>

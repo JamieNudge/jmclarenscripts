@@ -32,7 +32,7 @@ export default function BestPicksContactPage() {
           .
         </p>
         <p>
-          <strong className="font-medium text-white">Email</strong>{' '}
+          <strong className="font-medium text-[var(--hub-text)]">Email</strong>{' '}
           <a
             href={mailtoHref}
             className="text-amber-200/90 underline underline-offset-2 hover:text-amber-50 break-all"
@@ -40,7 +40,7 @@ export default function BestPicksContactPage() {
             {CONTACT_EMAIL}
           </a>
         </p>
-        <p className="text-xs text-white/85">
+        <p className="text-xs text-[var(--hub-text-soft)]">
           App-specific support may live on per-app pages from the portfolio; this address is for the public website
           and this publication unless you are directed otherwise.
         </p>

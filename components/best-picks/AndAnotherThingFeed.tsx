@@ -52,7 +52,7 @@ export function AndAnotherThingFeed({ initialPosts }: Props) {
   }, [load]);
 
   if (posts === null) {
-    return <p className="text-sm text-white/92">Loading…</p>;
+    return <p className="text-sm text-[var(--hub-text-soft)]">Loading…</p>;
   }
 
   if (err && posts.length === 0) {
@@ -64,7 +64,7 @@ export function AndAnotherThingFeed({ initialPosts }: Props) {
   }
 
   if (posts.length === 0) {
-    return <p className="text-sm text-white/94">No posts yet — check back soon.</p>;
+    return <p className="text-sm text-[var(--hub-text-soft)]">No posts yet — check back soon.</p>;
   }
 
   return (

@@ -5,8 +5,14 @@ import { BestPicksHubFooter } from '@/components/best-picks/BestPicksHubFooter';
 import { BestPicksVerticalAdAside } from '@/components/best-picks/BestPicksVerticalAdAside';
 import { BEST_PICKS_EXTENDED_SITE_NAV } from '@/components/best-picks/best-picks-site-nav-config';
 import { BestPicksSiteNav } from '@/components/best-picks/BestPicksSiteNav';
+import {
+  hubAdPlaceholder,
+  hubBorderT,
+  hubPageShellClass,
+  hubTextSoft,
+} from '@/lib/hub/ui';
 
-const bodyProse = 'space-y-6 text-sm md:text-base leading-relaxed text-white/92';
+const bodyProse = `space-y-6 text-sm md:text-base leading-relaxed ${hubTextSoft}`;
 
 export function BestPicksSubpageShell({
   title,
@@ -31,7 +37,7 @@ export function BestPicksSubpageShell({
 }) {
   const showHeaderNav = alwaysShowHeaderNav || BEST_PICKS_EXTENDED_SITE_NAV;
   return (
-    <main className="flex min-h-screen flex-col bg-gradient-to-b from-[#111827] to-[#1f2937] text-white">
+    <main className={hubPageShellClass}>
       <div className="flex w-full min-h-0 flex-1 flex-col lg:flex-row lg:min-h-0">
         <div className="flex min-h-0 min-w-0 flex-1 flex-col px-4 py-10 md:py-14 lg:px-6 lg:pr-4 2xl:pr-0">
           <div className="mx-auto flex min-h-0 w-full max-w-6xl 2xl:max-w-none flex-1 flex-col">
@@ -40,7 +46,7 @@ export function BestPicksSubpageShell({
               <div className={showHeaderNav ? 'mt-6' : ''}>
                 <HubFootballLink
                   href="/football-predictions"
-                  className="mb-8 inline-flex items-center gap-2 text-sm text-white/93 transition-colors hover:text-white"
+                  className={`mb-8 inline-flex items-center gap-2 text-sm ${hubTextSoft} transition-colors hover:opacity-100`}
                 >
                   <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden>
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -54,7 +60,7 @@ export function BestPicksSubpageShell({
 
             <h1 className="mb-3 text-3xl font-bold md:text-4xl">{title}</h1>
             {description ? (
-              <div className="mb-8 text-sm text-white/93 leading-relaxed">{description}</div>
+              <div className={`mb-8 text-sm ${hubTextSoft} leading-relaxed`}>{description}</div>
             ) : null}
             {hubFooter ? (
               <div className={`${bodyProse} min-h-0 flex-1`}>{children}</div>
@@ -64,11 +70,11 @@ export function BestPicksSubpageShell({
                 <div className="mt-8 w-full shrink-0">
                   <AdSenseAutoPlaceholder
                     orientation="horizontal"
-                    className="w-full min-h-[90px] !border-white/30 !bg-zinc-900/50 !text-white/94"
+                    className={`w-full min-h-[90px] ${hubAdPlaceholder}`}
                   />
                 </div>
                 <footer
-                  className="mt-10 shrink-0 border-t border-white/10 pt-6 text-xs text-white/91 leading-relaxed pb-[max(0.5rem,env(safe-area-inset-bottom))]"
+                  className={`mt-10 shrink-0 ${hubBorderT} pt-6 text-xs ${hubTextSoft} leading-relaxed pb-[max(0.5rem,env(safe-area-inset-bottom))]`}
                   role="contentinfo"
                 >
                   {footer}
@@ -78,13 +84,13 @@ export function BestPicksSubpageShell({
               <>
                 <div className={`${bodyProse} min-h-0 flex-1`}>{children}</div>
                 <footer
-                  className="mt-10 w-full shrink-0 border-t border-white/10 pt-6 pb-[max(0.5rem,env(safe-area-inset-bottom))]"
+                  className={`mt-10 w-full shrink-0 ${hubBorderT} pt-6 pb-[max(0.5rem,env(safe-area-inset-bottom))]`}
                   role="contentinfo"
                   aria-label="Advertising"
                 >
                   <AdSenseAutoPlaceholder
                     orientation="horizontal"
-                    className="w-full min-h-[90px] !border-white/30 !bg-zinc-900/50 !text-white/94"
+                    className={`w-full min-h-[90px] ${hubAdPlaceholder}`}
                   />
                 </footer>
               </>

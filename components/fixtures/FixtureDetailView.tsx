@@ -191,7 +191,7 @@ export function FixtureDetailView() {
         <div className={BEST_PICKS_EXTENDED_SITE_NAV ? 'mt-6' : 'mt-0'}>
           <HubFootballLink
             href={listBackHref}
-            className="inline-flex items-center gap-2 text-white/93 hover:text-white transition-colors mb-8 text-sm"
+            className="inline-flex items-center gap-2 text-[var(--hub-text-soft)] hover:text-[var(--hub-text)] transition-colors mb-8 text-sm"
           >
             <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden>
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -200,11 +200,11 @@ export function FixtureDetailView() {
           </HubFootballLink>
         </div>
 
-        {!fixtureId ? <p className="text-sm text-white">Missing fixture id.</p> : null}
+        {!fixtureId ? <p className="text-sm text-[var(--hub-text)]">Missing fixture id.</p> : null}
 
         {!configured ? (
-          <p className="text-sm text-white leading-relaxed">
-            Firebase is not configured — add keys in <code className="text-xs text-white/94">.env.local</code>.
+          <p className="text-sm text-[var(--hub-text)] leading-relaxed">
+            Firebase is not configured — add keys in <code className="text-xs text-[var(--hub-text-soft)]">.env.local</code>.
           </p>
         ) : null}
 
@@ -214,10 +214,10 @@ export function FixtureDetailView() {
           </p>
         ) : null}
 
-        {configured && loading ? <p className="text-sm text-white/90">Loading fixture…</p> : null}
+        {configured && loading ? <p className="text-sm text-[var(--hub-text-soft)]">Loading fixture…</p> : null}
 
         {configured && !loading && !error && !pick ? (
-          <p className="text-sm text-white leading-relaxed">
+          <p className="text-sm text-[var(--hub-text)] leading-relaxed">
             Fixture not found for <span className="tabular-nums">{dateKey}</span>.
           </p>
         ) : null}
@@ -225,24 +225,24 @@ export function FixtureDetailView() {
         {configured && !loading && pick && teams ? (
           <div className="space-y-6">
             <header className="space-y-2">
-              <h1 className="text-2xl md:text-3xl font-bold text-white leading-snug">
+              <h1 className="text-2xl md:text-3xl font-bold text-[var(--hub-text)] leading-snug">
                 {teams.home}
-                <span className="text-white/85 font-normal mx-2">v</span>
+                <span className="text-[var(--hub-text-soft)] font-normal mx-2">v</span>
                 {teams.away}
               </h1>
               {[country, league].filter(Boolean).length > 0 ? (
-                <p className="text-sm text-white/92">{[country, league].filter(Boolean).join(' · ')}</p>
+                <p className="text-sm text-[var(--hub-text-soft)]">{[country, league].filter(Boolean).join(' · ')}</p>
               ) : null}
-              {kickoff ? <p className="text-sm text-white/92 tabular-nums">{kickoff}</p> : null}
-              {venue ? <p className="text-sm text-white/88">{venue}</p> : null}
-              <p className="text-lg font-semibold tabular-nums text-white pt-1">
+              {kickoff ? <p className="text-sm text-[var(--hub-text-soft)] tabular-nums">{kickoff}</p> : null}
+              {venue ? <p className="text-sm text-[var(--hub-text-soft)]">{venue}</p> : null}
+              <p className="text-lg font-semibold tabular-nums text-[var(--hub-text)] pt-1">
                 {score !== '–' ? score : '–'}
-                {status ? <span className="ml-2 text-sm font-medium text-white/80">{status}</span> : null}
+                {status ? <span className="ml-2 text-sm font-medium text-[var(--hub-text-soft)]">{status}</span> : null}
               </p>
             </header>
 
             {forecast ? (
-              <section className="rounded-xl border border-white/15 bg-white/[0.06] px-4 py-4 space-y-4">
+              <section className="rounded-xl border border-[var(--hub-border-soft)] bg-white/[0.06] px-4 py-4 space-y-4">
                 <h2 className="text-xs font-semibold uppercase tracking-wide text-amber-100/90">Forecast</h2>
                 {forecast.primary ? (
                   <p className="text-base font-semibold text-cyan-100/95">{forecast.primary}</p>
@@ -251,21 +251,21 @@ export function FixtureDetailView() {
                 <div className="space-y-2">
                   {trackRecordDisplay ? (
                     <>
-                      <p className="text-[10px] font-bold uppercase tracking-wide text-white/75">
+                      <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--hub-text-muted)]">
                         {trackRecordDisplay.title}
                       </p>
-                      <p className="text-sm text-white/92 tabular-nums">
+                      <p className="text-sm text-[var(--hub-text-soft)] tabular-nums">
                         {trackRecordDisplay.trackRecord.forecastCount} archived forecast
                         {trackRecordDisplay.trackRecord.forecastCount === 1 ? '' : 's'}
                       </p>
-                      <p className="text-sm text-white/92 tabular-nums">
+                      <p className="text-sm text-[var(--hub-text-soft)] tabular-nums">
                         {Math.round(trackRecordDisplay.trackRecord.winRate)}% recent performance
                       </p>
-                      <p className="text-sm font-semibold text-white/95">
+                      <p className="text-sm font-semibold text-[var(--hub-text-soft)]">
                         {trackRecordDisplay.trackRecord.isQualified ? 'Qualified League ✓' : 'League tracked'}
                       </p>
                       {trackRecordDisplay.helperText ? (
-                        <p className="text-xs text-white/70">{trackRecordDisplay.helperText}</p>
+                        <p className="text-xs text-[var(--hub-text-muted)]">{trackRecordDisplay.helperText}</p>
                       ) : null}
                       <div className="h-1 w-full overflow-hidden rounded-full bg-cyan-400/20">
                         <div
@@ -278,26 +278,26 @@ export function FixtureDetailView() {
                     </>
                   ) : (
                     <>
-                      <p className="text-[10px] font-bold uppercase tracking-wide text-white/75">
+                      <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--hub-text-muted)]">
                         League track record
                       </p>
-                      <p className="text-sm text-white/80">Building — no archived forecasts yet</p>
+                      <p className="text-sm text-[var(--hub-text-soft)]">Building — no archived forecasts yet</p>
                     </>
                   )}
                 </div>
 
                 {forecast.oddsDecimal != null ? (
-                  <div className="flex items-end justify-between gap-3 border-t border-white/10 pt-3">
-                    <p className="text-[10px] font-bold uppercase tracking-wide text-white/75">ODDS</p>
-                    <p className="text-sm font-semibold tabular-nums text-amber-100/95">
+                  <div className="flex items-end justify-between gap-3 border-t border-[var(--hub-border-soft)] pt-3">
+                    <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--hub-text-muted)]">ODDS</p>
+                    <p className="text-sm font-semibold tabular-nums text-[var(--hub-accent-link)]">
                       @{forecast.oddsDecimal.toFixed(2)}
                     </p>
                   </div>
                 ) : null}
 
                 {keySignals.length > 0 ? (
-                  <div className="border-t border-white/10 pt-4 space-y-3">
-                    <p className="text-[10px] font-bold uppercase tracking-wide text-white/75">KEY SIGNALS</p>
+                  <div className="border-t border-[var(--hub-border-soft)] pt-4 space-y-3">
+                    <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--hub-text-muted)]">KEY SIGNALS</p>
                     <ul className="space-y-2.5">
                       {keySignals.map((line) => (
                         <li key={line.id} className="flex items-start gap-2.5">
@@ -306,18 +306,18 @@ export function FixtureDetailView() {
                             aria-hidden
                           />
                           <div className="min-w-0 text-sm leading-snug">
-                            <span className="text-white/95">
+                            <span className="text-[var(--hub-text-soft)]">
                               {line.label}: <span className="font-semibold tabular-nums">{line.value}</span>
                             </span>
                             {line.meta ? (
-                              <span className="block text-xs text-white/70 tabular-nums mt-0.5">{line.meta}</span>
+                              <span className="block text-xs text-[var(--hub-text-muted)] tabular-nums mt-0.5">{line.meta}</span>
                             ) : null}
                           </div>
                         </li>
                       ))}
                     </ul>
                     {!context ? (
-                      <p className="text-[11px] text-white/55 leading-relaxed">
+                      <p className="text-[11px] text-[var(--hub-text-faint)] leading-relaxed">
                         {contextLoadError
                           ? `Fixture context could not be loaded (${contextLoadError}). Add read access for fixtureContexts in Firebase rules.`
                           : selectionStats
@@ -331,11 +331,11 @@ export function FixtureDetailView() {
             ) : null}
 
             {context ? (
-              <div className="border-t border-white/10 pt-6">
+              <div className="border-t border-[var(--hub-border-soft)] pt-6">
                 <FixtureMatchHistorySection context={context} homeTeam={teams.home} awayTeam={teams.away} />
               </div>
             ) : (
-              <p className="text-xs text-white/75 border-t border-white/10 pt-4 leading-relaxed">
+              <p className="text-xs text-[var(--hub-text-muted)] border-t border-[var(--hub-border-soft)] pt-4 leading-relaxed">
                 {contextLoadError
                   ? 'Match history unavailable — fixture context could not be loaded.'
                   : 'Match history appears after the uploader writes fixture context for this date.'}
