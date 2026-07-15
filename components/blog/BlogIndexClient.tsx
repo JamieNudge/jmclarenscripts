@@ -30,7 +30,7 @@ function BlogCardParts({
   return (
     <>
       {categoryLine ? (
-        <p className="text-[11px] font-semibold uppercase tracking-wider text-amber-200/90 mb-2">{categoryLine}</p>
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--hub-heading-accent)] mb-2">{categoryLine}</p>
       ) : null}
       {titleAs === 'h2' ? (
         <h2 className="text-2xl font-bold leading-tight text-[var(--hub-text)] md:text-3xl md:leading-tight group-hover:text-[var(--hub-accent-link-hover)] transition-colors">
@@ -66,7 +66,7 @@ export function BlogIndexClient() {
 
   if (err) {
     return (
-      <p className="text-sm text-red-300/90 leading-relaxed" role="alert">
+      <p className="text-sm text-[var(--hub-danger)] leading-relaxed" role="alert">
         {err}
       </p>
     );
@@ -113,7 +113,7 @@ export function BlogIndexClient() {
                     titleAs="h2"
                     excerptTone="default"
                   />
-                  <p className="mt-4 text-sm font-medium text-amber-200/90 group-hover:text-amber-100">
+                  <p className="mt-4 text-sm font-medium text-[var(--hub-heading-accent)] group-hover:text-[var(--hub-accent-link-hover)]">
                     Read article <span aria-hidden>→</span>
                   </p>
                 </div>
@@ -140,7 +140,7 @@ export function BlogIndexClient() {
                     titleAs="h2"
                     excerptTone="hero"
                   />
-                  <p className="mt-4 text-sm font-medium text-amber-200/90 group-hover:text-amber-100">
+                  <p className="mt-4 text-sm font-medium text-[var(--hub-heading-accent)] group-hover:text-[var(--hub-accent-link-hover)]">
                     Read article <span aria-hidden>→</span>
                   </p>
                 </div>
@@ -156,7 +156,7 @@ export function BlogIndexClient() {
                 titleAs="h2"
                 excerptTone="default"
               />
-              <p className="mt-5 text-sm font-medium text-amber-200/90 group-hover:text-amber-100">
+              <p className="mt-5 text-sm font-medium text-[var(--hub-heading-accent)] group-hover:text-[var(--hub-accent-link-hover)]">
                 Read article <span aria-hidden>→</span>
               </p>
             </div>

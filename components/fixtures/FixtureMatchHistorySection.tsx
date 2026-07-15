@@ -77,7 +77,7 @@ function MatchHistoryBlock<T extends string>({
   const compact = density === 'compact';
 
   return (
-    <section className="rounded-xl border border-[var(--hub-border-soft)] bg-white/[0.06] overflow-hidden h-full">
+    <section className="rounded-xl border border-[var(--hub-border-soft)] bg-[var(--hub-chip)] overflow-hidden h-full">
       <div
         className={`flex flex-wrap items-center justify-between gap-2 border-b border-[var(--hub-border-soft)] bg-[var(--hub-inset)] ${
           compact ? 'px-3 py-2.5' : 'px-4 py-3 gap-3'
@@ -182,9 +182,9 @@ export function FixtureMatchHistorySection({
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xs font-semibold uppercase tracking-wide text-amber-100/90">Match history</h2>
+      <h2 className="text-xs font-semibold uppercase tracking-wide text-[var(--hub-heading-accent)]">Match history</h2>
 
-      <section className="rounded-xl border border-[var(--hub-border-soft)] bg-white/[0.06] overflow-hidden">
+      <section className="rounded-xl border border-[var(--hub-border-soft)] bg-[var(--hub-chip)] overflow-hidden">
         <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-b border-[var(--hub-border-soft)] bg-[var(--hub-inset)]">
           <div className="min-w-0 flex-1">
             <h2 className="text-xs font-semibold uppercase tracking-wide text-[var(--hub-text-soft)]">Head to head</h2>

@@ -82,6 +82,19 @@ body {
   --hub-nav-active: #ffffff;
   --hub-accent-link: rgba(254, 243, 199, 0.95);
   --hub-accent-link-hover: rgba(255, 251, 235, 0.95);
+  --hub-heading-accent: rgba(253, 230, 138, 0.95);
+  --hub-on-tint: rgba(255, 251, 235, 0.95);
+  --hub-success: rgb(167, 243, 208);
+  --hub-danger: rgb(254, 202, 202);
+  --hub-info: rgb(165, 243, 252);
+  --hub-success-border: rgba(52, 211, 153, 0.35);
+  --hub-success-bg: rgba(16, 185, 129, 0.12);
+  --hub-danger-border: rgba(248, 113, 113, 0.35);
+  --hub-danger-bg: rgba(239, 68, 68, 0.1);
+  --hub-info-border: rgba(34, 211, 238, 0.3);
+  --hub-info-bg: rgba(6, 182, 212, 0.15);
+  --hub-warn-border: rgba(251, 191, 36, 0.35);
+  --hub-warn-bg: rgba(245, 158, 11, 0.12);
   --hub-footer: #000000;
   --hub-inset: rgba(0, 0, 0, 0.25);
   --hub-code: rgba(0, 0, 0, 0.3);
@@ -96,12 +109,12 @@ body {
     radial-gradient(ellipse 90% 45% at 50% 108%, rgba(15, 23, 42, 0.03), transparent 48%),
     #ffffff;
   --hub-panel: #ffffff;
-  --hub-elevated: #f4f4f5;
+  --hub-elevated: #e4e4e7;
   --hub-input: #ffffff;
   --hub-text: #0a0a0b;
   --hub-text-soft: #18181b;
-  --hub-text-muted: #3f3f46;
-  --hub-text-faint: #71717a;
+  --hub-text-muted: #27272a;
+  --hub-text-faint: #52525b;
   --hub-border: rgba(24, 24, 27, 0.14);
   --hub-border-strong: rgba(24, 24, 27, 0.22);
   --hub-border-soft: rgba(24, 24, 27, 0.1);
@@ -110,13 +123,26 @@ body {
   --hub-chip: rgba(24, 24, 27, 0.08);
   --hub-shadow: rgba(24, 24, 27, 0.08);
   --hub-ring: rgba(24, 24, 27, 0.06);
-  --hub-nav: #92400e;
+  --hub-nav: #78350f;
   --hub-nav-active: #0a0a0b;
-  --hub-accent-link: #b45309;
-  --hub-accent-link-hover: #92400e;
+  --hub-accent-link: #9a3412;
+  --hub-accent-link-hover: #7c2d12;
+  --hub-heading-accent: #92400e;
+  --hub-on-tint: #1c1917;
+  --hub-success: #047857;
+  --hub-danger: #b91c1c;
+  --hub-info: #0e7490;
+  --hub-success-border: rgba(4, 120, 87, 0.35);
+  --hub-success-bg: rgba(16, 185, 129, 0.12);
+  --hub-danger-border: rgba(185, 28, 28, 0.3);
+  --hub-danger-bg: rgba(239, 68, 68, 0.1);
+  --hub-info-border: rgba(14, 116, 144, 0.3);
+  --hub-info-bg: rgba(6, 182, 212, 0.12);
+  --hub-warn-border: rgba(180, 83, 9, 0.35);
+  --hub-warn-bg: rgba(245, 158, 11, 0.12);
   --hub-footer: #f4f4f5;
-  --hub-inset: rgba(24, 24, 27, 0.04);
-  --hub-code: rgba(24, 24, 27, 0.06);
+  --hub-inset: rgba(24, 24, 27, 0.06);
+  --hub-code: rgba(24, 24, 27, 0.08);
 }
 
 .hub-root {

@@ -30,7 +30,7 @@ export function BestPicksBlogPreviewsRail() {
     >
       <div className="flex items-baseline justify-between gap-2">
         <h2 className="text-sm font-semibold text-[var(--hub-text-soft)] tracking-tight">From the blog</h2>
-        <Link href="/blog" className="text-[11px] text-amber-200/93 hover:text-amber-100 underline-offset-2 shrink-0">
+        <Link href="/blog" className="text-[11px] text-[var(--hub-heading-accent)] hover:text-[var(--hub-accent-link-hover)] underline-offset-2 shrink-0">
           All →
         </Link>
       </div>
@@ -38,7 +38,7 @@ export function BestPicksBlogPreviewsRail() {
       {loading ? (
         <p className="text-xs text-[var(--hub-text-soft)]">Loading…</p>
       ) : err ? (
-        <p className="text-xs text-red-300/80 leading-snug" role="alert">
+        <p className="text-xs text-[var(--hub-danger)] leading-snug" role="alert">
           {err}
         </p>
       ) : slice.length === 0 ? (

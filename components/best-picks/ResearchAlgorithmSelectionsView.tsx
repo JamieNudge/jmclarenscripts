@@ -38,7 +38,7 @@ export function ResearchAlgorithmSelectionsView() {
           update when Firebase is configured. For the app overview, see{' '}
           <HubFootballLink
             href="/football-predictions#how-apps-work"
-            className="text-amber-200/88 underline underline-offset-2 hover:text-[var(--hub-accent-link)]"
+            className="text-[var(--hub-accent-link)] underline underline-offset-2 hover:text-[var(--hub-accent-link)]"
           >
             How apps work
           </HubFootballLink>{' '}

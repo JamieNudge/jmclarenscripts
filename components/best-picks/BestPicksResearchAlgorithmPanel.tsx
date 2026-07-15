@@ -27,7 +27,7 @@ const TEASER_BLURRED_COUNT = 3;
 function bandPillClass(band: string): string {
   const b = band.toLowerCase();
   if (b.includes('over')) {
-    return 'text-cyan-200 border-cyan-400/30 bg-cyan-500/15';
+    return 'text-[var(--hub-info)] border-[var(--hub-info-border)] bg-[var(--hub-info-bg)]';
   }
   if (b.includes('under')) {
     return 'text-orange-200 border-orange-400/30 bg-orange-500/15';
@@ -38,11 +38,11 @@ function bandPillClass(band: string): string {
 function outcomeClass(outcome: string): string {
   switch (outcome) {
     case 'win':
-      return 'text-emerald-300 border-emerald-400/35 bg-emerald-500/15';
+      return 'text-[var(--hub-success)] border-[var(--hub-success-border)] bg-[var(--hub-success-bg)]';
     case 'loss':
-      return 'text-red-300 border-red-400/35 bg-red-500/15';
+      return 'text-[var(--hub-danger)] border-[var(--hub-danger-border)] bg-[var(--hub-danger-bg)]';
     case 'void':
-      return 'text-amber-200 border-amber-400/35 bg-amber-500/15';
+      return 'text-[var(--hub-heading-accent)] border-[var(--hub-warn-border)] bg-[var(--hub-warn-bg)]';
     default:
       return 'text-[var(--hub-text-soft)] border-[var(--hub-border)] bg-[var(--hub-chip)]';
   }
@@ -58,7 +58,7 @@ function ConsensusPickRow({ pick, className = '' }: { pick: DailyConsensusPickPa
   const kickoffLine = pick.kickoff?.trim() || null;
 
   return (
-    <li className={`rounded-xl border border-[var(--hub-border-soft)] bg-white/[0.06] px-3 py-2.5 shrink-0 ${className}`.trim()}>
+    <li className={`rounded-xl border border-[var(--hub-border-soft)] bg-[var(--hub-chip)] px-3 py-2.5 shrink-0 ${className}`.trim()}>
       {/* Stacked: full-width fixture + context first; model / outcome chips on a second row (no side-by-side squeeze). */}
       <div className="flex w-full min-w-0 flex-col gap-2.5">
         <div className="w-full min-w-0">
@@ -97,7 +97,7 @@ function ConsensusPickRow({ pick, className = '' }: { pick: DailyConsensusPickPa
 
 function LockedConsensusPlaceholderRow({ className = '' }: { className?: string }) {
   return (
-    <li className={`rounded-xl border border-[var(--hub-border-soft)] bg-white/[0.06] px-3 py-2.5 shrink-0 ${className}`.trim()}>
+    <li className={`rounded-xl border border-[var(--hub-border-soft)] bg-[var(--hub-chip)] px-3 py-2.5 shrink-0 ${className}`.trim()}>
       <div className="flex w-full min-w-0 flex-col gap-2.5">
         <div className="w-full min-w-0 space-y-1.5">
           <div className="h-4 w-3/4 rounded bg-white/16" />
@@ -128,7 +128,7 @@ function DownloadAppTeaser({ hiddenCount, label }: { hiddenCount: number; label:
           href={GOALLAB_APP_STORE_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-3 inline-flex items-center justify-center rounded-lg border border-amber-200/45 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-[var(--hub-accent-link)] transition-colors hover:bg-amber-500/15 hover:border-amber-200/60"
+          className="mt-3 inline-flex items-center justify-center rounded-lg border border-amber-200/45 bg-[var(--hub-warn-bg)] px-3 py-2 text-xs font-semibold text-[var(--hub-accent-link)] transition-colors hover:bg-[var(--hub-warn-bg)] hover:border-amber-200/60"
         >
           Download GoalLab on iOS
         </a>
@@ -233,7 +233,7 @@ export function BestPicksResearchAlgorithmPanel({
           <div className="space-y-2 border-t border-[var(--hub-border-soft)] pt-3">
             <p className="text-xs font-semibold uppercase tracking-wide text-[var(--hub-text)]">Daily consensus</p>
             {consensusError ? (
-              <p className="text-sm text-red-300 leading-relaxed" role="alert">
+              <p className="text-sm text-[var(--hub-danger)] leading-relaxed" role="alert">
                 {consensusError}
               </p>
             ) : null}

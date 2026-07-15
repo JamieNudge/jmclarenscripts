@@ -38,7 +38,7 @@ export default function BestPicksMethodologyPage() {
           For how each app is described for visitors, see{' '}
           <HubFootballLink
             href="/football-predictions#how-apps-work"
-            className="text-amber-200/80 underline underline-offset-2 hover:text-amber-100/90"
+            className="text-amber-200/80 underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)]/90"
           >
             How apps work
           </HubFootballLink>

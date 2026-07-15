@@ -41,7 +41,7 @@ function FixtureListRow({
     <li>
       <HubFootballLink
         href={fixtureDetailHref(fixture.fixtureId, dateKey)}
-        className="flex items-center gap-3 rounded-lg border border-[var(--hub-border-soft)] bg-[var(--hub-inset)] px-3 py-2.5 transition-colors hover:border-[var(--hub-border)] hover:bg-white/[0.06]"
+        className="flex items-center gap-3 rounded-lg border border-[var(--hub-border-soft)] bg-[var(--hub-inset)] px-3 py-2.5 transition-colors hover:border-[var(--hub-border)] hover:bg-[var(--hub-chip)]"
       >
         <span
           className="shrink-0 min-w-[9rem] text-xs tabular-nums text-[var(--hub-text-soft)] text-right leading-snug"
@@ -138,7 +138,7 @@ export function FixturesListView() {
         ) : null}
 
         {configured && error ? (
-          <p className="text-sm text-red-300 leading-relaxed" role="alert">
+          <p className="text-sm text-[var(--hub-danger)] leading-relaxed" role="alert">
             {error}
           </p>
         ) : null}

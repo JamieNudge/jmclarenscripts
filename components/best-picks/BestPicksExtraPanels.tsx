@@ -23,7 +23,7 @@ function BestPicksProphitPanelBody({
           ProphIt — Test Your Own Prediction Ideas in a living app!
         </TitleTag>
         <span
-          className="shrink-0 rounded-full border border-amber-400/40 bg-amber-500/15 px-2.5 py-1 text-[11px] font-bold tracking-wide text-[var(--hub-accent-link)] shadow-sm shadow-amber-900/20"
+          className="shrink-0 rounded-full border border-[var(--hub-warn-border)] bg-[var(--hub-warn-bg)] px-2.5 py-1 text-[11px] font-bold tracking-wide text-[var(--hub-accent-link)] shadow-sm shadow-amber-900/20"
           title="This project is in the research stage"
         >
           Coming Soon!

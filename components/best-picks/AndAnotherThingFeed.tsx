@@ -57,7 +57,7 @@ export function AndAnotherThingFeed({ initialPosts }: Props) {
 
   if (err && posts.length === 0) {
     return (
-      <p className="text-sm text-amber-200/93" role="alert">
+      <p className="text-sm text-[var(--hub-heading-accent)]" role="alert">
         {err}
       </p>
     );
@@ -70,7 +70,7 @@ export function AndAnotherThingFeed({ initialPosts }: Props) {
   return (
     <div className="space-y-4 min-w-0">
       {err ? (
-        <p className="text-xs text-amber-200/93" role="status">
+        <p className="text-xs text-[var(--hub-heading-accent)]" role="status">
           {err} (showing last loaded posts.)
         </p>
       ) : null}

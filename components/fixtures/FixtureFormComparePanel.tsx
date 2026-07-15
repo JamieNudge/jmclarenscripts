@@ -76,7 +76,7 @@ export function FixtureFormComparePanel({
       className={
         embedded
           ? 'overflow-hidden h-full'
-          : 'rounded-xl border border-[var(--hub-border-soft)] bg-white/[0.06] overflow-hidden h-full'
+          : 'rounded-xl border border-[var(--hub-border-soft)] bg-[var(--hub-chip)] overflow-hidden h-full'
       }
     >
       <div

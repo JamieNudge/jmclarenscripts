@@ -77,7 +77,7 @@ export function BlogPostClient({ slug }: { slug: string }) {
 
   if (err) {
     return (
-      <p className="text-sm text-red-300/90" role="alert">
+      <p className="text-sm text-[var(--hub-danger)]" role="alert">
         {err}
       </p>
     );
@@ -89,13 +89,13 @@ export function BlogPostClient({ slug }: { slug: string }) {
         <p className="text-sm text-[var(--hub-text-muted)]">This post is not available or is still a draft.</p>
         <p className="text-xs text-[var(--hub-text-muted)] leading-relaxed max-w-xl">
           To preview a <strong className="text-[var(--hub-text-muted)]">draft</strong> before publishing, open{' '}
-          <Link href="/admin/picks" className="text-amber-200/85 underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)]">
+          <Link href="/admin/picks" className="text-[var(--hub-accent-link)] underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)]">
             Admin picks
           </Link>
           , paste your admin key, find the post in the list, and use <strong className="text-[var(--hub-text-muted)]">Preview</strong>{' '}
           (opens <code className="text-[11px] text-[var(--hub-text-muted)]">/admin/blog-preview/…</code>).
         </p>
-        <Link href="/blog" className="text-sm text-amber-200/85 underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)]">
+        <Link href="/blog" className="text-sm text-[var(--hub-accent-link)] underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)]">
           ← Back to blogs
         </Link>
       </div>

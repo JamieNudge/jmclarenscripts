@@ -40,7 +40,7 @@ export function BlogPostArticleView({
       ) : null}
       <header className="mb-8">
         {categoryLine ? (
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-amber-200/90 mb-3">{categoryLine}</p>
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--hub-heading-accent)] mb-3">{categoryLine}</p>
         ) : null}
         <h1 className="text-3xl md:text-4xl font-bold text-[var(--hub-text)] mb-3">{post.title}</h1>
         <p className="text-xs text-[var(--hub-text-muted)] tabular-nums">

@@ -24,7 +24,7 @@ export default function BlogIndexPage() {
           Original articles and methodology behind the prediction system. Daily picks are available{' '}
           <HubFootballLink
             href="/football-predictions"
-            className="text-amber-200/85 underline underline-offset-2 hover:text-amber-50/95"
+            className="text-amber-200/85 underline underline-offset-2 hover:text-[var(--hub-on-tint)]"
           >
             here
           </HubFootballLink>

@@ -52,11 +52,11 @@ function BestPicksComingSoonAndProphitPanel() {
                 {ss.displayName}
               </h3>
               {ss.showComingSoonBadge ? (
-                <span className="shrink-0 rounded-full border border-amber-400/35 bg-amber-500/12 px-2.5 py-1 text-[11px] font-bold tracking-wide text-[var(--hub-accent-link)]">
+                <span className="shrink-0 rounded-full border border-[var(--hub-warn-border)] bg-[var(--hub-warn-bg)] px-2.5 py-1 text-[11px] font-bold tracking-wide text-[var(--hub-accent-link)]">
                   Coming Soon!
                 </span>
               ) : null}
-              <span className="shrink-0 rounded-full border border-emerald-400/35 bg-emerald-500/12 px-2.5 py-1 text-[11px] font-bold tracking-wide text-emerald-100/95">
+              <span className="shrink-0 rounded-full border border-[var(--hub-success-border)] bg-[var(--hub-success-bg)] px-2.5 py-1 text-[11px] font-bold tracking-wide text-[var(--hub-success)]">
                 Android closed test
               </span>
             </div>
@@ -68,7 +68,7 @@ function BestPicksComingSoonAndProphitPanel() {
               {ss.installSteps.map((step, index) => (
                 <li key={step.title} className="flex gap-2.5">
                   <span
-                    className="shrink-0 flex h-6 w-6 items-center justify-center rounded-full border border-emerald-400/35 bg-emerald-500/12 text-[11px] font-bold text-emerald-100/95"
+                    className="shrink-0 flex h-6 w-6 items-center justify-center rounded-full border border-[var(--hub-success-border)] bg-[var(--hub-success-bg)] text-[11px] font-bold text-[var(--hub-success)]"
                     aria-hidden
                   >
                     {index + 1}
@@ -92,7 +92,7 @@ function BestPicksComingSoonAndProphitPanel() {
                 </li>
               ))}
             </ol>
-            <p className="rounded-lg border border-amber-400/25 bg-amber-500/10 px-3 py-2 text-xs text-amber-50/95 leading-relaxed">
+            <p className="rounded-lg border border-[var(--hub-warn-border)] bg-[var(--hub-warn-bg)] px-3 py-2 text-xs text-[var(--hub-on-tint)] leading-relaxed">
               {ss.accountNote}
             </p>
           </div>
@@ -131,7 +131,7 @@ function BestPicksComingSoonAndProphitPanel() {
               <h3 className="text-base md:text-lg font-semibold text-[var(--hub-text)] tracking-tight min-w-0">
                 {m.displayName}
               </h3>
-              <span className="shrink-0 rounded-full border border-amber-400/35 bg-amber-500/12 px-2.5 py-1 text-[11px] font-bold tracking-wide text-[var(--hub-accent-link)]">
+              <span className="shrink-0 rounded-full border border-[var(--hub-warn-border)] bg-[var(--hub-warn-bg)] px-2.5 py-1 text-[11px] font-bold tracking-wide text-[var(--hub-accent-link)]">
                 Coming soon
               </span>
             </div>
@@ -165,7 +165,7 @@ export function FirebasePicksPanels({
   return (
     <div className="grid grid-cols-1 gap-4 md:gap-5">
       {configHint && (
-        <div className="rounded-xl border border-amber-400/40 bg-amber-500/15 px-4 py-3 text-sm text-amber-50/95 leading-relaxed">
+        <div className="rounded-xl border border-[var(--hub-warn-border)] bg-[var(--hub-warn-bg)] px-4 py-3 text-sm text-[var(--hub-on-tint)] leading-relaxed">
           Firebase is not configured. Copy{' '}
           <code className="text-xs bg-[var(--hub-inset)] px-1.5 py-0.5 rounded">.env.example</code> to{' '}
           <code className="text-xs bg-[var(--hub-inset)] px-1.5 py-0.5 rounded">.env.local</code>, add your

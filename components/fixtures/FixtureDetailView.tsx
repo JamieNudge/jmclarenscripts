@@ -209,7 +209,7 @@ export function FixtureDetailView() {
         ) : null}
 
         {configured && error ? (
-          <p className="text-sm text-red-300 leading-relaxed" role="alert">
+          <p className="text-sm text-[var(--hub-danger)] leading-relaxed" role="alert">
             {error}
           </p>
         ) : null}
@@ -242,10 +242,10 @@ export function FixtureDetailView() {
             </header>
 
             {forecast ? (
-              <section className="rounded-xl border border-[var(--hub-border-soft)] bg-white/[0.06] px-4 py-4 space-y-4">
-                <h2 className="text-xs font-semibold uppercase tracking-wide text-amber-100/90">Forecast</h2>
+              <section className="rounded-xl border border-[var(--hub-border-soft)] bg-[var(--hub-chip)] px-4 py-4 space-y-4">
+                <h2 className="text-xs font-semibold uppercase tracking-wide text-[var(--hub-heading-accent)]">Forecast</h2>
                 {forecast.primary ? (
-                  <p className="text-base font-semibold text-cyan-100/95">{forecast.primary}</p>
+                  <p className="text-base font-semibold text-[var(--hub-info)]">{forecast.primary}</p>
                 ) : null}
 
                 <div className="space-y-2">

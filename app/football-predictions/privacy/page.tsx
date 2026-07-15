@@ -27,7 +27,7 @@ export default function BestPicksPrivacyPage() {
           For privacy questions about <strong className="font-medium text-[var(--hub-text)]">this publication only</strong>, contact:{' '}
           <a
             href="mailto:jmclarenscripts@gmail.com?subject=Football%20Predictions%20%26%20Data-Driven%20Picks%20%2F%20blog%20privacy"
-            className="text-amber-200/80 underline hover:text-amber-100/90"
+            className="text-amber-200/80 underline hover:text-[var(--hub-accent-link-hover)]/90"
           >
             jmclarenscripts@gmail.com
           </a>
@@ -48,7 +48,7 @@ export default function BestPicksPrivacyPage() {
         <p>
           <span className="font-semibold text-[var(--hub-text-soft)]">What you send:</span> If you use an email
           address given on this hub or a contact page, we receive what you include (for example
-          your address and the message). Use the <HubFootballLink href="/football-predictions/contact" className="text-amber-200/80 underline underline-offset-2 hover:text-amber-100/90">contact</HubFootballLink> page
+          your address and the message). Use the <HubFootballLink href="/football-predictions/contact" className="text-amber-200/80 underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)]/90">contact</HubFootballLink> page
           for publication-related questions.
         </p>
         <p>
@@ -62,7 +62,7 @@ export default function BestPicksPrivacyPage() {
             href="https://vercel.com/docs/analytics/privacy-policy"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-amber-200/80 underline hover:text-amber-100/90"
+            className="text-amber-200/80 underline hover:text-[var(--hub-accent-link-hover)]/90"
           >
             Vercel Web Analytics
           </a>{' '}
@@ -72,7 +72,7 @@ export default function BestPicksPrivacyPage() {
             href="https://vercel.com/legal/privacy-policy"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-amber-200/80 underline hover:text-amber-100/90"
+            className="text-amber-200/80 underline hover:text-[var(--hub-accent-link-hover)]/90"
           >
             Vercel’s privacy policy
           </a>
@@ -96,7 +96,7 @@ export default function BestPicksPrivacyPage() {
             href="https://policies.google.com/technologies/partner-sites"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-amber-200/80 underline hover:text-amber-100/90"
+            className="text-amber-200/80 underline hover:text-[var(--hub-accent-link-hover)]/90"
           >
             How Google uses information from sites or apps that use our services
           </a>
@@ -105,7 +105,7 @@ export default function BestPicksPrivacyPage() {
             href="https://www.google.com/settings/ads"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-amber-200/80 underline hover:text-amber-100/90"
+            className="text-amber-200/80 underline hover:text-[var(--hub-accent-link-hover)]/90"
           >
             Google Ads Settings
           </a>
@@ -114,7 +114,7 @@ export default function BestPicksPrivacyPage() {
             href="https://policies.google.com/technologies/cookies"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-amber-200/80 underline hover:text-amber-100/90"
+            className="text-amber-200/80 underline hover:text-[var(--hub-accent-link-hover)]/90"
           >
             Google Privacy &amp; Terms
           </a>
@@ -132,28 +132,28 @@ export default function BestPicksPrivacyPage() {
         <p>These native apps are discussed on this site. Each has its own policy:</p>
         <ul className="list-disc list-inside space-y-1 ml-4">
           <li>
-            <Link href="/privacy/statstrike" className="text-amber-200/80 underline hover:text-amber-100/90">
+            <Link href="/privacy/statstrike" className="text-amber-200/80 underline hover:text-[var(--hub-accent-link-hover)]/90">
               StatStrike — privacy policy
             </Link>
           </li>
           <li>
-            <Link href="/privacy/goallab" className="text-amber-200/80 underline hover:text-amber-100/90">
+            <Link href="/privacy/goallab" className="text-amber-200/80 underline hover:text-[var(--hub-accent-link-hover)]/90">
               GoalLab — privacy policy
             </Link>
           </li>
           <li>
-            <Link href="/privacy/popgoals" className="text-amber-200/80 underline hover:text-amber-100/90">
+            <Link href="/privacy/popgoals" className="text-amber-200/80 underline hover:text-[var(--hub-accent-link-hover)]/90">
               PopGoals — privacy policy
             </Link>
           </li>
           <li>
-            <Link href="/privacy/prophit" className="text-amber-200/80 underline hover:text-amber-100/90">
+            <Link href="/privacy/prophit" className="text-amber-200/80 underline hover:text-[var(--hub-accent-link-hover)]/90">
               ProphIt — privacy policy
             </Link>
           </li>
         </ul>
         <p>
-          Other apps (for example tools linked from the <Link href="/" className="text-amber-200/80 underline underline-offset-2 hover:text-amber-100/90">portfolio</Link> home) are
+          Other apps (for example tools linked from the <Link href="/" className="text-amber-200/80 underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)]/90">portfolio</Link> home) are
           covered in the main site list when applicable.
         </p>
 

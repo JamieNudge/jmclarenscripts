@@ -171,7 +171,7 @@ export function BestPicksHowAppsWorkPanel() {
               <li className="space-y-1.5 text-xs sm:text-sm text-[var(--hub-text-soft)]">
                 <p>
                   <span className="font-semibold text-[var(--hub-accent-link)]">ProphIt </span>
-                  <span className="font-medium text-amber-200/86 text-sm normal-case">Coming Soon!</span>
+                  <span className="font-medium text-[var(--hub-heading-accent)] text-sm normal-case">Coming Soon!</span>
                 </p>
                 <p>A new service! Have a theory for predicting goal band outcomes?</p>
                 <p>

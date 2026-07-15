@@ -9,11 +9,11 @@ import { useBestPicksLondonDateKey } from '@/hooks/useBestPicksLondonDateKey';
 import { FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_PATH } from '@/lib/football-predictions-brand';
 
 function resultPillClass(r: BplCompactFixture['result']): string {
-  if (r === 'win') return 'text-emerald-200/95 border-emerald-400/35 bg-emerald-500/10';
-  if (r === 'loss') return 'text-red-200/95 border-red-400/35 bg-red-500/10';
-  if (r === 'void' || r === 'push') return 'text-amber-200/93 border-amber-400/30 bg-amber-500/10';
-  if (r === 'dropped' || r === 'pending' || r === null) return 'text-[var(--hub-text-soft)] border-[var(--hub-border-soft)] bg-white/5';
-  return 'text-[var(--hub-text-soft)] border-[var(--hub-border-soft)] bg-white/5';
+  if (r === 'win') return 'text-[var(--hub-success)] border-[var(--hub-success-border)] bg-[var(--hub-success-bg)]';
+  if (r === 'loss') return 'text-[var(--hub-danger)] border-[var(--hub-danger-border)] bg-[var(--hub-danger-bg)]';
+  if (r === 'void' || r === 'push') return 'text-[var(--hub-heading-accent)] border-[var(--hub-warn-border)] bg-[var(--hub-warn-bg)]';
+  if (r === 'dropped' || r === 'pending' || r === null) return 'text-[var(--hub-text-soft)] border-[var(--hub-border-soft)] bg-[var(--hub-chip)]';
+  return 'text-[var(--hub-text-soft)] border-[var(--hub-border-soft)] bg-[var(--hub-chip)]';
 }
 
 function formatYmdForDisplay(ymd: string): string {
@@ -71,7 +71,7 @@ function BplFixtureRow({ fixture, className = '' }: { fixture: BplCompactFixture
           </p>
         ) : null}
         {fixture.forecast ? (
-          <p className="text-[10px] text-cyan-200/92 font-medium leading-snug line-clamp-2">{fixture.forecast}</p>
+          <p className="text-[10px] text-[var(--hub-info)] font-medium leading-snug line-clamp-2">{fixture.forecast}</p>
         ) : null}
       </div>
       <div className="shrink-0 flex flex-col items-end gap-0.5">
@@ -107,7 +107,7 @@ function DownloadAppTeaser({ hiddenCount }: { hiddenCount: number }) {
           href={statStrikeAppStoreUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-3 inline-flex items-center justify-center rounded-lg border border-amber-200/45 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-[var(--hub-accent-link)] transition-colors hover:bg-amber-500/15 hover:border-amber-200/60"
+          className="mt-3 inline-flex items-center justify-center rounded-lg border border-amber-200/45 bg-[var(--hub-warn-bg)] px-3 py-2 text-xs font-semibold text-[var(--hub-accent-link)] transition-colors hover:bg-[var(--hub-warn-bg)] hover:border-amber-200/60"
         >
           Download StatStrike on iOS
         </a>
@@ -185,7 +185,7 @@ export function BplHubCell({ showTodayFixtures = true }: { showTodayFixtures?: b
               href={statStrikeAppStoreUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-amber-200/93 underline underline-offset-2 hover:text-[var(--hub-accent-link)]"
+              className="text-[var(--hub-heading-accent)] underline underline-offset-2 hover:text-[var(--hub-accent-link)]"
             >
               StatStrike - Best Performing - As seen in iOS app
             </a>
@@ -201,12 +201,12 @@ export function BplHubCell({ showTodayFixtures = true }: { showTodayFixtures?: b
         )}
         {loading && <p className="text-sm text-[var(--hub-text-soft)]">Loading…</p>}
         {err && (
-          <p className="text-sm text-amber-200/93" role="alert">
+          <p className="text-sm text-[var(--hub-heading-accent)]" role="alert">
             {err}
           </p>
         )}
         {data?.serverMessage ? (
-          <p className="text-xs text-amber-200/88" role="status">
+          <p className="text-xs text-[var(--hub-accent-link)]" role="status">
             {data.serverMessage}
           </p>
         ) : null}
@@ -216,13 +216,13 @@ export function BplHubCell({ showTodayFixtures = true }: { showTodayFixtures?: b
         <>
           <div className="shrink-0 rounded-xl border border-amber-200/25 bg-[var(--hub-elevated)] p-3 space-y-2">
             <div className="space-y-0.5">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-amber-100/88">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-[var(--hub-heading-accent)]">
                 All time · BPL, every best line (incl. no on-file odds)
               </p>
               <p className="text-sm tabular-nums text-[var(--hub-text-soft)]">
-                <span className="text-emerald-200/95">{allBplLines.wins}W</span>
+                <span className="text-[var(--hub-success)]">{allBplLines.wins}W</span>
                 <span className="text-[var(--hub-text-muted)]"> — </span>
-                <span className="text-red-200/95">{allBplLines.losses}L</span>
+                <span className="text-[var(--hub-danger)]">{allBplLines.losses}L</span>
                 {allBplLines.voids > 0 ? (
                   <span className="text-[var(--hub-text-soft)]">
                     {' '}
@@ -247,11 +247,11 @@ export function BplHubCell({ showTodayFixtures = true }: { showTodayFixtures?: b
                   All time · pre-KO odds (provable on the row)
                 </p>
                 <p className="text-sm tabular-nums text-[var(--hub-text-soft)]">
-                  <span className="text-emerald-200/95">{data.allTimeWithPreKoOdds.wins}W</span>
+                  <span className="text-[var(--hub-success)]">{data.allTimeWithPreKoOdds.wins}W</span>
                   <span className="text-[var(--hub-text-muted)]"> — </span>
-                  <span className="text-red-200/95">{data.allTimeWithPreKoOdds.losses}L</span>
+                  <span className="text-[var(--hub-danger)]">{data.allTimeWithPreKoOdds.losses}L</span>
                 </p>
-                <p className="text-lg font-semibold text-cyan-100/95 tabular-nums">
+                <p className="text-lg font-semibold text-[var(--hub-info)] tabular-nums">
                   ROI{' '}
                   {data.allTimeWithPreKoOdds.roiPercent == null
                     ? '—'
@@ -268,7 +268,7 @@ export function BplHubCell({ showTodayFixtures = true }: { showTodayFixtures?: b
             >
               <p className="text-xs font-bold uppercase tracking-wide text-[var(--hub-text-soft)] mb-1">
                 Selection day (London){' '}
-                <span className="tabular-nums text-amber-200/88">{data.current.dateKey}</span>
+                <span className="tabular-nums text-[var(--hub-accent-link)]">{data.current.dateKey}</span>
               </p>
               <p className="text-[10px] text-[var(--hub-text-soft)] mb-2">
                 {data.current.bestPerformingFixtureCount} best (BPL) line
@@ -311,7 +311,7 @@ export function BplHubCell({ showTodayFixtures = true }: { showTodayFixtures?: b
             <div className="shrink-0 pt-1">
               <Link
                 href={todayBplFixturesHref}
-                className="block w-full text-center rounded-xl border border-amber-200/40 bg-amber-500/10 px-4 py-3 text-sm font-semibold text-[var(--hub-accent-link)] tracking-tight shadow-sm shadow-black/20 transition-colors hover:bg-amber-500/15 hover:border-amber-200/55 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/50"
+                className="block w-full text-center rounded-xl border border-amber-200/40 bg-[var(--hub-warn-bg)] px-4 py-3 text-sm font-semibold text-[var(--hub-accent-link)] tracking-tight shadow-sm shadow-black/20 transition-colors hover:bg-[var(--hub-warn-bg)] hover:border-amber-200/55 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300/50"
               >
                 Click for today&apos;s BPL fixtures preview
               </Link>

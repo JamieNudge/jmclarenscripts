@@ -39,12 +39,12 @@ export function BestPicksIntro({ dateKey }: { dateKey: string }) {
       <div>
         <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight leading-tight text-[var(--hub-text)] flex flex-col gap-1 sm:flex-row sm:flex-wrap sm:items-baseline sm:gap-x-2 sm:gap-y-0.5">
           <span className="max-w-[22ch] sm:max-w-none">{FOOTBALL_PREDICTIONS_PAGE_TITLE}</span>
-          <span className="text-lg md:text-2xl lg:text-3xl font-semibold text-amber-200/93 tabular-nums tracking-wide shrink-0">
+          <span className="text-lg md:text-2xl lg:text-3xl font-semibold text-[var(--hub-heading-accent)] tabular-nums tracking-wide shrink-0">
             {dateKey}
           </span>
         </h1>
         <div className="mt-2 md:mt-3 rounded-2xl border border-amber-200/20 bg-[var(--hub-elevated)] ring-1 ring-[var(--hub-ring)] px-4 py-3.5 md:px-5 md:py-4 2xl:max-w-[min(100%,calc(100%-15rem-1.25rem))]">
-          <p className="text-lg md:text-xl lg:text-2xl font-semibold text-amber-50/95 leading-snug text-pretty">
+          <p className="text-lg md:text-xl lg:text-2xl font-semibold text-[var(--hub-text)] leading-snug text-pretty">
             Daily selections based on a four-algorithm system (
             <HubFootballLink
               href={FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_PATH}
@@ -66,10 +66,10 @@ export function BestPicksIntro({ dateKey }: { dateKey: string }) {
 
       {!BEST_PICKS_EXTENDED_SITE_NAV ? (
         <details className="group rounded-xl border border-amber-200/30 bg-[var(--hub-panel)] px-3 py-2.5 md:px-4 md:py-3">
-          <summary className="cursor-pointer list-none flex items-center justify-between gap-2 text-xs md:text-sm font-semibold text-amber-50/95 hover:text-amber-50 [&::-webkit-details-marker]:hidden">
+          <summary className="cursor-pointer list-none flex items-center justify-between gap-2 text-xs md:text-sm font-semibold text-[var(--hub-on-tint)] hover:text-[var(--hub-on-tint)] [&::-webkit-details-marker]:hidden">
             <span>Apps, this page &amp; where to read more</span>
             <svg
-              className="w-4 h-4 text-amber-200/78 shrink-0 transition-transform duration-200 group-open:rotate-180"
+              className="w-4 h-4 text-[var(--hub-heading-accent)] shrink-0 transition-transform duration-200 group-open:rotate-180"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -98,14 +98,14 @@ export function BestPicksIntro({ dateKey }: { dateKey: string }) {
               What this screen contains (feeds, blog, in-development teasers) is summarised on{' '}
               <HubFootballLink
                 href="/football-predictions/about"
-                className="text-amber-200/88 underline underline-offset-2 hover:text-[var(--hub-accent-link)]"
+                className="text-[var(--hub-accent-link)] underline underline-offset-2 hover:text-[var(--hub-accent-link)]"
               >
                 About this publication
               </HubFootballLink>
               . Technical detail on feeds is on{' '}
               <HubFootballLink
                 href="/football-predictions/methodology"
-                className="text-amber-200/88 underline underline-offset-2 hover:text-[var(--hub-accent-link)]"
+                className="text-[var(--hub-accent-link)] underline underline-offset-2 hover:text-[var(--hub-accent-link)]"
               >
                 Methodology
               </HubFootballLink>
@@ -115,25 +115,25 @@ export function BestPicksIntro({ dateKey }: { dateKey: string }) {
               App terms &amp; privacy: App Store listings and{' '}
               <HubFootballLink
                 href="/football-predictions/privacy"
-                className="text-amber-200/82 underline underline-offset-2 hover:text-[var(--hub-accent-link)]"
+                className="text-[var(--hub-accent-link)] underline underline-offset-2 hover:text-[var(--hub-accent-link)]"
               >
                 site privacy policy
               </HubFootballLink>
               .{' '}
               <HubFootballLink
                 href="/football-predictions#how-apps-work"
-                className="text-amber-200/82 underline underline-offset-2 hover:text-[var(--hub-accent-link)]"
+                className="text-[var(--hub-accent-link)] underline underline-offset-2 hover:text-[var(--hub-accent-link)]"
               >
                 How apps work
               </HubFootballLink>
               {' · '}
-              <HubFootballLink href="/football-predictions/about" className="text-amber-200/82 underline underline-offset-2 hover:text-[var(--hub-accent-link)]">
+              <HubFootballLink href="/football-predictions/about" className="text-[var(--hub-accent-link)] underline underline-offset-2 hover:text-[var(--hub-accent-link)]">
                 About
               </HubFootballLink>
               {' · '}
               <HubFootballLink
                 href="/football-predictions/methodology"
-                className="text-amber-200/82 underline underline-offset-2 hover:text-[var(--hub-accent-link)]"
+                className="text-[var(--hub-accent-link)] underline underline-offset-2 hover:text-[var(--hub-accent-link)]"
               >
                 Methodology
               </HubFootballLink>

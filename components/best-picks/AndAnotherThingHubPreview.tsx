@@ -59,7 +59,7 @@ export function AndAnotherThingHubPreview({ initialPosts, variant }: Props) {
         <h2 className="text-sm font-semibold text-[var(--hub-text-soft)] tracking-tight line-clamp-1">{AND_ANOTHER_THING_TITLE}</h2>
         <Link
           href={AND_ANOTHER_THING_PATH}
-          className="shrink-0 text-[11px] text-amber-200/93 hover:text-amber-100 underline-offset-2"
+          className="shrink-0 text-[11px] text-[var(--hub-heading-accent)] hover:text-[var(--hub-accent-link-hover)] underline-offset-2"
         >
           Open
         </Link>

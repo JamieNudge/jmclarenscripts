@@ -76,9 +76,9 @@ export function PredictionIdeaForm({ collapsibleTrigger = false }: PredictionIde
 
   if (status === 'success') {
     return (
-      <div className="rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-4 text-sm text-emerald-100/95 leading-relaxed">
-        <p className="font-semibold text-emerald-200">Thanks — your idea is submitted.</p>
-        <p className="mt-2 text-emerald-100/85">
+      <div className="rounded-xl border border-[var(--hub-success-border)] bg-[var(--hub-success-bg)] px-4 py-4 text-sm text-[var(--hub-success)] leading-relaxed">
+        <p className="font-semibold text-[var(--hub-success)]">Thanks — your idea is submitted.</p>
+        <p className="mt-2 text-[var(--hub-success)]">
           I&apos;ll review it and get back to you with next steps and pricing.
         </p>
       </div>
@@ -403,7 +403,7 @@ export function PredictionIdeaForm({ collapsibleTrigger = false }: PredictionIde
       </div>
 
       {status === 'error' && (
-        <p className="text-sm text-red-300/90" role="alert">
+        <p className="text-sm text-[var(--hub-danger)]" role="alert">
           {errorMessage}
         </p>
       )}
@@ -427,7 +427,7 @@ export function PredictionIdeaForm({ collapsibleTrigger = false }: PredictionIde
         Prefer email?{' '}
         <a
           href="mailto:jmclarenscripts@gmail.com?subject=Prediction%20model%20idea"
-          className="text-sky-300 hover:text-sky-200 underline underline-offset-2"
+          className="text-[var(--hub-info)] hover:opacity-90 underline underline-offset-2"
         >
           jmclarenscripts@gmail.com
         </a>
