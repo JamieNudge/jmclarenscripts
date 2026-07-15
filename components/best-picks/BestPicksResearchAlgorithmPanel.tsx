@@ -171,25 +171,25 @@ function TeaserListBlock({
         </ul>
       ) : null}
       {blurredPicks.length > 0 || placeholderCount > 0 ? (
-        <div className="relative pt-1">
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 top-10 bg-gradient-to-b from-transparent via-black/35 to-black/80" />
-          <ul
-            aria-hidden
-            className="space-y-2 select-none opacity-55 [mask-image:linear-gradient(to_bottom,rgba(0,0,0,0.95),rgba(0,0,0,0.18))]"
-          >
-            {blurredPicks.map((pick) => (
-              <ConsensusPickRow
-                key={`blurred-${pick.fixtureID}-${pick.band}`}
-                pick={pick}
-                className="blur-[3px]"
-              />
-            ))}
-            {Array.from({ length: placeholderCount }).map((_, i) => (
-              <LockedConsensusPlaceholderRow key={`placeholder-${i}`} className="blur-[3px]" />
-            ))}
-          </ul>
-          <div className="absolute inset-x-3 bottom-3">
-            <DownloadAppTeaser hiddenCount={hiddenCount} label={label} visibleCount={visibleCount} />
+        <div className="space-y-2 pt-1">
+          <DownloadAppTeaser hiddenCount={hiddenCount} label={label} visibleCount={visibleCount} />
+          <div className="relative">
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/25 via-black/45 to-black/75" />
+            <ul
+              aria-hidden
+              className="space-y-2 select-none opacity-50 [mask-image:linear-gradient(to_bottom,rgba(0,0,0,0.55),rgba(0,0,0,0.12))]"
+            >
+              {blurredPicks.map((pick) => (
+                <ConsensusPickRow
+                  key={`blurred-${pick.fixtureID}-${pick.band}`}
+                  pick={pick}
+                  className="blur-[3px]"
+                />
+              ))}
+              {Array.from({ length: placeholderCount }).map((_, i) => (
+                <LockedConsensusPlaceholderRow key={`placeholder-${i}`} className="blur-[3px]" />
+              ))}
+            </ul>
           </div>
         </div>
       ) : null}
