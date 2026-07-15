@@ -16,6 +16,10 @@ function linkActive(pathname: string, href: string, hostname: string): boolean {
   return longPath === href || longPath.startsWith(`${href}/`);
 }
 
+/**
+ * Header/footer site nav. Mobile: tidy 2-column grid, no mid-dots, Appearance on its own row.
+ * Desktop (md+): unchanged inline wrap with · separators.
+ */
 export function BestPicksSiteNav({ variant }: { variant: 'header' | 'footer' }) {
   const pathname = usePathname() ?? '';
   const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
@@ -23,42 +27,72 @@ export function BestPicksSiteNav({ variant }: { variant: 'header' | 'footer' }) 
 
   /** Header and footer use the same links so Contact + Privacy appear in the top bar everywhere (not only on /blog). */
   const items = [...bestPicksSiteNavPrimary, ...bestPicksSiteNavFooterExtra];
+  const isHeader = variant === 'header';
 
   return (
     <nav
       aria-label={
-        variant === 'header' ? 'Football predictions sections' : 'Football predictions and site links'
+        isHeader ? 'Football predictions sections' : 'Football predictions and site links'
       }
-      className={
-        variant === 'header'
-          ? 'flex flex-wrap items-center gap-x-2 gap-y-1.5 pb-2'
-          : 'flex flex-wrap items-center gap-x-2 gap-y-2 pt-1'
-      }
+      className={isHeader ? 'pb-2' : 'pt-1'}
     >
-      {items.map(({ href, label }, i) => {
-        const active = linkActive(pathname, href, hostname);
-        return (
-          <span key={href} className="inline-flex items-center gap-x-2">
-            {i > 0 ? (
-              <span className={`${hubTextFaint} select-none text-[10px] tabular-nums`} aria-hidden>
-                ·
-              </span>
-            ) : null}
-            <Link
-              href={hubPublicHref(href, isGoalLabHub)}
-              className={`${hubNavLink} ${active ? hubNavLinkActive : ''}`}
-              aria-current={active ? 'page' : undefined}
-            >
-              {label}
-            </Link>
-          </span>
-        );
-      })}
-      {variant === 'header' ? (
-        <span className="ml-auto inline-flex items-center pl-2">
+      {isHeader ? (
+        <div className="mb-3 flex justify-end md:hidden">
           <HubAppearanceToggle />
-        </span>
+        </div>
       ) : null}
+
+      {/* Mobile: structured grid without · separators */}
+      <ul className="grid grid-cols-2 gap-x-3 gap-y-1 sm:grid-cols-3 md:hidden list-none m-0 p-0">
+        {items.map(({ href, label }) => {
+          const active = linkActive(pathname, href, hostname);
+          return (
+            <li key={href} className="min-w-0">
+              <Link
+                href={hubPublicHref(href, isGoalLabHub)}
+                className={`${hubNavLink} block w-full py-2 px-1 -mx-1 text-left ${active ? hubNavLinkActive : ''}`}
+                aria-current={active ? 'page' : undefined}
+              >
+                {label}
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+
+      {/* Desktop: existing wrap + mid-dot separators */}
+      <div
+        className={
+          isHeader
+            ? 'hidden md:flex md:flex-wrap md:items-center md:gap-x-2 md:gap-y-1.5'
+            : 'hidden md:flex md:flex-wrap md:items-center md:gap-x-2 md:gap-y-2'
+        }
+      >
+        {items.map(({ href, label }, i) => {
+          const active = linkActive(pathname, href, hostname);
+          return (
+            <span key={href} className="inline-flex items-center gap-x-2">
+              {i > 0 ? (
+                <span className={`${hubTextFaint} select-none text-[10px] tabular-nums`} aria-hidden>
+                  ·
+                </span>
+              ) : null}
+              <Link
+                href={hubPublicHref(href, isGoalLabHub)}
+                className={`${hubNavLink} ${active ? hubNavLinkActive : ''}`}
+                aria-current={active ? 'page' : undefined}
+              >
+                {label}
+              </Link>
+            </span>
+          );
+        })}
+        {isHeader ? (
+          <span className="ml-auto inline-flex items-center pl-2">
+            <HubAppearanceToggle />
+          </span>
+        ) : null}
+      </div>
     </nav>
   );
 }
