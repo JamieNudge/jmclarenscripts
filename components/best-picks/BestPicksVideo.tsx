@@ -119,14 +119,14 @@ export function BestPicksVideo() {
             <button
               type="button"
               onClick={closeExpanded}
-              className="absolute -top-2 right-0 z-10 translate-y-[-100%] rounded-lg border border-[var(--hub-border)] bg-[var(--hub-elevated)] px-3 py-1.5 text-sm font-medium text-[var(--hub-text)] hover:bg-[var(--hub-hover)]"
+              className="absolute -top-2 right-0 z-10 translate-y-[-100%] rounded-lg border border-white/25 bg-zinc-900/95 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-800"
             >
               Close
             </button>
             {videoTitle ? (
-              <p className="mb-3 text-base font-semibold text-[var(--hub-text)] md:text-lg">{videoTitle}</p>
+              <p className="mb-3 text-base font-semibold text-white md:text-lg">{videoTitle}</p>
             ) : null}
-            <div className="aspect-video w-full overflow-hidden rounded-xl border border-[var(--hub-border)] bg-[var(--hub-footer)] shadow-2xl">
+            <div className="aspect-video w-full overflow-hidden rounded-xl border border-white/20 bg-black shadow-2xl">
               <iframe
                 title={videoTitle || 'YouTube video'}
                 src={youtubeEmbedSrc(youtubeId, { autoplay: true, origin: pageOrigin || undefined })}
@@ -136,12 +136,12 @@ export function BestPicksVideo() {
                 referrerPolicy="strict-origin-when-cross-origin"
               />
             </div>
-            <p className="mt-3 text-center text-xs text-[var(--hub-text-faint)]">
+            <p className="mt-3 text-center text-xs text-white/55">
               <a
                 href={youtubeWatchUrl(youtubeId)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="underline underline-offset-2 hover:text-[var(--hub-text-soft)]"
+                className="underline underline-offset-2 hover:text-white/80"
               >
                 Open on YouTube
               </a>
