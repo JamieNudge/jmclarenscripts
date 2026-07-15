@@ -24,6 +24,7 @@ import {
   sortFixturesByKickoff,
   type FixtureListItem,
 } from '@/lib/fixtures-browser';
+import { hubContentWidthClass } from '@/lib/hub/ui';
 
 function FixtureListRow({
   fixture,
@@ -110,7 +111,7 @@ export function FixturesListView() {
 
   return (
     <BestPicksHubWithSideAdLayout>
-      <div className="w-full min-w-0 max-w-3xl 2xl:max-w-4xl mx-auto">
+      <div className={hubContentWidthClass}>
         {BEST_PICKS_EXTENDED_SITE_NAV ? <BestPicksSiteNav variant="header" /> : null}
 
         <div className={BEST_PICKS_EXTENDED_SITE_NAV ? 'mt-6' : 'mt-0'}>

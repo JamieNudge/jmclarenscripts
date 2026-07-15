@@ -28,6 +28,7 @@ import {
   parseFixtureContextForFixture,
   type KeySignalLine,
 } from '@/lib/fixture-key-signals';
+import { hubContentWidthClass } from '@/lib/hub/ui';
 
 function pickText(v: unknown): string | null {
   if (typeof v === 'string') {
@@ -185,7 +186,7 @@ export function FixtureDetailView() {
 
   return (
     <BestPicksHubWithSideAdLayout>
-      <div className="w-full min-w-0 max-w-3xl 2xl:max-w-4xl mx-auto">
+      <div className={hubContentWidthClass}>
         {BEST_PICKS_EXTENDED_SITE_NAV ? <BestPicksSiteNav variant="header" /> : null}
 
         <div className={BEST_PICKS_EXTENDED_SITE_NAV ? 'mt-6' : 'mt-0'}>

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { BestPicksContentWithSideAdLayout } from '@/components/best-picks/BestPicksContentWithSideAdLayout';
 import { HowItWorksFromHubRedirect } from './HowItWorksFromHubRedirect';
 import { FOOTBALL_PREDICTIONS_PAGE_TITLE } from '@/lib/football-predictions-brand';
+import { hubContentWidthClass } from '@/lib/hub/ui';
 
 const title = `How apps work — ${FOOTBALL_PREDICTIONS_PAGE_TITLE}`;
 
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
 export default function HowItWorksPage() {
   return (
     <BestPicksContentWithSideAdLayout>
-      <div className="mx-auto w-full max-w-6xl 2xl:max-w-none">
+      <div className={hubContentWidthClass}>
         <HowItWorksFromHubRedirect />
       </div>
     </BestPicksContentWithSideAdLayout>

@@ -25,7 +25,7 @@ export default function BestPicksContactPage() {
           same contact channel referenced in the{' '}
           <HubFootballLink
             href="/football-predictions/privacy"
-            className="text-amber-200/80 underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)]/90"
+            className="text-[var(--hub-accent-link)] underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)]"
           >
             privacy policy
           </HubFootballLink>
@@ -35,7 +35,7 @@ export default function BestPicksContactPage() {
           <strong className="font-medium text-[var(--hub-text)]">Email</strong>{' '}
           <a
             href={mailtoHref}
-            className="text-amber-200/90 underline underline-offset-2 hover:text-[var(--hub-on-tint)] break-all"
+            className="text-[var(--hub-accent-link)] underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)] break-all"
           >
             {CONTACT_EMAIL}
           </a>

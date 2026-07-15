@@ -8,6 +8,7 @@ import { BestPicksSiteNav } from '@/components/best-picks/BestPicksSiteNav';
 import { BEST_PICKS_EXTENDED_SITE_NAV } from '@/components/best-picks/best-picks-site-nav-config';
 import { useBestPicksLondonDateKey } from '@/hooks/useBestPicksLondonDateKey';
 import { FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_TITLE } from '@/lib/football-predictions-brand';
+import { hubContentWidthClass } from '@/lib/hub/ui';
 
 /**
  * Full page: same chrome as the football-predictions hub (side ad + shared footer) + two columns on
@@ -18,7 +19,7 @@ export function ResearchAlgorithmSelectionsView() {
 
   return (
     <BestPicksHubWithSideAdLayout>
-      <div className="w-full min-w-0 max-w-6xl 2xl:max-w-none 2xl:mx-0 mx-auto">
+      <div className={hubContentWidthClass}>
         {BEST_PICKS_EXTENDED_SITE_NAV ? <BestPicksSiteNav variant="header" /> : null}
         <div className={BEST_PICKS_EXTENDED_SITE_NAV ? 'mt-6' : 'mt-0'}>
           <HubFootballLink

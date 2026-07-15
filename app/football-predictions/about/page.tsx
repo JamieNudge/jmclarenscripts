@@ -20,7 +20,7 @@ export default function BestPicksAboutPage() {
         <p>
           This page pulls together a few things in one place: App Store links to shipped products, a live feed of the
           latest research algorithm selections for the London calendar date in the headline, links to{' '}
-          <Link href="/blog" className="text-amber-200/85 underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)]/90">
+          <Link href="/blog" className="text-[var(--hub-accent-link)] underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)]">
             blog posts
           </Link>
           , optional embedded video, and a column highlighting products still in development (for example PopGoals and
@@ -36,7 +36,7 @@ export default function BestPicksAboutPage() {
           themselves. For how each app is meant to work, see{' '}
           <HubFootballLink
             href="/football-predictions#how-apps-work"
-            className="text-amber-200/85 underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)]/90"
+            className="text-[var(--hub-accent-link)] underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)]"
           >
             How apps work
           </HubFootballLink>
@@ -46,14 +46,14 @@ export default function BestPicksAboutPage() {
           Questions about this website: see{' '}
           <HubFootballLink
             href="/football-predictions/contact"
-            className="text-amber-200/80 underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)]/90"
+            className="text-[var(--hub-accent-link)] underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)]"
           >
             Contact
           </HubFootballLink>
           . Privacy and cookies:{' '}
           <HubFootballLink
             href="/football-predictions/privacy"
-            className="text-amber-200/80 underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)]/90"
+            className="text-[var(--hub-accent-link)] underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)]"
           >
             Privacy policies
           </HubFootballLink>

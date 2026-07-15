@@ -3,6 +3,10 @@
  * Use these instead of hard-coded text-white / bg-black on hub pages.
  */
 
+/** Main column width — keep fixtures / research / blog / subpages aligned. */
+export const hubContentWidthClass =
+  'w-full min-w-0 max-w-6xl 2xl:max-w-none mx-auto';
+
 export const hubPageClass =
   'min-h-screen bg-[var(--hub-page)] text-[var(--hub-text)]';
 

@@ -4,6 +4,7 @@ import { HubFootballLink } from '@/components/hub/HubFootballLink';
 import { BestPicksContentWithSideAdLayout } from '@/components/best-picks/BestPicksContentWithSideAdLayout';
 import { BestPicksSiteNav } from '@/components/best-picks/BestPicksSiteNav';
 import { BlogIndexClient } from '@/components/blog/BlogIndexClient';
+import { hubContentWidthClass } from '@/lib/hub/ui';
 
 export const metadata: Metadata = {
   title: 'Blogs',
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
 export default function BlogIndexPage() {
   return (
     <BestPicksContentWithSideAdLayout>
-      <div className="mx-auto w-full max-w-6xl 2xl:max-w-none">
+      <div className={hubContentWidthClass}>
         <div className="mb-10">
           <BestPicksSiteNav variant="header" />
         </div>
