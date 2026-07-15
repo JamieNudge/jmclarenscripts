@@ -39,6 +39,13 @@ export function jobIdFromName(name: string): string {
   return slug || 'untitled-job';
 }
 
+function newJobId(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  return `job-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
 export function formatJobSavedAt(savedAt: string): string {
   try {
     return new Date(savedAt).toLocaleString(undefined, {
@@ -58,13 +65,16 @@ export function listSavedJobs(): SavedJobRecord[] {
   );
 }
 
-export function saveJob(document: DGCDesignDocument): SavedJobRecord {
+export function saveJob(
+  document: DGCDesignDocument,
+  options: { id?: string | null } = {},
+): SavedJobRecord {
   const name = document.name.trim();
   if (!name) {
     throw new Error('Enter a job name before saving.');
   }
 
-  const id = jobIdFromName(name);
+  const id = options.id?.trim() || newJobId();
   const registry = readRegistry();
   const record: SavedJobRecord = {
     id,
