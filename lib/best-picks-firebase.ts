@@ -938,6 +938,8 @@ export function statStrikeRtdbPathsFromEnv(dateKey: string): {
   researchAlgorithmSelectionsPath: string;
   /** All Models Best Forecaster: consensus-filtered daily top-N (same London date key). */
   dailyConsensusSelectionsPath: string;
+  /** All Models Best Forecaster: Goal Band Cascade list for GoalLab Research teaser. */
+  goalBandCascadeSelectionsPath: string;
 } {
   const unanimousRoot =
     process.env.NEXT_PUBLIC_FIREBASE_UNANIMOUS_EXPORTS_ROOT?.trim() || 'unanimousExports';
@@ -950,12 +952,15 @@ export function statStrikeRtdbPathsFromEnv(dateKey: string): {
     'researchAlgorithmSelections';
   const dailyConsensusRoot =
     process.env.NEXT_PUBLIC_FIREBASE_DAILY_CONSENSUS_ROOT?.trim() || 'dailyConsensusSelections';
+  const goalBandCascadeRoot =
+    process.env.NEXT_PUBLIC_FIREBASE_GOAL_BAND_CASCADE_ROOT?.trim() || 'goalBandCascadeSelections';
   return {
     unanimousPath: `${unanimousRoot}/${dateKey}`,
     selectionPath: `${selectionsRoot}/${dateKey}`,
     manualExportsPath: `${manualRoot}/${dateKey}`,
     researchAlgorithmSelectionsPath: `${researchRoot}/${dateKey}`,
     dailyConsensusSelectionsPath: `${dailyConsensusRoot}/${dateKey}`,
+    goalBandCascadeSelectionsPath: `${goalBandCascadeRoot}/${dateKey}`,
   };
 }
 
@@ -993,6 +998,17 @@ function str(v: unknown): string {
   if (typeof v === 'string') return v;
   if (typeof v === 'number' || typeof v === 'boolean') return String(v);
   return '';
+}
+
+/**
+ * Parses RTDB payload from All Models Best Forecaster `goalBandCascadeSelections/{date}`.
+ * Same pick/record shape as daily consensus for GoalLab Research cards.
+ */
+export function parseGoalBandCascadeSelections(
+  val: unknown,
+  calendarDateKey?: string,
+): DailyConsensusFeedParsed | null {
+  return parseDailyConsensusSelections(val, calendarDateKey);
 }
 
 /**
