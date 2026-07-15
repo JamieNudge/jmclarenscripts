@@ -58,12 +58,12 @@ function fixturePendingLabel(fixture: BplCompactFixture): string {
 function BplFixtureRow({ fixture, className = '' }: { fixture: BplCompactFixture; className?: string }) {
   return (
     <li
-      className={`rounded-lg border border-[var(--hub-border-soft)] bg-[var(--hub-inset)] px-3 py-2 flex items-start justify-between gap-2 ${className}`.trim()}
+      className={`rounded-lg border border-[var(--hub-border)] bg-[var(--hub-panel)] px-3 py-2 flex items-start justify-between gap-2 ${className}`.trim()}
     >
       <div className="min-w-0 flex-1 space-y-0.5">
         <p className="text-sm font-medium text-[var(--hub-text)] leading-snug line-clamp-2">{fixture.title}</p>
         {fixture.league?.trim() || fixture.kickoff?.trim() ? (
-          <p className="text-[10px] text-[var(--hub-text-soft)] leading-snug line-clamp-2">
+          <p className="text-[10px] text-[var(--hub-text-muted)] leading-snug line-clamp-2">
             {[fixture.league, fixture.kickoff]
               .map((x) => (x == null ? '' : x.trim()))
               .filter(Boolean)
@@ -71,14 +71,14 @@ function BplFixtureRow({ fixture, className = '' }: { fixture: BplCompactFixture
           </p>
         ) : null}
         {fixture.forecast ? (
-          <p className="text-[10px] text-[var(--hub-info)] font-medium leading-snug line-clamp-2">{fixture.forecast}</p>
+          <p className="text-[10px] text-[var(--hub-info)] font-semibold leading-snug line-clamp-2">{fixture.forecast}</p>
         ) : null}
       </div>
       <div className="shrink-0 flex flex-col items-end gap-0.5">
         <span
           className={
             fixture.odds != null
-              ? 'text-xs tabular-nums text-[var(--hub-accent-link)]'
+              ? 'text-xs font-semibold tabular-nums text-[var(--hub-text)]'
               : 'text-[10px] font-medium text-[var(--hub-text-muted)] tabular-nums'
           }
         >
@@ -96,9 +96,9 @@ function BplFixtureRow({ fixture, className = '' }: { fixture: BplCompactFixture
 
 function DownloadAppTeaser({ hiddenCount }: { hiddenCount: number }) {
   return (
-    <div className="rounded-xl border border-amber-200/35 bg-[var(--hub-inset)] backdrop-blur-sm px-4 py-3 text-center shadow-lg shadow-black/25">
-      <p className="text-sm font-semibold text-[var(--hub-accent-link)]">Unlock the full daily list in StatStrike</p>
-      <p className="mt-1 text-xs leading-relaxed text-[var(--hub-text-soft)]">
+    <div className="rounded-xl border border-[var(--hub-border-strong)] bg-[var(--hub-elevated)] px-4 py-3 text-center shadow-md shadow-[var(--hub-shadow)]">
+      <p className="text-sm font-semibold text-[var(--hub-text)]">Unlock the full daily list in StatStrike</p>
+      <p className="mt-1 text-xs leading-relaxed text-[var(--hub-text-muted)]">
         Showing the first {TEASER_VISIBLE_COUNT} best-performing lines
         {hiddenCount > 0 ? ` with ${hiddenCount} more available in the app today.` : '.'}
       </p>
@@ -107,7 +107,7 @@ function DownloadAppTeaser({ hiddenCount }: { hiddenCount: number }) {
           href={statStrikeAppStoreUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-3 inline-flex items-center justify-center rounded-lg border border-amber-200/45 bg-[var(--hub-warn-bg)] px-3 py-2 text-xs font-semibold text-[var(--hub-accent-link)] transition-colors hover:bg-[var(--hub-warn-bg)] hover:border-amber-200/60"
+          className="mt-3 inline-flex items-center justify-center rounded-lg bg-[var(--hub-cta-bg)] px-3 py-2 text-xs font-semibold text-[var(--hub-cta-text)] transition-opacity hover:opacity-90"
         >
           Download StatStrike on iOS
         </a>

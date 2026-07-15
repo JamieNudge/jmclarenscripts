@@ -30,7 +30,7 @@ function bandPillClass(band: string): string {
     return 'text-[var(--hub-info)] border-[var(--hub-info-border)] bg-[var(--hub-info-bg)]';
   }
   if (b.includes('under')) {
-    return 'text-orange-200 border-orange-400/30 bg-orange-500/15';
+    return 'text-[var(--hub-under)] border-[var(--hub-under-border)] bg-[var(--hub-under-bg)]';
   }
   return 'text-[var(--hub-text-soft)] border-[var(--hub-border)] bg-[var(--hub-chip)]';
 }
@@ -58,7 +58,7 @@ function ConsensusPickRow({ pick, className = '' }: { pick: DailyConsensusPickPa
   const kickoffLine = pick.kickoff?.trim() || null;
 
   return (
-    <li className={`rounded-xl border border-[var(--hub-border-soft)] bg-[var(--hub-chip)] px-3 py-2.5 shrink-0 ${className}`.trim()}>
+    <li className={`rounded-xl border border-[var(--hub-border)] bg-[var(--hub-panel)] px-3 py-2.5 shrink-0 ${className}`.trim()}>
       {/* Stacked: full-width fixture + context first; model / outcome chips on a second row (no side-by-side squeeze). */}
       <div className="flex w-full min-w-0 flex-col gap-2.5">
         <div className="w-full min-w-0">
@@ -67,9 +67,9 @@ function ConsensusPickRow({ pick, className = '' }: { pick: DailyConsensusPickPa
             <span className="text-[var(--hub-text-soft)] font-normal mx-1">v</span>
             {pick.away}
           </p>
-          {venueLine ? <p className="text-xs text-[var(--hub-text-soft)] mt-1.5 leading-relaxed text-pretty">{venueLine}</p> : null}
+          {venueLine ? <p className="text-xs text-[var(--hub-text-muted)] mt-1.5 leading-relaxed text-pretty">{venueLine}</p> : null}
           {kickoffLine ? (
-            <p className="text-xs text-[var(--hub-text-soft)] leading-relaxed text-pretty">{kickoffLine}</p>
+            <p className="text-xs text-[var(--hub-text-muted)] leading-relaxed text-pretty">{kickoffLine}</p>
           ) : null}
         </div>
         <div className="flex w-full min-w-0 flex-row flex-wrap items-center gap-1.5">
@@ -78,7 +78,7 @@ function ConsensusPickRow({ pick, className = '' }: { pick: DailyConsensusPickPa
           >
             {formatBandAsGoalsPhrase(pick.band)}
           </span>
-          <span className="text-[10px] font-semibold text-purple-200/95 border border-purple-400/25 bg-purple-500/15 px-2 py-0.5 rounded-md whitespace-nowrap">
+          <span className="text-[10px] font-semibold text-[var(--hub-models)] border border-[var(--hub-models-border)] bg-[var(--hub-models-bg)] px-2 py-0.5 rounded-md whitespace-nowrap">
             {pick.sources} models
           </span>
           {score ? (
@@ -97,12 +97,12 @@ function ConsensusPickRow({ pick, className = '' }: { pick: DailyConsensusPickPa
 
 function LockedConsensusPlaceholderRow({ className = '' }: { className?: string }) {
   return (
-    <li className={`rounded-xl border border-[var(--hub-border-soft)] bg-[var(--hub-chip)] px-3 py-2.5 shrink-0 ${className}`.trim()}>
+    <li className={`rounded-xl border border-[var(--hub-border)] bg-[var(--hub-panel)] px-3 py-2.5 shrink-0 ${className}`.trim()}>
       <div className="flex w-full min-w-0 flex-col gap-2.5">
         <div className="w-full min-w-0 space-y-1.5">
-          <div className="h-4 w-3/4 rounded bg-white/16" />
-          <div className="h-3 w-2/3 rounded bg-[var(--hub-chip)]" />
-          <div className="h-3 w-1/2 rounded bg-[var(--hub-chip)]" />
+          <div className="h-4 w-3/4 rounded bg-[var(--hub-elevated)]" />
+          <div className="h-3 w-2/3 rounded bg-[var(--hub-elevated)]" />
+          <div className="h-3 w-1/2 rounded bg-[var(--hub-elevated)]" />
         </div>
         <div className="flex w-full min-w-0 flex-row flex-wrap items-center gap-1.5">
           <span className="h-6 w-20 rounded-md border border-[var(--hub-border-soft)] bg-[var(--hub-chip)]" />
@@ -117,9 +117,9 @@ function LockedConsensusPlaceholderRow({ className = '' }: { className?: string 
 
 function DownloadAppTeaser({ hiddenCount, label }: { hiddenCount: number; label: string }) {
   return (
-    <div className="rounded-xl border border-amber-200/35 bg-[var(--hub-inset)] backdrop-blur-sm px-4 py-3 text-center shadow-lg shadow-black/25">
-      <p className="text-sm font-semibold text-[var(--hub-accent-link)]">Unlock the full daily list in GoalLab</p>
-      <p className="mt-1 text-xs leading-relaxed text-[var(--hub-text-soft)]">
+    <div className="rounded-xl border border-[var(--hub-border-strong)] bg-[var(--hub-elevated)] px-4 py-3 text-center shadow-md shadow-[var(--hub-shadow)]">
+      <p className="text-sm font-semibold text-[var(--hub-text)]">Unlock the full daily list in GoalLab</p>
+      <p className="mt-1 text-xs leading-relaxed text-[var(--hub-text-muted)]">
         Showing the first {TEASER_VISIBLE_COUNT} {label}
         {hiddenCount > 0 ? ` with ${hiddenCount} more available in the app today.` : '.'}
       </p>
@@ -128,7 +128,7 @@ function DownloadAppTeaser({ hiddenCount, label }: { hiddenCount: number; label:
           href={GOALLAB_APP_STORE_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-3 inline-flex items-center justify-center rounded-lg border border-amber-200/45 bg-[var(--hub-warn-bg)] px-3 py-2 text-xs font-semibold text-[var(--hub-accent-link)] transition-colors hover:bg-[var(--hub-warn-bg)] hover:border-amber-200/60"
+          className="mt-3 inline-flex items-center justify-center rounded-lg bg-[var(--hub-cta-bg)] px-3 py-2 text-xs font-semibold text-[var(--hub-cta-text)] transition-opacity hover:opacity-90"
         >
           Download GoalLab on iOS
         </a>

@@ -14,12 +14,12 @@ export const HUB_APPEARANCE_OPTIONS: {
 
 export function parseHubAppearance(raw: string | null | undefined): HubAppearancePreference {
   if (raw === 'light' || raw === 'dark' || raw === 'system') return raw;
-  return 'dark';
+  return 'light';
 }
 
 export function resolveHubTheme(
   preference: HubAppearancePreference,
-  systemDark = true,
+  systemDark = false,
 ): HubResolvedTheme {
   if (preference === 'light') return 'light';
   if (preference === 'dark') return 'dark';
@@ -27,11 +27,11 @@ export function resolveHubTheme(
 }
 
 export function readStoredHubAppearance(): HubAppearancePreference {
-  if (typeof window === 'undefined') return 'dark';
+  if (typeof window === 'undefined') return 'light';
   try {
     return parseHubAppearance(window.localStorage.getItem(GOAL_LAB_APPEARANCE_STORAGE_KEY));
   } catch {
-    return 'dark';
+    return 'light';
   }
 }
 
@@ -45,6 +45,6 @@ export function writeStoredHubAppearance(preference: HubAppearancePreference): v
 }
 
 export function systemPrefersDark(): boolean {
-  if (typeof window === 'undefined') return true;
+  if (typeof window === 'undefined') return false;
   return window.matchMedia('(prefers-color-scheme: dark)').matches;
 }

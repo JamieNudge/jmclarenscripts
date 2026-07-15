@@ -27,8 +27,8 @@ interface HubAppearanceContextValue {
 const HubAppearanceContext = createContext<HubAppearanceContextValue | null>(null);
 
 export function HubAppearanceProvider({ children }: { children: ReactNode }) {
-  const [preference, setPreferenceState] = useState<HubAppearancePreference>('dark');
-  const [systemDark, setSystemDark] = useState(true);
+  const [preference, setPreferenceState] = useState<HubAppearancePreference>('light');
+  const [systemDark, setSystemDark] = useState(false);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {

@@ -5,9 +5,9 @@ import {
 } from '../appearance';
 
 describe('hub appearance', () => {
-  it('defaults unknown values to dark', () => {
-    expect(parseHubAppearance(null)).toBe('dark');
-    expect(parseHubAppearance('nope')).toBe('dark');
+  it('defaults unknown values to light', () => {
+    expect(parseHubAppearance(null)).toBe('light');
+    expect(parseHubAppearance('nope')).toBe('light');
   });
 
   it('resolves system from OS preference', () => {
