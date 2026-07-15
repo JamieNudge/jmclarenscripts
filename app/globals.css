@@ -272,3 +272,102 @@ body.best-picks-route .bp-best-picks-surface,
   background: var(--dgc-page);
   color: var(--dgc-text);
 }
+
+/* GoalLab V2 prototype — scoped tokens; does not replace hub amber theme. */
+.gl-v2 {
+  color-scheme: light;
+  --gl-page: #f7f8fa;
+  --gl-surface: #ffffff;
+  --gl-elevated: #f1f3f7;
+  --gl-text: #0f1419;
+  --gl-text-soft: #3d4a5c;
+  --gl-text-muted: #6b7785;
+  --gl-border: rgba(15, 20, 25, 0.1);
+  --gl-border-strong: rgba(15, 20, 25, 0.16);
+  --gl-accent: #1d4ed8;
+  --gl-accent-soft: rgba(29, 78, 216, 0.1);
+  --gl-accent-hover: #1e40af;
+  --gl-success: #047857;
+  --gl-warn: #b45309;
+  --gl-danger: #b91c1c;
+  --gl-shadow: 0 1px 2px rgba(15, 20, 25, 0.04), 0 8px 24px rgba(15, 20, 25, 0.06);
+  --gl-nav-h: 3.5rem;
+  background: var(--gl-page);
+  color: var(--gl-text);
+  font-family: var(--font-gl-v2), ui-sans-serif, system-ui, sans-serif;
+}
+
+[data-hub-theme='dark'] .gl-v2 {
+  color-scheme: dark;
+  --gl-page: #0b0d10;
+  --gl-surface: #12151a;
+  --gl-elevated: #1a1f27;
+  --gl-text: #f2f4f7;
+  --gl-text-soft: #c5ccd6;
+  --gl-text-muted: #8b95a5;
+  --gl-border: rgba(255, 255, 255, 0.1);
+  --gl-border-strong: rgba(255, 255, 255, 0.16);
+  --gl-accent: #60a5fa;
+  --gl-accent-soft: rgba(96, 165, 250, 0.12);
+  --gl-accent-hover: #93c5fd;
+  --gl-success: #34d399;
+  --gl-warn: #fbbf24;
+  --gl-danger: #f87171;
+  --gl-shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 12px 32px rgba(0, 0, 0, 0.35);
+}
+
+/* Map hub token names onto V2 palette so existing research/history panels can sit in the shell. */
+.gl-v2 .gl-v2-hub-bridge {
+  --hub-page: var(--gl-page);
+  --hub-panel: var(--gl-surface);
+  --hub-elevated: var(--gl-elevated);
+  --hub-input: var(--gl-surface);
+  --hub-text: var(--gl-text);
+  --hub-text-soft: var(--gl-text-soft);
+  --hub-text-muted: var(--gl-text-muted);
+  --hub-text-faint: var(--gl-text-muted);
+  --hub-border: var(--gl-border);
+  --hub-border-strong: var(--gl-border-strong);
+  --hub-border-soft: var(--gl-border);
+  --hub-border-zinc: var(--gl-border);
+  --hub-hover: color-mix(in srgb, var(--gl-text) 5%, transparent);
+  --hub-chip: var(--gl-elevated);
+  --hub-inset: var(--gl-elevated);
+  --hub-shadow: rgba(15, 20, 25, 0.08);
+  --hub-ring: var(--gl-border);
+  --hub-nav: var(--gl-text-soft);
+  --hub-nav-active: var(--gl-text);
+  --hub-accent-link: var(--gl-accent);
+  --hub-accent-link-hover: var(--gl-accent-hover);
+  --hub-heading-accent: var(--gl-accent);
+  --hub-on-tint: var(--gl-text);
+  --hub-success: var(--gl-success);
+  --hub-danger: var(--gl-danger);
+  --hub-info: var(--gl-accent);
+  --hub-success-border: color-mix(in srgb, var(--gl-success) 35%, transparent);
+  --hub-success-bg: color-mix(in srgb, var(--gl-success) 12%, transparent);
+  --hub-danger-border: color-mix(in srgb, var(--gl-danger) 30%, transparent);
+  --hub-danger-bg: color-mix(in srgb, var(--gl-danger) 10%, transparent);
+  --hub-info-border: color-mix(in srgb, var(--gl-accent) 30%, transparent);
+  --hub-info-bg: var(--gl-accent-soft);
+  --hub-warn-border: color-mix(in srgb, var(--gl-warn) 35%, transparent);
+  --hub-warn-bg: color-mix(in srgb, var(--gl-warn) 12%, transparent);
+  --hub-under: var(--gl-warn);
+  --hub-under-border: color-mix(in srgb, var(--gl-warn) 35%, transparent);
+  --hub-under-bg: color-mix(in srgb, var(--gl-warn) 12%, transparent);
+  --hub-models: var(--gl-accent);
+  --hub-models-border: color-mix(in srgb, var(--gl-accent) 30%, transparent);
+  --hub-models-bg: var(--gl-accent-soft);
+  --hub-cta-bg: var(--gl-accent);
+  --hub-cta-text: #ffffff;
+  --hub-footer: var(--gl-surface);
+  --hub-code: var(--gl-elevated);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gl-v2 * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

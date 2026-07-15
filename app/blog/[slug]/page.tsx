@@ -1,38 +1,43 @@
 import type { Metadata } from 'next';
-import { AdSenseAutoPlaceholder } from '@/components/AdSenseAutoPlaceholder';
+import { GoalLabV2Shell } from '@/components/goallab/v2/GoalLabV2Shell';
 import { HubFootballLink } from '@/components/hub/HubFootballLink';
-import { BestPicksContentWithSideAdLayout } from '@/components/best-picks/BestPicksContentWithSideAdLayout';
-import { BestPicksSiteNav } from '@/components/best-picks/BestPicksSiteNav';
 import { BlogPostClient } from '@/components/blog/BlogPostClient';
-import { hubContentWidthClass } from '@/lib/hub/ui';
+import { FOOTBALL_PREDICTIONS_PAGE_TITLE } from '@/lib/football-predictions-brand';
 
 export const metadata: Metadata = {
-  title: 'Blogs',
-  description: 'Article from the blogs.',
+  title: `Insights — ${FOOTBALL_PREDICTIONS_PAGE_TITLE}`,
+  description: 'Article from GoalLab Insights.',
 };
 
 export default function BlogPostPage({ params }: { params: { slug: string } }) {
   const slug = params.slug?.trim() ?? '';
   return (
-    <BestPicksContentWithSideAdLayout>
-      <div className={hubContentWidthClass}>
-        <div className="mb-10">
-          <BestPicksSiteNav variant="header" />
+    <GoalLabV2Shell>
+      <div className="mx-auto max-w-3xl px-4 py-10 md:px-6 md:py-14 space-y-8">
+        <div>
+          <HubFootballLink
+            href="/blog"
+            className="inline-flex items-center gap-2 text-sm text-[var(--gl-text-muted)] hover:text-[var(--gl-text)] transition-colors"
+          >
+            <span aria-hidden>←</span> Back to Insights
+          </HubFootballLink>
         </div>
 
-        <BlogPostClient slug={slug} />
+        <div className="gl-v2-hub-bridge">
+          <BlogPostClient slug={slug} />
+        </div>
 
-        <footer className="mt-12 space-y-4 border-t border-[var(--hub-border-soft)] pt-8 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
-          <AdSenseAutoPlaceholder orientation="horizontal" className="w-full min-h-[90px]" />
-          <p className="max-w-[min(100%,42rem)] text-left text-[11px] leading-relaxed text-[var(--hub-text-muted)] md:text-xs">
-            <HubFootballLink href="/football-predictions/privacy" className="underline hover:text-[var(--hub-text-muted)] underline-offset-2">
-              Privacy policies
-            </HubFootballLink>
-            <span className="text-white/25"> · </span>
-            Google ads may appear on this page; the privacy policies cover cookies, ads, and app-specific links.
-          </p>
-        </footer>
+        <p className="text-[11px] leading-relaxed text-[var(--gl-text-muted)] border-t border-[var(--gl-border)] pt-6">
+          <HubFootballLink
+            href="/football-predictions/privacy"
+            className="underline underline-offset-2 hover:text-[var(--gl-text-soft)]"
+          >
+            Privacy policies
+          </HubFootballLink>
+          <span> · </span>
+          Informational content only.
+        </p>
       </div>
-    </BestPicksContentWithSideAdLayout>
+    </GoalLabV2Shell>
   );
 }

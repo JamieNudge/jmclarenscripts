@@ -7,13 +7,14 @@ import {
   FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_TITLE,
 } from '@/lib/football-predictions-brand';
 
+/** Legacy BestPicks nav — prefer GoalLab V2 nav on primary product pages. */
 export const bestPicksSiteNavPrimary = [
   { href: '/football-predictions', label: 'Home' },
   { href: FOOTBALL_PREDICTIONS_FIXTURES_PATH, label: FOOTBALL_PREDICTIONS_FIXTURES_TITLE },
   { href: FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_PATH, label: FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_TITLE },
-  { href: '/football-predictions/methodology', label: 'Methodology' },
+  { href: '/football-predictions/methodology', label: 'Models' },
   { href: '/football-predictions/about', label: 'About' },
-  { href: '/blog', label: 'Blogs' },
+  { href: '/blog', label: 'Insights' },
   { href: AND_ANOTHER_THING_PATH, label: AND_ANOTHER_THING_TITLE },
 ] as const;
 

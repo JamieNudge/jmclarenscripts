@@ -1,50 +1,48 @@
 import type { Metadata } from 'next';
-import { AdSenseAutoPlaceholder } from '@/components/AdSenseAutoPlaceholder';
+import { GoalLabV2Shell } from '@/components/goallab/v2/GoalLabV2Shell';
 import { HubFootballLink } from '@/components/hub/HubFootballLink';
-import { BestPicksContentWithSideAdLayout } from '@/components/best-picks/BestPicksContentWithSideAdLayout';
-import { BestPicksSiteNav } from '@/components/best-picks/BestPicksSiteNav';
 import { BlogIndexClient } from '@/components/blog/BlogIndexClient';
-import { hubContentWidthClass } from '@/lib/hub/ui';
+import { FOOTBALL_PREDICTIONS_PAGE_TITLE } from '@/lib/football-predictions-brand';
 
 export const metadata: Metadata = {
-  title: 'Blogs',
+  title: `Insights — ${FOOTBALL_PREDICTIONS_PAGE_TITLE}`,
   description:
-    'Original articles and methodology behind the prediction system. Daily picks: Football Predictions & Data-Driven Picks.',
+    'Original articles and methodology notes behind the forecasting system. Daily forecasts on GoalLab.',
 };
 
 export default function BlogIndexPage() {
   return (
-    <BestPicksContentWithSideAdLayout>
-      <div className={hubContentWidthClass}>
-        <div className="mb-10">
-          <BestPicksSiteNav variant="header" />
+    <GoalLabV2Shell>
+      <div className="mx-auto max-w-6xl px-4 py-10 md:px-6 md:py-14 space-y-8">
+        <header className="space-y-2 max-w-2xl">
+          <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-[var(--gl-text)]">Insights</h1>
+          <p className="text-base text-[var(--gl-text-soft)] leading-relaxed">
+            Original articles and notes behind the forecasting system. Daily forecasts are on{' '}
+            <HubFootballLink
+              href="/football-predictions"
+              className="font-medium text-[var(--gl-accent)] underline-offset-2 hover:underline"
+            >
+              GoalLab home
+            </HubFootballLink>
+            .
+          </p>
+        </header>
+
+        <div className="gl-v2-hub-bridge">
+          <BlogIndexClient />
         </div>
 
-        <h1 className="mb-3 text-3xl font-bold md:text-4xl">Blogs</h1>
-        <p className="mb-8 text-sm text-[var(--hub-text-muted)] leading-relaxed">
-          Original articles and methodology behind the prediction system. Daily picks are available{' '}
+        <p className="text-[11px] leading-relaxed text-[var(--gl-text-muted)] border-t border-[var(--gl-border)] pt-6">
           <HubFootballLink
-            href="/football-predictions"
-            className="text-amber-200/85 underline underline-offset-2 hover:text-[var(--hub-on-tint)]"
+            href="/football-predictions/privacy"
+            className="underline underline-offset-2 hover:text-[var(--gl-text-soft)]"
           >
-            here
+            Privacy policies
           </HubFootballLink>
-          .
+          <span> · </span>
+          Informational content only. Advertising tech may load site-wide when enabled in configuration.
         </p>
-
-        <BlogIndexClient />
-
-        <footer className="mt-12 space-y-4 border-t border-[var(--hub-border-soft)] pt-8 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
-          <AdSenseAutoPlaceholder orientation="horizontal" className="w-full min-h-[90px]" />
-          <p className="max-w-[min(100%,42rem)] text-left text-[11px] leading-relaxed text-[var(--hub-text-muted)] md:text-xs">
-            <HubFootballLink href="/football-predictions/privacy" className="underline hover:text-[var(--hub-text-muted)] underline-offset-2">
-              Privacy policies
-            </HubFootballLink>
-            <span className="text-white/25"> · </span>
-            Google ads may appear on this page; the privacy policies cover cookies, ads, and app-specific links.
-          </p>
-        </footer>
       </div>
-    </BestPicksContentWithSideAdLayout>
+    </GoalLabV2Shell>
   );
 }

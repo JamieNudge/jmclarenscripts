@@ -1,7 +1,13 @@
-import { Inter } from 'next/font/google';
+import { Inter, Source_Sans_3 } from 'next/font/google';
 
 /** Single Inter instance for the app (layout + blog emoji stack). */
 export const inter = Inter({ subsets: ['latin'] });
+
+/** GoalLab V2 prototype — calm product UI (scoped to `/football-predictions/v2`). */
+export const goalLabV2Sans = Source_Sans_3({
+  subsets: ['latin'],
+  variable: '--font-gl-v2',
+});
 
 /**
  * Body text stack: Inter first, then system UI, then color-emoji fonts so 🎉 etc. render in titles

@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
-import { ResearchAlgorithmSelectionsView } from '@/components/best-picks/ResearchAlgorithmSelectionsView';
+import { GoalLabV2Research } from '@/components/goallab/v2/GoalLabV2Research';
+import { GoalLabV2Shell } from '@/components/goallab/v2/GoalLabV2Shell';
 import {
   FOOTBALL_PREDICTIONS_PAGE_TITLE,
   FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_TITLE,
 } from '@/lib/football-predictions-brand';
 
 const desc =
-  "Today's Research Selections: daily consensus and per-model lines from the hub. Live data when Firebase is configured.";
+  "Today's Research Selections: daily consensus and per-model lines from GoalLab. Live data when Firebase is configured.";
 
 export const metadata: Metadata = {
   title: `${FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_TITLE} — ${FOOTBALL_PREDICTIONS_PAGE_TITLE}`,
@@ -24,5 +25,9 @@ export const metadata: Metadata = {
 };
 
 export default function ResearchAlgorithmSelectionsPage() {
-  return <ResearchAlgorithmSelectionsView />;
+  return (
+    <GoalLabV2Shell>
+      <GoalLabV2Research />
+    </GoalLabV2Shell>
+  );
 }

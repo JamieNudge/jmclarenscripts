@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { AndAnotherThingFeed } from '@/components/best-picks/AndAnotherThingFeed';
-import { BestPicksSubpageShell } from '@/components/best-picks/BestPicksSubpageShell';
+import { GoalLabV2SubpageShell } from '@/components/goallab/v2/GoalLabV2SubpageShell';
 import {
   AND_ANOTHER_THING_TITLE,
   FOOTBALL_PREDICTIONS_PAGE_TITLE,
@@ -26,12 +26,12 @@ export const metadata: Metadata = {
 export default async function AndAnotherThingPage() {
   const initialPosts = await loadAndAnotherThingPostsForPublic();
   return (
-    <BestPicksSubpageShell
+    <GoalLabV2SubpageShell
       title={AND_ANOTHER_THING_TITLE}
       description="A short, informal line — a thought for the day, a link, or a picture. Nothing here is betting or financial advice."
-      hubFooter
+      wide
     >
       <AndAnotherThingFeed initialPosts={initialPosts} />
-    </BestPicksSubpageShell>
+    </GoalLabV2SubpageShell>
   );
 }

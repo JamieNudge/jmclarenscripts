@@ -1,28 +1,26 @@
 import type { Metadata } from 'next';
-import { BestPicksSubpageShell } from '@/components/best-picks/BestPicksSubpageShell';
+import { GoalLabV2SubpageShell } from '@/components/goallab/v2/GoalLabV2SubpageShell';
 import { HubFootballLink } from '@/components/hub/HubFootballLink';
+import { FOOTBALL_PREDICTIONS_PAGE_TITLE } from '@/lib/football-predictions-brand';
 
 const CONTACT_EMAIL = 'jmclarenscripts@gmail.com';
-const mailtoHref = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(
-  'Football Predictions & Data-Driven Picks — website',
-)}`;
+const mailtoHref = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('GoalLab — website')}`;
 
 export const metadata: Metadata = {
-  title: 'Contact — Football Predictions & Data-Driven Picks',
-  description:
-    'Contact the publisher of Football Predictions & Data-Driven Picks and this portfolio website.',
+  title: `Contact — ${FOOTBALL_PREDICTIONS_PAGE_TITLE}`,
+  description: 'Contact the publisher of GoalLab and this portfolio website.',
 };
 
 export default function BestPicksContactPage() {
   return (
-    <BestPicksSubpageShell
+    <GoalLabV2SubpageShell
       title="Contact"
-      description="Reach the publisher for questions about this website, privacy, or Football Predictions & Data-Driven Picks."
+      description="Reach the publisher for questions about this website, privacy, or GoalLab."
     >
       <section className="space-y-4">
         <p>
-          For privacy questions about this site (including this hub, cookies, and Google ads), use the
-          same contact channel referenced in the{' '}
+          For privacy questions about this site (including this hub, cookies, and any advertising tech when
+          enabled), use the same contact channel referenced in the{' '}
           <HubFootballLink
             href="/football-predictions/privacy"
             className="text-[var(--hub-accent-link)] underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)]"
@@ -45,6 +43,6 @@ export default function BestPicksContactPage() {
           and this publication unless you are directed otherwise.
         </p>
       </section>
-    </BestPicksSubpageShell>
+    </GoalLabV2SubpageShell>
   );
 }

@@ -2,7 +2,7 @@
 export const FOOTBALL_PREDICTIONS_HUB_PATH = '/football-predictions' as const;
 
 /** Primary product name: browser title, H1, and Open Graph. */
-export const FOOTBALL_PREDICTIONS_PAGE_TITLE = 'Football Predictions & Data-Driven Picks';
+export const FOOTBALL_PREDICTIONS_PAGE_TITLE = 'GoalLab';
 
 /** Full page for live consensus and per-model research algorithm feeds. */
 export const FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_PATH =
@@ -13,7 +13,7 @@ export const FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_TITLE = "Today's Research 
 
 /** Daily fixture list from unanimousExports (minimal browser v1). */
 export const FOOTBALL_PREDICTIONS_FIXTURES_PATH = '/football-predictions/fixtures' as const;
-export const FOOTBALL_PREDICTIONS_FIXTURES_TITLE = "Today's Fixtures" as const;
+export const FOOTBALL_PREDICTIONS_FIXTURES_TITLE = 'Forecasts' as const;
 
 export const AND_ANOTHER_THING_PATH = '/football-predictions/and-another-thing' as const;
 export const AND_ANOTHER_THING_TITLE = 'And Another Thing...' as const;
