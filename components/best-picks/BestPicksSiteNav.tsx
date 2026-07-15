@@ -1,5 +1,6 @@
 'use client';
 
+import { useId, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useGoalLabHubNav } from '@/components/hub/HubNavContext';
@@ -17,17 +18,40 @@ function linkActive(pathname: string, href: string, hostname: string): boolean {
 }
 
 /**
- * Header/footer site nav. Mobile: tidy 2-column grid, no mid-dots, Appearance on its own row.
+ * Header/footer site nav.
+ * Mobile: Appearance + Menu button; links open as a single clean list (no mid-dots / no uneven grid).
  * Desktop (md+): unchanged inline wrap with · separators.
  */
 export function BestPicksSiteNav({ variant }: { variant: 'header' | 'footer' }) {
   const pathname = usePathname() ?? '';
   const hostname = typeof window !== 'undefined' ? window.location.hostname : '';
   const isGoalLabHub = useGoalLabHubNav();
+  const menuId = useId();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   /** Header and footer use the same links so Contact + Privacy appear in the top bar everywhere (not only on /blog). */
   const items = [...bestPicksSiteNavPrimary, ...bestPicksSiteNavFooterExtra];
   const isHeader = variant === 'header';
+
+  const linkList = (
+    <ul className="m-0 list-none space-y-0 p-0">
+      {items.map(({ href, label }) => {
+        const active = linkActive(pathname, href, hostname);
+        return (
+          <li key={href} className="border-b border-[var(--hub-border-soft)] last:border-b-0">
+            <Link
+              href={hubPublicHref(href, isGoalLabHub)}
+              className={`${hubNavLink} flex w-full items-center px-1 py-3 text-left text-sm ${active ? hubNavLinkActive : ''}`}
+              aria-current={active ? 'page' : undefined}
+              onClick={() => setMenuOpen(false)}
+            >
+              {label}
+            </Link>
+          </li>
+        );
+      })}
+    </ul>
+  );
 
   return (
     <nav
@@ -36,29 +60,49 @@ export function BestPicksSiteNav({ variant }: { variant: 'header' | 'footer' }) 
       }
       className={isHeader ? 'pb-2' : 'pt-1'}
     >
+      {/* Mobile header chrome: Appearance + Menu */}
       {isHeader ? (
-        <div className="mb-3 flex justify-end md:hidden">
+        <div className="flex items-center justify-between gap-3 md:hidden">
+          <button
+            type="button"
+            className="inline-flex items-center gap-2 rounded-lg border border-[var(--hub-border-strong)] bg-[var(--hub-input)] px-3 py-2 text-sm font-medium text-[var(--hub-text)]"
+            aria-expanded={menuOpen}
+            aria-controls={menuId}
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            {menuOpen ? (
+              <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg className="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            )}
+            {menuOpen ? 'Close' : 'Menu'}
+          </button>
           <HubAppearanceToggle />
         </div>
       ) : null}
 
-      {/* Mobile: structured grid without · separators */}
-      <ul className="grid grid-cols-2 gap-x-3 gap-y-1 sm:grid-cols-3 md:hidden list-none m-0 p-0">
-        {items.map(({ href, label }) => {
-          const active = linkActive(pathname, href, hostname);
-          return (
-            <li key={href} className="min-w-0">
-              <Link
-                href={hubPublicHref(href, isGoalLabHub)}
-                className={`${hubNavLink} block w-full py-2 px-1 -mx-1 text-left ${active ? hubNavLinkActive : ''}`}
-                aria-current={active ? 'page' : undefined}
-              >
-                {label}
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
+      {/* Mobile: collapse menu in header; always show list in footer */}
+      {isHeader ? (
+        <div
+          id={menuId}
+          className={`md:hidden ${menuOpen ? 'mt-3 block' : 'hidden'}`}
+          hidden={!menuOpen}
+        >
+          <div className="rounded-xl border border-[var(--hub-border)] bg-[var(--hub-elevated)] px-3">
+            {linkList}
+          </div>
+        </div>
+      ) : (
+        <div className="md:hidden">
+          <div className="rounded-xl border border-[var(--hub-border)] bg-[var(--hub-elevated)] px-3">
+            {linkList}
+          </div>
+        </div>
+      )}
 
       {/* Desktop: existing wrap + mid-dot separators */}
       <div
