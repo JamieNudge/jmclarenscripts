@@ -319,66 +319,15 @@ export function BestPicksResearchAlgorithmPanel({
 
   return (
     <div className={`${bestPicksGridTileClassName} min-h-0 h-full justify-start`}>
-      <div className="shrink-0 mb-3 space-y-4">
-        <div>
-          {showPanelHeading ? (
-            <h2 className="text-lg md:text-xl font-semibold text-[var(--hub-text)]">{bestPicksResearchAlgorithmPanelTitle}</h2>
-          ) : null}
-          <p
-            className={`text-sm text-[var(--hub-text)] leading-relaxed ${showPanelHeading ? 'mt-2' : ''}`}
-          >
-            Selections are driven by multi-model consensus in an attempt to determine a highly reliable list every day.
-          </p>
-        </div>
-
-        {configured ? (
-          <div className="space-y-2 border-t border-[var(--hub-border-soft)] pt-3">
-            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--hub-text)]">Daily consensus</p>
-            {consensusError ? (
-              <p className="text-sm text-[var(--hub-danger)] leading-relaxed" role="alert">
-                {consensusError}
-              </p>
-            ) : null}
-            {!consensusError && consensusLoading ? (
-              <p className="text-sm text-[var(--hub-text)] leading-relaxed">Loading consensus…</p>
-            ) : null}
-            {!consensusError && !consensusLoading && sourcesCapLine ? (
-              <p className="text-sm text-[var(--hub-text)] tabular-nums leading-snug">{sourcesCapLine}</p>
-            ) : null}
-            {!consensusError && !consensusLoading && recordLine ? (
-              <p className="text-sm text-[var(--hub-text)] leading-snug">{recordLine}</p>
-            ) : null}
-            {!consensusError && !consensusLoading && !hasConsensusContent ? (
-              <p className="text-sm text-[var(--hub-text)] leading-relaxed">
-                No consensus picks for <span className="tabular-nums">{dateKey}</span> yet.
-              </p>
-            ) : null}
-          </div>
+      <div className="shrink-0 mb-3">
+        {showPanelHeading ? (
+          <h2 className="text-lg md:text-xl font-semibold text-[var(--hub-text)]">{bestPicksResearchAlgorithmPanelTitle}</h2>
         ) : null}
-
-        {configured ? (
-          <div className="space-y-2 border-t border-[var(--hub-border-soft)] pt-3">
-            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--hub-text)]">
-              Goal Band Cascade
-            </p>
-            {cascadeError ? (
-              <p className="text-sm text-[var(--hub-danger)] leading-relaxed" role="alert">
-                {cascadeError}
-              </p>
-            ) : null}
-            {!cascadeError && cascadeLoading ? (
-              <p className="text-sm text-[var(--hub-text)] leading-relaxed">Loading Goal Band Cascade…</p>
-            ) : null}
-            {!cascadeError && !cascadeLoading && cascadeRecordLine ? (
-              <p className="text-sm text-[var(--hub-text)] leading-snug">{cascadeRecordLine}</p>
-            ) : null}
-            {!cascadeError && !cascadeLoading && !hasCascadeContent ? (
-              <p className="text-sm text-[var(--hub-text)] leading-relaxed">
-                No Goal Band Cascade picks for <span className="tabular-nums">{dateKey}</span> yet.
-              </p>
-            ) : null}
-          </div>
-        ) : null}
+        <p
+          className={`text-sm text-[var(--hub-text)] leading-relaxed ${showPanelHeading ? 'mt-2' : ''}`}
+        >
+          Selections are driven by multi-model consensus in an attempt to determine a highly reliable list every day.
+        </p>
       </div>
 
       <div className={scrollArea}>
@@ -389,9 +338,29 @@ export function BestPicksResearchAlgorithmPanel({
         )}
 
         {configured && (
-          <div className="space-y-6">
-            {showConsensusTeaser ? (
-              <section className="space-y-2" aria-label="Daily consensus teaser">
+          <div className="space-y-8">
+            <section className="space-y-2" aria-label="Daily consensus">
+              <p className="text-xs font-semibold uppercase tracking-wide text-[var(--hub-text)]">Daily consensus</p>
+              {consensusError ? (
+                <p className="text-sm text-[var(--hub-danger)] leading-relaxed" role="alert">
+                  {consensusError}
+                </p>
+              ) : null}
+              {!consensusError && consensusLoading ? (
+                <p className="text-sm text-[var(--hub-text)] leading-relaxed">Loading consensus…</p>
+              ) : null}
+              {!consensusError && !consensusLoading && sourcesCapLine ? (
+                <p className="text-sm text-[var(--hub-text)] tabular-nums leading-snug">{sourcesCapLine}</p>
+              ) : null}
+              {!consensusError && !consensusLoading && recordLine ? (
+                <p className="text-sm text-[var(--hub-text)] leading-snug">{recordLine}</p>
+              ) : null}
+              {!consensusError && !consensusLoading && !hasConsensusContent ? (
+                <p className="text-sm text-[var(--hub-text)] leading-relaxed">
+                  No consensus picks for <span className="tabular-nums">{dateKey}</span> yet.
+                </p>
+              ) : null}
+              {showConsensusTeaser ? (
                 <TeaserListBlock
                   visiblePicks={visibleConsensusPicks}
                   blurredPicks={blurredConsensusPicks}
@@ -400,14 +369,33 @@ export function BestPicksResearchAlgorithmPanel({
                   label="consensus picks"
                   visibleCount={CONSENSUS_TEASER_VISIBLE_COUNT}
                 />
-              </section>
-            ) : null}
+              ) : null}
+            </section>
 
-            {showCascadeTeaser && hasCascadeContent ? (
-              <section className="space-y-2 border-t border-[var(--hub-border-soft)] pt-4" aria-label="Goal Band Cascade teaser">
-                <p className="text-xs font-semibold uppercase tracking-wide text-[var(--hub-text-muted)]">
-                  Goal Band Cascade
+            <section
+              className="space-y-2 border-t border-[var(--hub-border-soft)] pt-4"
+              aria-label="Goal Band Cascade"
+            >
+              <p className="text-xs font-semibold uppercase tracking-wide text-[var(--hub-text)]">
+                Goal Band Cascade
+              </p>
+              {cascadeError ? (
+                <p className="text-sm text-[var(--hub-danger)] leading-relaxed" role="alert">
+                  {cascadeError}
                 </p>
+              ) : null}
+              {!cascadeError && cascadeLoading ? (
+                <p className="text-sm text-[var(--hub-text)] leading-relaxed">Loading Goal Band Cascade…</p>
+              ) : null}
+              {!cascadeError && !cascadeLoading && cascadeRecordLine ? (
+                <p className="text-sm text-[var(--hub-text)] leading-snug">{cascadeRecordLine}</p>
+              ) : null}
+              {!cascadeError && !cascadeLoading && !hasCascadeContent ? (
+                <p className="text-sm text-[var(--hub-text)] leading-relaxed">
+                  No Goal Band Cascade picks for <span className="tabular-nums">{dateKey}</span> yet.
+                </p>
+              ) : null}
+              {showCascadeTeaser && hasCascadeContent ? (
                 <TeaserListBlock
                   visiblePicks={visibleCascadePicks}
                   blurredPicks={blurredCascadePicks}
@@ -416,8 +404,8 @@ export function BestPicksResearchAlgorithmPanel({
                   label="cascade picks"
                   visibleCount={CASCADE_TEASER_VISIBLE_COUNT}
                 />
-              </section>
-            ) : null}
+              ) : null}
+            </section>
           </div>
         )}
       </div>
