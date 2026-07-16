@@ -1,12 +1,10 @@
 import type { ReactNode } from 'react';
-import { AdSenseAutoPlaceholder } from '@/components/AdSenseAutoPlaceholder';
 import { HubFootballLink } from '@/components/hub/HubFootballLink';
 import { BestPicksHubFooter } from '@/components/best-picks/BestPicksHubFooter';
 import { BestPicksVerticalAdAside } from '@/components/best-picks/BestPicksVerticalAdAside';
 import { BEST_PICKS_EXTENDED_SITE_NAV } from '@/components/best-picks/best-picks-site-nav-config';
 import { BestPicksSiteNav } from '@/components/best-picks/BestPicksSiteNav';
 import {
-  hubAdPlaceholder,
   hubBorderT,
   hubContentWidthClass,
   hubPageShellClass,
@@ -68,12 +66,6 @@ export function BestPicksSubpageShell({
             ) : footer ? (
               <>
                 <div className={`${bodyProse} min-h-0 flex-1`}>{children}</div>
-                <div className="mt-8 w-full shrink-0">
-                  <AdSenseAutoPlaceholder
-                    orientation="horizontal"
-                    className={`w-full min-h-[90px] ${hubAdPlaceholder}`}
-                  />
-                </div>
                 <footer
                   className={`mt-10 shrink-0 ${hubBorderT} pt-6 text-xs ${hubTextSoft} leading-relaxed pb-[max(0.5rem,env(safe-area-inset-bottom))]`}
                   role="contentinfo"
@@ -84,16 +76,6 @@ export function BestPicksSubpageShell({
             ) : (
               <>
                 <div className={`${bodyProse} min-h-0 flex-1`}>{children}</div>
-                <footer
-                  className={`mt-10 w-full shrink-0 ${hubBorderT} pt-6 pb-[max(0.5rem,env(safe-area-inset-bottom))]`}
-                  role="contentinfo"
-                  aria-label="Advertising"
-                >
-                  <AdSenseAutoPlaceholder
-                    orientation="horizontal"
-                    className={`w-full min-h-[90px] ${hubAdPlaceholder}`}
-                  />
-                </footer>
               </>
             )}
           </div>

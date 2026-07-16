@@ -1,8 +1,7 @@
-import { AdSenseAutoPlaceholder } from '@/components/AdSenseAutoPlaceholder';
 import { HubFootballLink } from '@/components/hub/HubFootballLink';
 import { BEST_PICKS_EXTENDED_SITE_NAV } from '@/components/best-picks/best-picks-site-nav-config';
 import { BestPicksSiteNav } from '@/components/best-picks/BestPicksSiteNav';
-import { hubAdPlaceholder, hubTextFaint, hubTextSoft } from '@/lib/hub/ui';
+import { hubTextFaint, hubTextSoft } from '@/lib/hub/ui';
 
 /**
  * Shared full-width, left-aligned footer (nav + ad placeholder + disclaimer) for football-predictions pages.
@@ -16,10 +15,6 @@ export function BestPicksHubFooter() {
             <BestPicksSiteNav variant="footer" />
           </div>
         ) : null}
-        <AdSenseAutoPlaceholder
-          orientation="horizontal"
-          className={`w-full min-h-[90px] !justify-start !text-left ${hubAdPlaceholder} px-4 py-3`}
-        />
         <div className="flex w-full min-w-0 flex-col items-stretch gap-3 md:flex-row md:flex-wrap md:items-start md:justify-between md:gap-x-6 md:gap-y-2">
           <p
             className={`w-full min-w-0 break-words text-left text-[11px] leading-relaxed ${hubTextSoft} md:max-w-[min(100%,42rem)] md:flex-1 md:text-xs`}
