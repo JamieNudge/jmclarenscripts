@@ -15,22 +15,17 @@ NEXT_PUBLIC_STATSTRIKE_WEB_ENABLED=1
 
 ### Coming Soon blur (admin — live, no redeploy)
 
-Stored in RTDB at `statstrikeWebConfig` → `{ blur: boolean, updatedAt }`.
-
-- Toggle on **`/admin/picks`** → section **StatStrike Web — Coming Soon blur** (same Bearer key as picks).
-- Public site reads via **`GET /api/statstrike/web-config`** (Admin SDK) so blur flips even if RTDB client rules deny the new path. Optional live RTDB listen when rules allow.
-- Missing node defaults to **blur ON** (safe teaser).
-- **Blur OFF** while building / reviewing the interactive board.
-- **Blur ON** when you want the App Store teaser again before Stripe.
-
-Suggested Firebase rules (optional, for direct client listen):
+Stored in RTDB at `statstrikeWebConfig`:
 
 ```json
-"statstrikeWebConfig": {
-  ".read": true,
-  ".write": false
-}
+{ "blur": true, "forecastsBlur": true, "updatedAt": "…" }
 ```
+
+- Toggle on **`/admin/picks`** → **GoalLab blurs (StatStrike + Forecasts)** (same Bearer key as picks).
+  - **StatStrike Web blur** — hero + `/statstrike`
+  - **Forecasts blur** — `/fixtures` overflow (six clear cards vs full list)
+- Public site reads via **`GET /api/statstrike/web-config`** (Admin SDK).
+- Missing fields default to **ON**.
 
 ## Routes
 

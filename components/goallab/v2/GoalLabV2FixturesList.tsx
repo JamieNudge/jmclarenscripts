@@ -8,6 +8,7 @@ import { ComingSoonBlur } from '@/components/hub/ComingSoonBlur';
 import { HubFootballLink } from '@/components/hub/HubFootballLink';
 import { StatStrikeAppStoreCta } from '@/components/statstrike/StatStrikeAppStoreCta';
 import { useBestPicksLondonDateKey } from '@/hooks/useBestPicksLondonDateKey';
+import { useStatStrikeWebBlur } from '@/hooks/useStatStrikeWebBlur';
 import { apps } from '@/lib/apps-data';
 import {
   groupFixturesByLeague,
@@ -22,6 +23,7 @@ const statStrikeAppStoreUrl = apps.find((a) => a.id === 'stat-strike')?.appStore
 
 export function GoalLabV2FixturesList() {
   const dateKey = useBestPicksLondonDateKey();
+  const { forecastsBlur } = useStatStrikeWebBlur();
   const [exportVal, setExportVal] = useState<unknown>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -65,9 +67,13 @@ export function GoalLabV2FixturesList() {
     () => sortFixturesByKickoff(parseFixturesFromUnanimousExport(exportVal)),
     [exportVal],
   );
-  const previewFixtures = fixtures.slice(0, PREVIEW_LIMIT);
-  const lockedFixtures = fixtures.slice(PREVIEW_LIMIT);
+  const previewFixtures = forecastsBlur ? fixtures.slice(0, PREVIEW_LIMIT) : fixtures;
+  const lockedFixtures = forecastsBlur ? fixtures.slice(PREVIEW_LIMIT) : [];
   const lockedGroups = useMemo(() => groupFixturesByLeague(lockedFixtures), [lockedFixtures]);
+  const fullGroups = useMemo(
+    () => (forecastsBlur ? [] : groupFixturesByLeague(fixtures)),
+    [forecastsBlur, fixtures],
+  );
   const totalCount = fixtures.length;
 
   return (
@@ -84,8 +90,10 @@ export function GoalLabV2FixturesList() {
       <header className="space-y-2 max-w-2xl">
         <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-[var(--gl-text)]">Forecasts</h1>
         <p className="text-base text-[var(--gl-text-soft)] leading-relaxed">
-          Day <span className="tabular-nums text-[var(--gl-accent)]">{dateKey}</span> — six daily picks on
-          the web. Full list is in the StatStrike app.
+          Day <span className="tabular-nums text-[var(--gl-accent)]">{dateKey}</span>
+          {forecastsBlur
+            ? ' — six daily picks on the web. Full list is in the StatStrike app.'
+            : ' — full daily list on the web.'}
         </p>
       </header>
 
@@ -106,36 +114,59 @@ export function GoalLabV2FixturesList() {
 
       {configured && !loading && !error && totalCount > 0 ? (
         <div className="space-y-8">
-          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 list-none m-0 p-0">
-            {previewFixtures.map((fixture) => (
-              <li key={String(fixture.fixtureId)}>
-                <GoalLabV2FixtureCard fixture={fixture} dateKey={dateKey} />
-              </li>
-            ))}
-          </ul>
-          {statStrikeAppStoreUrl ? (
-            <p className="text-sm text-[var(--gl-text-soft)]">
-              More in the app —{' '}
-              <StatStrikeAppStoreCta href={statStrikeAppStoreUrl} variant="inline" />
-            </p>
-          ) : null}
-          {lockedGroups.length > 0 ? (
-            <ComingSoonBlur
-              badge={null}
-              ctaHref={statStrikeAppStoreUrl}
-              ctaLabel="Get StatStrike on the App Store"
-              ctaStatStrike
-              ctaPlacement="center"
-              minHeightClassName="min-h-[20rem]"
-              centerBadge
-            >
+          {forecastsBlur ? (
+            <>
+              <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 list-none m-0 p-0">
+                {previewFixtures.map((fixture) => (
+                  <li key={String(fixture.fixtureId)}>
+                    <GoalLabV2FixtureCard fixture={fixture} dateKey={dateKey} />
+                  </li>
+                ))}
+              </ul>
+              {statStrikeAppStoreUrl ? (
+                <p className="text-sm text-[var(--gl-text-soft)]">
+                  More in the app —{' '}
+                  <StatStrikeAppStoreCta href={statStrikeAppStoreUrl} variant="inline" />
+                </p>
+              ) : null}
+              {lockedGroups.length > 0 ? (
+                <ComingSoonBlur
+                  badge={null}
+                  ctaHref={statStrikeAppStoreUrl}
+                  ctaLabel="Get StatStrike on the App Store"
+                  ctaStatStrike
+                  ctaPlacement="center"
+                  minHeightClassName="min-h-[20rem]"
+                  centerBadge
+                >
+                  <div className="space-y-10">
+                    {lockedGroups.map((group) => (
+                      <section key={group.leagueKey} className="space-y-4">
+                        <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--gl-text-muted)]">
+                          {group.leagueKey}
+                        </h2>
+                        <ul className="grid gap-4 sm:grid-cols-2 list-none m-0 p-0">
+                          {group.fixtures.map((fixture) => (
+                            <li key={String(fixture.fixtureId)}>
+                              <GoalLabV2FixtureCard fixture={fixture} dateKey={dateKey} />
+                            </li>
+                          ))}
+                        </ul>
+                      </section>
+                    ))}
+                  </div>
+                </ComingSoonBlur>
+              ) : null}
+            </>
+          ) : (
+            <>
               <div className="space-y-10">
-                {lockedGroups.map((group) => (
+                {fullGroups.map((group) => (
                   <section key={group.leagueKey} className="space-y-4">
                     <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--gl-text-muted)]">
                       {group.leagueKey}
                     </h2>
-                    <ul className="grid gap-4 sm:grid-cols-2 list-none m-0 p-0">
+                    <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 list-none m-0 p-0">
                       {group.fixtures.map((fixture) => (
                         <li key={String(fixture.fixtureId)}>
                           <GoalLabV2FixtureCard fixture={fixture} dateKey={dateKey} />
@@ -145,8 +176,14 @@ export function GoalLabV2FixturesList() {
                   </section>
                 ))}
               </div>
-            </ComingSoonBlur>
-          ) : null}
+              {statStrikeAppStoreUrl ? (
+                <p className="text-sm text-[var(--gl-text-soft)]">
+                  Also in the app —{' '}
+                  <StatStrikeAppStoreCta href={statStrikeAppStoreUrl} variant="inline" />
+                </p>
+              ) : null}
+            </>
+          )}
         </div>
       ) : null}
     </div>

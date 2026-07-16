@@ -17,16 +17,19 @@ async function fetchConfigViaApi(): Promise<StatStrikeWebConfig> {
 }
 
 /**
- * Live Coming Soon blur flag.
- * Prefers RTDB when rules allow public read; always falls back to Admin-backed API
- * (RTDB rules often deny unread paths → permission error → would stick on blur ON).
+ * Live blur flags for StatStrike web + GoalLab Forecasts.
+ * Prefers RTDB when rules allow; always polls Admin-backed API as the reliable path.
  */
-export function useStatStrikeWebBlur(): { blur: boolean; loading: boolean } {
-  const [blur, setBlur] = useState(DEFAULT_STATSTRIKE_WEB_CONFIG.blur);
+export function useStatStrikeWebBlur(): {
+  blur: boolean;
+  forecastsBlur: boolean;
+  loading: boolean;
+} {
+  const [config, setConfig] = useState<StatStrikeWebConfig>(DEFAULT_STATSTRIKE_WEB_CONFIG);
   const [loading, setLoading] = useState(true);
 
-  const apply = useCallback((config: StatStrikeWebConfig) => {
-    setBlur(config.blur);
+  const apply = useCallback((next: StatStrikeWebConfig) => {
+    setConfig(next);
     setLoading(false);
   }, []);
 
@@ -37,18 +40,14 @@ export function useStatStrikeWebBlur(): { blur: boolean; loading: boolean } {
 
     const loadApi = async () => {
       try {
-        const config = await fetchConfigViaApi();
-        if (!cancelled) apply(config);
+        const next = await fetchConfigViaApi();
+        if (!cancelled) apply(next);
       } catch {
-        if (!cancelled) {
-          apply(DEFAULT_STATSTRIKE_WEB_CONFIG);
-        }
+        if (!cancelled) apply(DEFAULT_STATSTRIKE_WEB_CONFIG);
       }
     };
 
     void loadApi();
-
-    // Poll so admin toggles show up without a full page reload even if RTDB read is denied.
     pollTimer = setInterval(() => {
       void loadApi();
     }, 4_000);
@@ -63,7 +62,7 @@ export function useStatStrikeWebBlur(): { blur: boolean; loading: boolean } {
             apply(parseStatStrikeWebConfig(snap.val()));
           },
           () => {
-            // Permission denied / missing rules — keep relying on API poll.
+            // Permission denied — keep API poll.
           },
         );
       }
@@ -82,5 +81,5 @@ export function useStatStrikeWebBlur(): { blur: boolean; loading: boolean } {
     };
   }, [apply]);
 
-  return { blur, loading };
+  return { blur: config.blur, forecastsBlur: config.forecastsBlur, loading };
 }

@@ -1,12 +1,13 @@
 /**
- * StatStrike Web runtime config in RTDB (public read, admin write).
- * Same pattern as hubVideo — flip Coming Soon blur without redeploy.
+ * GoalLab / StatStrike runtime config in RTDB (public read via Admin API, admin write).
+ * Same pattern as hubVideo — flip Coming Soon blurs without redeploy.
  *
- * Suggested Firebase rules:
+ * Path: `statstrikeWebConfig`
  * ```json
- * "statstrikeWebConfig": {
- *   ".read": true,
- *   ".write": false
+ * {
+ *   "blur": true,
+ *   "forecastsBlur": true,
+ *   "updatedAt": "…"
  * }
  * ```
  */
@@ -22,51 +23,72 @@ export function statStrikeWebConfigRtdbPath(): string {
 }
 
 export type StatStrikeWebConfig = {
-  /** When true, Coming Soon blur + App Store CTA on hero + /statstrike. */
+  /** When true, Coming Soon blur on StatStrike hero + /statstrike. */
   blur: boolean;
+  /** When true, blur overflow fixtures on GoalLab /fixtures (Forecasts). */
+  forecastsBlur: boolean;
   updatedAt: string | null;
 };
 
-/** Missing RTDB node → blur on (safe teaser default for production). */
+/** Missing RTDB node → both blurs ON (safe teaser defaults). */
 export const DEFAULT_STATSTRIKE_WEB_CONFIG: StatStrikeWebConfig = {
   blur: true,
+  forecastsBlur: true,
   updatedAt: null,
 };
+
+function parseBool(value: unknown, fallback: boolean): boolean {
+  if (typeof value === 'boolean') return value;
+  if (typeof value === 'string') {
+    const s = value.trim().toLowerCase();
+    if (s === 'false' || s === '0') return false;
+    if (s === 'true' || s === '1') return true;
+  }
+  if (typeof value === 'number') return value !== 0;
+  return fallback;
+}
 
 export function parseStatStrikeWebConfig(raw: unknown): StatStrikeWebConfig {
   if (raw == null || typeof raw !== 'object' || Array.isArray(raw)) {
     return { ...DEFAULT_STATSTRIKE_WEB_CONFIG };
   }
   const o = raw as Record<string, unknown>;
-  let blur = true;
-  if (typeof o.blur === 'boolean') {
-    blur = o.blur;
-  } else if (typeof o.blur === 'string') {
-    const s = o.blur.trim().toLowerCase();
-    if (s === 'false' || s === '0') blur = false;
-    else if (s === 'true' || s === '1') blur = true;
-  } else if (typeof o.blur === 'number') {
-    blur = o.blur !== 0;
-  }
   const updatedAt =
     typeof o.updatedAt === 'string' && o.updatedAt.trim() ? o.updatedAt.trim() : null;
-  return { blur, updatedAt };
+  return {
+    blur: parseBool(o.blur, DEFAULT_STATSTRIKE_WEB_CONFIG.blur),
+    forecastsBlur: parseBool(o.forecastsBlur, DEFAULT_STATSTRIKE_WEB_CONFIG.forecastsBlur),
+    updatedAt,
+  };
 }
 
-export function normalizeStatStrikeWebConfigInput(
+/**
+ * Partial update: send `blur` and/or `forecastsBlur`.
+ * Caller merges onto existing RTDB record before write.
+ */
+export function normalizeStatStrikeWebConfigPatch(
   body: Record<string, unknown>,
-): { ok: true; record: StatStrikeWebConfig } | { ok: false; error: string } {
-  if (!Object.prototype.hasOwnProperty.call(body, 'blur')) {
-    return { ok: false, error: 'blur is required (boolean).' };
+):
+  | { ok: true; patch: Partial<Pick<StatStrikeWebConfig, 'blur' | 'forecastsBlur'>> }
+  | { ok: false; error: string } {
+  const patch: Partial<Pick<StatStrikeWebConfig, 'blur' | 'forecastsBlur'>> = {};
+
+  if (Object.prototype.hasOwnProperty.call(body, 'blur')) {
+    if (typeof body.blur !== 'boolean') {
+      return { ok: false, error: 'blur must be a boolean.' };
+    }
+    patch.blur = body.blur;
   }
-  if (typeof body.blur !== 'boolean') {
-    return { ok: false, error: 'blur must be a boolean.' };
+  if (Object.prototype.hasOwnProperty.call(body, 'forecastsBlur')) {
+    if (typeof body.forecastsBlur !== 'boolean') {
+      return { ok: false, error: 'forecastsBlur must be a boolean.' };
+    }
+    patch.forecastsBlur = body.forecastsBlur;
   }
-  return {
-    ok: true,
-    record: {
-      blur: body.blur,
-      updatedAt: new Date().toISOString(),
-    },
-  };
+
+  if (patch.blur === undefined && patch.forecastsBlur === undefined) {
+    return { ok: false, error: 'Provide blur and/or forecastsBlur (boolean).' };
+  }
+
+  return { ok: true, patch };
 }

@@ -3,7 +3,7 @@ import { getDatabase } from 'firebase-admin/database';
 import { isManualPicksAdminAuthorized } from '@/lib/admin-manual-picks-auth';
 import { getFirebaseAdminApp } from '@/lib/firebase-admin';
 import {
-  normalizeStatStrikeWebConfigInput,
+  normalizeStatStrikeWebConfigPatch,
   parseStatStrikeWebConfig,
   statStrikeWebConfigRtdbPath,
 } from '@/lib/statstrike/web-config';
@@ -53,15 +53,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
   }
 
-  const normalized = normalizeStatStrikeWebConfigInput(body);
+  const normalized = normalizeStatStrikeWebConfigPatch(body);
   if (!normalized.ok) {
     return NextResponse.json({ error: normalized.error }, { status: 400 });
   }
 
   try {
     const path = statStrikeWebConfigRtdbPath();
-    await configRef().set(normalized.record);
-    return NextResponse.json({ ok: true, config: normalized.record, path });
+    const snap = await configRef().once('value');
+    const existing = parseStatStrikeWebConfig(snap.val());
+    const record = {
+      ...existing,
+      ...normalized.patch,
+      updatedAt: new Date().toISOString(),
+    };
+    await configRef().set(record);
+    return NextResponse.json({ ok: true, config: record, path });
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Server error';
     return NextResponse.json({ error: msg }, { status: 500 });
