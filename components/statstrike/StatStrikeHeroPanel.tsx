@@ -16,7 +16,7 @@ export function StatStrikeHeroPanel() {
 
   return (
     <aside
-      className="flex max-h-[min(18.5rem,52vh)] flex-col overflow-hidden rounded-2xl border border-black/10 bg-[#f7f9fb] shadow-[0_12px_40px_-20px_rgba(11,61,92,0.45)]"
+      className="flex h-[min(18.5rem,52vh)] flex-col overflow-hidden rounded-2xl border border-black/10 bg-[#f7f9fb] shadow-[0_12px_40px_-20px_rgba(11,61,92,0.45)]"
       aria-label="StatStrike web version coming soon"
     >
       <header className="flex shrink-0 items-center gap-2.5 border-b border-black/8 bg-white/90 px-3 py-2">
@@ -41,12 +41,12 @@ export function StatStrikeHeroPanel() {
         </div>
       </header>
 
-      <div className="relative min-h-0 flex-1 overflow-hidden">
+      <div className="min-h-0 flex-1 overflow-hidden">
         <ComingSoonBlur
           badge="Coming Soon!"
           ctaHref={statStrikeAppStoreUrl}
           ctaLabel="Get StatStrike on the App Store"
-          minHeightClassName="absolute inset-0"
+          minHeightClassName="h-full"
           centerBadge
         >
           <StatStrikeBoard

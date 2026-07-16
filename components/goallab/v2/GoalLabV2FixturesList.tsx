@@ -4,10 +4,15 @@ import { useEffect, useMemo, useState } from 'react';
 import { onValue, ref } from 'firebase/database';
 import { GoalLabV2FixtureCard } from '@/components/goallab/v2/GoalLabV2FixtureCard';
 import { GOAL_LAB_V2_HOME_PATH } from '@/components/goallab/v2/paths';
+import { ComingSoonBlur } from '@/components/hub/ComingSoonBlur';
 import { HubFootballLink } from '@/components/hub/HubFootballLink';
 import { useBestPicksLondonDateKey } from '@/hooks/useBestPicksLondonDateKey';
 import { apps } from '@/lib/apps-data';
-import { parseFixturesFromUnanimousExport, sortFixturesByKickoff } from '@/lib/fixtures-browser';
+import {
+  groupFixturesByLeague,
+  parseFixturesFromUnanimousExport,
+  sortFixturesByKickoff,
+} from '@/lib/fixtures-browser';
 import { statStrikeRtdbPathsFromEnv } from '@/lib/best-picks-firebase';
 import { getFirebaseRealtimeDb, isFirebaseClientConfigured } from '@/lib/firebase-client';
 
@@ -56,9 +61,12 @@ export function GoalLabV2FixturesList() {
   }, [configured, unanimousPath]);
 
   const fixtures = useMemo(
-    () => sortFixturesByKickoff(parseFixturesFromUnanimousExport(exportVal)).slice(0, PREVIEW_LIMIT),
+    () => sortFixturesByKickoff(parseFixturesFromUnanimousExport(exportVal)),
     [exportVal],
   );
+  const previewFixtures = fixtures.slice(0, PREVIEW_LIMIT);
+  const lockedFixtures = fixtures.slice(PREVIEW_LIMIT);
+  const lockedGroups = useMemo(() => groupFixturesByLeague(lockedFixtures), [lockedFixtures]);
   const totalCount = fixtures.length;
 
   return (
@@ -96,9 +104,9 @@ export function GoalLabV2FixturesList() {
       ) : null}
 
       {configured && !loading && !error && totalCount > 0 ? (
-        <div className="space-y-5">
+        <div className="space-y-8">
           <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 list-none m-0 p-0">
-            {fixtures.map((fixture) => (
+            {previewFixtures.map((fixture) => (
               <li key={String(fixture.fixtureId)}>
                 <GoalLabV2FixtureCard fixture={fixture} dateKey={dateKey} />
               </li>
@@ -116,6 +124,32 @@ export function GoalLabV2FixturesList() {
                 Get StatStrike on the App Store
               </a>
             </p>
+          ) : null}
+          {lockedGroups.length > 0 ? (
+            <ComingSoonBlur
+              badge="Coming Soon!"
+              ctaHref={statStrikeAppStoreUrl}
+              ctaLabel="Get StatStrike on the App Store"
+              minHeightClassName="min-h-[20rem]"
+              centerBadge
+            >
+              <div className="space-y-10">
+                {lockedGroups.map((group) => (
+                  <section key={group.leagueKey} className="space-y-4">
+                    <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--gl-text-muted)]">
+                      {group.leagueKey}
+                    </h2>
+                    <ul className="grid gap-4 sm:grid-cols-2 list-none m-0 p-0">
+                      {group.fixtures.map((fixture) => (
+                        <li key={String(fixture.fixtureId)}>
+                          <GoalLabV2FixtureCard fixture={fixture} dateKey={dateKey} />
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                ))}
+              </div>
+            </ComingSoonBlur>
           ) : null}
         </div>
       ) : null}
