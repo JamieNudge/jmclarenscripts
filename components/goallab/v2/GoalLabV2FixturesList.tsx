@@ -12,7 +12,7 @@ import { groupFixturesByLeague, parseFixturesFromUnanimousExport, sortFixturesBy
 import { statStrikeRtdbPathsFromEnv } from '@/lib/best-picks-firebase';
 import { getFirebaseRealtimeDb, isFirebaseClientConfigured } from '@/lib/firebase-client';
 
-const goalLabAppStoreUrl = apps.find((a) => a.id === 'goallab')?.appStoreUrl;
+const statStrikeAppStoreUrl = apps.find((a) => a.id === 'stat-strike')?.appStoreUrl;
 
 export function GoalLabV2FixturesList() {
   const dateKey = useBestPicksLondonDateKey();
@@ -104,9 +104,10 @@ export function GoalLabV2FixturesList() {
       {configured && !loading && !error && groups.length > 0 ? (
         <ComingSoonBlur
           badge="Coming Soon!"
-          ctaHref={goalLabAppStoreUrl}
-          ctaLabel="Get GoalLab on the App Store"
+          ctaHref={statStrikeAppStoreUrl}
+          ctaLabel="Get StatStrike on the App Store"
           minHeightClassName="min-h-[20rem]"
+          centerBadge
         >
           <div className="space-y-10">
             {groups.map((group) => (

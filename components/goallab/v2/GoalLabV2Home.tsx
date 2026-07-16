@@ -25,7 +25,7 @@ import {
 import { isStatStrikeWebEnabled } from '@/lib/statstrike/enabled';
 
 const PREVIEW_LIMIT = 3;
-const goalLabAppStoreUrl = apps.find((a) => a.id === 'goallab')?.appStoreUrl;
+const statStrikeAppStoreUrl = apps.find((a) => a.id === 'stat-strike')?.appStoreUrl;
 
 export function GoalLabV2Home() {
   const dateKey = useBestPicksLondonDateKey();
@@ -161,16 +161,16 @@ export function GoalLabV2Home() {
                 </li>
               ))}
             </ul>
-            {goalLabAppStoreUrl ? (
+            {statStrikeAppStoreUrl ? (
               <p className="text-sm text-[var(--gl-text-soft)]">
-                More on mobile —{' '}
+                More in the app —{' '}
                 <a
-                  href={goalLabAppStoreUrl}
+                  href={statStrikeAppStoreUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="font-semibold text-[var(--gl-accent)] underline-offset-2 hover:underline"
                 >
-                  Get GoalLab on the App Store
+                  Get StatStrike on the App Store
                 </a>
               </p>
             ) : null}

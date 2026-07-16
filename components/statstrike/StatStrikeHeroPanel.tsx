@@ -41,12 +41,12 @@ export function StatStrikeHeroPanel() {
         </div>
       </header>
 
-      <div className="min-h-0 flex-1 overflow-hidden">
+      <div className="relative min-h-0 flex-1 overflow-hidden">
         <ComingSoonBlur
           badge="Coming Soon!"
           ctaHref={statStrikeAppStoreUrl}
           ctaLabel="Get StatStrike on the App Store"
-          minHeightClassName="min-h-full h-full"
+          minHeightClassName="absolute inset-0"
           centerBadge
         >
           <StatStrikeBoard
