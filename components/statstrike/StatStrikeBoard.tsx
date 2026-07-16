@@ -47,7 +47,7 @@ export function StatStrikeBoard({
 
   if (!configured) {
     return (
-      <div className="px-3 py-4 text-sm text-black/55">
+      <div className="px-3 py-4 text-sm text-black/75">
         Firebase is not configured in this environment.
       </div>
     );
@@ -82,7 +82,7 @@ export function StatStrikeBoard({
 
   if (visibleCount === 0) {
     return (
-      <div className="px-3 py-4 text-sm text-black/55">
+      <div className="px-3 py-4 text-sm text-black/75">
         {emptyHint ?? `No fixtures for London date ${todayKey} yet.`}
         {onReload && !compact ? (
           <button
@@ -101,7 +101,7 @@ export function StatStrikeBoard({
     <div className="flex flex-col min-h-0">
       {!compact ? (
         <div className="flex items-center justify-between gap-2 px-1 pb-2">
-          <p className="text-xs tabular-nums text-black/45">
+          <p className="text-xs tabular-nums text-black/80">
             London · {todayKey} · {visibleCount} fixture{visibleCount === 1 ? '' : 's'}
             {rows.length !== visibleCount ? ` (of ${rows.length})` : ''}
           </p>
@@ -122,13 +122,13 @@ export function StatStrikeBoard({
         <div className="space-y-6">
           {dayGroups!.map((day) => (
             <section key={day.dayKey} className="space-y-3">
-              <h2 className="text-xs font-bold uppercase tracking-wide text-black/45">{day.dayLabel}</h2>
+              <h2 className="text-xs font-bold uppercase tracking-wide text-black/80">{day.dayLabel}</h2>
               {day.timeGroups.map((tg) => (
                 <div key={`${day.dayKey}-${tg.timeLabel}`} className="space-y-2">
                   <p className="text-sm font-semibold tabular-nums text-[#0b3d5c]">{tg.timeLabel}</p>
                   {tg.leagues.map((lg) => (
                     <div key={`${day.dayKey}-${tg.timeLabel}-${lg.leagueKey}`} className="space-y-2">
-                      <p className="text-[10px] font-semibold uppercase tracking-wide text-black/40">
+                      <p className="text-[10px] font-semibold uppercase tracking-wide text-black/80">
                         {lg.leagueKey}
                       </p>
                       <ul className="space-y-2">
@@ -161,7 +161,7 @@ export function StatStrikeBoard({
       )}
 
       {compact && maxRows != null && rows.length > maxRows ? (
-        <p className="px-3 py-2 text-[11px] text-black/45">
+        <p className="px-3 py-2 text-[11px] text-black/80">
           +{rows.length - maxRows} more in full StatStrike
         </p>
       ) : null}

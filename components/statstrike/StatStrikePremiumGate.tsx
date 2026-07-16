@@ -47,7 +47,7 @@ export function StatStrikePremiumGate({
             {title}
           </h2>
         </div>
-        <p className="mt-3 text-sm leading-relaxed text-black/65">{body}</p>
+        <p className="mt-3 text-sm leading-relaxed text-black/80">{body}</p>
         <div className="mt-4 flex flex-col gap-2">
           {appStoreUrl ? <StatStrikeAppStoreCta href={appStoreUrl} size="md" /> : null}
           <button

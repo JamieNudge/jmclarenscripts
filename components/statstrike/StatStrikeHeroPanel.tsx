@@ -48,7 +48,7 @@ export function StatStrikeHeroPanel() {
           <p className="text-sm font-bold tracking-tight text-[#0b3d5c]">
             StatStrike (Web Version)
           </p>
-          <p className="text-[10px] font-medium text-black/45">
+          <p className="text-[10px] font-medium text-black/80">
             {blur ? 'Browser preview' : 'Live board'}
             {!board.loading ? (
               <span className="tabular-nums"> · {board.todayKey}</span>

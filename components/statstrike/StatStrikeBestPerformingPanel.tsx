@@ -55,7 +55,7 @@ export function StatStrikeBestPerformingPanel({ rows, onOpenFixturesBest }: Prop
     <div className="space-y-4 rounded-2xl border border-black/10 bg-white/90 p-4 shadow-sm">
       <div>
         <h2 className="text-lg font-bold text-[#0b3d5c]">Best Performing</h2>
-        <p className="mt-1 text-sm text-black/55">
+        <p className="mt-1 text-sm text-black/75">
           Leagues with archive win rate ≥ 70% on today’s board (same threshold as iOS).
         </p>
       </div>
@@ -63,19 +63,19 @@ export function StatStrikeBestPerformingPanel({ rows, onOpenFixturesBest }: Prop
       <div className="grid grid-cols-3 gap-2 text-center">
         <div className="rounded-xl bg-[#0b3d5c]/5 px-2 py-3">
           <p className="text-xl font-bold tabular-nums text-[#0b3d5c]">{digest.bpCount}</p>
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-black/45">On board</p>
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-black/80">On board</p>
         </div>
         <div className="rounded-xl bg-[#0b3d5c]/5 px-2 py-3">
           <p className="text-xl font-bold tabular-nums text-[#0b3d5c]">
             {digest.rate != null ? `${digest.rate}%` : '—'}
           </p>
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-black/45">Hit rate</p>
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-black/80">Hit rate</p>
         </div>
         <div className="rounded-xl bg-[#0b3d5c]/5 px-2 py-3">
           <p className="text-xl font-bold tabular-nums text-[#0b3d5c]">
             {digest.wins}/{digest.settled || '—'}
           </p>
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-black/45">Settled</p>
+          <p className="text-[10px] font-semibold uppercase tracking-wide text-black/80">Settled</p>
         </div>
       </div>
 
@@ -87,14 +87,14 @@ export function StatStrikeBestPerformingPanel({ rows, onOpenFixturesBest }: Prop
               className="flex items-center justify-between gap-2 rounded-lg border border-black/8 px-3 py-2 text-sm"
             >
               <span className="min-w-0 truncate font-medium text-black/80">{l.name}</span>
-              <span className="shrink-0 tabular-nums text-black/55">
+              <span className="shrink-0 tabular-nums text-black/75">
                 {l.wins}/{l.settled} · {l.rate}%
               </span>
             </li>
           ))}
         </ul>
       ) : (
-        <p className="text-sm text-black/50">No settled best-performing results on this board yet.</p>
+        <p className="text-sm text-black/70">No settled best-performing results on this board yet.</p>
       )}
 
       {onOpenFixturesBest ? (

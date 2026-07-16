@@ -19,7 +19,7 @@ export default function StatStrikeSettingsPage() {
           />
           <div className="min-w-0 flex-1">
             <h1 className="text-lg font-bold text-[#0b3d5c]">Settings</h1>
-            <p className="text-xs text-black/50">StatStrike Web</p>
+            <p className="text-xs text-black/70">StatStrike Web</p>
           </div>
           <Link href="/statstrike" className="text-xs font-semibold text-[#0b3d5c] hover:underline">
             ← Board
@@ -37,12 +37,12 @@ export default function StatStrikeSettingsPage() {
 
         <section className="rounded-2xl border border-black/10 bg-white p-5 space-y-3">
           <h2 className="font-semibold text-black">Premium (iOS for now)</h2>
-          <p className="text-black/60">
+          <p className="text-black/80">
             Your Picks, personal track record, export/import, and league-change digests ship on iOS
             first. Stripe on web comes later.
           </p>
           {appStoreUrl ? <StatStrikeAppStoreCta href={appStoreUrl} size="sm" /> : null}
-          <ul className="space-y-2 text-black/55">
+          <ul className="space-y-2 text-black/75">
             <li className="rounded-lg border border-black/8 bg-black/[0.02] px-3 py-2">
               Export / Import track record — locked
             </li>
@@ -54,7 +54,7 @@ export default function StatStrikeSettingsPage() {
 
         <section className="rounded-2xl border border-black/10 bg-white p-5 space-y-2">
           <h2 className="font-semibold text-black">Daily selection alerts</h2>
-          <p className="text-black/60">
+          <p className="text-black/80">
             Push alerts when today’s list publishes are available in the iOS app. Web push is not
             wired yet.
           </p>
@@ -62,7 +62,7 @@ export default function StatStrikeSettingsPage() {
 
         <section className="rounded-2xl border border-black/10 bg-white p-5 space-y-2">
           <h2 className="font-semibold text-black">Board</h2>
-          <p className="text-black/60">
+          <p className="text-black/80">
             Use Refresh on the Fixtures tab to re-publish the live listeners. Clearing a local cache
             is not required — the board reads Firebase Realtime Database directly.
           </p>
@@ -88,7 +88,7 @@ export default function StatStrikeSettingsPage() {
             </li>
           </ul>
         </section>
-        <p className="text-xs text-black/45">
+        <p className="text-xs text-black/80">
           Forecasts are informational and not gambling advice. Past patterns do not guarantee future
           results.
         </p>

@@ -46,7 +46,7 @@ export function StatStrikeAppShell() {
         </button>
         <div className="text-center">
           <p className="text-sm font-bold text-[#0b3d5c]">{board.selectionDateLabel}</p>
-          <p className="text-[11px] tabular-nums text-black/45">{board.todayKey}</p>
+          <p className="text-[11px] tabular-nums text-black/80">{board.todayKey}</p>
         </div>
         <div className="flex gap-1.5">
           {board.dayOffset !== 0 ? (
@@ -112,7 +112,7 @@ export function StatStrikeAppShell() {
             <h1 className="text-lg font-bold tracking-tight text-[#0b3d5c]">
               StatStrike (Web Version)
             </h1>
-            <p className="text-xs text-black/50">
+            <p className="text-xs text-black/70">
               Browser preview{blur ? ' · coming soon' : ' · interactive'}
             </p>
           </div>
@@ -126,7 +126,7 @@ export function StatStrikeAppShell() {
                 Upgrade
               </button>
             ) : null}
-            <Link href="/statstrike/settings" className="text-black/55 hover:text-[#0b3d5c]">
+            <Link href="/statstrike/settings" className="text-black/75 hover:text-[#0b3d5c]">
               Settings
             </Link>
             <Link href="/" className="text-[#0b3d5c] underline-offset-2 hover:underline">
@@ -156,7 +156,7 @@ export function StatStrikeAppShell() {
               className={`rounded-lg px-3 py-2 text-xs font-semibold ${
                 tab === t.id
                   ? 'bg-[#0b3d5c] text-white'
-                  : 'text-black/55 hover:bg-black/[0.04]'
+                  : 'text-black/75 hover:bg-black/[0.04]'
               }`}
             >
               {t.label}

@@ -31,7 +31,7 @@ const LEAGUE_CHIPS: { id: LeagueFilterId; label: string; locked?: boolean }[] = 
 
 function chipClass(active: boolean, locked?: boolean) {
   if (locked) {
-    return 'rounded-full border border-black/15 bg-black/5 px-2.5 py-1 text-[11px] font-semibold text-black/40';
+    return 'rounded-full border border-black/15 bg-black/5 px-2.5 py-1 text-[11px] font-semibold text-black/55';
   }
   return active
     ? 'rounded-full bg-[#0b3d5c] px-2.5 py-1 text-[11px] font-semibold text-white'
@@ -61,7 +61,7 @@ export function StatStrikeBoardFilters({
       </div>
 
       {filters.time === 'custom' ? (
-        <div className="flex flex-wrap items-center gap-2 text-xs text-black/60">
+        <div className="flex flex-wrap items-center gap-2 text-xs text-black/80">
           <label className="inline-flex items-center gap-1">
             From
             <input
@@ -126,7 +126,7 @@ export function StatStrikeBoardFilters({
             placeholder="Search teams…"
             value={filters.search}
             onChange={(e) => onChange({ ...filters, search: e.target.value })}
-            className="w-full rounded-lg border border-black/15 bg-white px-3 py-2 text-sm text-black placeholder:text-black/35 focus:outline-none focus:ring-2 focus:ring-[#0b3d5c]/30"
+            className="w-full rounded-lg border border-black/15 bg-white px-3 py-2 text-sm text-black placeholder:text-black/45 focus:outline-none focus:ring-2 focus:ring-[#0b3d5c]/30"
           />
         </label>
       ) : null}

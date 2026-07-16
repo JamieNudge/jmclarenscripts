@@ -49,23 +49,23 @@ export function StatStrikeFixtureRow({ row, compact = false, onStarClick }: Prop
           }`}
         >
           <div className="min-w-0 flex-1">
-            <p className="text-[10px] font-semibold uppercase tracking-wide text-black/45 truncate">
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-black/80 truncate">
               {leagueLabel || 'League'}
               {bestPerformingLeague ? ' · Best performing' : ''}
               {fromYesterday ? ' · Carry-over' : ''}
             </p>
             <p className={`mt-0.5 font-semibold text-black/90 leading-snug ${compact ? 'text-sm' : 'text-base'}`}>
               {fixture.homeTeam.name}{' '}
-              <span className="font-normal text-black/40">v</span> {fixture.awayTeam.name}
+              <span className="font-normal text-black/80">v</span> {fixture.awayTeam.name}
             </p>
-            <p className="mt-1 text-xs tabular-nums text-black/50">
+            <p className="mt-1 text-xs tabular-nums text-black/70">
               {formatKickoffLocal(fixture.kickoffMs)}
               {live ? (
                 <span className="ml-2 font-semibold text-emerald-700">
                   LIVE{fixture.elapsed != null ? ` ${fixture.elapsed}'` : ''}
                 </span>
               ) : fixture.status && fixture.status !== 'NS' && !finished ? (
-                <span className="ml-2 text-black/40">{fixture.status}</span>
+                <span className="ml-2 text-black/80">{fixture.status}</span>
               ) : null}
             </p>
           </div>
@@ -94,7 +94,7 @@ export function StatStrikeFixtureRow({ row, compact = false, onStarClick }: Prop
           <button
             type="button"
             aria-label="Add to Your Picks (Premium)"
-            className="shrink-0 self-start rounded-lg px-2 py-1 text-base leading-none text-black/35 hover:bg-black/[0.04] hover:text-amber-500"
+            className="shrink-0 self-start rounded-lg px-2 py-1 text-base leading-none text-black/75 hover:bg-black/[0.04] hover:text-amber-500"
             onClick={onStarClick}
           >
             ★
@@ -108,23 +108,23 @@ export function StatStrikeFixtureRow({ row, compact = false, onStarClick }: Prop
           className={`border-t border-black/5 bg-black/[0.02] ${compact ? 'px-3 py-2.5' : 'px-3 py-3'}`}
         >
           <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1.5 text-xs text-black/70">
-            <dt className="font-semibold text-black/45">Forecast</dt>
+            <dt className="font-semibold text-black/80">Forecast</dt>
             <dd>{band}</dd>
             {finished ? (
               <>
-                <dt className="font-semibold text-black/45">Result</dt>
+                <dt className="font-semibold text-black/80">Result</dt>
                 <dd>{won === true ? 'WIN' : won === false ? 'FT' : fixture.status}</dd>
               </>
             ) : null}
             {prediction?.recommendedLevel && prediction.recommendedLevel !== prediction.level ? (
               <>
-                <dt className="font-semibold text-black/45">Primary</dt>
+                <dt className="font-semibold text-black/80">Primary</dt>
                 <dd>{prediction.level}</dd>
               </>
             ) : null}
             {confidencePct != null ? (
               <>
-                <dt className="font-semibold text-black/45">Criteria</dt>
+                <dt className="font-semibold text-black/80">Criteria</dt>
                 <dd className="tabular-nums">
                   {prediction!.matchedCriteria}/{prediction!.totalCriteria} ({confidencePct}%)
                 </dd>
@@ -132,23 +132,23 @@ export function StatStrikeFixtureRow({ row, compact = false, onStarClick }: Prop
             ) : null}
             {prediction?.bookmakerOdds != null ? (
               <>
-                <dt className="font-semibold text-black/45">Odds</dt>
+                <dt className="font-semibold text-black/80">Odds</dt>
                 <dd className="tabular-nums">{prediction.bookmakerOdds.toFixed(2)}</dd>
               </>
             ) : null}
             {prediction?.sourceLabel ? (
               <>
-                <dt className="font-semibold text-black/45">Source</dt>
+                <dt className="font-semibold text-black/80">Source</dt>
                 <dd>{prediction.sourceLabel}</dd>
               </>
             ) : null}
             {fixture.venue ? (
               <>
-                <dt className="font-semibold text-black/45">Venue</dt>
+                <dt className="font-semibold text-black/80">Venue</dt>
                 <dd>{fixture.venue}</dd>
               </>
             ) : null}
-            <dt className="font-semibold text-black/45">Status</dt>
+            <dt className="font-semibold text-black/80">Status</dt>
             <dd className="tabular-nums">
               {fixture.status ?? 'NS'}
               {live && fixture.elapsed != null ? ` · ${fixture.elapsed}'` : ''}
@@ -157,7 +157,7 @@ export function StatStrikeFixtureRow({ row, compact = false, onStarClick }: Prop
           </dl>
           {prediction?.significantStats && prediction.significantStats.length > 0 ? (
             <div className="mt-2.5">
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-black/45">
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-black/80">
                 Key signals
               </p>
               <ul className="mt-1 space-y-1">
@@ -169,7 +169,7 @@ export function StatStrikeFixtureRow({ row, compact = false, onStarClick }: Prop
               </ul>
             </div>
           ) : (
-            <p className="mt-2 text-xs text-black/45">No key signals uploaded for this pick.</p>
+            <p className="mt-2 text-xs text-black/80">No key signals uploaded for this pick.</p>
           )}
         </div>
       ) : null}
