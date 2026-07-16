@@ -80,11 +80,6 @@ export function StatStrikeFixtureRow({ row, compact = false }: Props) {
           <p className="mt-1 inline-flex max-w-[9.5rem] rounded-md bg-[#0b3d5c]/10 px-1.5 py-0.5 text-[11px] font-semibold text-[#0b3d5c] leading-tight">
             {band}
           </p>
-          {prediction && prediction.matchedCriteria > 0 ? (
-            <p className="mt-1 text-[10px] tabular-nums text-black/40">
-              {prediction.matchedCriteria}/{prediction.totalCriteria || 11}
-            </p>
-          ) : null}
           <p className="mt-1.5 text-[10px] font-semibold text-[#0b3d5c]/70">
             {open ? 'Hide detail ▴' : 'Detail ▾'}
           </p>
