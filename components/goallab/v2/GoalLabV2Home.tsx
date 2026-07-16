@@ -6,6 +6,7 @@ import { GoalLabV2AppsStatus } from '@/components/goallab/v2/GoalLabV2AppsStatus
 import { GoalLabV2FixtureCard } from '@/components/goallab/v2/GoalLabV2FixtureCard';
 import { GoalLabV2ModelPipeline } from '@/components/goallab/v2/GoalLabV2ModelPipeline';
 import { StatStrikeHeroPanel } from '@/components/statstrike/StatStrikeHeroPanel';
+import { ComingSoonBlur } from '@/components/hub/ComingSoonBlur';
 import { HubFootballLink } from '@/components/hub/HubFootballLink';
 import { useBestPicksLondonDateKey } from '@/hooks/useBestPicksLondonDateKey';
 import {
@@ -15,6 +16,7 @@ import {
   GOAL_LAB_V2_RESEARCH_PATH,
 } from '@/components/goallab/v2/paths';
 import { AND_ANOTHER_THING_PATH } from '@/lib/football-predictions-brand';
+import { apps } from '@/lib/apps-data';
 import { statStrikeRtdbPathsFromEnv } from '@/lib/best-picks-firebase';
 import { getFirebaseRealtimeDb, isFirebaseClientConfigured } from '@/lib/firebase-client';
 import {
@@ -24,6 +26,7 @@ import {
 import { isStatStrikeWebEnabled } from '@/lib/statstrike/enabled';
 
 const PREVIEW_LIMIT = 6;
+const goalLabAppStoreUrl = apps.find((a) => a.id === 'goallab')?.appStoreUrl;
 
 export function GoalLabV2Home() {
   const dateKey = useBestPicksLondonDateKey();
@@ -151,13 +154,20 @@ export function GoalLabV2Home() {
         </div>
 
         {!loading && grid.length > 0 ? (
-          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 list-none m-0 p-0">
-            {grid.map((fixture) => (
-              <li key={String(fixture.fixtureId)}>
-                <GoalLabV2FixtureCard fixture={fixture} dateKey={dateKey} />
-              </li>
-            ))}
-          </ul>
+          <ComingSoonBlur
+            badge="Coming Soon!"
+            ctaHref={goalLabAppStoreUrl}
+            ctaLabel="Get GoalLab on the App Store"
+            minHeightClassName="min-h-[14rem]"
+          >
+            <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 list-none m-0 p-0">
+              {grid.map((fixture) => (
+                <li key={String(fixture.fixtureId)}>
+                  <GoalLabV2FixtureCard fixture={fixture} dateKey={dateKey} />
+                </li>
+              ))}
+            </ul>
+          </ComingSoonBlur>
         ) : !loading ? (
           <p className="text-sm text-[var(--gl-text-muted)]">No fixtures to preview for this date.</p>
         ) : (

@@ -2,8 +2,12 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { ComingSoonBlur } from '@/components/hub/ComingSoonBlur';
 import { StatStrikeBoard } from '@/components/statstrike/StatStrikeBoard';
 import { useStatStrikeBoard } from '@/hooks/useStatStrikeBoard';
+import { apps } from '@/lib/apps-data';
+
+const statStrikeAppStoreUrl = apps.find((a) => a.id === 'stat-strike')?.appStoreUrl;
 
 export function StatStrikeAppShell() {
   const board = useStatStrikeBoard();
@@ -21,8 +25,10 @@ export function StatStrikeAppShell() {
             priority
           />
           <div className="min-w-0 flex-1">
-            <h1 className="text-lg font-bold tracking-tight text-[#0b3d5c]">StatStrike</h1>
-            <p className="text-xs text-black/50">Web app · football fixtures &amp; forecasts</p>
+            <h1 className="text-lg font-bold tracking-tight text-[#0b3d5c]">
+              StatStrike (Web Version)
+            </h1>
+            <p className="text-xs text-black/50">Browser preview · coming soon</p>
           </div>
           <nav className="flex items-center gap-3 text-xs font-semibold">
             <Link href="/statstrike/settings" className="text-black/55 hover:text-[#0b3d5c]">
@@ -36,16 +42,22 @@ export function StatStrikeAppShell() {
       </header>
 
       <main className="mx-auto max-w-3xl px-4 py-6">
-        <StatStrikeBoard
-          variant="full"
-          loading={board.loading}
-          error={board.error}
-          configured={board.configured}
-          rows={board.rows}
-          todayKey={board.todayKey}
-          lastReason={board.lastReason}
-          onReload={board.reload}
-        />
+        <ComingSoonBlur
+          badge="Coming Soon!"
+          ctaHref={statStrikeAppStoreUrl}
+          ctaLabel="Get StatStrike on the App Store"
+          minHeightClassName="min-h-[22rem]"
+        >
+          <StatStrikeBoard
+            variant="full"
+            loading={board.loading}
+            error={board.error}
+            configured={board.configured}
+            rows={board.rows}
+            todayKey={board.todayKey}
+            lastReason={board.lastReason}
+          />
+        </ComingSoonBlur>
       </main>
     </div>
   );

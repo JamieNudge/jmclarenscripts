@@ -4,11 +4,15 @@ import { useEffect, useMemo, useState } from 'react';
 import { onValue, ref } from 'firebase/database';
 import { GoalLabV2FixtureCard } from '@/components/goallab/v2/GoalLabV2FixtureCard';
 import { GOAL_LAB_V2_HOME_PATH } from '@/components/goallab/v2/paths';
+import { ComingSoonBlur } from '@/components/hub/ComingSoonBlur';
 import { HubFootballLink } from '@/components/hub/HubFootballLink';
 import { useBestPicksLondonDateKey } from '@/hooks/useBestPicksLondonDateKey';
+import { apps } from '@/lib/apps-data';
 import { groupFixturesByLeague, parseFixturesFromUnanimousExport, sortFixturesByKickoff } from '@/lib/fixtures-browser';
 import { statStrikeRtdbPathsFromEnv } from '@/lib/best-picks-firebase';
 import { getFirebaseRealtimeDb, isFirebaseClientConfigured } from '@/lib/firebase-client';
+
+const goalLabAppStoreUrl = apps.find((a) => a.id === 'goallab')?.appStoreUrl;
 
 export function GoalLabV2FixturesList() {
   const dateKey = useBestPicksLondonDateKey();
@@ -72,8 +76,8 @@ export function GoalLabV2FixturesList() {
       <header className="space-y-2 max-w-2xl">
         <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-[var(--gl-text)]">Forecasts</h1>
         <p className="text-base text-[var(--gl-text-soft)] leading-relaxed">
-          Day <span className="tabular-nums text-[var(--gl-accent)]">{dateKey}</span> from the daily upload. Open a
-          fixture for forecast detail.
+          Day <span className="tabular-nums text-[var(--gl-accent)]">{dateKey}</span> from the daily upload.
+          Full browser forecasts are coming soon — get the iOS app for live access.
         </p>
         {configured && !loading && !error && totalCount > 0 ? (
           <p className="text-sm tabular-nums text-[var(--gl-text-muted)]">
@@ -98,22 +102,29 @@ export function GoalLabV2FixturesList() {
       ) : null}
 
       {configured && !loading && !error && groups.length > 0 ? (
-        <div className="space-y-10">
-          {groups.map((group) => (
-            <section key={group.leagueKey} className="space-y-4">
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--gl-text-muted)]">
-                {group.leagueKey}
-              </h2>
-              <ul className="grid gap-4 sm:grid-cols-2 list-none m-0 p-0">
-                {group.fixtures.map((fixture) => (
-                  <li key={String(fixture.fixtureId)}>
-                    <GoalLabV2FixtureCard fixture={fixture} dateKey={dateKey} />
-                  </li>
-                ))}
-              </ul>
-            </section>
-          ))}
-        </div>
+        <ComingSoonBlur
+          badge="Coming Soon!"
+          ctaHref={goalLabAppStoreUrl}
+          ctaLabel="Get GoalLab on the App Store"
+          minHeightClassName="min-h-[20rem]"
+        >
+          <div className="space-y-10">
+            {groups.map((group) => (
+              <section key={group.leagueKey} className="space-y-4">
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--gl-text-muted)]">
+                  {group.leagueKey}
+                </h2>
+                <ul className="grid gap-4 sm:grid-cols-2 list-none m-0 p-0">
+                  {group.fixtures.map((fixture) => (
+                    <li key={String(fixture.fixtureId)}>
+                      <GoalLabV2FixtureCard fixture={fixture} dateKey={dateKey} />
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ))}
+          </div>
+        </ComingSoonBlur>
       ) : null}
     </div>
   );
