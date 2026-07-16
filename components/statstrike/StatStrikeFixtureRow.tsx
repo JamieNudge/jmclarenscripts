@@ -74,7 +74,7 @@ export function StatStrikeFixtureRow({ row, compact = false }: Props) {
                 won === true ? 'bg-amber-300 text-black' : 'bg-black/25 text-white'
               }`}
             >
-              {won === true ? '✅ WIN' : 'FT'}
+              {won === true ? 'WIN' : 'FT'}
             </p>
           ) : null}
           <p className="mt-1 inline-flex max-w-[9.5rem] rounded-md bg-[#0b3d5c]/10 px-1.5 py-0.5 text-[11px] font-semibold text-[#0b3d5c] leading-tight">
@@ -97,7 +97,7 @@ export function StatStrikeFixtureRow({ row, compact = false }: Props) {
             {finished ? (
               <>
                 <dt className="font-semibold text-black/45">Result</dt>
-                <dd>{won === true ? '✅ WIN' : won === false ? 'FT' : fixture.status}</dd>
+                <dd>{won === true ? 'WIN' : won === false ? 'FT' : fixture.status}</dd>
               </>
             ) : null}
             {prediction?.recommendedLevel && prediction.recommendedLevel !== prediction.level ? (
