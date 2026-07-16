@@ -8,8 +8,7 @@ import {
 } from '@/lib/statstrike/parse-selection';
 
 function shouldCarryOverFromYesterday(fixture: StatStrikeFixture, nowMs: number): boolean {
-  // Keep final results from yesterday briefly so WIN badges can still surface.
-  if (isResultFinishedStatus(fixture.status)) return true;
+  // iOS: yesterday carry-over is live / short not-started only — never finished results.
   if (isFinishedStatus(fixture.status)) return false;
   if (isLiveStatus(fixture.status)) return true;
   const isNotStarted = fixture.status == null || fixture.status === 'NS';
@@ -24,10 +23,13 @@ function shouldShowOnBoard(
   fixture: StatStrikeFixture,
   hasPrediction: boolean,
   nowMs: number,
+  opts?: { allowFinishedResults?: boolean },
 ): boolean {
   if (!hasPrediction) return false;
-  // Show FT/AET/PEN so WIN / FT badges can appear (iOS card behaviour).
-  if (isResultFinishedStatus(fixture.status)) return true;
+  // FT/AET/PEN only for today's selection so WIN badges can show — not yesterday's board.
+  if (isResultFinishedStatus(fixture.status)) {
+    return opts?.allowFinishedResults === true;
+  }
   if (isFinishedStatus(fixture.status)) return false;
   if (isLiveStatus(fixture.status)) return true;
   const isNotStarted = fixture.status == null || fixture.status === 'NS';
@@ -61,7 +63,7 @@ export function mergeBoardRows(args: {
       if (!shouldCarryOverFromYesterday(fixture, nowMs)) continue;
       const prediction = args.yesterday.predictionsByFixtureId.get(fixture.id) ?? null;
       if (!prediction || prediction.matchedCriteria <= 0) continue;
-      if (!shouldShowOnBoard(fixture, true, nowMs)) continue;
+      if (!shouldShowOnBoard(fixture, true, nowMs, { allowFinishedResults: false })) continue;
       byId.set(fixture.id, {
         fixture,
         prediction,
@@ -76,7 +78,7 @@ export function mergeBoardRows(args: {
     for (const fixture of args.today.fixtures) {
       const prediction = args.today.predictionsByFixtureId.get(fixture.id) ?? null;
       if (!prediction || prediction.matchedCriteria <= 0) continue;
-      if (!shouldShowOnBoard(fixture, true, nowMs)) continue;
+      if (!shouldShowOnBoard(fixture, true, nowMs, { allowFinishedResults: true })) continue;
       byId.set(fixture.id, {
         fixture,
         prediction,
