@@ -78,6 +78,23 @@ export function pickScoreDisplay(p: PickRecord): string {
   return '–';
 }
 
+/** True when the forecast band settled as a win; null when not yet decidable. */
+export function fixtureListItemWinResult(fixture: FixtureListItem): boolean | null {
+  const hs = num(fixture.pick.homeScore ?? fixture.pick.homeGoals);
+  const aws = num(fixture.pick.awayScore ?? fixture.pick.awayGoals);
+  if (hs == null || aws == null) return null;
+  const band = recommendedBandLabelForPick(fixture.pick);
+  if (!band) return null;
+  const total = hs + aws;
+  const lower = band.toLowerCase();
+  if (lower.includes('under 2.5')) return total <= 2;
+  if (lower.includes('over 5.5')) return total > 5;
+  if (lower.includes('over 4.5')) return total > 4;
+  if (lower.includes('over 3.5')) return total > 3;
+  if (lower.includes('over 2.5')) return total > 2;
+  return null;
+}
+
 function leagueKeyForPick(p: PickRecord): string {
   const country = pickText(p.country);
   const league = pickText(p.league);

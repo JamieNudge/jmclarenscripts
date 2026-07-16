@@ -7,7 +7,7 @@ import {
   formatKickoffShortLocalAndUtc,
 } from '@/lib/best-picks-firebase';
 import { fixtureDetailHrefV2 } from '@/components/goallab/v2/paths';
-import { pickForecastDetailLines, type FixtureListItem } from '@/lib/fixtures-browser';
+import { fixtureListItemWinResult, pickForecastDetailLines, type FixtureListItem } from '@/lib/fixtures-browser';
 
 function pickConfidence(fixture: FixtureListItem): number | null {
   const conf = fixture.pick.confidence;
@@ -30,6 +30,7 @@ export function GoalLabV2FixtureCard({ fixture, dateKey, featured = false }: Pro
     fixture.kickoffMs != null ? formatKickoffLocalAndUtc(fixture.kickoffMs, visitorTz) : undefined;
   const forecast = pickForecastDetailLines(fixture.pick);
   const confidence = pickConfidence(fixture);
+  const won = fixtureListItemWinResult(fixture);
   const href = fixtureDetailHrefV2(fixture.fixtureId, dateKey);
 
   return (
@@ -62,6 +63,11 @@ export function GoalLabV2FixtureCard({ fixture, dateKey, featured = false }: Pro
       </p>
 
       <div className="mt-4 flex flex-wrap items-center gap-2">
+        {won === true ? (
+          <span className="inline-flex items-center rounded-full bg-amber-300 px-2.5 py-1 text-[11px] font-black tracking-wide text-black">
+            WIN
+          </span>
+        ) : null}
         {forecast.primary ? (
           <span className="inline-flex items-center rounded-lg bg-[var(--gl-accent-soft)] px-2.5 py-1 text-xs font-semibold text-[var(--gl-accent)]">
             {forecast.primary}

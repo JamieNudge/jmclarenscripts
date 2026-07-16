@@ -4,14 +4,14 @@ import { useEffect, useMemo, useState } from 'react';
 import { onValue, ref } from 'firebase/database';
 import { GoalLabV2FixtureCard } from '@/components/goallab/v2/GoalLabV2FixtureCard';
 import { GOAL_LAB_V2_HOME_PATH } from '@/components/goallab/v2/paths';
-import { ComingSoonBlur } from '@/components/hub/ComingSoonBlur';
 import { HubFootballLink } from '@/components/hub/HubFootballLink';
 import { useBestPicksLondonDateKey } from '@/hooks/useBestPicksLondonDateKey';
 import { apps } from '@/lib/apps-data';
-import { groupFixturesByLeague, parseFixturesFromUnanimousExport, sortFixturesByKickoff } from '@/lib/fixtures-browser';
+import { parseFixturesFromUnanimousExport, sortFixturesByKickoff } from '@/lib/fixtures-browser';
 import { statStrikeRtdbPathsFromEnv } from '@/lib/best-picks-firebase';
 import { getFirebaseRealtimeDb, isFirebaseClientConfigured } from '@/lib/firebase-client';
 
+const PREVIEW_LIMIT = 3;
 const statStrikeAppStoreUrl = apps.find((a) => a.id === 'stat-strike')?.appStoreUrl;
 
 export function GoalLabV2FixturesList() {
@@ -56,10 +56,9 @@ export function GoalLabV2FixturesList() {
   }, [configured, unanimousPath]);
 
   const fixtures = useMemo(
-    () => sortFixturesByKickoff(parseFixturesFromUnanimousExport(exportVal)),
+    () => sortFixturesByKickoff(parseFixturesFromUnanimousExport(exportVal)).slice(0, PREVIEW_LIMIT),
     [exportVal],
   );
-  const groups = useMemo(() => groupFixturesByLeague(fixtures), [fixtures]);
   const totalCount = fixtures.length;
 
   return (
@@ -76,14 +75,9 @@ export function GoalLabV2FixturesList() {
       <header className="space-y-2 max-w-2xl">
         <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-[var(--gl-text)]">Forecasts</h1>
         <p className="text-base text-[var(--gl-text-soft)] leading-relaxed">
-          Day <span className="tabular-nums text-[var(--gl-accent)]">{dateKey}</span> from the daily upload.
-          Full browser forecasts are coming soon — get the iOS app for live access.
+          Day <span className="tabular-nums text-[var(--gl-accent)]">{dateKey}</span> — three daily picks on
+          the web. Full list is in the StatStrike app.
         </p>
-        {configured && !loading && !error && totalCount > 0 ? (
-          <p className="text-sm tabular-nums text-[var(--gl-text-muted)]">
-            {totalCount} fixture{totalCount === 1 ? '' : 's'}
-          </p>
-        ) : null}
       </header>
 
       {!configured ? (
@@ -101,31 +95,29 @@ export function GoalLabV2FixturesList() {
         <p className="text-sm text-[var(--gl-text-soft)]">No fixtures for {dateKey} yet.</p>
       ) : null}
 
-      {configured && !loading && !error && groups.length > 0 ? (
-        <ComingSoonBlur
-          badge="Coming Soon!"
-          ctaHref={statStrikeAppStoreUrl}
-          ctaLabel="Get StatStrike on the App Store"
-          minHeightClassName="min-h-[20rem]"
-          centerBadge
-        >
-          <div className="space-y-10">
-            {groups.map((group) => (
-              <section key={group.leagueKey} className="space-y-4">
-                <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--gl-text-muted)]">
-                  {group.leagueKey}
-                </h2>
-                <ul className="grid gap-4 sm:grid-cols-2 list-none m-0 p-0">
-                  {group.fixtures.map((fixture) => (
-                    <li key={String(fixture.fixtureId)}>
-                      <GoalLabV2FixtureCard fixture={fixture} dateKey={dateKey} />
-                    </li>
-                  ))}
-                </ul>
-              </section>
+      {configured && !loading && !error && totalCount > 0 ? (
+        <div className="space-y-5">
+          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 list-none m-0 p-0">
+            {fixtures.map((fixture) => (
+              <li key={String(fixture.fixtureId)}>
+                <GoalLabV2FixtureCard fixture={fixture} dateKey={dateKey} />
+              </li>
             ))}
-          </div>
-        </ComingSoonBlur>
+          </ul>
+          {statStrikeAppStoreUrl ? (
+            <p className="text-sm text-[var(--gl-text-soft)]">
+              More in the app —{' '}
+              <a
+                href={statStrikeAppStoreUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-[var(--gl-accent)] underline-offset-2 hover:underline"
+              >
+                Get StatStrike on the App Store
+              </a>
+            </p>
+          ) : null}
+        </div>
       ) : null}
     </div>
   );
