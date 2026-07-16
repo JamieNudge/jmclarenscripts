@@ -6,6 +6,7 @@ import { GoalLabV2AppsStatus } from '@/components/goallab/v2/GoalLabV2AppsStatus
 import { GoalLabV2FixtureCard } from '@/components/goallab/v2/GoalLabV2FixtureCard';
 import { GoalLabV2ModelPipeline } from '@/components/goallab/v2/GoalLabV2ModelPipeline';
 import { StatStrikeHeroPanel } from '@/components/statstrike/StatStrikeHeroPanel';
+import { StatStrikeAppStoreCta } from '@/components/statstrike/StatStrikeAppStoreCta';
 import { HubFootballLink } from '@/components/hub/HubFootballLink';
 import { useBestPicksLondonDateKey } from '@/hooks/useBestPicksLondonDateKey';
 import {
@@ -163,15 +164,7 @@ export function GoalLabV2Home() {
             </ul>
             {statStrikeAppStoreUrl ? (
               <p className="text-sm text-[var(--gl-text-soft)]">
-                More in the app —{' '}
-                <a
-                  href={statStrikeAppStoreUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-semibold text-[var(--gl-accent)] underline-offset-2 hover:underline"
-                >
-                  Get StatStrike on the App Store
-                </a>
+                More in the app — <StatStrikeAppStoreCta href={statStrikeAppStoreUrl} variant="inline" />
               </p>
             ) : null}
           </div>

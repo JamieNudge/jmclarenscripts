@@ -46,6 +46,8 @@ export function StatStrikeHeroPanel() {
           badge="Coming Soon!"
           ctaHref={statStrikeAppStoreUrl}
           ctaLabel="Get StatStrike on the App Store"
+          ctaStatStrike
+          ctaPlacement="bottom"
           minHeightClassName="h-full"
           centerBadge
         >

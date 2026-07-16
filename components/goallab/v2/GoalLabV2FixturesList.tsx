@@ -6,6 +6,7 @@ import { GoalLabV2FixtureCard } from '@/components/goallab/v2/GoalLabV2FixtureCa
 import { GOAL_LAB_V2_HOME_PATH } from '@/components/goallab/v2/paths';
 import { ComingSoonBlur } from '@/components/hub/ComingSoonBlur';
 import { HubFootballLink } from '@/components/hub/HubFootballLink';
+import { StatStrikeAppStoreCta } from '@/components/statstrike/StatStrikeAppStoreCta';
 import { useBestPicksLondonDateKey } from '@/hooks/useBestPicksLondonDateKey';
 import { apps } from '@/lib/apps-data';
 import {
@@ -115,14 +116,7 @@ export function GoalLabV2FixturesList() {
           {statStrikeAppStoreUrl ? (
             <p className="text-sm text-[var(--gl-text-soft)]">
               More in the app —{' '}
-              <a
-                href={statStrikeAppStoreUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-semibold text-[var(--gl-accent)] underline-offset-2 hover:underline"
-              >
-                Get StatStrike on the App Store
-              </a>
+              <StatStrikeAppStoreCta href={statStrikeAppStoreUrl} variant="inline" />
             </p>
           ) : null}
           {lockedGroups.length > 0 ? (
@@ -130,6 +124,8 @@ export function GoalLabV2FixturesList() {
               badge={null}
               ctaHref={statStrikeAppStoreUrl}
               ctaLabel="Get StatStrike on the App Store"
+              ctaStatStrike
+              ctaPlacement="center"
               minHeightClassName="min-h-[20rem]"
               centerBadge
             >

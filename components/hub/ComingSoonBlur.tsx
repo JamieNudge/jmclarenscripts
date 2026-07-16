@@ -1,27 +1,33 @@
 'use client';
 
 import type { ReactNode } from 'react';
+import { StatStrikeAppStoreCta } from '@/components/statstrike/StatStrikeAppStoreCta';
 
 type Props = {
   children: ReactNode;
-  /** Short label on the frost overlay, e.g. Coming Soon! */
+  /** Short label on the frost overlay, e.g. Coming Soon! — omit/null to hide */
   badge?: string | null;
   /** Optional CTA under the badge */
   ctaHref?: string;
   ctaLabel?: string;
+  /** When true, CTA uses StatStrike icon + App Store styling */
+  ctaStatStrike?: boolean;
   className?: string;
   /** Min height so empty/loading still looks like a panel */
   minHeightClassName?: string;
   /**
-   * Pin the badge to the true geometric centre of the *visible* blur panel.
-   * Blurred children are clipped to the panel so they cannot push the centre down.
-   * CTA (if any) sits along the bottom edge.
+   * Pin overlays to the visible panel; blurred children are clipped.
    */
   centerBadge?: boolean;
+  /**
+   * Where to place the CTA in centerBadge mode.
+   * `center` sits higher in the blur; `bottom` pins to the lower edge.
+   */
+  ctaPlacement?: 'center' | 'bottom';
 };
 
 /**
- * Soft-blur content teaser with a centered badge / optional App Store CTA.
+ * Soft-blur content teaser with optional badge / App Store CTA.
  * Titles and chrome outside this wrapper stay sharp.
  */
 export function ComingSoonBlur({
@@ -29,10 +35,28 @@ export function ComingSoonBlur({
   badge = 'Coming Soon!',
   ctaHref,
   ctaLabel,
+  ctaStatStrike = false,
   className = '',
   minHeightClassName = 'min-h-[10rem]',
   centerBadge = false,
+  ctaPlacement = 'bottom',
 }: Props) {
+  const cta =
+    ctaHref && ctaLabel ? (
+      ctaStatStrike ? (
+        <StatStrikeAppStoreCta href={ctaHref} label={ctaLabel} size="sm" />
+      ) : (
+        <a
+          href={ctaHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex max-w-full items-center justify-center rounded-xl bg-[#0b3d5c] px-3 py-2 text-center text-[11px] font-semibold leading-snug text-white shadow-sm hover:opacity-90 sm:text-xs sm:px-4 sm:py-2.5"
+        >
+          {ctaLabel}
+        </a>
+      )
+    ) : null;
+
   return (
     <div
       className={`relative overflow-hidden ${minHeightClassName} ${className} ${
@@ -48,24 +72,18 @@ export function ComingSoonBlur({
             {children}
           </div>
           <div className="absolute inset-0 bg-white/50">
-            {badge ? (
-              <div className="absolute inset-0 flex items-center justify-center px-4">
-                <span className="rounded-full bg-amber-300 px-3 py-1.5 text-xs font-black tracking-wide text-black shadow-sm">
-                  {badge}
-                </span>
+            {badge || (cta && ctaPlacement === 'center') ? (
+              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 px-4">
+                {badge ? (
+                  <span className="rounded-full bg-amber-300 px-3 py-1.5 text-xs font-black tracking-wide text-black shadow-sm">
+                    {badge}
+                  </span>
+                ) : null}
+                {ctaPlacement === 'center' ? cta : null}
               </div>
             ) : null}
-            {ctaHref && ctaLabel ? (
-              <div className="absolute inset-x-0 bottom-3 z-10 flex justify-center px-3">
-                <a
-                  href={ctaHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex max-w-full items-center justify-center rounded-xl bg-[#0b3d5c] px-3 py-2 text-center text-[11px] font-semibold leading-snug text-white shadow-sm hover:opacity-90 sm:text-xs"
-                >
-                  {ctaLabel}
-                </a>
-              </div>
+            {cta && ctaPlacement === 'bottom' ? (
+              <div className="absolute inset-x-0 bottom-3 z-10 flex justify-center px-3">{cta}</div>
             ) : null}
           </div>
         </>
@@ -81,16 +99,7 @@ export function ComingSoonBlur({
                   {badge}
                 </span>
               ) : null}
-              {ctaHref && ctaLabel ? (
-                <a
-                  href={ctaHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center rounded-xl bg-[#0b3d5c] px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:opacity-90"
-                >
-                  {ctaLabel}
-                </a>
-              ) : null}
+              {cta}
             </div>
           </div>
         </>

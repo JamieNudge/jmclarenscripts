@@ -7,6 +7,7 @@ import { apps } from '@/lib/apps-data';
 import type { BplHubPublicPayload, BplCompactFixture } from '@/lib/bpl-hub';
 import { useBestPicksLondonDateKey } from '@/hooks/useBestPicksLondonDateKey';
 import { FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_PATH } from '@/lib/football-predictions-brand';
+import { StatStrikeAppStoreCta } from '@/components/statstrike/StatStrikeAppStoreCta';
 
 function resultPillClass(r: BplCompactFixture['result']): string {
   if (r === 'win') return 'text-black border-amber-300 bg-amber-300';
@@ -103,14 +104,12 @@ function DownloadAppTeaser({ hiddenCount }: { hiddenCount: number }) {
         {hiddenCount > 0 ? ` with ${hiddenCount} more available in the app today.` : '.'}
       </p>
       {statStrikeAppStoreUrl ? (
-        <a
+        <StatStrikeAppStoreCta
           href={statStrikeAppStoreUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-3 inline-flex items-center justify-center rounded-lg bg-[var(--hub-cta-bg)] px-3 py-2 text-xs font-semibold text-[var(--hub-cta-text)] transition-opacity hover:opacity-90"
-        >
-          Download StatStrike on iOS
-        </a>
+          label="Download StatStrike on iOS"
+          size="sm"
+          className="mt-3"
+        />
       ) : null}
     </div>
   );
