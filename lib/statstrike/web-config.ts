@@ -38,7 +38,16 @@ export function parseStatStrikeWebConfig(raw: unknown): StatStrikeWebConfig {
     return { ...DEFAULT_STATSTRIKE_WEB_CONFIG };
   }
   const o = raw as Record<string, unknown>;
-  const blur = typeof o.blur === 'boolean' ? o.blur : true;
+  let blur = true;
+  if (typeof o.blur === 'boolean') {
+    blur = o.blur;
+  } else if (typeof o.blur === 'string') {
+    const s = o.blur.trim().toLowerCase();
+    if (s === 'false' || s === '0') blur = false;
+    else if (s === 'true' || s === '1') blur = true;
+  } else if (typeof o.blur === 'number') {
+    blur = o.blur !== 0;
+  }
   const updatedAt =
     typeof o.updatedAt === 'string' && o.updatedAt.trim() ? o.updatedAt.trim() : null;
   return { blur, updatedAt };

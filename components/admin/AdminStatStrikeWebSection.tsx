@@ -102,8 +102,10 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
       <p className="text-xs text-white/50 leading-relaxed">
         Runtime kill-switch for the StatStrike hero panel and{' '}
         <code className="text-white/70">/statstrike</code> board. Stored at{' '}
-        <code className="text-white/70">statstrikeWebConfig</code> in Realtime Database — flips live,
-        no redeploy. Missing node defaults to blur <strong className="text-white/65">ON</strong>.
+        Stored at <code className="text-white/70">statstrikeWebConfig</code> in Realtime Database —
+        flips via a public API read (works even before you add RTDB client read rules). Optional
+        rules for direct client listen:
+        <code className="text-white/70">statstrikeWebConfig: &#123; ".read": true, ".write": false &#125;</code>.
       </p>
       <p className="text-xs text-white/55 leading-relaxed">
         Product on/off is still <code className="text-white/70">NEXT_PUBLIC_STATSTRIKE_WEB_ENABLED</code>{' '}

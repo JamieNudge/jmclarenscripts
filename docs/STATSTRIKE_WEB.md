@@ -18,11 +18,12 @@ NEXT_PUBLIC_STATSTRIKE_WEB_ENABLED=1
 Stored in RTDB at `statstrikeWebConfig` → `{ blur: boolean, updatedAt }`.
 
 - Toggle on **`/admin/picks`** → section **StatStrike Web — Coming Soon blur** (same Bearer key as picks).
-- Public clients subscribe live; missing node defaults to **blur ON** (safe teaser).
+- Public site reads via **`GET /api/statstrike/web-config`** (Admin SDK) so blur flips even if RTDB client rules deny the new path. Optional live RTDB listen when rules allow.
+- Missing node defaults to **blur ON** (safe teaser).
 - **Blur OFF** while building / reviewing the interactive board.
 - **Blur ON** when you want the App Store teaser again before Stripe.
 
-Suggested Firebase rules (write only via Admin SDK):
+Suggested Firebase rules (optional, for direct client listen):
 
 ```json
 "statstrikeWebConfig": {
