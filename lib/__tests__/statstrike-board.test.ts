@@ -144,3 +144,75 @@ describe('ukSelectionDateKeyOffset', () => {
     expect(key).toMatch(/^\d{4}-\d{2}-\d{2}$/);
   });
 });
+
+describe('board filters', () => {
+  it('filters live and best performing; groups by day/time/league', async () => {
+    const { DEFAULT_BOARD_FILTERS, presentBoardRows, rowPassesBoardFilters } = await import(
+      '@/lib/statstrike/board-filters'
+    );
+    const { isUpperDivision } = await import('@/lib/statstrike/upper-divisions');
+
+    expect(isUpperDivision('England', 'Premier League')).toBe(true);
+    expect(isUpperDivision('England', 'National League')).toBe(false);
+
+    const now = Date.parse('2026-07-16T15:00:00.000Z');
+    const rows = [
+      {
+        fixture: fixture({
+          id: 1,
+          status: '2H',
+          kickoffMs: now,
+          league: { id: 1, name: 'Premier League', country: 'England' },
+          homeTeam: { id: 1, name: 'Arsenal' },
+        }),
+        prediction: {
+          level: 'Over 2.5 Goals',
+          matchedCriteria: 6,
+          totalCriteria: 11,
+          significantStats: [],
+        },
+        bestPerformingLeague: true,
+        fromYesterday: false,
+        selectionDateKey: '2026-07-16',
+      },
+      {
+        fixture: fixture({
+          id: 2,
+          status: 'NS',
+          kickoffMs: now + 7200_000,
+          league: { id: 2, name: 'National League', country: 'England' },
+          homeTeam: { id: 3, name: 'Barnet' },
+        }),
+        prediction: {
+          level: 'Under 2.5 Goals',
+          matchedCriteria: 5,
+          totalCriteria: 11,
+          significantStats: [],
+        },
+        bestPerformingLeague: false,
+        fromYesterday: false,
+        selectionDateKey: '2026-07-16',
+      },
+    ];
+
+    expect(
+      rowPassesBoardFilters(rows[0], { ...DEFAULT_BOARD_FILTERS, time: 'live' }),
+    ).toBe(true);
+    expect(
+      rowPassesBoardFilters(rows[1], { ...DEFAULT_BOARD_FILTERS, time: 'live' }),
+    ).toBe(false);
+    expect(
+      rowPassesBoardFilters(rows[0], { ...DEFAULT_BOARD_FILTERS, league: 'bestPerforming' }),
+    ).toBe(true);
+    expect(
+      rowPassesBoardFilters(rows[1], { ...DEFAULT_BOARD_FILTERS, league: 'major' }),
+    ).toBe(false);
+    expect(
+      rowPassesBoardFilters(rows[1], { ...DEFAULT_BOARD_FILTERS, search: 'bar' }),
+    ).toBe(true);
+
+    const groups = presentBoardRows(rows, DEFAULT_BOARD_FILTERS, { timeZone: 'UTC' });
+    expect(groups.length).toBeGreaterThan(0);
+    expect(groups[0].timeGroups.length).toBeGreaterThan(0);
+  });
+});

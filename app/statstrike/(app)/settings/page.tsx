@@ -1,5 +1,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { StatStrikeAppStoreCta } from '@/components/statstrike/StatStrikeAppStoreCta';
+import { apps } from '@/lib/apps-data';
+
+const appStoreUrl = apps.find((a) => a.id === 'stat-strike')?.appStoreUrl;
 
 export default function StatStrikeSettingsPage() {
   return (
@@ -24,12 +28,46 @@ export default function StatStrikeSettingsPage() {
       </header>
       <main className="mx-auto max-w-3xl space-y-6 px-4 py-8 text-sm leading-relaxed text-black/80">
         <section className="rounded-2xl border border-black/10 bg-white p-5 space-y-2">
-          <h2 className="font-semibold text-black">About this preview</h2>
+          <h2 className="font-semibold text-black">About</h2>
           <p>
-            This is an early browser version of StatStrike. Billing, push alerts, and login are not
-            enabled yet — the focus is proving the live fixtures board.
+            Browser version of StatStrike. Coming Soon blur is controlled from the GoalLab admin
+            page. Web subscriptions are not enabled yet.
           </p>
         </section>
+
+        <section className="rounded-2xl border border-black/10 bg-white p-5 space-y-3">
+          <h2 className="font-semibold text-black">Premium (iOS for now)</h2>
+          <p className="text-black/60">
+            Your Picks, personal track record, export/import, and league-change digests ship on iOS
+            first. Stripe on web comes later.
+          </p>
+          {appStoreUrl ? <StatStrikeAppStoreCta href={appStoreUrl} size="sm" /> : null}
+          <ul className="space-y-2 text-black/55">
+            <li className="rounded-lg border border-black/8 bg-black/[0.02] px-3 py-2">
+              Export / Import track record — locked
+            </li>
+            <li className="rounded-lg border border-black/8 bg-black/[0.02] px-3 py-2">
+              Clear track record — locked
+            </li>
+          </ul>
+        </section>
+
+        <section className="rounded-2xl border border-black/10 bg-white p-5 space-y-2">
+          <h2 className="font-semibold text-black">Daily selection alerts</h2>
+          <p className="text-black/60">
+            Push alerts when today’s list publishes are available in the iOS app. Web push is not
+            wired yet.
+          </p>
+        </section>
+
+        <section className="rounded-2xl border border-black/10 bg-white p-5 space-y-2">
+          <h2 className="font-semibold text-black">Board</h2>
+          <p className="text-black/60">
+            Use Refresh on the Fixtures tab to re-publish the live listeners. Clearing a local cache
+            is not required — the board reads Firebase Realtime Database directly.
+          </p>
+        </section>
+
         <section className="rounded-2xl border border-black/10 bg-white p-5 space-y-2">
           <h2 className="font-semibold text-black">Legal</h2>
           <ul className="list-disc space-y-1 pl-5">

@@ -10,32 +10,38 @@ import {
   msUntilNextUkSelectionDay,
   selectionsPathForDateKey,
   ukSelectionDateKey,
-  ukYesterdaySelectionDateKey,
+  ukSelectionDateKeyOffset,
 } from '@/lib/statstrike/uk-date';
 
 type BoardState = {
   loading: boolean;
   error: string | null;
   configured: boolean;
+  /** Selected UK selection day (may differ from calendar today when browsing). */
   todayKey: string;
   yesterdayKey: string;
+  /** Offset from UK calendar today: 0 = today, -1 = yesterday, +1 = tomorrow. */
+  dayOffset: number;
   rows: BoardRefreshResult['rows'];
   lastReason: string;
 };
 
-const initialKeys = () => ({
-  todayKey: ukSelectionDateKey(),
-  yesterdayKey: ukYesterdaySelectionDateKey(),
-});
+function keysForOffset(dayOffset: number) {
+  const todayKey = ukSelectionDateKeyOffset(dayOffset);
+  const yesterdayKey = ukSelectionDateKeyOffset(dayOffset - 1);
+  return { todayKey, yesterdayKey };
+}
 
-export function useStatStrikeBoard() {
-  const keys0 = initialKeys();
+export function useStatStrikeBoard(initialDayOffset = 0) {
+  const keys0 = keysForOffset(initialDayOffset);
+  const [dayOffset, setDayOffsetState] = useState(initialDayOffset);
   const [state, setState] = useState<BoardState>({
     loading: true,
     error: null,
     configured: isFirebaseClientConfigured(),
     todayKey: keys0.todayKey,
     yesterdayKey: keys0.yesterdayKey,
+    dayOffset: initialDayOffset,
     rows: [],
     lastReason: 'init',
   });
@@ -44,6 +50,7 @@ export function useStatStrikeBoard() {
   const yestSel = useRef<StatStrikeDailySelection | null>(null);
   const todayKeyRef = useRef(keys0.todayKey);
   const yesterdayKeyRef = useRef(keys0.yesterdayKey);
+  const dayOffsetRef = useRef(initialDayOffset);
 
   const publish = useCallback((reason: string) => {
     const result = buildBoardRefreshResult({
@@ -59,23 +66,13 @@ export function useStatStrikeBoard() {
       error: null,
       todayKey: result.todayKey,
       yesterdayKey: result.yesterdayKey,
+      dayOffset: dayOffsetRef.current,
       rows: result.rows,
       lastReason: reason,
     }));
   }, []);
 
-  const hardRefreshKeys = useCallback(
-    (reason: string) => {
-      const todayKey = ukSelectionDateKey();
-      const yesterdayKey = ukYesterdaySelectionDateKey();
-      todayKeyRef.current = todayKey;
-      yesterdayKeyRef.current = yesterdayKey;
-      setState((s) => ({ ...s, todayKey, yesterdayKey, loading: true }));
-      publish(reason);
-      return { todayKey, yesterdayKey };
-    },
-    [publish],
-  );
+  const attachRef = useRef<(reason: string) => void>(() => {});
 
   useEffect(() => {
     if (!isFirebaseClientConfigured()) {
@@ -108,8 +105,12 @@ export function useStatStrikeBoard() {
       for (const u of unsubs) u();
       unsubs = [];
 
-      const todayKey = ukSelectionDateKey();
-      const yesterdayKey = ukYesterdaySelectionDateKey();
+      // On calendar rollover while browsing "today", snap offset back to 0.
+      if (dayOffsetRef.current === 0) {
+        // keep
+      }
+
+      const { todayKey, yesterdayKey } = keysForOffset(dayOffsetRef.current);
       todayKeyRef.current = todayKey;
       yesterdayKeyRef.current = yesterdayKey;
       todaySel.current = null;
@@ -122,12 +123,12 @@ export function useStatStrikeBoard() {
         error: null,
         todayKey,
         yesterdayKey,
+        dayOffset: dayOffsetRef.current,
       }));
 
       const todayPath = selectionsPathForDateKey(todayKey);
       const yestPath = selectionsPathForDateKey(yesterdayKey);
 
-      // Empty-board heal: always listen to today even if empty.
       unsubs.push(
         onValue(
           ref(db, todayPath),
@@ -156,7 +157,6 @@ export function useStatStrikeBoard() {
             publish(`${reason}:yesterday`);
           },
           () => {
-            // Yesterday missing is fine.
             if (cancelled) return;
             yestSel.current = null;
             publish(`${reason}:yesterday-empty`);
@@ -165,15 +165,20 @@ export function useStatStrikeBoard() {
       );
     };
 
+    attachRef.current = attach;
     attach('mount');
 
     let midnightTimer: ReturnType<typeof setTimeout> | undefined;
     const scheduleMidnight = () => {
       if (midnightTimer != null) clearTimeout(midnightTimer);
-      // UK midnight + ~90s buffer (STATSTRIKE_MIDNIGHT_HANDOFF).
       const delay = msUntilNextUkSelectionDay() + 90_000;
       midnightTimer = setTimeout(() => {
-        attach('selection-day-rollover');
+        if (dayOffsetRef.current === 0) {
+          attach('selection-day-rollover');
+        } else {
+          // Keep relative offset; re-resolve absolute keys against new calendar today.
+          attach('selection-day-rollover-offset');
+        }
         scheduleMidnight();
       }, delay);
     };
@@ -181,9 +186,13 @@ export function useStatStrikeBoard() {
 
     const onVis = () => {
       if (document.visibilityState !== 'visible') return;
-      const nextToday = ukSelectionDateKey();
-      if (nextToday !== todayKeyRef.current) {
-        attach('visibility-new-day');
+      if (dayOffsetRef.current === 0) {
+        const nextToday = ukSelectionDateKey();
+        if (nextToday !== todayKeyRef.current) {
+          attach('visibility-new-day');
+        } else {
+          publish('visibility');
+        }
       } else {
         publish('visibility');
       }
@@ -198,14 +207,31 @@ export function useStatStrikeBoard() {
     };
   }, [publish]);
 
+  const setDayOffset = useCallback(
+    (next: number) => {
+      dayOffsetRef.current = next;
+      setDayOffsetState(next);
+      attachRef.current('day-nav');
+    },
+    [],
+  );
+
   const reload = useCallback(() => {
-    hardRefreshKeys('manual-reload');
-    // Re-trigger by forcing remount via key change is heavy; listeners already live — republish.
-    publish('manual-reload');
-  }, [hardRefreshKeys, publish]);
+    attachRef.current('manual-reload');
+  }, []);
+
+  const selectionDateLabel = (() => {
+    if (dayOffset === 0) return 'Today';
+    if (dayOffset === -1) return 'Yesterday';
+    if (dayOffset === 1) return 'Tomorrow';
+    return state.todayKey;
+  })();
 
   return {
     ...state,
+    dayOffset,
+    setDayOffset,
+    selectionDateLabel,
     reload,
   };
 }

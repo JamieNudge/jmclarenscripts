@@ -1,6 +1,7 @@
 'use client';
 
 import { StatStrikeFixtureRow } from '@/components/statstrike/StatStrikeFixtureRow';
+import type { BoardDayGroup } from '@/lib/statstrike/board-filters';
 import type { StatStrikeBoardRow } from '@/lib/statstrike/models';
 
 type Props = {
@@ -10,9 +11,13 @@ type Props = {
   error: string | null;
   configured: boolean;
   rows: StatStrikeBoardRow[];
+  /** When provided, render Day → time → league groups instead of a flat list. */
+  dayGroups?: BoardDayGroup[];
   todayKey: string;
   lastReason?: string;
   onReload?: () => void;
+  emptyHint?: string;
+  onStarClick?: () => void;
 };
 
 /** Presentational board — parent owns `useStatStrikeBoard` (one listener set). */
@@ -23,12 +28,22 @@ export function StatStrikeBoard({
   error,
   configured,
   rows,
+  dayGroups,
   todayKey,
   lastReason,
   onReload,
+  emptyHint,
+  onStarClick,
 }: Props) {
   const compact = variant === 'hero';
-  const shown = maxRows != null ? rows.slice(0, maxRows) : rows;
+  const useGroups = dayGroups != null && !compact;
+  const flatShown = maxRows != null ? rows.slice(0, maxRows) : rows;
+  const visibleCount = useGroups
+    ? dayGroups.reduce(
+        (n, d) => n + d.timeGroups.reduce((m, t) => m + t.leagues.reduce((k, l) => k + l.rows.length, 0), 0),
+        0,
+      )
+    : flatShown.length;
 
   if (!configured) {
     return (
@@ -65,10 +80,10 @@ export function StatStrikeBoard({
     );
   }
 
-  if (shown.length === 0) {
+  if (visibleCount === 0) {
     return (
       <div className="px-3 py-4 text-sm text-black/55">
-        No live fixtures for London date {todayKey} yet.
+        {emptyHint ?? `No fixtures for London date ${todayKey} yet.`}
         {onReload && !compact ? (
           <button
             type="button"
@@ -87,7 +102,8 @@ export function StatStrikeBoard({
       {!compact ? (
         <div className="flex items-center justify-between gap-2 px-1 pb-2">
           <p className="text-xs tabular-nums text-black/45">
-            London · {todayKey} · {rows.length} fixture{rows.length === 1 ? '' : 's'}
+            London · {todayKey} · {visibleCount} fixture{visibleCount === 1 ? '' : 's'}
+            {rows.length !== visibleCount ? ` (of ${rows.length})` : ''}
           </p>
           {onReload ? (
             <button
@@ -101,11 +117,49 @@ export function StatStrikeBoard({
           ) : null}
         </div>
       ) : null}
-      <ul className={compact ? 'divide-y-0' : 'space-y-2'}>
-        {shown.map((row) => (
-          <StatStrikeFixtureRow key={row.fixture.id} row={row} compact={compact} />
-        ))}
-      </ul>
+
+      {useGroups ? (
+        <div className="space-y-6">
+          {dayGroups!.map((day) => (
+            <section key={day.dayKey} className="space-y-3">
+              <h2 className="text-xs font-bold uppercase tracking-wide text-black/45">{day.dayLabel}</h2>
+              {day.timeGroups.map((tg) => (
+                <div key={`${day.dayKey}-${tg.timeLabel}`} className="space-y-2">
+                  <p className="text-sm font-semibold tabular-nums text-[#0b3d5c]">{tg.timeLabel}</p>
+                  {tg.leagues.map((lg) => (
+                    <div key={`${day.dayKey}-${tg.timeLabel}-${lg.leagueKey}`} className="space-y-2">
+                      <p className="text-[10px] font-semibold uppercase tracking-wide text-black/40">
+                        {lg.leagueKey}
+                      </p>
+                      <ul className="space-y-2">
+                        {lg.rows.map((row) => (
+                          <StatStrikeFixtureRow
+                            key={row.fixture.id}
+                            row={row}
+                            onStarClick={onStarClick}
+                          />
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </section>
+          ))}
+        </div>
+      ) : (
+        <ul className={compact ? 'divide-y-0' : 'space-y-2'}>
+          {flatShown.map((row) => (
+            <StatStrikeFixtureRow
+              key={row.fixture.id}
+              row={row}
+              compact={compact}
+              onStarClick={onStarClick}
+            />
+          ))}
+        </ul>
+      )}
+
       {compact && maxRows != null && rows.length > maxRows ? (
         <p className="px-3 py-2 text-[11px] text-black/45">
           +{rows.length - maxRows} more in full StatStrike

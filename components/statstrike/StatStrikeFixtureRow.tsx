@@ -9,9 +9,11 @@ import { isLiveStatus } from '@/lib/statstrike/parse-selection';
 type Props = {
   row: StatStrikeBoardRow;
   compact?: boolean;
+  /** Premium stub — star opens App Store gate until Stripe. */
+  onStarClick?: () => void;
 };
 
-export function StatStrikeFixtureRow({ row, compact = false }: Props) {
+export function StatStrikeFixtureRow({ row, compact = false, onStarClick }: Props) {
   const { fixture, prediction, bestPerformingLeague, fromYesterday } = row;
   const [open, setOpen] = useState(false);
   const panelId = useId();
@@ -34,57 +36,71 @@ export function StatStrikeFixtureRow({ row, compact = false }: Props) {
           : 'rounded-xl border border-black/10 bg-white/80 shadow-sm'
       }
     >
-      <button
-        type="button"
-        aria-expanded={open}
-        aria-controls={panelId}
-        onClick={() => setOpen((v) => !v)}
-        className={`flex w-full items-start justify-between gap-2 text-left transition-colors hover:bg-black/[0.03] ${
-          compact ? 'px-3 py-2' : 'px-3 py-3'
-        }`}
+      <div
+        className={`flex items-start gap-1 ${compact ? 'px-2 py-1' : 'px-2 py-2'}`}
       >
-        <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-semibold uppercase tracking-wide text-black/45 truncate">
-            {leagueLabel || 'League'}
-            {bestPerformingLeague ? ' · Best performing' : ''}
-            {fromYesterday ? ' · Carry-over' : ''}
-          </p>
-          <p className={`mt-0.5 font-semibold text-black/90 leading-snug ${compact ? 'text-sm' : 'text-base'}`}>
-            {fixture.homeTeam.name}{' '}
-            <span className="font-normal text-black/40">v</span> {fixture.awayTeam.name}
-          </p>
-          <p className="mt-1 text-xs tabular-nums text-black/50">
-            {formatKickoffLocal(fixture.kickoffMs)}
-            {live ? (
-              <span className="ml-2 font-semibold text-emerald-700">
-                LIVE{fixture.elapsed != null ? ` ${fixture.elapsed}'` : ''}
-              </span>
-            ) : fixture.status && fixture.status !== 'NS' && !finished ? (
-              <span className="ml-2 text-black/40">{fixture.status}</span>
-            ) : null}
-          </p>
-        </div>
-        <div className="shrink-0 text-right">
-          {score ? (
-            <p className="text-sm font-bold tabular-nums text-black/90">{score}</p>
-          ) : null}
-          {finished ? (
-            <p
-              className={`mt-1 inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-black tracking-wide ${
-                won === true ? 'bg-amber-300 text-black' : 'bg-black/25 text-white'
-              }`}
-            >
-              {won === true ? 'WIN' : 'FT'}
+        <button
+          type="button"
+          aria-expanded={open}
+          aria-controls={panelId}
+          onClick={() => setOpen((v) => !v)}
+          className={`min-w-0 flex-1 flex items-start justify-between gap-2 text-left transition-colors hover:bg-black/[0.03] rounded-lg ${
+            compact ? 'px-1 py-1' : 'px-1 py-1'
+          }`}
+        >
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-black/45 truncate">
+              {leagueLabel || 'League'}
+              {bestPerformingLeague ? ' · Best performing' : ''}
+              {fromYesterday ? ' · Carry-over' : ''}
             </p>
-          ) : null}
-          <p className="mt-1 inline-flex max-w-[9.5rem] rounded-md bg-[#0b3d5c]/10 px-1.5 py-0.5 text-[11px] font-semibold text-[#0b3d5c] leading-tight">
-            {band}
-          </p>
-          <p className="mt-1.5 text-[10px] font-semibold text-[#0b3d5c]/70">
-            {open ? 'Hide detail ▴' : 'Detail ▾'}
-          </p>
-        </div>
-      </button>
+            <p className={`mt-0.5 font-semibold text-black/90 leading-snug ${compact ? 'text-sm' : 'text-base'}`}>
+              {fixture.homeTeam.name}{' '}
+              <span className="font-normal text-black/40">v</span> {fixture.awayTeam.name}
+            </p>
+            <p className="mt-1 text-xs tabular-nums text-black/50">
+              {formatKickoffLocal(fixture.kickoffMs)}
+              {live ? (
+                <span className="ml-2 font-semibold text-emerald-700">
+                  LIVE{fixture.elapsed != null ? ` ${fixture.elapsed}'` : ''}
+                </span>
+              ) : fixture.status && fixture.status !== 'NS' && !finished ? (
+                <span className="ml-2 text-black/40">{fixture.status}</span>
+              ) : null}
+            </p>
+          </div>
+          <div className="shrink-0 text-right">
+            {score ? (
+              <p className="text-sm font-bold tabular-nums text-black/90">{score}</p>
+            ) : null}
+            {finished ? (
+              <p
+                className={`mt-1 inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-black tracking-wide ${
+                  won === true ? 'bg-amber-300 text-black' : 'bg-black/25 text-white'
+                }`}
+              >
+                {won === true ? 'WIN' : 'FT'}
+              </p>
+            ) : null}
+            <p className="mt-1 inline-flex max-w-[9.5rem] rounded-md bg-[#0b3d5c]/10 px-1.5 py-0.5 text-[11px] font-semibold text-[#0b3d5c] leading-tight">
+              {band}
+            </p>
+            <p className="mt-1.5 text-[10px] font-semibold text-[#0b3d5c]/70">
+              {open ? 'Hide detail ▴' : 'Detail ▾'}
+            </p>
+          </div>
+        </button>
+        {onStarClick && !compact ? (
+          <button
+            type="button"
+            aria-label="Add to Your Picks (Premium)"
+            className="shrink-0 self-start rounded-lg px-2 py-1 text-base leading-none text-black/35 hover:bg-black/[0.04] hover:text-amber-500"
+            onClick={onStarClick}
+          >
+            ★
+          </button>
+        ) : null}
+      </div>
 
       {open ? (
         <div

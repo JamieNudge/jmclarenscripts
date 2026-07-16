@@ -12,6 +12,7 @@ import {
 import { AdminAndAnotherThingSection } from '@/components/admin/AdminAndAnotherThingSection';
 import { AdminBlogSection } from '@/components/admin/AdminBlogSection';
 import { AdminHubVideoSection } from '@/components/admin/AdminHubVideoSection';
+import { AdminStatStrikeWebSection } from '@/components/admin/AdminStatStrikeWebSection';
 import { AdminPredictionEmailBlocklist } from '@/components/admin/AdminPredictionEmailBlocklist';
 import { AdminPredictionSubmissions } from '@/components/admin/AdminPredictionSubmissions';
 import { AdminStatstrikeBetaFeedbackSubmissions } from '@/components/admin/AdminStatstrikeBetaFeedbackSubmissions';
@@ -546,6 +547,8 @@ export default function AdminPicksPage() {
         </section>
 
         <AdminHubVideoSection adminKey={adminKey} />
+
+        <AdminStatStrikeWebSection adminKey={adminKey} />
 
         <AdminBlogSection adminKey={adminKey} />
 
