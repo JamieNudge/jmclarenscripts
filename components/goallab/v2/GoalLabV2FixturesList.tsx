@@ -16,7 +16,7 @@ import {
 import { statStrikeRtdbPathsFromEnv } from '@/lib/best-picks-firebase';
 import { getFirebaseRealtimeDb, isFirebaseClientConfigured } from '@/lib/firebase-client';
 
-const PREVIEW_LIMIT = 3;
+const PREVIEW_LIMIT = 6;
 const statStrikeAppStoreUrl = apps.find((a) => a.id === 'stat-strike')?.appStoreUrl;
 
 export function GoalLabV2FixturesList() {
@@ -83,7 +83,7 @@ export function GoalLabV2FixturesList() {
       <header className="space-y-2 max-w-2xl">
         <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-[var(--gl-text)]">Forecasts</h1>
         <p className="text-base text-[var(--gl-text-soft)] leading-relaxed">
-          Day <span className="tabular-nums text-[var(--gl-accent)]">{dateKey}</span> — three daily picks on
+          Day <span className="tabular-nums text-[var(--gl-accent)]">{dateKey}</span> — six daily picks on
           the web. Full list is in the StatStrike app.
         </p>
       </header>
@@ -127,7 +127,7 @@ export function GoalLabV2FixturesList() {
           ) : null}
           {lockedGroups.length > 0 ? (
             <ComingSoonBlur
-              badge="Coming Soon!"
+              badge={null}
               ctaHref={statStrikeAppStoreUrl}
               ctaLabel="Get StatStrike on the App Store"
               minHeightClassName="min-h-[20rem]"

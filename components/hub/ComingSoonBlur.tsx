@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 type Props = {
   children: ReactNode;
   /** Short label on the frost overlay, e.g. Coming Soon! */
-  badge?: string;
+  badge?: string | null;
   /** Optional CTA under the badge */
   ctaHref?: string;
   ctaLabel?: string;
@@ -48,11 +48,13 @@ export function ComingSoonBlur({
             {children}
           </div>
           <div className="absolute inset-0 bg-white/50">
-            <div className="absolute inset-0 flex items-center justify-center px-4">
-              <span className="rounded-full bg-amber-300 px-3 py-1.5 text-xs font-black tracking-wide text-black shadow-sm">
-                {badge}
-              </span>
-            </div>
+            {badge ? (
+              <div className="absolute inset-0 flex items-center justify-center px-4">
+                <span className="rounded-full bg-amber-300 px-3 py-1.5 text-xs font-black tracking-wide text-black shadow-sm">
+                  {badge}
+                </span>
+              </div>
+            ) : null}
             {ctaHref && ctaLabel ? (
               <div className="absolute inset-x-0 bottom-3 z-10 flex justify-center px-3">
                 <a
@@ -74,9 +76,11 @@ export function ComingSoonBlur({
           </div>
           <div className="absolute inset-0 flex items-center justify-center bg-white/45 px-4">
             <div className="flex max-w-sm flex-col items-center gap-3 text-center">
-              <span className="rounded-full bg-amber-300 px-3 py-1 text-xs font-black tracking-wide text-black shadow-sm">
-                {badge}
-              </span>
+              {badge ? (
+                <span className="rounded-full bg-amber-300 px-3 py-1 text-xs font-black tracking-wide text-black shadow-sm">
+                  {badge}
+                </span>
+              ) : null}
               {ctaHref && ctaLabel ? (
                 <a
                   href={ctaHref}
