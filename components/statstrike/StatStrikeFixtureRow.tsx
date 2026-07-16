@@ -3,6 +3,7 @@
 import { useId, useState } from 'react';
 import type { StatStrikeBoardRow } from '@/lib/statstrike/models';
 import { formatKickoffLocal, scoreLabel } from '@/lib/statstrike/board-merge';
+import { isResultFinishedStatus, predictionResultForFixture } from '@/lib/statstrike/correctness';
 import { isLiveStatus } from '@/lib/statstrike/parse-selection';
 
 type Props = {
@@ -15,6 +16,8 @@ export function StatStrikeFixtureRow({ row, compact = false }: Props) {
   const [open, setOpen] = useState(false);
   const panelId = useId();
   const live = isLiveStatus(fixture.status);
+  const finished = isResultFinishedStatus(fixture.status);
+  const won = predictionResultForFixture(fixture, prediction);
   const score = scoreLabel(fixture);
   const band = prediction?.recommendedLevel || prediction?.level || '—';
   const leagueLabel = [fixture.league.country, fixture.league.name].filter(Boolean).join(' · ');
@@ -56,7 +59,7 @@ export function StatStrikeFixtureRow({ row, compact = false }: Props) {
               <span className="ml-2 font-semibold text-emerald-700">
                 LIVE{fixture.elapsed != null ? ` ${fixture.elapsed}'` : ''}
               </span>
-            ) : fixture.status && fixture.status !== 'NS' ? (
+            ) : fixture.status && fixture.status !== 'NS' && !finished ? (
               <span className="ml-2 text-black/40">{fixture.status}</span>
             ) : null}
           </p>
@@ -64,6 +67,15 @@ export function StatStrikeFixtureRow({ row, compact = false }: Props) {
         <div className="shrink-0 text-right">
           {score ? (
             <p className="text-sm font-bold tabular-nums text-black/90">{score}</p>
+          ) : null}
+          {finished ? (
+            <p
+              className={`mt-1 inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-black tracking-wide ${
+                won === true ? 'bg-amber-300 text-black' : 'bg-black/25 text-white'
+              }`}
+            >
+              {won === true ? '✅ WIN' : 'FT'}
+            </p>
           ) : null}
           <p className="mt-1 inline-flex max-w-[9.5rem] rounded-md bg-[#0b3d5c]/10 px-1.5 py-0.5 text-[11px] font-semibold text-[#0b3d5c] leading-tight">
             {band}
@@ -87,8 +99,13 @@ export function StatStrikeFixtureRow({ row, compact = false }: Props) {
           <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1.5 text-xs text-black/70">
             <dt className="font-semibold text-black/45">Forecast</dt>
             <dd>{band}</dd>
-            {prediction?.recommendedLevel &&
-            prediction.recommendedLevel !== prediction.level ? (
+            {finished ? (
+              <>
+                <dt className="font-semibold text-black/45">Result</dt>
+                <dd>{won === true ? '✅ WIN' : won === false ? 'FT' : fixture.status}</dd>
+              </>
+            ) : null}
+            {prediction?.recommendedLevel && prediction.recommendedLevel !== prediction.level ? (
               <>
                 <dt className="font-semibold text-black/45">Primary</dt>
                 <dd>{prediction.level}</dd>

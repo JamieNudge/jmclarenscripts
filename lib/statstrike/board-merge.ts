@@ -1,4 +1,5 @@
 import type { StatStrikeBoardRow, StatStrikeDailySelection, StatStrikeFixture } from '@/lib/statstrike/models';
+import { isResultFinishedStatus } from '@/lib/statstrike/correctness';
 import {
   FINISHED_STATUSES,
   isBestPerformingLeague,
@@ -7,6 +8,8 @@ import {
 } from '@/lib/statstrike/parse-selection';
 
 function shouldCarryOverFromYesterday(fixture: StatStrikeFixture, nowMs: number): boolean {
+  // Keep final results from yesterday briefly so WIN badges can still surface.
+  if (isResultFinishedStatus(fixture.status)) return true;
   if (isFinishedStatus(fixture.status)) return false;
   if (isLiveStatus(fixture.status)) return true;
   const isNotStarted = fixture.status == null || fixture.status === 'NS';
@@ -23,6 +26,8 @@ function shouldShowOnBoard(
   nowMs: number,
 ): boolean {
   if (!hasPrediction) return false;
+  // Show FT/AET/PEN so WIN / FT badges can appear (iOS card behaviour).
+  if (isResultFinishedStatus(fixture.status)) return true;
   if (isFinishedStatus(fixture.status)) return false;
   if (isLiveStatus(fixture.status)) return true;
   const isNotStarted = fixture.status == null || fixture.status === 'NS';
