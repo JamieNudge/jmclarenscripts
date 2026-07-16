@@ -47,6 +47,7 @@ export function StatStrikeHeroPanel() {
           ctaHref={statStrikeAppStoreUrl}
           ctaLabel="Get StatStrike on the App Store"
           minHeightClassName="min-h-full h-full"
+          centerBadge
         >
           <StatStrikeBoard
             variant="hero"

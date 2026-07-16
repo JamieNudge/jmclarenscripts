@@ -47,6 +47,7 @@ export function StatStrikeAppShell() {
           ctaHref={statStrikeAppStoreUrl}
           ctaLabel="Get StatStrike on the App Store"
           minHeightClassName="min-h-[22rem]"
+          centerBadge
         >
           <StatStrikeBoard
             variant="full"
