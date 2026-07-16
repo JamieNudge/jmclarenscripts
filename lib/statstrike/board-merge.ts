@@ -1,0 +1,149 @@
+import type { StatStrikeBoardRow, StatStrikeDailySelection, StatStrikeFixture } from '@/lib/statstrike/models';
+import {
+  FINISHED_STATUSES,
+  isBestPerformingLeague,
+  isFinishedStatus,
+  isLiveStatus,
+} from '@/lib/statstrike/parse-selection';
+
+function shouldCarryOverFromYesterday(fixture: StatStrikeFixture, nowMs: number): boolean {
+  if (isFinishedStatus(fixture.status)) return false;
+  if (isLiveStatus(fixture.status)) return true;
+  const isNotStarted = fixture.status == null || fixture.status === 'NS';
+  if (!isNotStarted) return false;
+  // Not started: keep if kickoff still ahead, or within 3h past (same as iOS).
+  if (fixture.kickoffMs > nowMs) return true;
+  const hoursPast = (nowMs - fixture.kickoffMs) / 3_600_000;
+  return hoursPast <= 3;
+}
+
+function shouldShowOnBoard(
+  fixture: StatStrikeFixture,
+  hasPrediction: boolean,
+  nowMs: number,
+): boolean {
+  if (!hasPrediction) return false;
+  if (isFinishedStatus(fixture.status)) return false;
+  if (isLiveStatus(fixture.status)) return true;
+  const isNotStarted = fixture.status == null || fixture.status === 'NS';
+  if (fixture.kickoffMs > nowMs) return true;
+  if (isNotStarted) {
+    const hoursPast = (nowMs - fixture.kickoffMs) / 3_600_000;
+    return hoursPast <= 3;
+  }
+  return false;
+}
+
+/**
+ * Merge UK today selection with yesterday live carry-over (iOS FixtureListViewModel behaviour).
+ * Today wins on fixture id collision.
+ */
+export function mergeBoardRows(args: {
+  todayKey: string;
+  yesterdayKey: string;
+  today: StatStrikeDailySelection | null;
+  yesterday: StatStrikeDailySelection | null;
+  nowMs?: number;
+}): StatStrikeBoardRow[] {
+  const nowMs = args.nowMs ?? Date.now();
+  const byId = new Map<number, StatStrikeBoardRow>();
+
+  const lpToday = args.today?.leaguePerformance ?? {};
+  const lpYest = args.yesterday?.leaguePerformance ?? {};
+
+  if (args.yesterday) {
+    for (const fixture of args.yesterday.fixtures) {
+      if (!shouldCarryOverFromYesterday(fixture, nowMs)) continue;
+      const prediction = args.yesterday.predictionsByFixtureId.get(fixture.id) ?? null;
+      if (!prediction || prediction.matchedCriteria <= 0) continue;
+      if (!shouldShowOnBoard(fixture, true, nowMs)) continue;
+      byId.set(fixture.id, {
+        fixture,
+        prediction,
+        bestPerformingLeague: isBestPerformingLeague(fixture, { ...lpYest, ...lpToday }),
+        fromYesterday: true,
+        selectionDateKey: args.yesterdayKey,
+      });
+    }
+  }
+
+  if (args.today) {
+    for (const fixture of args.today.fixtures) {
+      const prediction = args.today.predictionsByFixtureId.get(fixture.id) ?? null;
+      if (!prediction || prediction.matchedCriteria <= 0) continue;
+      if (!shouldShowOnBoard(fixture, true, nowMs)) continue;
+      byId.set(fixture.id, {
+        fixture,
+        prediction,
+        bestPerformingLeague: isBestPerformingLeague(fixture, lpToday),
+        fromYesterday: false,
+        selectionDateKey: args.todayKey,
+      });
+    }
+  }
+
+  return Array.from(byId.values()).sort((a, b) => {
+    if (a.fixture.kickoffMs !== b.fixture.kickoffMs) {
+      return a.fixture.kickoffMs - b.fixture.kickoffMs;
+    }
+    return a.fixture.homeTeam.name.localeCompare(b.fixture.homeTeam.name);
+  });
+}
+
+export function formatKickoffLocal(kickoffMs: number): string {
+  if (!kickoffMs) return '—';
+  try {
+    return new Intl.DateTimeFormat(undefined, {
+      weekday: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(new Date(kickoffMs));
+  } catch {
+    return new Date(kickoffMs).toLocaleString();
+  }
+}
+
+export function scoreLabel(fixture: StatStrikeFixture): string | null {
+  if (fixture.homeScore == null || fixture.awayScore == null) {
+    if (!isLiveStatus(fixture.status) && !FINISHED_STATUSES.has(fixture.status ?? '')) {
+      return null;
+    }
+  }
+  if (fixture.homeScore == null || fixture.awayScore == null) return null;
+  return `${fixture.homeScore}–${fixture.awayScore}`;
+}
+
+export type BoardRefreshResult = {
+  todayKey: string;
+  yesterdayKey: string;
+  rows: StatStrikeBoardRow[];
+  todayCount: number;
+  yesterdayCarryCount: number;
+  reason: string;
+};
+
+export function buildBoardRefreshResult(args: {
+  todayKey: string;
+  yesterdayKey: string;
+  today: StatStrikeDailySelection | null;
+  yesterday: StatStrikeDailySelection | null;
+  reason: string;
+  nowMs?: number;
+}): BoardRefreshResult {
+  const rows = mergeBoardRows(args);
+  const yesterdayCarryCount = rows.filter((r) => r.fromYesterday).length;
+  const result: BoardRefreshResult = {
+    todayKey: args.todayKey,
+    yesterdayKey: args.yesterdayKey,
+    rows,
+    todayCount: args.today?.fixtures.length ?? 0,
+    yesterdayCarryCount,
+    reason: args.reason,
+  };
+  if (typeof console !== 'undefined') {
+    console.info(
+      `[statstrike] refresh uk=${result.todayKey} fixtures=${result.rows.length} todayRaw=${result.todayCount} yCarry=${result.yesterdayCarryCount} reason=${result.reason}`,
+    );
+  }
+  return result;
+}

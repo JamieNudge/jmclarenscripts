@@ -5,6 +5,7 @@ import { onValue, ref } from 'firebase/database';
 import { GoalLabV2AppsStatus } from '@/components/goallab/v2/GoalLabV2AppsStatus';
 import { GoalLabV2FixtureCard } from '@/components/goallab/v2/GoalLabV2FixtureCard';
 import { GoalLabV2ModelPipeline } from '@/components/goallab/v2/GoalLabV2ModelPipeline';
+import { StatStrikeHeroPanel } from '@/components/statstrike/StatStrikeHeroPanel';
 import { HubFootballLink } from '@/components/hub/HubFootballLink';
 import { useBestPicksLondonDateKey } from '@/hooks/useBestPicksLondonDateKey';
 import {
@@ -20,6 +21,7 @@ import {
   parseFixturesFromUnanimousExport,
   sortFixturesByKickoff,
 } from '@/lib/fixtures-browser';
+import { isStatStrikeWebEnabled } from '@/lib/statstrike/enabled';
 
 const PREVIEW_LIMIT = 6;
 
@@ -104,7 +106,9 @@ export function GoalLabV2Home() {
         </div>
 
         <div className="min-w-0">
-          {loading ? (
+          {isStatStrikeWebEnabled() ? (
+            <StatStrikeHeroPanel />
+          ) : loading ? (
             <div className="rounded-2xl border border-[var(--gl-border)] bg-[var(--gl-surface)] p-6 shadow-[var(--gl-shadow)] animate-pulse">
               <div className="h-3 w-1/3 rounded bg-[var(--gl-elevated)]" />
               <div className="mt-4 h-7 w-3/4 rounded bg-[var(--gl-elevated)]" />

@@ -147,6 +147,10 @@ export function middleware(request: NextRequest) {
     return NextResponse.next(forward);
   }
 
+  if (pathname === '/statstrike' || pathname.startsWith('/statstrike/')) {
+    return NextResponse.next(forward);
+  }
+
   if (isStaticAssetPath(pathname)) {
     return NextResponse.next(forward);
   }
