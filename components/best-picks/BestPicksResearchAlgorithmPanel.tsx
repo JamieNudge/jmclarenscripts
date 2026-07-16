@@ -40,7 +40,7 @@ function bandPillClass(band: string): string {
 function outcomeClass(outcome: string): string {
   switch (outcome) {
     case 'win':
-      return 'text-[var(--hub-success)] border-[var(--hub-success-border)] bg-[var(--hub-success-bg)]';
+      return 'text-black border-amber-300 bg-amber-300';
     case 'loss':
       return 'text-[var(--hub-danger)] border-[var(--hub-danger-border)] bg-[var(--hub-danger-bg)]';
     case 'void':
@@ -48,6 +48,10 @@ function outcomeClass(outcome: string): string {
     default:
       return 'text-[var(--hub-text-soft)] border-[var(--hub-border)] bg-[var(--hub-chip)]';
   }
+}
+
+function outcomeLabel(outcome: string): string {
+  return outcome === 'win' ? 'WIN' : outcome;
 }
 
 function ConsensusPickRow({ pick, className = '' }: { pick: DailyConsensusPickParsed; className?: string }) {
@@ -88,7 +92,7 @@ function ConsensusPickRow({ pick, className = '' }: { pick: DailyConsensusPickPa
           <span
             className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-md border whitespace-nowrap ${outcomeClass(pick.outcome)}`}
           >
-            {pick.outcome}
+            {outcomeLabel(pick.outcome)}
           </span>
         </div>
       </div>
