@@ -23,9 +23,9 @@ Stored in RTDB at `statstrikeWebConfig`:
 
 - Toggle on **`/admin/picks`** → **GoalLab blurs (StatStrike + Forecasts)** (same Bearer key as picks).
   - **StatStrike Web blur** — hero + `/statstrike`
-  - **Forecasts blur** — `/fixtures` overflow (six clear cards vs full list)
+  - **Forecasts** (`/fixtures`) — full-day compact board (fixture + goal band); no overflow blur. `forecastsBlur` may still exist in RTDB unused.
 - Public site reads via **`GET /api/statstrike/web-config`** (Admin SDK).
-- Missing fields default to **ON**.
+- Missing StatStrike blur defaults to **ON**.
 
 ## Routes
 

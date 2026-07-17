@@ -57,7 +57,6 @@ function ToggleRow({
 
 export function AdminStatStrikeWebSection({ adminKey }: Props) {
   const [blur, setBlur] = useState(true);
-  const [forecastsBlur, setForecastsBlur] = useState(true);
   const [updatedAt, setUpdatedAt] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -66,7 +65,6 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
 
   const apply = useCallback((config: StatStrikeWebConfig) => {
     setBlur(config.blur);
-    setForecastsBlur(config.forecastsBlur);
     setUpdatedAt(config.updatedAt);
   }, []);
 
@@ -97,8 +95,8 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
         c
           ? `Loaded config${json.path ? ` (${json.path})` : ''}. StatStrike blur ${
               c.blur ? 'ON' : 'OFF'
-            }, Forecasts blur ${c.forecastsBlur ? 'ON' : 'OFF'}.`
-          : 'No config yet — both blurs default ON.',
+            }.`
+          : 'No config yet — StatStrike blur defaults ON.',
       );
     } catch (e) {
       setStatus(e instanceof Error ? e.message : 'Load failed');
@@ -111,7 +109,7 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
     if (canUse) void load();
   }, [canUse, load]);
 
-  const save = async (patch: { blur?: boolean; forecastsBlur?: boolean }) => {
+  const save = async (patch: { blur?: boolean }) => {
     if (!canUse) {
       setStatus('Admin key required.');
       return;
@@ -138,26 +136,15 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
       }
       const c = json.config ?? {
         blur: patch.blur ?? blur,
-        forecastsBlur: patch.forecastsBlur ?? forecastsBlur,
+        forecastsBlur: true,
         updatedAt: new Date().toISOString(),
       };
       apply(c);
-      const bits: string[] = [];
-      if (patch.blur !== undefined) {
-        bits.push(
-          patch.blur
-            ? 'StatStrike Coming Soon blur ON (hero + /statstrike).'
-            : 'StatStrike Coming Soon blur OFF (interactive board).',
-        );
-      }
-      if (patch.forecastsBlur !== undefined) {
-        bits.push(
-          patch.forecastsBlur
-            ? 'Forecasts overflow blur ON (/fixtures).'
-            : 'Forecasts overflow blur OFF (full list on /fixtures).',
-        );
-      }
-      setStatus(`${bits.join(' ')}${json.path ? ` (${json.path})` : ''}`);
+      setStatus(
+        patch.blur
+          ? `StatStrike Coming Soon blur ON (hero + /statstrike).${json.path ? ` (${json.path})` : ''}`
+          : `StatStrike Coming Soon blur OFF (interactive board).${json.path ? ` (${json.path})` : ''}`,
+      );
     } catch (e) {
       setStatus(e instanceof Error ? e.message : 'Save failed');
     } finally {
@@ -167,11 +154,11 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
 
   return (
     <section className="rounded-2xl border border-white/15 bg-white/5 p-6 space-y-4">
-      <h2 className="text-lg font-semibold">GoalLab blurs (StatStrike + Forecasts)</h2>
+      <h2 className="text-lg font-semibold">GoalLab / StatStrike blur</h2>
       <p className="text-xs text-white/50 leading-relaxed">
-        Runtime kill-switches stored at <code className="text-white/70">statstrikeWebConfig</code>.
+        Runtime kill-switch stored at <code className="text-white/70">statstrikeWebConfig</code>.
         Public site reads via <code className="text-white/70">/api/statstrike/web-config</code>. Missing
-        fields default to blur <strong className="text-white/65">ON</strong>.
+        StatStrike blur defaults to <strong className="text-white/65">ON</strong>.
       </p>
       <p className="text-xs text-white/55 leading-relaxed">
         Product on/off for StatStrike web is still{' '}
@@ -181,7 +168,7 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
       {updatedAt ? (
         <p className="text-[11px] text-white/45 tabular-nums">Last updated {updatedAt}</p>
       ) : (
-        <p className="text-[11px] text-white/45">Not saved yet (defaults ON)</p>
+        <p className="text-[11px] text-white/45">Not saved yet (default ON)</p>
       )}
 
       <ToggleRow
@@ -194,15 +181,12 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
         onTurnOn={() => void save({ blur: true })}
       />
 
-      <ToggleRow
-        label="Forecasts blur"
-        description="GoalLab /fixtures — when ON, only six cards stay clear and the rest are blurred with App Store CTA. When OFF, the full day list is visible."
-        on={forecastsBlur}
-        loading={loading}
-        canUse={canUse}
-        onTurnOff={() => void save({ forecastsBlur: false })}
-        onTurnOn={() => void save({ forecastsBlur: true })}
-      />
+      <p className="text-xs text-white/50 leading-relaxed rounded-xl border border-white/15 bg-white/[0.03] px-4 py-3">
+        <strong className="text-white/70">Forecasts (/fixtures)</strong> is a full-day compact board
+        (fixture + goal band) with no overflow blur. The{' '}
+        <code className="text-white/70">forecastsBlur</code> field remains in RTDB for later reuse but
+        is not applied on the list.
+      </p>
 
       {!canUse ? (
         <p className="text-xs text-amber-100/90">Paste your admin key in section 1 to manage this.</p>

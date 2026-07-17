@@ -21,9 +21,19 @@ type Props = {
   fixture: FixtureListItem;
   dateKey: string;
   featured?: boolean;
+  /**
+   * When false, render a display cell (fixture + band) with no link to detail.
+   * Used on /fixtures — the list page is the Forecasts experience.
+   */
+  interactive?: boolean;
 };
 
-export function GoalLabV2FixtureCard({ fixture, dateKey, featured = false }: Props) {
+export function GoalLabV2FixtureCard({
+  fixture,
+  dateKey,
+  featured = false,
+  interactive = true,
+}: Props) {
   const visitorTz = useVisitorTimeZone();
   const kickoffShort = formatKickoffShortLocalAndUtc(fixture.kickoffMs, visitorTz);
   const kickoffTitle =
@@ -33,13 +43,16 @@ export function GoalLabV2FixtureCard({ fixture, dateKey, featured = false }: Pro
   const won = fixtureListItemWinResult(fixture);
   const href = fixtureDetailHrefV2(fixture.fixtureId, dateKey);
 
-  return (
-    <HubFootballLink
-      href={href}
-      className={`group flex flex-col rounded-2xl border border-[var(--gl-border)] bg-[var(--gl-surface)] shadow-[var(--gl-shadow)] transition-colors outline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--gl-accent)] hover:border-[var(--gl-border-strong)] ${
-        featured ? 'p-5 md:p-6' : 'p-4'
-      }`}
-    >
+  const shellClass = `flex flex-col rounded-2xl border border-[var(--gl-border)] bg-[var(--gl-surface)] shadow-[var(--gl-shadow)] ${
+    featured ? 'p-5 md:p-6' : 'p-4'
+  } ${
+    interactive
+      ? 'group transition-colors outline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--gl-accent)] hover:border-[var(--gl-border-strong)]'
+      : ''
+  }`;
+
+  const body = (
+    <>
       <div className="flex items-start justify-between gap-3">
         <p className="text-xs font-medium uppercase tracking-wide text-[var(--gl-text-muted)] truncate">
           {fixture.leagueKey}
@@ -97,12 +110,24 @@ export function GoalLabV2FixtureCard({ fixture, dateKey, featured = false }: Pro
         </div>
       ) : null}
 
-      <p className="mt-4 text-sm font-medium text-[var(--gl-accent)] group-hover:text-[var(--gl-accent-hover)]">
-        View forecast
-        <span className="ml-1 inline-block transition-transform group-hover:translate-x-0.5" aria-hidden>
-          →
-        </span>
-      </p>
+      {interactive ? (
+        <p className="mt-4 text-sm font-medium text-[var(--gl-accent)] group-hover:text-[var(--gl-accent-hover)]">
+          View forecast
+          <span className="ml-1 inline-block transition-transform group-hover:translate-x-0.5" aria-hidden>
+            →
+          </span>
+        </p>
+      ) : null}
+    </>
+  );
+
+  if (!interactive) {
+    return <article className={shellClass}>{body}</article>;
+  }
+
+  return (
+    <HubFootballLink href={href} className={shellClass}>
+      {body}
     </HubFootballLink>
   );
 }
