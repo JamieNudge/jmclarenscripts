@@ -87,6 +87,12 @@ export function GoalLabV2FixturesList() {
           Day <span className="tabular-nums text-[var(--gl-accent)]">{dateKey}</span> — fixture and
           goal-band forecasts for the day. Deeper boards and track record live in StatStrike.
         </p>
+        {statStrikeAppStoreUrl ? (
+          <p className="text-sm text-[var(--gl-text-soft)] pt-1">
+            Full StatStrike experience —{' '}
+            <StatStrikeAppStoreCta href={statStrikeAppStoreUrl} variant="inline" />
+          </p>
+        ) : null}
       </header>
 
       {!configured ? (
