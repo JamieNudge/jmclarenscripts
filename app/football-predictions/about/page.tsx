@@ -51,7 +51,16 @@ export default function BestPicksAboutPage() {
       <section className="space-y-3 border-t border-[var(--hub-border-soft)] pt-6">
         <h2 className="text-xl font-semibold text-[var(--hub-text)]">Video</h2>
         <p className="text-sm text-[var(--hub-text-soft)]">
-          Optional hub video when configured in Firebase — expands here without cluttering the homepage.
+          Optional hub video when configured in Firebase — expands here without cluttering the homepage.{' '}
+          <a
+            href="https://www.youtube.com/@TheGoalLabArchive/videos"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[var(--hub-accent-link)] underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)]"
+          >
+            Watch more on YouTube
+          </a>
+          .
         </p>
         <div className="min-h-0 max-w-xl">
           <BestPicksVideo />
