@@ -2,6 +2,7 @@ import type { StatStrikeBoardRow, StatStrikeDailySelection, StatStrikeFixture } 
 import { isResultFinishedStatus } from '@/lib/statstrike/correctness';
 import {
   FINISHED_STATUSES,
+  enrichBoardRowDisplay,
   isBestPerformingLeague,
   isFinishedStatus,
   isLiveStatus,
@@ -68,12 +69,15 @@ export function mergeBoardRows(args: {
       const prediction = args.yesterday.predictionsByFixtureId.get(fixture.id) ?? null;
       if (!prediction || prediction.matchedCriteria <= 0) continue;
       if (!shouldShowOnBoard(fixture, true, nowMs, { allowFinishedResults: false })) continue;
+      const display = enrichBoardRowDisplay(fixture, prediction, args.yesterday);
       byId.set(fixture.id, {
         fixture,
         prediction,
         bestPerformingLeague: isBestPerformingLeague(fixture, { ...lpYest, ...lpToday }),
         fromYesterday: true,
         selectionDateKey: args.yesterdayKey,
+        trackRecordDisplay: display.trackRecordDisplay,
+        keySignalLines: display.keySignalLines,
       });
     }
   }
@@ -83,12 +87,15 @@ export function mergeBoardRows(args: {
       const prediction = args.today.predictionsByFixtureId.get(fixture.id) ?? null;
       if (!prediction || prediction.matchedCriteria <= 0) continue;
       if (!shouldShowOnBoard(fixture, true, nowMs, { allowFinishedResults: true })) continue;
+      const display = enrichBoardRowDisplay(fixture, prediction, args.today);
       byId.set(fixture.id, {
         fixture,
         prediction,
         bestPerformingLeague: isBestPerformingLeague(fixture, lpToday),
         fromYesterday: false,
         selectionDateKey: args.todayKey,
+        trackRecordDisplay: display.trackRecordDisplay,
+        keySignalLines: display.keySignalLines,
       });
     }
   }

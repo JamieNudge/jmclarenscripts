@@ -3,10 +3,16 @@ import { parseGoalBandCascade } from '@/lib/statstrike/goal-band-cascade';
 import type {
   StatStrikeDailySelection,
   StatStrikeFixture,
+  StatStrikeFixtureStatsSummary,
   StatStrikeLeague,
+  StatStrikeLeagueTrackRecord,
   StatStrikePrediction,
   StatStrikeTeam,
 } from '@/lib/statstrike/models';
+import {
+  resolvedDisplayKeySignals,
+  trackRecordDisplayForFixture,
+} from '@/lib/statstrike/display-signals';
 
 function asRecord(v: unknown): Record<string, unknown> | null {
   return v != null && typeof v === 'object' && !Array.isArray(v) ? (v as Record<string, unknown>) : null;
@@ -127,6 +133,111 @@ function parsePredictionPayload(raw: unknown): StatStrikePrediction | null {
   };
 }
 
+function parseLeagueTrackRecordEntry(v: unknown): StatStrikeLeagueTrackRecord | null {
+  const o = asRecord(v);
+  if (!o) return null;
+  const forecastCount = asNumber(o.forecastCount);
+  const winRate = asNumber(o.winRate);
+  if (forecastCount == null || winRate == null) return null;
+  return {
+    forecastCount,
+    winRate,
+    avgCriteria: asNumber(o.avgCriteria) ?? 0,
+    isQualified: o.isQualified === true,
+  };
+}
+
+function parseLeagueTrackRecordMap(raw: unknown): Record<string, StatStrikeLeagueTrackRecord> {
+  const o = asRecord(raw);
+  if (!o) return {};
+  const out: Record<string, StatStrikeLeagueTrackRecord> = {};
+  for (const [k, v] of Object.entries(o)) {
+    const rec = parseLeagueTrackRecordEntry(v);
+    if (rec) out[k] = rec;
+  }
+  return out;
+}
+
+function parseFixtureStatsSummary(row: Record<string, unknown>): StatStrikeFixtureStatsSummary {
+  const n = (k: string) => asNumber(row[k]) ?? 0;
+  return {
+    h2hLast6Over25Percent: n('h2hLast6Over25Percent'),
+    h2hHomeVenueLast6Over25Percent: n('h2hHomeVenueLast6Over25Percent'),
+    bttsHomeVenueLast6Percent: n('bttsHomeVenueLast6Percent'),
+    homeTeamLast6HomeOver25Percent: n('homeTeamLast6HomeOver25Percent'),
+    awayTeamLast6AwayOver25Percent: n('awayTeamLast6AwayOver25Percent'),
+    homeConcessionLast6HomePercent: n('homeConcessionLast6HomePercent'),
+    awayConcessionLast6AwayPercent: n('awayConcessionLast6AwayPercent'),
+    homeAvgGoalsLast6Home: n('homeAvgGoalsLast6Home'),
+    awayAvgGoalsLast6Away: n('awayAvgGoalsLast6Away'),
+    h2hHomeVenueAvgGoals: n('h2hHomeVenueAvgGoals'),
+    h2hAllVenuesAvgGoals: n('h2hAllVenuesAvgGoals'),
+  };
+}
+
+function parseStatsByFixtureId(raw: unknown): Map<number, StatStrikeFixtureStatsSummary> {
+  const out = new Map<number, StatStrikeFixtureStatsSummary>();
+  const rows: Record<string, unknown>[] = [];
+  if (Array.isArray(raw)) {
+    for (const item of raw) {
+      const r = asRecord(item);
+      if (r) rows.push(r);
+    }
+  } else {
+    const o = asRecord(raw);
+    if (o) {
+      for (const v of Object.values(o)) {
+        const r = asRecord(v);
+        if (r) rows.push(r);
+      }
+    }
+  }
+  for (const r of rows) {
+    const fixture = asRecord(r.fixture);
+    const id = asNumber(fixture?.id) ?? asNumber(r.fixtureId) ?? asNumber(r.fixtureID);
+    if (id == null) continue;
+    out.set(id, parseFixtureStatsSummary(r));
+  }
+  return out;
+}
+
+export function enrichBoardRowDisplay(
+  fixture: StatStrikeFixture,
+  prediction: StatStrikePrediction | null,
+  sel: StatStrikeDailySelection,
+): {
+  trackRecordDisplay: StatStrikeBoardRowTrackRecord | null;
+  keySignalLines: string[];
+} {
+  const stats = sel.statsByFixtureId.get(fixture.id) ?? null;
+  const tr = trackRecordDisplayForFixture(
+    fixture,
+    prediction,
+    sel.leagueTrackRecord,
+    sel.leagueBandTrackRecord,
+  );
+  return {
+    trackRecordDisplay: tr
+      ? {
+          title: tr.title,
+          helperText: tr.helperText,
+          forecastCount: tr.trackRecord.forecastCount,
+          winRate: tr.trackRecord.winRate,
+          isQualified: tr.trackRecord.isQualified,
+        }
+      : null,
+    keySignalLines: resolvedDisplayKeySignals(prediction, stats),
+  };
+}
+
+export type StatStrikeBoardRowTrackRecord = {
+  title: string;
+  helperText: string | null;
+  forecastCount: number;
+  winRate: number;
+  isQualified: boolean;
+};
+
 export function parseDailySelection(raw: unknown): StatStrikeDailySelection | null {
   const o = asRecord(raw);
   if (!o) return null;
@@ -162,9 +273,12 @@ export function parseDailySelection(raw: unknown): StatStrikeDailySelection | nu
     }
   }
 
+  const leagueTrackRecord = parseLeagueTrackRecordMap(o.leagueTrackRecord);
+  const leagueBandTrackRecord = parseLeagueTrackRecordMap(o.leagueBandTrackRecord);
+  const statsByFixtureId = parseStatsByFixtureId(o.stats);
+
   const date = asString(o.date) ?? '';
   if (!fixtures.length && !predictionsByFixtureId.size) {
-    // Empty node is still a valid "no fixtures yet" selection if date exists; treat missing payload as null.
     if (!date && raw == null) return null;
   }
 
@@ -173,6 +287,9 @@ export function parseDailySelection(raw: unknown): StatStrikeDailySelection | nu
     fixtures,
     predictionsByFixtureId,
     leaguePerformance,
+    leagueTrackRecord,
+    leagueBandTrackRecord,
+    statsByFixtureId,
   };
 }
 

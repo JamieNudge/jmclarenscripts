@@ -77,6 +77,37 @@ export type StatStrikeBoardRow = {
   /** Carried from yesterday UK selection (live only). */
   fromYesterday: boolean;
   selectionDateKey: string;
+  /** League / band archive track record for expand + detail (iOS FixtureTrackRecordDisplay). */
+  trackRecordDisplay?: {
+    title: string;
+    helperText: string | null;
+    forecastCount: number;
+    winRate: number;
+    isQualified: boolean;
+  } | null;
+  /** Consumer key signals (Desktop markers filtered; values from selection stats). */
+  keySignalLines?: string[];
+};
+
+export type StatStrikeFixtureStatsSummary = {
+  h2hLast6Over25Percent: number;
+  h2hHomeVenueLast6Over25Percent: number;
+  bttsHomeVenueLast6Percent: number;
+  homeTeamLast6HomeOver25Percent: number;
+  awayTeamLast6AwayOver25Percent: number;
+  homeConcessionLast6HomePercent: number;
+  awayConcessionLast6AwayPercent: number;
+  homeAvgGoalsLast6Home: number;
+  awayAvgGoalsLast6Away: number;
+  h2hHomeVenueAvgGoals: number;
+  h2hAllVenuesAvgGoals: number;
+};
+
+export type StatStrikeLeagueTrackRecord = {
+  forecastCount: number;
+  winRate: number;
+  avgCriteria: number;
+  isQualified: boolean;
 };
 
 export type StatStrikeDailySelection = {
@@ -84,4 +115,7 @@ export type StatStrikeDailySelection = {
   fixtures: StatStrikeFixture[];
   predictionsByFixtureId: Map<number, StatStrikePrediction>;
   leaguePerformance: Record<string, number>;
+  leagueTrackRecord: Record<string, StatStrikeLeagueTrackRecord>;
+  leagueBandTrackRecord: Record<string, StatStrikeLeagueTrackRecord>;
+  statsByFixtureId: Map<number, StatStrikeFixtureStatsSummary>;
 };

@@ -8,7 +8,7 @@ import { formatKickoffLocal, scoreLabel } from '@/lib/statstrike/board-merge';
 import { isResultFinishedStatus, predictionResultForFixture } from '@/lib/statstrike/correctness';
 import { displayBandRows } from '@/lib/statstrike/goal-band-cascade';
 import type { StatStrikeFixture, StatStrikePrediction } from '@/lib/statstrike/models';
-import { isBestPerformingLeague, isLiveStatus, parseDailySelection } from '@/lib/statstrike/parse-selection';
+import { isBestPerformingLeague, enrichBoardRowDisplay, isLiveStatus, parseDailySelection } from '@/lib/statstrike/parse-selection';
 import { selectionsPathForDateKey } from '@/lib/statstrike/uk-date';
 
 type Props = {
@@ -26,6 +26,14 @@ type DetailState =
       prediction: StatStrikePrediction | null;
       bestPerformingLeague: boolean;
       selectionDateKey: string;
+      trackRecordDisplay: {
+        title: string;
+        helperText: string | null;
+        forecastCount: number;
+        winRate: number;
+        isQualified: boolean;
+      } | null;
+      keySignalLines: string[];
     };
 
 export function StatStrikeFixtureDetail({ fixtureId, dateKey }: Props) {
@@ -58,6 +66,7 @@ export function StatStrikeFixtureDetail({ fixtureId, dateKey }: Props) {
           return;
         }
         const prediction = sel.predictionsByFixtureId.get(fixtureId) ?? null;
+        const display = enrichBoardRowDisplay(fixture, prediction, sel);
         if (!cancelled) {
           setState({
             status: 'ready',
@@ -65,6 +74,8 @@ export function StatStrikeFixtureDetail({ fixtureId, dateKey }: Props) {
             prediction,
             bestPerformingLeague: isBestPerformingLeague(fixture, sel.leaguePerformance),
             selectionDateKey: dateKey,
+            trackRecordDisplay: display.trackRecordDisplay,
+            keySignalLines: display.keySignalLines,
           });
         }
       } catch (e) {
@@ -100,7 +111,7 @@ export function StatStrikeFixtureDetail({ fixtureId, dateKey }: Props) {
     );
   }
 
-  const { fixture, prediction, bestPerformingLeague } = state;
+  const { fixture, prediction, bestPerformingLeague, trackRecordDisplay, keySignalLines } = state;
   const live = isLiveStatus(fixture.status);
   const finished = isResultFinishedStatus(fixture.status);
   const won = predictionResultForFixture(fixture, prediction);
@@ -227,18 +238,57 @@ export function StatStrikeFixtureDetail({ fixtureId, dateKey }: Props) {
         </section>
       ) : null}
 
+      <section className="rounded-2xl border border-black/10 bg-white p-4 shadow-sm space-y-2">
+        {trackRecordDisplay ? (
+          <>
+            <h2 className="text-[10px] font-semibold uppercase tracking-wide text-black/70">
+              {trackRecordDisplay.title}
+            </h2>
+            <p className="text-sm tabular-nums text-black/75">
+              {trackRecordDisplay.forecastCount} archived forecast
+              {trackRecordDisplay.forecastCount === 1 ? '' : 's'}
+            </p>
+            <p className="text-sm tabular-nums text-black/75">
+              {Math.round(trackRecordDisplay.winRate)}% recent performance
+            </p>
+            <p className="text-sm font-semibold text-black/85">
+              {trackRecordDisplay.isQualified ? 'Qualified League ✓' : 'League tracked'}
+            </p>
+            {trackRecordDisplay.helperText ? (
+              <p className="text-xs text-black/60">{trackRecordDisplay.helperText}</p>
+            ) : null}
+            <div className="h-1 w-full overflow-hidden rounded-full bg-black/10">
+              <div
+                className="h-full rounded-full bg-[#0b3d5c]"
+                style={{
+                  width: `${Math.max(4, Math.min(100, trackRecordDisplay.winRate))}%`,
+                }}
+              />
+            </div>
+          </>
+        ) : (
+          <>
+            <h2 className="text-[10px] font-semibold uppercase tracking-wide text-black/70">
+              League track record
+            </h2>
+            <p className="text-sm text-black/65">Building — no archived forecasts yet</p>
+          </>
+        )}
+      </section>
+
       <section className="rounded-2xl border border-black/10 bg-white p-4 shadow-sm">
         <h2 className="text-[10px] font-semibold uppercase tracking-wide text-black/70">Key signals</h2>
-        {prediction?.significantStats && prediction.significantStats.length > 0 ? (
+        {keySignalLines.length > 0 ? (
           <ul className="mt-2 space-y-1.5">
-            {prediction.significantStats.map((stat) => (
-              <li key={stat} className="text-sm leading-snug text-black/75">
-                · {stat}
+            {keySignalLines.map((stat) => (
+              <li key={stat} className="flex items-start gap-2 text-sm leading-snug text-black/75">
+                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-600" aria-hidden />
+                {stat}
               </li>
             ))}
           </ul>
         ) : (
-          <p className="mt-2 text-sm text-black/65">No key signals uploaded for this pick.</p>
+          <p className="mt-2 text-sm text-black/65">No stat breakdown available for this pick.</p>
         )}
       </section>
     </article>

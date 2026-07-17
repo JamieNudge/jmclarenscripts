@@ -17,7 +17,8 @@ type Props = {
 };
 
 export function StatStrikeFixtureRow({ row, compact = false, starred = false, onStarClick }: Props) {
-  const { fixture, prediction, bestPerformingLeague, fromYesterday } = row;
+  const { fixture, prediction, bestPerformingLeague, fromYesterday, trackRecordDisplay, keySignalLines } =
+    row;
   const [open, setOpen] = useState(false);
   const panelId = useId();
   const live = isLiveStatus(fixture.status);
@@ -198,18 +199,43 @@ export function StatStrikeFixtureRow({ row, compact = false, starred = false, on
               </ul>
             </div>
           ) : null}
-          {prediction?.significantStats && prediction.significantStats.length > 0 ? (
+          {trackRecordDisplay ? (
+            <div className="mt-2.5 space-y-1">
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-black/80">
+                {trackRecordDisplay.title}
+              </p>
+              <p className="text-xs tabular-nums text-black/75">
+                {trackRecordDisplay.forecastCount} archived forecast
+                {trackRecordDisplay.forecastCount === 1 ? '' : 's'}
+              </p>
+              <p className="text-xs tabular-nums text-black/75">
+                {Math.round(trackRecordDisplay.winRate)}% recent performance
+              </p>
+              <p className="text-xs font-semibold text-black/85">
+                {trackRecordDisplay.isQualified ? 'Qualified League ✓' : 'League tracked'}
+              </p>
+              {trackRecordDisplay.helperText ? (
+                <p className="text-[11px] text-black/60">{trackRecordDisplay.helperText}</p>
+              ) : null}
+            </div>
+          ) : null}
+          {(keySignalLines && keySignalLines.length > 0) ||
+          (prediction?.significantStats && prediction.significantStats.length > 0) ? (
             <div className="mt-2.5">
               <p className="text-[10px] font-semibold uppercase tracking-wide text-black/80">
                 Key signals
               </p>
-              <ul className="mt-1 space-y-1">
-                {prediction.significantStats.slice(0, compact ? 4 : 8).map((stat) => (
-                  <li key={stat} className="text-xs leading-snug text-black/70">
-                    · {stat}
-                  </li>
-                ))}
-              </ul>
+              {(keySignalLines && keySignalLines.length > 0) ? (
+                <ul className="mt-1 space-y-1">
+                  {keySignalLines.slice(0, compact ? 4 : 8).map((stat) => (
+                    <li key={stat} className="text-xs leading-snug text-black/70">
+                      · {stat}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="mt-1 text-xs text-black/65">No stat breakdown available for this pick.</p>
+              )}
             </div>
           ) : (
             <p className="mt-2 text-xs text-black/80">No key signals uploaded for this pick.</p>

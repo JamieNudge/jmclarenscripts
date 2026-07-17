@@ -94,6 +94,9 @@ describe('parseDailySelection', () => {
         },
       ],
       leaguePerformance: {},
+      leagueTrackRecord: {},
+      leagueBandTrackRecord: {},
+      statsByFixtureId: new Map(),
     });
     const gbc = sel!.predictionsByFixtureId.get(99)?.goalBandCascade;
     expect(gbc).not.toBeNull();
@@ -123,6 +126,9 @@ describe('parseDailySelection', () => {
         },
       ],
       leaguePerformance: {},
+      leagueTrackRecord: {},
+      leagueBandTrackRecord: {},
+      statsByFixtureId: new Map(),
     });
     expect(sel!.predictionsByFixtureId.get(1)?.goalBandCascade).toBeNull();
   });
@@ -155,6 +161,9 @@ describe('mergeBoardRows', () => {
         [2, { level: 'Under 2.5 Goals', matchedCriteria: 5, totalCriteria: 11, significantStats: [] }],
       ]),
       leaguePerformance: {},
+      leagueTrackRecord: {},
+      leagueBandTrackRecord: {},
+      statsByFixtureId: new Map(),
     };
     const today: StatStrikeDailySelection = {
       date: '2026-07-16',
@@ -181,6 +190,9 @@ describe('mergeBoardRows', () => {
         [4, { level: 'Over 2.5 Goals', matchedCriteria: 6, totalCriteria: 11, significantStats: [] }],
       ]),
       leaguePerformance: {},
+      leagueTrackRecord: {},
+      leagueBandTrackRecord: {},
+      statsByFixtureId: new Map(),
     };
 
     const rows = mergeBoardRows({
@@ -221,6 +233,9 @@ describe('mergeBoardRows', () => {
         [11, { level: 'Over 2.5 Goals', matchedCriteria: 6, totalCriteria: 11, significantStats: [] }],
       ]),
       leaguePerformance: {},
+      leagueTrackRecord: {},
+      leagueBandTrackRecord: {},
+      statsByFixtureId: new Map(),
     };
     const tomorrow: StatStrikeDailySelection = {
       date: '2026-07-17',
@@ -236,6 +251,9 @@ describe('mergeBoardRows', () => {
         [20, { level: 'Over 2.5 Goals', matchedCriteria: 7, totalCriteria: 11, significantStats: [] }],
       ]),
       leaguePerformance: {},
+      leagueTrackRecord: {},
+      leagueBandTrackRecord: {},
+      statsByFixtureId: new Map(),
     };
 
     const rows = mergeBoardRows({
