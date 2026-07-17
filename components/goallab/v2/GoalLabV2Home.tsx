@@ -81,7 +81,7 @@ export function GoalLabV2Home() {
       {/* Hero */}
       <section className="grid gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:items-start">
         <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--gl-accent)]">
+          <p className="text-xs font-semibold tracking-[0.08em] text-[var(--gl-accent)]">
             GoalLab
           </p>
           <h1 className="mt-3 text-4xl md:text-5xl lg:text-[3.25rem] font-semibold tracking-tight text-[var(--gl-text)] leading-[1.1] text-balance">
