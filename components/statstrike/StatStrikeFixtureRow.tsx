@@ -72,7 +72,12 @@ export function StatStrikeFixtureRow({ row, compact = false, onStarClick }: Prop
             <p className="mt-1 text-xs tabular-nums text-black/70">
               {formatKickoffLocal(fixture.kickoffMs)}
               {live ? (
-                <span className="ml-2 font-semibold text-emerald-700">
+                <span
+                  className="ml-2 inline-flex items-center rounded-full bg-[#0d9488] px-1.5 py-0.5 text-[10px] font-bold leading-none tracking-wide text-white align-middle"
+                  aria-label={
+                    fixture.elapsed != null ? `Live ${fixture.elapsed} minutes` : 'Live'
+                  }
+                >
                   LIVE{fixture.elapsed != null ? ` ${fixture.elapsed}'` : ''}
                 </span>
               ) : fixture.status && fixture.status !== 'NS' && !finished ? (
