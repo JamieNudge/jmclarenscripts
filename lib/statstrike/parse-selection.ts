@@ -1,4 +1,5 @@
 import { leaguePerformanceLookupKey } from '@/lib/best-picks-firebase';
+import { parseGoalBandCascade } from '@/lib/statstrike/goal-band-cascade';
 import type {
   StatStrikeDailySelection,
   StatStrikeFixture,
@@ -113,6 +114,7 @@ function parsePredictionPayload(raw: unknown): StatStrikePrediction | null {
   const sig = Array.isArray(o.significantStats)
     ? o.significantStats.filter((s): s is string => typeof s === 'string')
     : [];
+  const goalBandCascade = parseGoalBandCascade(o.goalBandCascade);
   return {
     level,
     recommendedLevel: asString(o.recommendedLevel),
@@ -121,6 +123,7 @@ function parsePredictionPayload(raw: unknown): StatStrikePrediction | null {
     significantStats: sig,
     bookmakerOdds: asNumber(o.bookmakerOdds),
     sourceLabel: asString(o.sourceLabel),
+    goalBandCascade,
   };
 }
 

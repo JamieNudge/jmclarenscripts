@@ -4,6 +4,7 @@ import { useId, useState } from 'react';
 import type { StatStrikeBoardRow } from '@/lib/statstrike/models';
 import { formatKickoffLocal, scoreLabel } from '@/lib/statstrike/board-merge';
 import { isResultFinishedStatus, predictionResultForFixture } from '@/lib/statstrike/correctness';
+import { displayBandRows } from '@/lib/statstrike/goal-band-cascade';
 import { isLiveStatus } from '@/lib/statstrike/parse-selection';
 
 type Props = {
@@ -22,6 +23,8 @@ export function StatStrikeFixtureRow({ row, compact = false, onStarClick }: Prop
   const won = predictionResultForFixture(fixture, prediction);
   const score = scoreLabel(fixture);
   const band = prediction?.recommendedLevel || prediction?.level || '—';
+  const cascade = prediction?.goalBandCascade ?? null;
+  const cascadeRows = cascade ? displayBandRows(cascade) : [];
   const leagueLabel = [fixture.league.country, fixture.league.name].filter(Boolean).join(' · ');
   const confidencePct =
     prediction && prediction.totalCriteria > 0
@@ -54,6 +57,14 @@ export function StatStrikeFixtureRow({ row, compact = false, onStarClick }: Prop
               {bestPerformingLeague ? ' · Best performing' : ''}
               {fromYesterday ? ' · Carry-over' : ''}
             </p>
+            {cascade ? (
+              <span
+                className="mt-1 inline-flex max-w-full items-center rounded-full bg-indigo-600 px-1.5 py-0.5 text-[10px] font-bold leading-none text-white"
+                aria-label="Goal band cascade"
+              >
+                Goal Band Cascade
+              </span>
+            ) : null}
             <p className={`mt-0.5 font-semibold text-black/90 leading-snug ${compact ? 'text-sm' : 'text-base'}`}>
               {fixture.homeTeam.name}{' '}
               <span className="font-normal text-black/80">v</span> {fixture.awayTeam.name}
@@ -155,6 +166,28 @@ export function StatStrikeFixtureRow({ row, compact = false, onStarClick }: Prop
               {score ? ` · ${score}` : ''}
             </dd>
           </dl>
+          {cascadeRows.length > 0 ? (
+            <div className="mt-2.5">
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-black/80">
+                Goal Band Cascade
+              </p>
+              <ul className="mt-1.5 space-y-1">
+                {cascadeRows.map((bandRow) => (
+                  <li
+                    key={bandRow.bandKey}
+                    className="flex items-center justify-between gap-2 text-xs text-black/80"
+                  >
+                    <span className="font-medium text-black/90">{bandRow.label}</span>
+                    {bandRow.decimalOdds != null && bandRow.decimalOdds > 1 ? (
+                      <span className="tabular-nums font-semibold text-black/70">
+                        {bandRow.decimalOdds.toFixed(2)}
+                      </span>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
           {prediction?.significantStats && prediction.significantStats.length > 0 ? (
             <div className="mt-2.5">
               <p className="text-[10px] font-semibold uppercase tracking-wide text-black/80">

@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { mergeBoardRows } from '@/lib/statstrike/board-merge';
 import { isWinningForecast, predictionResultForFixture } from '@/lib/statstrike/correctness';
+import {
+  displayBandRows,
+  displayLabelForBand,
+  parseGoalBandCascade,
+} from '@/lib/statstrike/goal-band-cascade';
 import type { StatStrikeDailySelection, StatStrikeFixture } from '@/lib/statstrike/models';
 import { parseDailySelection } from '@/lib/statstrike/parse-selection';
 import { ukSelectionDateKeyOffset } from '@/lib/statstrike/uk-date';
@@ -51,6 +56,88 @@ describe('parseDailySelection', () => {
     expect(sel!.fixtures).toHaveLength(1);
     expect(sel!.predictionsByFixtureId.get(99)?.level).toBe('Over 2.5 Goals');
     expect(sel!.leaguePerformance['Test - Liga']).toBe(72);
+  });
+
+  it('parses optional goalBandCascade on predictions', () => {
+    const sel = parseDailySelection({
+      date: '2026-07-16',
+      fixtures: [
+        {
+          id: 99,
+          date: '2026-07-16T15:00:00.000Z',
+          homeTeam: { id: 1, name: 'Alpha' },
+          awayTeam: { id: 2, name: 'Beta' },
+          league: { id: 3, name: 'Liga', country: 'Test' },
+          status: 'NS',
+        },
+      ],
+      predictions: [
+        {
+          fixtureId: 99,
+          prediction: {
+            level: 'Over 2.5 Goals',
+            matchedCriteria: 7,
+            totalCriteria: 11,
+            significantStats: [],
+            goalBandCascade: {
+              source: 'signal-review',
+              recommendedBands: ['O2.5', 'O3.5', 'O4.5'],
+              forecasterConfidence: 100,
+              bandOdds: [
+                { band: 'O2.5', decimalOdds: 1.17, impliedProbability: 85.47 },
+                { band: 'O3.5', decimalOdds: 1.47, impliedProbability: 68.03 },
+                { band: 'O4.5', decimalOdds: 2.06, impliedProbability: 48.54 },
+              ],
+              qualifiers: ['criteriaExact'],
+            },
+          },
+        },
+      ],
+      leaguePerformance: {},
+    });
+    const gbc = sel!.predictionsByFixtureId.get(99)?.goalBandCascade;
+    expect(gbc).not.toBeNull();
+    expect(gbc!.recommendedBands).toEqual(['O2.5', 'O3.5', 'O4.5']);
+    expect(gbc!.bandOdds?.[1]?.decimalOdds).toBe(1.47);
+    expect(displayBandRows(gbc!)).toEqual([
+      { bandKey: 'O2.5', label: 'Over 2.5', decimalOdds: 1.17 },
+      { bandKey: 'O3.5', label: 'Over 3.5', decimalOdds: 1.47 },
+      { bandKey: 'O4.5', label: 'Over 4.5', decimalOdds: 2.06 },
+    ]);
+  });
+
+  it('omits empty goalBandCascade', () => {
+    const sel = parseDailySelection({
+      date: '2026-07-16',
+      fixtures: [],
+      predictions: [
+        {
+          fixtureId: 1,
+          prediction: {
+            level: 'Over 2.5 Goals',
+            matchedCriteria: 5,
+            totalCriteria: 11,
+            significantStats: [],
+            goalBandCascade: { source: 'x', recommendedBands: [], forecasterConfidence: 0 },
+          },
+        },
+      ],
+      leaguePerformance: {},
+    });
+    expect(sel!.predictionsByFixtureId.get(1)?.goalBandCascade).toBeNull();
+  });
+});
+
+describe('goalBandCascade helpers', () => {
+  it('normalizes display labels', () => {
+    expect(displayLabelForBand('O2.5')).toBe('Over 2.5');
+    expect(displayLabelForBand('Over 3.5 Goals')).toBe('Over 3.5');
+    expect(displayLabelForBand('O4.5')).toBe('Over 4.5');
+  });
+
+  it('returns null for missing cascade payload', () => {
+    expect(parseGoalBandCascade(null)).toBeNull();
+    expect(parseGoalBandCascade(undefined)).toBeNull();
   });
 });
 

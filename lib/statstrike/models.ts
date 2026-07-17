@@ -36,6 +36,27 @@ export type StatStrikeFixture = {
   awayScore?: number | null;
 };
 
+/** Optional Desktop Goal Band Cascade metadata on a selections prediction (not a tip type). */
+export type StatStrikeGoalBandCascadeBandOdds = {
+  band: string;
+  decimalOdds?: number | null;
+  impliedProbability?: number | null;
+};
+
+export type StatStrikeGoalBandCascade = {
+  source: string;
+  recommendedBands: string[];
+  forecasterConfidence: number;
+  bandOdds?: StatStrikeGoalBandCascadeBandOdds[];
+  qualifiers?: string[];
+};
+
+export type StatStrikeGoalBandCascadeDisplayRow = {
+  bandKey: string;
+  label: string;
+  decimalOdds?: number | null;
+};
+
 export type StatStrikePrediction = {
   level: StatStrikePredictionLevel;
   recommendedLevel?: StatStrikePredictionLevel | null;
@@ -44,6 +65,8 @@ export type StatStrikePrediction = {
   significantStats: string[];
   bookmakerOdds?: number | null;
   sourceLabel?: string | null;
+  /** Optional GBC ladder; consumer tip remains level / recommendedLevel. */
+  goalBandCascade?: StatStrikeGoalBandCascade | null;
 };
 
 export type StatStrikeBoardRow = {

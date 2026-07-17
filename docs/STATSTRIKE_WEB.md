@@ -44,6 +44,12 @@ Stored in RTDB at `statstrikeWebConfig`:
 - Filters: All / Live / AM–PM–Night / Custom; Best / Upper / Minor; team search.
 - GoalLab “Today’s forecasts” still uses `unanimousExports` — unchanged.
 
+### Goal Band Cascade (GBC)
+
+Optional metadata on a `/selections/{date}` prediction (same shape as iOS Desktop handoff). Consumer tip stays **Over 2.5** (`level` / `recommendedLevel`); cascade bands (usually O2.5 / O3.5 / O4.5 + optional decimal odds) are shown as a board badge + expand section only. Not a separate tip type. WIN/FT uses the tip band, not the ladder.
+
+Research’s separate `goalBandCascadeSelections/{date}` feed is unrelated to the StatStrike board.
+
 ## Not wired yet
 
 - Stripe / paywall (premium UI stubs → App Store)
