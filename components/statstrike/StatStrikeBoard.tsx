@@ -17,7 +17,8 @@ type Props = {
   lastReason?: string;
   onReload?: () => void;
   emptyHint?: string;
-  onStarClick?: () => void;
+  onStarClick?: (row: StatStrikeBoardRow) => void;
+  isStarred?: (row: StatStrikeBoardRow) => boolean;
 };
 
 /** Presentational board — parent owns `useStatStrikeBoard` (one listener set). */
@@ -34,6 +35,7 @@ export function StatStrikeBoard({
   onReload,
   emptyHint,
   onStarClick,
+  isStarred,
 }: Props) {
   const compact = variant === 'hero';
   const useGroups = dayGroups != null && !compact;
@@ -136,7 +138,8 @@ export function StatStrikeBoard({
                           <StatStrikeFixtureRow
                             key={row.fixture.id}
                             row={row}
-                            onStarClick={onStarClick}
+                            starred={isStarred?.(row)}
+                            onStarClick={onStarClick ? () => onStarClick(row) : undefined}
                           />
                         ))}
                       </ul>
@@ -154,7 +157,8 @@ export function StatStrikeBoard({
               key={row.fixture.id}
               row={row}
               compact={compact}
-              onStarClick={onStarClick}
+              starred={isStarred?.(row)}
+              onStarClick={onStarClick ? () => onStarClick(row) : undefined}
             />
           ))}
         </ul>

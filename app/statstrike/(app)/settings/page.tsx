@@ -38,8 +38,10 @@ export default function StatStrikeSettingsPage() {
         <section className="rounded-2xl border border-black/10 bg-white p-5 space-y-3">
           <h2 className="font-semibold text-black">Premium (iOS for now)</h2>
           <p className="text-black/80">
-            Your Picks, personal track record, export/import, and league-change digests ship on iOS
-            first. Stripe on web comes later.
+            Your Picks and personal track record use on-device IndexedDB on web, ready for
+            Stripe/Patreon accounts. Until then the UI stays App Store–gated (set{' '}
+            <code className="text-xs">NEXT_PUBLIC_STATSTRIKE_PERSONAL_ENABLED=1</code> locally to
+            unlock for QA). Export/import helpers exist in code; public CSV UI ships with accounts.
           </p>
           {appStoreUrl ? <StatStrikeAppStoreCta href={appStoreUrl} size="sm" /> : null}
           <ul className="space-y-2 text-black/75">

@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useId, useState } from 'react';
 import type { StatStrikeBoardRow } from '@/lib/statstrike/models';
 import { formatKickoffLocal, scoreLabel } from '@/lib/statstrike/board-merge';
@@ -10,11 +11,12 @@ import { isLiveStatus } from '@/lib/statstrike/parse-selection';
 type Props = {
   row: StatStrikeBoardRow;
   compact?: boolean;
-  /** Premium stub — star opens App Store gate until Stripe. */
+  starred?: boolean;
+  /** Premium stub — star opens App Store gate until Stripe (or toggles when personal unlocked). */
   onStarClick?: () => void;
 };
 
-export function StatStrikeFixtureRow({ row, compact = false, onStarClick }: Props) {
+export function StatStrikeFixtureRow({ row, compact = false, starred = false, onStarClick }: Props) {
   const { fixture, prediction, bestPerformingLeague, fromYesterday } = row;
   const [open, setOpen] = useState(false);
   const panelId = useId();
@@ -109,11 +111,14 @@ export function StatStrikeFixtureRow({ row, compact = false, onStarClick }: Prop
         {onStarClick && !compact ? (
           <button
             type="button"
-            aria-label="Add to Your Picks (Premium)"
-            className="shrink-0 self-start rounded-lg px-2 py-1 text-base leading-none text-black/75 hover:bg-black/[0.04] hover:text-amber-500"
+            aria-label={starred ? 'Remove from Your Picks' : 'Add to Your Picks (Premium)'}
+            aria-pressed={starred}
+            className={`shrink-0 self-start rounded-lg px-2 py-1 text-base leading-none hover:bg-black/[0.04] ${
+              starred ? 'text-amber-500' : 'text-black/75 hover:text-amber-500'
+            }`}
             onClick={onStarClick}
           >
-            ★
+            {starred ? '★' : '☆'}
           </button>
         ) : null}
       </div>
@@ -209,6 +214,17 @@ export function StatStrikeFixtureRow({ row, compact = false, onStarClick }: Prop
           ) : (
             <p className="mt-2 text-xs text-black/80">No key signals uploaded for this pick.</p>
           )}
+          {!compact ? (
+            <p className="mt-3">
+              <Link
+                href={`/statstrike/fixture/${fixture.id}?date=${encodeURIComponent(row.selectionDateKey)}`}
+                className="text-xs font-semibold text-[#0b3d5c] underline-offset-2 hover:underline"
+                onClick={(e) => e.stopPropagation()}
+              >
+                Open full detail →
+              </Link>
+            </p>
+          ) : null}
         </div>
       ) : null}
     </li>

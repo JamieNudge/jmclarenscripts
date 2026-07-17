@@ -33,6 +33,7 @@ Stored in RTDB at `statstrikeWebConfig`:
 |------|------|
 | GoalLab `/` hero right | Live StatStrike panel when enabled |
 | `/statstrike` | Full board (filters, day nav, tabs) |
+| `/statstrike/fixture/[id]?date=` | Fixture detail (tip, GBC, signals) |
 | `/statstrike/settings` | Legal + premium stubs |
 | `/admin/picks` | Blur kill-switch (+ other owner tools) |
 | `/statstrike/content-rating` | App Store rating page (always on) |
@@ -50,12 +51,29 @@ Optional metadata on a `/selections/{date}` prediction (same shape as iOS Deskto
 
 Research’s separate `goalBandCascadeSelections/{date}` feed is unrelated to the StatStrike board.
 
+### Best Performing + GBC track rates
+
+Best Performing tab loads the last **7** UK selection days (`useStatStrikeHistoryWindow`) and computes:
+
+- **7-day BP digest** — settled `bestPerformingLeague` tips (hit rate, optional flat-stake ROI, best league/band)
+- **GBC rates** — tip W/L among settled cascade-tagged tips + O2.5 / O3.5 / O4.5 FT threshold hit rates
+
+Same cohort rules as iOS `BestPerformingDigest` / `goalBandCascadeSuccessRate`.
+
+### Personal track (gated)
+
+IndexedDB store `statstrike-web` / `personalPicks` is implemented (`lib/statstrike/personal-store.ts`) for future Stripe/Patreon accounts. **Production UX stays App Store–gated** (star, Your Picks, My Record). Local QA unlock:
+
+```bash
+NEXT_PUBLIC_STATSTRIKE_PERSONAL_ENABLED=1
+```
+
 ## Not wired yet
 
-- Stripe / paywall (premium UI stubs → App Store)
+- Stripe / Patreon / login (personal UI gated until then)
 - FCM web push
-- IndexedDB personal track record
-- Login / accounts
+- Public CSV export/import UI (helpers exist in personal-store)
+- Dashboard modules (Today’s Matches, My Teams, Alerts, Watchlist, …) — deferred
 
 ## Local
 

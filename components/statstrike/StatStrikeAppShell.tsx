@@ -7,8 +7,11 @@ import { ComingSoonBlur } from '@/components/hub/ComingSoonBlur';
 import { StatStrikeBestPerformingPanel } from '@/components/statstrike/StatStrikeBestPerformingPanel';
 import { StatStrikeBoard } from '@/components/statstrike/StatStrikeBoard';
 import { StatStrikeBoardFilters } from '@/components/statstrike/StatStrikeBoardFilters';
+import { StatStrikeMyRecordPanel } from '@/components/statstrike/StatStrikeMyRecordPanel';
 import { StatStrikePremiumGate } from '@/components/statstrike/StatStrikePremiumGate';
 import { useStatStrikeBoard } from '@/hooks/useStatStrikeBoard';
+import { useStatStrikeHistoryWindow } from '@/hooks/useStatStrikeHistoryWindow';
+import { useStatStrikePersonalPicks } from '@/hooks/useStatStrikePersonalPicks';
 import { useStatStrikeWebBlur } from '@/hooks/useStatStrikeWebBlur';
 import {
   DEFAULT_BOARD_FILTERS,
@@ -24,13 +27,44 @@ type TabId = 'fixtures' | 'best' | 'record';
 export function StatStrikeAppShell() {
   const board = useStatStrikeBoard();
   const { blur } = useStatStrikeWebBlur();
+  const personal = useStatStrikePersonalPicks();
   const [filters, setFilters] = useState<BoardFilterState>(DEFAULT_BOARD_FILTERS);
   const [tab, setTab] = useState<TabId>('fixtures');
   const [premiumOpen, setPremiumOpen] = useState(false);
+  const history = useStatStrikeHistoryWindow(7, { enabled: tab === 'best' });
 
   const dayGroups = useMemo(
-    () => presentBoardRows(board.rows, filters),
-    [board.rows, filters],
+    () =>
+      presentBoardRows(board.rows, filters, {
+        personalFixtureIds: personal.savedFixtureIds,
+      }),
+    [board.rows, filters, personal.savedFixtureIds],
+  );
+
+  const openPremiumOrToggle = (row?: (typeof board.rows)[number]) => {
+    if (personal.enabled && row) {
+      void personal.toggleFromBoardRow(row);
+      return;
+    }
+    setPremiumOpen(true);
+  };
+
+  const bestPanel = (
+    <StatStrikeBestPerformingPanel
+      rows={board.rows}
+      historyRecords={history.records}
+      historyLoading={history.loading}
+      historyError={history.error}
+      onRefreshHistory={history.refresh}
+      onOpenFixturesBest={
+        blur
+          ? undefined
+          : () => {
+              setFilters((f) => ({ ...f, league: 'bestPerforming', time: 'all' }));
+              setTab('fixtures');
+            }
+      }
+    />
   );
 
   const boardBody = (
@@ -72,7 +106,7 @@ export function StatStrikeAppShell() {
       <StatStrikeBoardFilters
         filters={filters}
         onChange={setFilters}
-        yourPicksLocked
+        yourPicksLocked={!personal.enabled}
         onYourPicksLockedClick={() => setPremiumOpen(true)}
       />
 
@@ -86,7 +120,10 @@ export function StatStrikeAppShell() {
         todayKey={board.todayKey}
         lastReason={board.lastReason}
         onReload={board.reload}
-        onStarClick={() => setPremiumOpen(true)}
+        onStarClick={(row) => openPremiumOrToggle(row)}
+        isStarred={(row) =>
+          personal.enabled && personal.isSaved(row.selectionDateKey, row.fixture.id)
+        }
         emptyHint={
           board.rows.length > 0
             ? 'No fixtures match these filters.'
@@ -147,7 +184,7 @@ export function StatStrikeAppShell() {
               key={t.id}
               type="button"
               onClick={() => {
-                if (t.id === 'record') {
+                if (t.id === 'record' && !personal.enabled) {
                   setPremiumOpen(true);
                   return;
                 }
@@ -160,7 +197,7 @@ export function StatStrikeAppShell() {
               }`}
             >
               {t.label}
-              {t.id === 'record' ? ' · lock' : ''}
+              {t.id === 'record' && !personal.enabled ? ' · lock' : ''}
             </button>
           ))}
         </div>
@@ -178,20 +215,24 @@ export function StatStrikeAppShell() {
             centerBadge
           >
             {tab === 'fixtures' ? boardBody : null}
-            {tab === 'best' ? (
-              <StatStrikeBestPerformingPanel rows={board.rows} />
+            {tab === 'best' ? bestPanel : null}
+            {tab === 'record' && personal.enabled ? (
+              <StatStrikeMyRecordPanel
+                picks={personal.picks}
+                loading={personal.loading}
+                error={personal.error}
+              />
             ) : null}
           </ComingSoonBlur>
         ) : (
           <>
             {tab === 'fixtures' ? boardBody : null}
-            {tab === 'best' ? (
-              <StatStrikeBestPerformingPanel
-                rows={board.rows}
-                onOpenFixturesBest={() => {
-                  setFilters((f) => ({ ...f, league: 'bestPerforming', time: 'all' }));
-                  setTab('fixtures');
-                }}
+            {tab === 'best' ? bestPanel : null}
+            {tab === 'record' && personal.enabled ? (
+              <StatStrikeMyRecordPanel
+                picks={personal.picks}
+                loading={personal.loading}
+                error={personal.error}
               />
             ) : null}
           </>
