@@ -9,7 +9,7 @@ import { isResultFinishedStatus, predictionResultForFixture } from '@/lib/statst
 import { displayBandRows } from '@/lib/statstrike/goal-band-cascade';
 import type { StatStrikeFixture, StatStrikePrediction } from '@/lib/statstrike/models';
 import { isBestPerformingLeague, isLiveStatus, parseDailySelection } from '@/lib/statstrike/parse-selection';
-import { selectionsPathForDateKey, ukSelectionDateKey } from '@/lib/statstrike/uk-date';
+import { selectionsPathForDateKey } from '@/lib/statstrike/uk-date';
 
 type Props = {
   fixtureId: number;
@@ -243,9 +243,4 @@ export function StatStrikeFixtureDetail({ fixtureId, dateKey }: Props) {
       </section>
     </article>
   );
-}
-
-export function resolveFixtureDetailDateKey(searchDate: string | null | undefined): string {
-  if (searchDate && /^\d{4}-\d{2}-\d{2}$/.test(searchDate)) return searchDate;
-  return ukSelectionDateKey();
 }

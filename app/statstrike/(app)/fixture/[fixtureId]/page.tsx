@@ -1,9 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import {
-  resolveFixtureDetailDateKey,
-  StatStrikeFixtureDetail,
-} from '@/components/statstrike/StatStrikeFixtureDetail';
+import { StatStrikeFixtureDetail } from '@/components/statstrike/StatStrikeFixtureDetail';
+import { resolveFixtureDetailDateKey } from '@/lib/statstrike/uk-date';
 
 type PageProps = {
   params: { fixtureId: string };

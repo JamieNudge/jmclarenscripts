@@ -38,3 +38,9 @@ export function selectionsPathForDateKey(dateKey: string): string {
   const root = process.env.NEXT_PUBLIC_FIREBASE_SELECTIONS_ROOT?.trim() || 'selections';
   return `${root}/${dateKey}`;
 }
+
+/** Fixture detail `?date=` query, or UK calendar today. */
+export function resolveFixtureDetailDateKey(searchDate: string | null | undefined): string {
+  if (searchDate && /^\d{4}-\d{2}-\d{2}$/.test(searchDate)) return searchDate;
+  return ukSelectionDateKey();
+}
