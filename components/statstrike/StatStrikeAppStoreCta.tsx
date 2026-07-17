@@ -28,16 +28,16 @@ export function StatStrikeAppStoreCta({
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className={`inline-flex items-center gap-1.5 font-semibold text-[var(--gl-accent,#0b3d5c)] underline-offset-2 hover:underline ${className}`}
+        className={`inline-flex items-center gap-1.5 align-baseline leading-none font-semibold text-[var(--gl-accent,#0b3d5c)] underline-offset-2 hover:underline ${className}`}
       >
         <Image
           src={ICON}
           alt=""
-          width={16}
-          height={16}
-          className="h-4 w-4 rounded-sm object-cover"
+          width={14}
+          height={14}
+          className="h-3.5 w-3.5 shrink-0 translate-y-[0.1em] rounded-sm object-cover"
         />
-        <span>{label}</span>
+        <span className="leading-normal">{label}</span>
       </a>
     );
   }
