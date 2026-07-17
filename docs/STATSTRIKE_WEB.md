@@ -41,7 +41,7 @@ Stored in RTDB at `statstrikeWebConfig`:
 ## Data
 
 - Reads Firebase RTDB `selections/{yyyy-MM-dd}` (UK / `Europe/London` business day).
-- Merges yesterday **live carry-over** only (iOS-aligned).
+- Merges yesterday **live carry-over** only when viewing **UK calendar today** (iOS-aligned). Browsing Tomorrow/Yesterday shows that day alone.
 - Filters: All / Live / AM–PM–Night / Custom; Best / Upper / Minor; team search.
 - GoalLab “Today’s forecasts” still uses `unanimousExports` — unchanged.
 

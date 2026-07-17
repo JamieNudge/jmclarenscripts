@@ -53,11 +53,13 @@ export function useStatStrikeBoard(initialDayOffset = 0) {
   const dayOffsetRef = useRef(initialDayOffset);
 
   const publish = useCallback((reason: string) => {
+    const viewingCurrentDay = dayOffsetRef.current === 0;
     const result = buildBoardRefreshResult({
       todayKey: todayKeyRef.current,
       yesterdayKey: yesterdayKeyRef.current,
       today: todaySel.current,
-      yesterday: yestSel.current,
+      yesterday: viewingCurrentDay ? yestSel.current : null,
+      includeYesterdayCarryOver: viewingCurrentDay,
       reason,
     });
     setState((s) => ({
@@ -105,12 +107,8 @@ export function useStatStrikeBoard(initialDayOffset = 0) {
       for (const u of unsubs) u();
       unsubs = [];
 
-      // On calendar rollover while browsing "today", snap offset back to 0.
-      if (dayOffsetRef.current === 0) {
-        // keep
-      }
-
       const { todayKey, yesterdayKey } = keysForOffset(dayOffsetRef.current);
+      const viewingCurrentDay = dayOffsetRef.current === 0;
       todayKeyRef.current = todayKey;
       yesterdayKeyRef.current = yesterdayKey;
       todaySel.current = null;
@@ -127,7 +125,6 @@ export function useStatStrikeBoard(initialDayOffset = 0) {
       }));
 
       const todayPath = selectionsPathForDateKey(todayKey);
-      const yestPath = selectionsPathForDateKey(yesterdayKey);
 
       unsubs.push(
         onValue(
@@ -148,21 +145,25 @@ export function useStatStrikeBoard(initialDayOffset = 0) {
         ),
       );
 
-      unsubs.push(
-        onValue(
-          ref(db, yestPath),
-          (snap) => {
-            if (cancelled) return;
-            yestSel.current = parseDailySelection(snap.val());
-            publish(`${reason}:yesterday`);
-          },
-          () => {
-            if (cancelled) return;
-            yestSel.current = null;
-            publish(`${reason}:yesterday-empty`);
-          },
-        ),
-      );
+      // Previous-day live carry-over only while viewing UK calendar today (iOS isCurrentSelectionDay).
+      if (viewingCurrentDay) {
+        const yestPath = selectionsPathForDateKey(yesterdayKey);
+        unsubs.push(
+          onValue(
+            ref(db, yestPath),
+            (snap) => {
+              if (cancelled) return;
+              yestSel.current = parseDailySelection(snap.val());
+              publish(`${reason}:yesterday`);
+            },
+            () => {
+              if (cancelled) return;
+              yestSel.current = null;
+              publish(`${reason}:yesterday-empty`);
+            },
+          ),
+        );
+      }
     };
 
     attachRef.current = attach;

@@ -197,6 +197,59 @@ describe('mergeBoardRows', () => {
     expect(clash.fromYesterday).toBe(false);
     expect(clash.prediction?.level).toBe('Over 3.5 Goals');
   });
+
+  it('does not merge adjacent-day fixtures when carry-over is disabled (Tomorrow browse)', () => {
+    const now = Date.parse('2026-07-16T12:00:00.000Z');
+    const calendarToday: StatStrikeDailySelection = {
+      date: '2026-07-16',
+      fixtures: [
+        fixture({
+          id: 10,
+          status: 'NS',
+          kickoffMs: now + 3600_000,
+          homeTeam: { id: 1, name: 'Today NS' },
+        }),
+        fixture({
+          id: 11,
+          status: '2H',
+          kickoffMs: now - 1800_000,
+          homeTeam: { id: 1, name: 'Today Live' },
+        }),
+      ],
+      predictionsByFixtureId: new Map([
+        [10, { level: 'Over 2.5 Goals', matchedCriteria: 6, totalCriteria: 11, significantStats: [] }],
+        [11, { level: 'Over 2.5 Goals', matchedCriteria: 6, totalCriteria: 11, significantStats: [] }],
+      ]),
+      leaguePerformance: {},
+    };
+    const tomorrow: StatStrikeDailySelection = {
+      date: '2026-07-17',
+      fixtures: [
+        fixture({
+          id: 20,
+          status: 'NS',
+          kickoffMs: now + 86_400_000,
+          homeTeam: { id: 1, name: 'Tomorrow Only' },
+        }),
+      ],
+      predictionsByFixtureId: new Map([
+        [20, { level: 'Over 2.5 Goals', matchedCriteria: 7, totalCriteria: 11, significantStats: [] }],
+      ]),
+      leaguePerformance: {},
+    };
+
+    const rows = mergeBoardRows({
+      todayKey: '2026-07-17',
+      yesterdayKey: '2026-07-16',
+      today: tomorrow,
+      yesterday: calendarToday,
+      nowMs: now,
+      includeYesterdayCarryOver: false,
+    });
+
+    expect(rows.map((r) => r.fixture.id)).toEqual([20]);
+    expect(rows[0].fromYesterday).toBe(false);
+  });
 });
 
 describe('winning forecast', () => {

@@ -8,15 +8,15 @@ import {
 } from '@/lib/statstrike/parse-selection';
 
 function shouldCarryOverFromYesterday(fixture: StatStrikeFixture, nowMs: number): boolean {
-  // iOS: yesterday carry-over is live / short not-started only — never finished results.
-  if (isFinishedStatus(fixture.status)) return false;
+  // iOS: only live statuses from the previous selection day when viewing calendar today.
   if (isLiveStatus(fixture.status)) return true;
+  // Keep brief NS grace for kickoffs that slipped past midnight without going live yet.
+  if (isFinishedStatus(fixture.status)) return false;
   const isNotStarted = fixture.status == null || fixture.status === 'NS';
   if (!isNotStarted) return false;
-  // Not started: keep if kickoff still ahead, or within 3h past (same as iOS).
-  if (fixture.kickoffMs > nowMs) return true;
+  if (fixture.kickoffMs > nowMs) return false;
   const hoursPast = (nowMs - fixture.kickoffMs) / 3_600_000;
-  return hoursPast <= 3;
+  return hoursPast >= 0 && hoursPast <= 3;
 }
 
 function shouldShowOnBoard(
@@ -42,8 +42,9 @@ function shouldShowOnBoard(
 }
 
 /**
- * Merge UK today selection with yesterday live carry-over (iOS FixtureListViewModel behaviour).
- * Today wins on fixture id collision.
+ * Merge selected-day selection with optional previous-day live carry-over.
+ * Carry-over is only for the current UK business day (iOS `isCurrentSelectionDay`) —
+ * browsing Tomorrow/Yesterday must not pull in the adjacent day's full board.
  */
 export function mergeBoardRows(args: {
   todayKey: string;
@@ -51,14 +52,17 @@ export function mergeBoardRows(args: {
   today: StatStrikeDailySelection | null;
   yesterday: StatStrikeDailySelection | null;
   nowMs?: number;
+  /** When false, only the selected day is shown (no relative-yesterday merge). Default true. */
+  includeYesterdayCarryOver?: boolean;
 }): StatStrikeBoardRow[] {
   const nowMs = args.nowMs ?? Date.now();
   const byId = new Map<number, StatStrikeBoardRow>();
+  const includeCarry = args.includeYesterdayCarryOver !== false;
 
   const lpToday = args.today?.leaguePerformance ?? {};
   const lpYest = args.yesterday?.leaguePerformance ?? {};
 
-  if (args.yesterday) {
+  if (includeCarry && args.yesterday) {
     for (const fixture of args.yesterday.fixtures) {
       if (!shouldCarryOverFromYesterday(fixture, nowMs)) continue;
       const prediction = args.yesterday.predictionsByFixtureId.get(fixture.id) ?? null;
@@ -136,6 +140,7 @@ export function buildBoardRefreshResult(args: {
   yesterday: StatStrikeDailySelection | null;
   reason: string;
   nowMs?: number;
+  includeYesterdayCarryOver?: boolean;
 }): BoardRefreshResult {
   const rows = mergeBoardRows(args);
   const yesterdayCarryCount = rows.filter((r) => r.fromYesterday).length;
@@ -149,7 +154,7 @@ export function buildBoardRefreshResult(args: {
   };
   if (typeof console !== 'undefined') {
     console.info(
-      `[statstrike] refresh uk=${result.todayKey} fixtures=${result.rows.length} todayRaw=${result.todayCount} yCarry=${result.yesterdayCarryCount} reason=${result.reason}`,
+      `[statstrike] refresh uk=${result.todayKey} fixtures=${result.rows.length} todayRaw=${result.todayCount} yCarry=${result.yesterdayCarryCount} carry=${args.includeYesterdayCarryOver !== false} reason=${result.reason}`,
     );
   }
   return result;
