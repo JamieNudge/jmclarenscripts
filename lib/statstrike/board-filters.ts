@@ -273,3 +273,48 @@ export function hhmmToMinutes(value: string): number | null {
   if (h < 0 || h > 23 || min < 0 || min > 59) return null;
   return h * 60 + min;
 }
+
+const TIME_FILTER_IDS: TimeFilterId[] = ['all', 'live', 'morning', 'afternoon', 'evening', 'custom'];
+const LEAGUE_FILTER_IDS: LeagueFilterId[] = [
+  'all',
+  'bestPerforming',
+  'goalBandCascade',
+  'major',
+  'minor',
+  'yourSelections',
+];
+
+export type BoardChipCounts = {
+  time: Record<TimeFilterId, number>;
+  league: Record<LeagueFilterId, number>;
+};
+
+/**
+ * Chip badges for the selected calendar day board.
+ * Time counts respect the current league filter; league counts ignore time (iOS-aligned).
+ */
+export function boardChipCounts(
+  rows: StatStrikeBoardRow[],
+  filters: BoardFilterState,
+  opts?: { timeZone?: string; personalFixtureIds?: Set<number> },
+): BoardChipCounts {
+  const time = {} as Record<TimeFilterId, number>;
+  for (const id of TIME_FILTER_IDS) {
+    const probe: BoardFilterState = { ...filters, time: id };
+    time[id] = rows.filter((r) => rowPassesBoardFilters(r, probe, opts)).length;
+  }
+
+  const league = {} as Record<LeagueFilterId, number>;
+  for (const id of LEAGUE_FILTER_IDS) {
+    // League badges are independent of the active time chip (iOS leagueFilterCount).
+    const probe: BoardFilterState = {
+      ...filters,
+      league: id,
+      time: 'all',
+      search: filters.search,
+    };
+    league[id] = rows.filter((r) => rowPassesBoardFilters(r, probe, opts)).length;
+  }
+
+  return { time, league };
+}

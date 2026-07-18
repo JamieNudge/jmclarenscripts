@@ -387,6 +387,30 @@ describe('board filters', () => {
       rowPassesBoardFilters(rows[1], { ...DEFAULT_BOARD_FILTERS, league: 'goalBandCascade' }),
     ).toBe(false);
 
+    const { boardChipCounts } = await import('@/lib/statstrike/board-filters');
+    const counts = boardChipCounts(
+      [
+        ...rows,
+        {
+          ...rows[0],
+          prediction: {
+            ...rows[0].prediction!,
+            goalBandCascade: {
+              source: 'signal-review',
+              recommendedBands: ['O2.5'],
+              forecasterConfidence: 80,
+            },
+          },
+        },
+      ],
+      DEFAULT_BOARD_FILTERS,
+      { timeZone: 'UTC' },
+    );
+    expect(counts.time.all).toBeGreaterThan(0);
+    expect(counts.time.live).toBeGreaterThan(0);
+    expect(counts.league.bestPerforming).toBeGreaterThan(0);
+    expect(counts.league.goalBandCascade).toBe(1);
+
     const groups = presentBoardRows(rows, DEFAULT_BOARD_FILTERS, { timeZone: 'UTC' });
     expect(groups.length).toBeGreaterThan(0);
     expect(groups[0].timeGroups.length).toBeGreaterThan(0);

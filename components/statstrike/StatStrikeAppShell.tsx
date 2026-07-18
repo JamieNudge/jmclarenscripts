@@ -15,6 +15,7 @@ import { useStatStrikePersonalPicks } from '@/hooks/useStatStrikePersonalPicks';
 import { useStatStrikeWebBlur } from '@/hooks/useStatStrikeWebBlur';
 import {
   DEFAULT_BOARD_FILTERS,
+  boardChipCounts,
   presentBoardRows,
   type BoardFilterState,
 } from '@/lib/statstrike/board-filters';
@@ -41,9 +42,12 @@ export function StatStrikeAppShell() {
     [board.rows, filters, personal.savedFixtureIds],
   );
 
-  const goalBandCascadeCount = useMemo(
-    () => board.rows.filter((r) => r.prediction?.goalBandCascade != null).length,
-    [board.rows],
+  const chipCounts = useMemo(
+    () =>
+      boardChipCounts(board.rows, filters, {
+        personalFixtureIds: personal.savedFixtureIds,
+      }),
+    [board.rows, filters, personal.savedFixtureIds],
   );
 
   const openPremiumOrToggle = (row?: (typeof board.rows)[number]) => {
@@ -113,7 +117,7 @@ export function StatStrikeAppShell() {
         onChange={setFilters}
         yourPicksLocked={!personal.enabled}
         onYourPicksLockedClick={() => setPremiumOpen(true)}
-        goalBandCascadeCount={goalBandCascadeCount}
+        chipCounts={chipCounts}
       />
 
       <StatStrikeBoard

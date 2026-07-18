@@ -1,6 +1,11 @@
 'use client';
 
-import type { BoardFilterState, LeagueFilterId, TimeFilterId } from '@/lib/statstrike/board-filters';
+import type {
+  BoardChipCounts,
+  BoardFilterState,
+  LeagueFilterId,
+  TimeFilterId,
+} from '@/lib/statstrike/board-filters';
 import { hhmmToMinutes, minutesToHHMM } from '@/lib/statstrike/board-filters';
 
 type Props = {
@@ -9,8 +14,8 @@ type Props = {
   /** When true, Your Picks chip is shown locked. */
   yourPicksLocked?: boolean;
   onYourPicksLockedClick?: () => void;
-  /** Count of board rows with goalBandCascade (optional badge). */
-  goalBandCascadeCount?: number;
+  /** Fixture counts for the selected calendar day (time + league chips). */
+  chipCounts?: BoardChipCounts | null;
   compact?: boolean;
 };
 
@@ -44,12 +49,21 @@ function chipClass(active: boolean, locked?: boolean, indigo?: boolean) {
     : 'rounded-full border border-black/15 bg-white px-2.5 py-1 text-[11px] font-semibold text-black/70 hover:bg-black/[0.03]';
 }
 
+function ChipCountBadge({ count }: { count: number | undefined }) {
+  if (count == null || count <= 0) return null;
+  return (
+    <span className="absolute -right-1 -top-1 inline-flex min-w-[1.1rem] items-center justify-center rounded-full bg-red-600 px-1 text-[9px] font-bold leading-4 text-white">
+      {count}
+    </span>
+  );
+}
+
 export function StatStrikeBoardFilters({
   filters,
   onChange,
   yourPicksLocked = true,
   onYourPicksLockedClick,
-  goalBandCascadeCount,
+  chipCounts = null,
   compact = false,
 }: Props) {
   return (
@@ -59,10 +73,11 @@ export function StatStrikeBoardFilters({
           <button
             key={chip.id}
             type="button"
-            className={chipClass(filters.time === chip.id)}
+            className={`relative ${chipClass(filters.time === chip.id)}`}
             onClick={() => onChange({ ...filters, time: chip.id })}
           >
             {chip.label}
+            <ChipCountBadge count={chipCounts?.time[chip.id]} />
           </button>
         ))}
       </div>
@@ -122,13 +137,7 @@ export function StatStrikeBoardFilters({
             >
               {chip.label}
               {locked ? ' · lock' : ''}
-              {chip.id === 'goalBandCascade' &&
-              goalBandCascadeCount != null &&
-              goalBandCascadeCount > 0 ? (
-                <span className="absolute -right-1 -top-1 inline-flex min-w-[1.1rem] items-center justify-center rounded-full bg-red-600 px-1 text-[9px] font-bold leading-4 text-white">
-                  {goalBandCascadeCount}
-                </span>
-              ) : null}
+              <ChipCountBadge count={chipCounts?.league[chip.id]} />
             </button>
           );
         })}
