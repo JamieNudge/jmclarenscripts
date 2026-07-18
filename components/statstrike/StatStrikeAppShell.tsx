@@ -41,6 +41,11 @@ export function StatStrikeAppShell() {
     [board.rows, filters, personal.savedFixtureIds],
   );
 
+  const goalBandCascadeCount = useMemo(
+    () => board.rows.filter((r) => r.prediction?.goalBandCascade != null).length,
+    [board.rows],
+  );
+
   const openPremiumOrToggle = (row?: (typeof board.rows)[number]) => {
     if (personal.enabled && row) {
       void personal.toggleFromBoardRow(row);
@@ -108,6 +113,7 @@ export function StatStrikeAppShell() {
         onChange={setFilters}
         yourPicksLocked={!personal.enabled}
         onYourPicksLockedClick={() => setPremiumOpen(true)}
+        goalBandCascadeCount={goalBandCascadeCount}
       />
 
       <StatStrikeBoard

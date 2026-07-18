@@ -9,6 +9,8 @@ type Props = {
   /** When true, Your Picks chip is shown locked. */
   yourPicksLocked?: boolean;
   onYourPicksLockedClick?: () => void;
+  /** Count of board rows with goalBandCascade (optional badge). */
+  goalBandCascadeCount?: number;
   compact?: boolean;
 };
 
@@ -21,17 +23,21 @@ const TIME_CHIPS: { id: TimeFilterId; label: string }[] = [
   { id: 'custom', label: 'Custom' },
 ];
 
-const LEAGUE_CHIPS: { id: LeagueFilterId; label: string; locked?: boolean }[] = [
+const LEAGUE_CHIPS: { id: LeagueFilterId; label: string; locked?: boolean; indigo?: boolean }[] = [
   { id: 'all', label: 'All' },
   { id: 'bestPerforming', label: 'Best Leagues' },
+  { id: 'goalBandCascade', label: 'GBC', indigo: true },
   { id: 'major', label: 'Upper' },
   { id: 'minor', label: 'Minor' },
   { id: 'yourSelections', label: 'Your Picks!', locked: true },
 ];
 
-function chipClass(active: boolean, locked?: boolean) {
+function chipClass(active: boolean, locked?: boolean, indigo?: boolean) {
   if (locked) {
     return 'rounded-full border border-black/15 bg-black/5 px-2.5 py-1 text-[11px] font-semibold text-black/55';
+  }
+  if (active && indigo) {
+    return 'rounded-full bg-indigo-600 px-2.5 py-1 text-[11px] font-semibold text-white';
   }
   return active
     ? 'rounded-full bg-[#0b3d5c] px-2.5 py-1 text-[11px] font-semibold text-white'
@@ -43,6 +49,7 @@ export function StatStrikeBoardFilters({
   onChange,
   yourPicksLocked = true,
   onYourPicksLockedClick,
+  goalBandCascadeCount,
   compact = false,
 }: Props) {
   return (
@@ -94,11 +101,13 @@ export function StatStrikeBoardFilters({
       <div className="flex flex-wrap gap-1.5">
         {LEAGUE_CHIPS.map((chip) => {
           const locked = chip.locked && yourPicksLocked;
+          const active = filters.league === chip.id;
           return (
             <button
               key={chip.id}
               type="button"
-              className={chipClass(filters.league === chip.id, locked)}
+              aria-label={chip.id === 'goalBandCascade' ? 'Goal Band Cascade' : undefined}
+              className={`relative ${chipClass(active, locked, chip.indigo)}`}
               onClick={() => {
                 if (locked) {
                   onYourPicksLockedClick?.();
@@ -106,13 +115,20 @@ export function StatStrikeBoardFilters({
                 }
                 onChange({
                   ...filters,
-                  league: chip.id,
+                  league: active && chip.id !== 'all' ? 'all' : chip.id,
                   ...(chip.id === 'all' ? { time: 'all' as const } : {}),
                 });
               }}
             >
               {chip.label}
               {locked ? ' · lock' : ''}
+              {chip.id === 'goalBandCascade' &&
+              goalBandCascadeCount != null &&
+              goalBandCascadeCount > 0 ? (
+                <span className="absolute -right-1 -top-1 inline-flex min-w-[1.1rem] items-center justify-center rounded-full bg-red-600 px-1 text-[9px] font-bold leading-4 text-white">
+                  {goalBandCascadeCount}
+                </span>
+              ) : null}
             </button>
           );
         })}

@@ -5,7 +5,13 @@ import { isUpperDivision } from '@/lib/statstrike/upper-divisions';
 import { statStrikeTimeZone } from '@/lib/statstrike/uk-date';
 
 export type TimeFilterId = 'all' | 'live' | 'morning' | 'afternoon' | 'evening' | 'custom';
-export type LeagueFilterId = 'all' | 'bestPerforming' | 'major' | 'minor' | 'yourSelections';
+export type LeagueFilterId =
+  | 'all'
+  | 'bestPerforming'
+  | 'major'
+  | 'minor'
+  | 'goalBandCascade'
+  | 'yourSelections';
 
 export type BoardFilterState = {
   time: TimeFilterId;
@@ -102,11 +108,12 @@ export function rowPassesBoardFilters(
   const { fixture, prediction } = row;
   if (!prediction) return false;
 
-  // Settled visibility: hide FT except All / Your Picks / Best Performing (iOS).
+  // Settled visibility: hide FT except All / Your Picks / Best Performing / GBC (iOS).
   if (
     filters.league !== 'all' &&
     filters.league !== 'yourSelections' &&
     filters.league !== 'bestPerforming' &&
+    filters.league !== 'goalBandCascade' &&
     isResultFinishedStatus(fixture.status)
   ) {
     return false;
@@ -147,6 +154,9 @@ export function rowPassesBoardFilters(
       break;
     case 'bestPerforming':
       if (!row.bestPerformingLeague) return false;
+      break;
+    case 'goalBandCascade':
+      if (prediction.goalBandCascade == null) return false;
       break;
     case 'major':
       if (!isUpperDivision(fixture.league.country, fixture.league.name)) return false;

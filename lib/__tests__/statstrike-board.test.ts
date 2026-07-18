@@ -369,6 +369,24 @@ describe('board filters', () => {
       rowPassesBoardFilters(rows[1], { ...DEFAULT_BOARD_FILTERS, search: 'bar' }),
     ).toBe(true);
 
+    const gbcRow = {
+      ...rows[0],
+      prediction: {
+        ...rows[0].prediction!,
+        goalBandCascade: {
+          source: 'signal-review',
+          recommendedBands: ['O2.5', 'O3.5'],
+          forecasterConfidence: 90,
+        },
+      },
+    };
+    expect(
+      rowPassesBoardFilters(gbcRow, { ...DEFAULT_BOARD_FILTERS, league: 'goalBandCascade' }),
+    ).toBe(true);
+    expect(
+      rowPassesBoardFilters(rows[1], { ...DEFAULT_BOARD_FILTERS, league: 'goalBandCascade' }),
+    ).toBe(false);
+
     const groups = presentBoardRows(rows, DEFAULT_BOARD_FILTERS, { timeZone: 'UTC' });
     expect(groups.length).toBeGreaterThan(0);
     expect(groups[0].timeGroups.length).toBeGreaterThan(0);
