@@ -109,12 +109,13 @@ type CardAccent = 'streak' | 'competition' | 'status' | 'none';
 
 const CARD_ACCENT: Record<CardAccent, string> = {
   none: '',
-  // Warm ember — restrained, not casino neon
-  streak: 'border-l-[3px] border-l-amber-500/70 bg-gradient-to-br from-amber-50/80 to-transparent',
-  // Cool analytical teal
-  competition: 'border-l-[3px] border-l-teal-600/60 bg-gradient-to-br from-teal-50/70 to-transparent',
-  // Neutral slate with a hint of navy (GoalLab accent family)
-  status: 'border-l-[3px] border-l-[var(--gl-accent)]/50 bg-gradient-to-br from-slate-50/90 to-transparent',
+  // Token washes — readable in light and dark (no amber-50/slate-50 cream veil)
+  streak:
+    'border-l-[3px] border-l-[color-mix(in_srgb,var(--gl-warn)_75%,transparent)] bg-gradient-to-br from-[color-mix(in_srgb,var(--gl-warn)_12%,transparent)] to-transparent',
+  competition:
+    'border-l-[3px] border-l-[color-mix(in_srgb,var(--gl-success)_70%,transparent)] bg-gradient-to-br from-[color-mix(in_srgb,var(--gl-success)_12%,transparent)] to-transparent',
+  status:
+    'border-l-[3px] border-l-[color-mix(in_srgb,var(--gl-accent)_55%,transparent)] bg-gradient-to-br from-[color-mix(in_srgb,var(--gl-accent)_10%,transparent)] to-transparent',
 };
 
 function CardShell({
@@ -358,24 +359,24 @@ export function GoalLabV2LiveMetrics({ layout = 'row' }: { layout?: 'row' | 'sta
                   Fixture tips · all competitions
                 </p>
                 <dl className="mt-3 grid w-full grid-cols-3 gap-2 sm:gap-3 text-center">
-                  <div className="flex min-w-0 flex-col items-center justify-center rounded-lg bg-amber-500/10 px-2 py-2.5">
-                    <dt className="text-[10px] font-semibold uppercase tracking-wide text-amber-900/70">
+                  <div className="flex min-w-0 flex-col items-center justify-center rounded-lg border border-[var(--gl-border)] bg-[var(--gl-elevated)] px-2 py-2.5">
+                    <dt className="text-[10px] font-semibold uppercase tracking-wide text-[var(--gl-text-muted)]">
                       Hottest 30d
                     </dt>
                     <dd className="mt-0.5 text-xl font-semibold tabular-nums text-[var(--gl-text)]">
                       {hottest?.count ?? 0}
                     </dd>
                   </div>
-                  <div className="flex min-w-0 flex-col items-center justify-center rounded-lg bg-amber-500/10 px-2 py-2.5">
-                    <dt className="text-[10px] font-semibold uppercase tracking-wide text-amber-900/70">
+                  <div className="flex min-w-0 flex-col items-center justify-center rounded-lg border border-[var(--gl-border)] bg-[var(--gl-elevated)] px-2 py-2.5">
+                    <dt className="text-[10px] font-semibold uppercase tracking-wide text-[var(--gl-text-muted)]">
                       Today
                     </dt>
                     <dd className="mt-0.5 text-xl font-semibold tabular-nums text-[var(--gl-text)]">
                       {todayStreak?.count ?? 0}
                     </dd>
                   </div>
-                  <div className="flex min-w-0 flex-col items-center justify-center rounded-lg bg-amber-500/10 px-2 py-2.5">
-                    <dt className="text-[10px] font-semibold uppercase tracking-wide text-amber-900/70">
+                  <div className="flex min-w-0 flex-col items-center justify-center rounded-lg border border-[var(--gl-border)] bg-[var(--gl-elevated)] px-2 py-2.5">
+                    <dt className="text-[10px] font-semibold uppercase tracking-wide text-[var(--gl-text-muted)]">
                       7d avg
                     </dt>
                     <dd className="mt-0.5 text-xl font-semibold tabular-nums text-[var(--gl-text)]">
@@ -512,9 +513,9 @@ export function GoalLabV2LiveMetrics({ layout = 'row' }: { layout?: 'row' | 'sta
                   <span
                     className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
                       data.modelStatus.status === 'live'
-                        ? 'bg-teal-600/15 text-teal-800'
+                        ? 'bg-[color-mix(in_srgb,var(--gl-success)_16%,transparent)] text-[var(--gl-success)]'
                         : data.modelStatus.status === 'delayed'
-                          ? 'bg-amber-500/15 text-amber-900'
+                          ? 'bg-[color-mix(in_srgb,var(--gl-warn)_16%,transparent)] text-[var(--gl-warn)]'
                           : 'bg-[var(--gl-elevated)] text-[var(--gl-text-muted)]'
                     }`}
                   >

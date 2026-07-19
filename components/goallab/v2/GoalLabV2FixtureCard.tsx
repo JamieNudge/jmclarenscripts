@@ -43,22 +43,22 @@ export function GoalLabV2FixtureCard({
   const won = fixtureListItemWinResult(fixture);
   const href = fixtureDetailHrefV2(fixture.fixtureId, dateKey);
 
-  const shellClass = `flex flex-col rounded-2xl border border-[var(--gl-border)] bg-[var(--gl-surface)] shadow-[var(--gl-shadow)] ${
+  const shellClass = `flex flex-col rounded-2xl border border-[var(--gl-border-strong)] bg-[var(--gl-elevated)] shadow-[var(--gl-shadow)] ${
     featured ? 'p-5 md:p-6' : 'p-4'
   } ${
     interactive
-      ? 'group transition-colors outline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--gl-accent)] hover:border-[var(--gl-border-strong)]'
+      ? 'group transition-colors outline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--gl-accent)] hover:border-[var(--gl-accent)]/40'
       : ''
   }`;
 
   const body = (
     <>
       <div className="flex items-start justify-between gap-3">
-        <p className="text-xs font-medium uppercase tracking-wide text-[var(--gl-text-muted)] truncate">
+        <p className="text-xs font-medium uppercase tracking-wide text-[var(--gl-text-soft)] truncate">
           {fixture.leagueKey}
         </p>
         <p
-          className="shrink-0 text-xs tabular-nums text-[var(--gl-text-muted)]"
+          className="shrink-0 text-xs tabular-nums text-[var(--gl-text-soft)]"
           title={kickoffTitle}
         >
           {kickoffShort}
@@ -82,17 +82,17 @@ export function GoalLabV2FixtureCard({
           </span>
         ) : null}
         {forecast.primary ? (
-          <span className="inline-flex items-center rounded-lg bg-[var(--gl-accent-soft)] px-2.5 py-1 text-xs font-semibold text-[var(--gl-accent)]">
+          <span className="inline-flex items-center rounded-lg border border-[color-mix(in_srgb,var(--gl-accent)_35%,transparent)] bg-[var(--gl-accent-soft)] px-2.5 py-1 text-xs font-semibold text-[var(--gl-accent)]">
             {forecast.primary}
           </span>
         ) : null}
         {confidence != null ? (
-          <span className="inline-flex items-center rounded-lg border border-[var(--gl-border)] px-2.5 py-1 text-xs font-medium tabular-nums text-[var(--gl-text-soft)]">
+          <span className="inline-flex items-center rounded-lg border border-[var(--gl-border-strong)] bg-[var(--gl-surface)] px-2.5 py-1 text-xs font-medium tabular-nums text-[var(--gl-text-soft)]">
             {confidence}% confidence
           </span>
         ) : null}
         {fixture.scoreDisplay !== '–' ? (
-          <span className="inline-flex items-center rounded-lg border border-[var(--gl-border)] px-2.5 py-1 text-xs font-semibold tabular-nums text-[var(--gl-text)]">
+          <span className="inline-flex items-center rounded-lg border border-[var(--gl-border-strong)] bg-[var(--gl-surface)] px-2.5 py-1 text-xs font-semibold tabular-nums text-[var(--gl-text)]">
             {fixture.scoreDisplay}
           </span>
         ) : null}
