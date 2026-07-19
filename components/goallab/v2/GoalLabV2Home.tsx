@@ -10,6 +10,7 @@ import { StatStrikeHeroPanel } from '@/components/statstrike/StatStrikeHeroPanel
 import { StatStrikeAppStoreCta } from '@/components/statstrike/StatStrikeAppStoreCta';
 import { HubFootballLink } from '@/components/hub/HubFootballLink';
 import { useBestPicksLondonDateKey } from '@/hooks/useBestPicksLondonDateKey';
+import { useStatStrikeBoard } from '@/hooks/useStatStrikeBoard';
 import {
   GOAL_LAB_V2_BLOG_PATH,
   GOAL_LAB_V2_FIXTURES_PATH,
@@ -23,46 +24,68 @@ import { getFirebaseRealtimeDb, isFirebaseClientConfigured } from '@/lib/firebas
 import {
   parseFixturesFromUnanimousExport,
   sortFixturesByKickoff,
+  type FixtureListItem,
 } from '@/lib/fixtures-browser';
 import { isStatStrikeWebEnabled } from '@/lib/statstrike/enabled';
+import {
+  boardRowToFixtureListItem,
+  HOMEPAGE_FORECAST_PREVIEW_LIMIT,
+  pickHomepageForecastPreview,
+  statStrikeFixtureHref,
+} from '@/lib/statstrike/homepage-forecast-preview';
 
-const PREVIEW_LIMIT = 3;
+const PREVIEW_LIMIT = HOMEPAGE_FORECAST_PREVIEW_LIMIT;
 const statStrikeAppStoreUrl = apps.find((a) => a.id === 'stat-strike')?.appStoreUrl;
+const statStrikeWeb = isStatStrikeWebEnabled();
+
+type PreviewCard = {
+  fixture: FixtureListItem;
+  dateKey: string;
+  href?: string;
+};
 
 export function GoalLabV2Home() {
   const dateKey = useBestPicksLondonDateKey();
+  const board = useStatStrikeBoard();
   const [exportVal, setExportVal] = useState<unknown>(null);
-  const [loading, setLoading] = useState(true);
+  const [exportLoading, setExportLoading] = useState(!statStrikeWeb);
   const [error, setError] = useState<string | null>(null);
 
   const { unanimousPath } = statStrikeRtdbPathsFromEnv(dateKey);
   const configured = isFirebaseClientConfigured();
 
   useEffect(() => {
+    // Board-backed preview when StatStrike web is on — skip unanimous export listener.
+    if (statStrikeWeb) {
+      setExportLoading(false);
+      setExportVal(null);
+      setError(null);
+      return;
+    }
     if (!configured) {
-      setLoading(false);
+      setExportLoading(false);
       setExportVal(null);
       setError(null);
       return;
     }
     const db = getFirebaseRealtimeDb();
     if (!db) {
-      setLoading(false);
+      setExportLoading(false);
       return;
     }
 
-    setLoading(true);
+    setExportLoading(true);
     const exportRef = ref(db, unanimousPath);
     const unsub = onValue(
       exportRef,
       (snap) => {
         setError(null);
-        setLoading(false);
+        setExportLoading(false);
         setExportVal(snap.val());
       },
       (err) => {
         setError(err.message);
-        setLoading(false);
+        setExportLoading(false);
         setExportVal(null);
       },
     );
@@ -70,12 +93,27 @@ export function GoalLabV2Home() {
     return () => unsub();
   }, [configured, unanimousPath]);
 
-  const fixtures = useMemo(
+  const exportFixtures = useMemo(
     () => sortFixturesByKickoff(parseFixturesFromUnanimousExport(exportVal)),
     [exportVal],
   );
-  const featured = fixtures[0] ?? null;
-  const grid = fixtures.slice(0, PREVIEW_LIMIT);
+  const featured = exportFixtures[0] ?? null;
+
+  const previewCards: PreviewCard[] = useMemo(() => {
+    if (statStrikeWeb) {
+      return pickHomepageForecastPreview(board.rows).map((row) => ({
+        fixture: boardRowToFixtureListItem(row),
+        dateKey: row.selectionDateKey,
+        href: statStrikeFixtureHref(row.fixture.id, row.selectionDateKey),
+      }));
+    }
+    return exportFixtures.slice(0, PREVIEW_LIMIT).map((fixture) => ({
+      fixture,
+      dateKey,
+    }));
+  }, [board.rows, dateKey, exportFixtures]);
+
+  const loading = statStrikeWeb ? board.loading : exportLoading;
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 md:px-6 md:py-14 space-y-16 md:space-y-24">
@@ -110,7 +148,7 @@ export function GoalLabV2Home() {
         </div>
 
         <div className="min-w-0">
-          {isStatStrikeWebEnabled() ? (
+          {statStrikeWeb ? (
             <StatStrikeHeroPanel />
           ) : loading ? (
             <div className="rounded-2xl border border-[var(--gl-border)] bg-[var(--gl-surface)] p-6 shadow-[var(--gl-shadow)] animate-pulse">
@@ -149,8 +187,8 @@ export function GoalLabV2Home() {
                 Today&apos;s forecasts
               </h2>
               <p className="mt-1.5 text-sm text-[var(--gl-text-soft)] leading-relaxed">
-                From the daily upload — tap a card for forecast detail, see historical league
-                success and key signals.
+                Live matches first, then the latest full-time results — tap a card for forecast
+                detail.
               </p>
             </div>
             <HubFootballLink
@@ -161,18 +199,19 @@ export function GoalLabV2Home() {
             </HubFootballLink>
           </div>
 
-          {!loading && grid.length > 0 ? (
+          {!loading && previewCards.length > 0 ? (
             <div className="space-y-4">
               <ul className="grid gap-3 list-none m-0 p-0">
-                {grid.map((fixture) => (
-                  <li key={String(fixture.fixtureId)}>
-                    <GoalLabV2FixtureCard fixture={fixture} dateKey={dateKey} />
+                {previewCards.map(({ fixture, dateKey: cardDate, href }) => (
+                  <li key={`${cardDate}:${fixture.fixtureId}`}>
+                    <GoalLabV2FixtureCard fixture={fixture} dateKey={cardDate} href={href} />
                   </li>
                 ))}
               </ul>
               {statStrikeAppStoreUrl ? (
                 <p className="text-sm text-[var(--gl-text-soft)]">
-                  More in the app — <StatStrikeAppStoreCta href={statStrikeAppStoreUrl} variant="inline" />
+                  More in the app —{' '}
+                  <StatStrikeAppStoreCta href={statStrikeAppStoreUrl} variant="inline" />
                 </p>
               ) : null}
             </div>
@@ -196,7 +235,10 @@ export function GoalLabV2Home() {
       {/* Research & insights */}
       <section className="space-y-6" aria-labelledby="gl-v2-insights-heading">
         <div>
-          <h2 id="gl-v2-insights-heading" className="text-2xl md:text-3xl font-semibold tracking-tight text-[var(--gl-text)]">
+          <h2
+            id="gl-v2-insights-heading"
+            className="text-2xl md:text-3xl font-semibold tracking-tight text-[var(--gl-text)]"
+          >
             Research & insights
           </h2>
           <p className="mt-2 text-base text-[var(--gl-text-soft)] leading-relaxed max-w-2xl">
@@ -227,7 +269,9 @@ export function GoalLabV2Home() {
                 className="flex h-full flex-col rounded-2xl border border-[var(--gl-border)] bg-[var(--gl-surface)] p-5 shadow-[var(--gl-shadow)] transition-colors hover:border-[var(--gl-border-strong)] outline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--gl-accent)]"
               >
                 <span className="text-base font-semibold text-[var(--gl-text)]">{item.title}</span>
-                <span className="mt-2 text-sm text-[var(--gl-text-soft)] leading-relaxed flex-1">{item.body}</span>
+                <span className="mt-2 text-sm text-[var(--gl-text-soft)] leading-relaxed flex-1">
+                  {item.body}
+                </span>
                 <span className="mt-4 text-sm font-medium text-[var(--gl-accent)]">Open →</span>
               </HubFootballLink>
             </li>

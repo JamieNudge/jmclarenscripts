@@ -26,6 +26,8 @@ type Props = {
    * Used on /fixtures — the list page is the Forecasts experience.
    */
   interactive?: boolean;
+  /** Override detail href (e.g. StatStrike fixture page for board-backed previews). */
+  href?: string;
 };
 
 export function GoalLabV2FixtureCard({
@@ -33,6 +35,7 @@ export function GoalLabV2FixtureCard({
   dateKey,
   featured = false,
   interactive = true,
+  href: hrefOverride,
 }: Props) {
   const visitorTz = useVisitorTimeZone();
   const kickoffShort = formatKickoffShortLocalAndUtc(fixture.kickoffMs, visitorTz);
@@ -41,7 +44,7 @@ export function GoalLabV2FixtureCard({
   const forecast = pickForecastDetailLines(fixture.pick);
   const confidence = pickConfidence(fixture);
   const won = fixtureListItemWinResult(fixture);
-  const href = fixtureDetailHrefV2(fixture.fixtureId, dateKey);
+  const href = hrefOverride ?? fixtureDetailHrefV2(fixture.fixtureId, dateKey);
 
   const shellClass = `flex flex-col rounded-2xl border border-[var(--gl-border-strong)] bg-[var(--gl-elevated)] shadow-[var(--gl-shadow)] ${
     featured ? 'p-5 md:p-6' : 'p-4'
