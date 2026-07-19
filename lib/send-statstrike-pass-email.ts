@@ -47,7 +47,7 @@ export async function sendStatStrikePassWelcomeEmail(input: {
     `Access expires: ${expiresLocal}`,
     '',
     `Open the board: ${board}`,
-    `If the board is still locked in this browser, return to ${support} and finish claiming after checkout.`,
+    `If the board is still locked in this browser, open ${support}/success after checkout or contact support.`,
     '',
     'Included: full board (Coming Soon blur off) + Your Picks / My Record on this device for 24 hours.',
     '',

@@ -14,9 +14,16 @@ export {
 
 export type StatStrikePassRecord = {
   passId: string;
-  lemonOrderId: string;
-  lemonCheckoutId?: string | null;
+  provider: 'stripe';
+  /** Stripe Checkout Session id — unique fulfilment key. */
+  stripeCheckoutSessionId: string;
+  stripePaymentIntentId?: string | null;
+  /** Stripe event id that fulfilled this pass (idempotency aid). */
+  stripeEventId?: string | null;
   amountGbp: number;
+  amountMinor: number;
+  currency: 'gbp';
+  purchaseType: 'supporter_pass_24h';
   createdAt: string;
   expiresAt: string;
   email?: string | null;
@@ -28,7 +35,6 @@ export type StatStrikePassRecord = {
   tokenHash: string;
   welcomeEmailSentAt?: string | null;
   surveyEmailSentAt?: string | null;
-  /** When the access cookie was first claimed in a browser. */
   claimedAt?: string | null;
 };
 
@@ -53,9 +59,27 @@ export function passExpiresAtFrom(createdAtIso: string, hours = STATSTRIKE_PASS_
   return new Date(base + hours * 60 * 60 * 1000).toISOString();
 }
 
+/**
+ * Repeat purchase stacking:
+ * new_start = max(now, latest active expiry); new_expiry = new_start + 24h
+ */
+export function stackedPassExpiresAt(
+  existingExpiresAt: string | null | undefined,
+  nowMs = Date.now(),
+  hours = STATSTRIKE_PASS_HOURS,
+): string {
+  const existingMs = existingExpiresAt ? Date.parse(existingExpiresAt) : NaN;
+  const start = Number.isFinite(existingMs) && existingMs > nowMs ? existingMs : nowMs;
+  return new Date(start + hours * 60 * 60 * 1000).toISOString();
+}
+
 export function isPassActive(pass: Pick<StatStrikePassRecord, 'expiresAt'>, now = Date.now()): boolean {
   const exp = Date.parse(pass.expiresAt);
   return Number.isFinite(exp) && exp > now;
+}
+
+export function amountGbpToMinor(amountGbp: number): number {
+  return Math.round(amountGbp * 100);
 }
 
 /** Public site origin for redirects / emails (no trailing slash). */

@@ -5,19 +5,19 @@ import {
   isStatStrikePassAmountGbp,
   parseConsentFlag,
 } from '@/lib/statstrike/pass';
-import { createLemonPassCheckout, isLemonPassConfigured } from '@/lib/statstrike/lemon';
+import { createStripePassCheckout, isStripePassConfigured } from '@/lib/statstrike/stripe';
 import { jsonNoStore } from '@/lib/statstrike/pass-session';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-/** POST: create Lemon checkout for a 24h StatStrike pass. */
+/** POST: create Stripe Checkout Session for a 24h StatStrike Supporter Pass. */
 export async function POST(req: NextRequest) {
-  if (!isLemonPassConfigured()) {
+  if (!isStripePassConfigured()) {
     return jsonNoStore(
       {
         error:
-          'Lemon Squeezy checkout is not configured yet. Set store, API key, webhook secret, and variant IDs.',
+          'Stripe checkout is not configured yet. Set STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET.',
         configured: false,
       },
       { status: 503 },
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
   const claimKey = randomBytes(24).toString('base64url');
 
   try {
-    const { url, checkoutId } = await createLemonPassCheckout({
+    const { url, checkoutSessionId } = await createStripePassCheckout({
       amountGbp: amountRaw,
       email,
       marketingConsent,
@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
       consentTextVersion,
       claimKey,
     });
-    return jsonNoStore({ url, checkoutId, claimKey, configured: true });
+    return jsonNoStore({ url, checkoutSessionId, claimKey, configured: true });
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Checkout failed';
     return jsonNoStore({ error: msg, configured: true }, { status: 502 });
@@ -72,8 +72,9 @@ export async function POST(req: NextRequest) {
 
 export async function GET() {
   return jsonNoStore({
-    configured: isLemonPassConfigured(),
+    configured: isStripePassConfigured(),
     amountsGbp: [1, 3, 5, 10],
     consentTextVersion: STATSTRIKE_PASS_CONSENT_TEXT_VERSION,
+    provider: 'stripe',
   });
 }

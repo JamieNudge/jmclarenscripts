@@ -16,12 +16,12 @@ export function passByTokenHashPath(tokenHash: string): string {
   return `${statStrikePassesRoot()}/byTokenHash/${tokenHash}`;
 }
 
-export function passByOrderIdPath(lemonOrderId: string): string {
-  return `${statStrikePassesRoot()}/byOrderId/${lemonOrderId}`;
+export function passByCheckoutSessionPath(stripeCheckoutSessionId: string): string {
+  return `${statStrikePassesRoot()}/byCheckoutSession/${stripeCheckoutSessionId}`;
 }
 
-export function passByCheckoutIdPath(lemonCheckoutId: string): string {
-  return `${statStrikePassesRoot()}/byCheckoutId/${lemonCheckoutId}`;
+export function stripeEventProcessedPath(stripeEventId: string): string {
+  return `${statStrikePassesRoot()}/stripeEvents/${stripeEventId}`;
 }
 
 function db() {
@@ -41,24 +41,33 @@ export async function getPassByTokenHash(tokenHash: string): Promise<StatStrikeP
   return getPassById(passId);
 }
 
-export async function getPassIdByOrderId(lemonOrderId: string): Promise<string | null> {
-  const snap = await db().ref(passByOrderIdPath(lemonOrderId)).once('value');
+export async function getPassIdByCheckoutSession(
+  stripeCheckoutSessionId: string,
+): Promise<string | null> {
+  const snap = await db().ref(passByCheckoutSessionPath(stripeCheckoutSessionId)).once('value');
   return typeof snap.val() === 'string' ? snap.val() : null;
 }
 
-export async function getPassIdByCheckoutId(lemonCheckoutId: string): Promise<string | null> {
-  const snap = await db().ref(passByCheckoutIdPath(lemonCheckoutId)).once('value');
-  return typeof snap.val() === 'string' ? snap.val() : null;
+export async function wasStripeEventProcessed(stripeEventId: string): Promise<boolean> {
+  const snap = await db().ref(stripeEventProcessedPath(stripeEventId)).once('value');
+  return Boolean(snap.val());
+}
+
+export async function markStripeEventProcessed(
+  stripeEventId: string,
+  meta: { type: string; passId?: string; at: string },
+): Promise<void> {
+  await db().ref(stripeEventProcessedPath(stripeEventId)).set(meta);
 }
 
 /**
- * Create a pass and index lookups. Idempotent on lemonOrderId when already present.
+ * Create a pass and index lookups. Idempotent on stripeCheckoutSessionId.
  */
 export async function createPassRecord(
   pass: StatStrikePassRecord,
   opts?: { claimKey?: string; rawTokenForClaimIndex?: string },
 ): Promise<{ created: boolean; pass: StatStrikePassRecord }> {
-  const existingId = await getPassIdByOrderId(pass.lemonOrderId);
+  const existingId = await getPassIdByCheckoutSession(pass.stripeCheckoutSessionId);
   if (existingId) {
     const existing = await getPassById(existingId);
     if (existing) return { created: false, pass: existing };
@@ -67,12 +76,8 @@ export async function createPassRecord(
   const updates: Record<string, unknown> = {
     [passByIdPath(pass.passId)]: pass,
     [passByTokenHashPath(pass.tokenHash)]: pass.passId,
-    [passByOrderIdPath(pass.lemonOrderId)]: pass.passId,
+    [passByCheckoutSessionPath(pass.stripeCheckoutSessionId)]: pass.passId,
   };
-  if (pass.lemonCheckoutId) {
-    updates[passByCheckoutIdPath(pass.lemonCheckoutId)] = pass.passId;
-  }
-  // One-time claim index (claimKey → token) for post-checkout cookie; cleared after claim.
   if (opts?.claimKey && opts?.rawTokenForClaimIndex) {
     updates[`${statStrikePassesRoot()}/claimTokens/${opts.claimKey}`] = {
       passId: pass.passId,
@@ -106,6 +111,10 @@ export async function clearClaimToken(claimKey: string): Promise<void> {
 
 export async function markPassClaimed(passId: string, claimedAt: string): Promise<void> {
   await db().ref(passByIdPath(passId)).update({ claimedAt });
+}
+
+export async function updatePassExpiresAt(passId: string, expiresAt: string): Promise<void> {
+  await db().ref(passByIdPath(passId)).update({ expiresAt });
 }
 
 export async function markWelcomeEmailSent(passId: string, at: string): Promise<void> {

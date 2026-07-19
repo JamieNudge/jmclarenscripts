@@ -1,10 +1,17 @@
 import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
-import { STATSTRIKE_PASS_COOKIE, isPassActive } from '@/lib/statstrike/pass';
+import {
+  STATSTRIKE_PASS_COOKIE,
+  hashPassAccessToken,
+  isPassActive,
+  stackedPassExpiresAt,
+} from '@/lib/statstrike/pass';
 import {
   clearClaimToken,
   getClaimToken,
+  getPassByTokenHash,
   markPassClaimed,
+  updatePassExpiresAt,
 } from '@/lib/statstrike/pass-store';
 import { jsonNoStore, passCookieOptions, readPassSessionFromCookies } from '@/lib/statstrike/pass-session';
 
@@ -18,8 +25,8 @@ export async function GET() {
 }
 
 /**
- * POST: claim access after Lemon redirect (`claim` key from checkout custom data).
- * Sets httpOnly cookie; clears one-time claim token.
+ * POST: claim access after Stripe success redirect (`claim` key from Checkout metadata).
+ * If this browser already has an active pass, stack +24h onto the remaining time.
  */
 export async function POST(req: NextRequest) {
   let body: unknown;
@@ -45,8 +52,37 @@ export async function POST(req: NextRequest) {
   }
 
   if (!claim) {
-    // Webhook may lag behind redirect — tell client to retry briefly.
     return jsonNoStore({ error: 'Pass not ready yet', retry: true }, { status: 409 });
+  }
+
+  const jar = cookies();
+  const existingToken = jar.get(STATSTRIKE_PASS_COOKIE)?.value;
+  let existingPass = null as Awaited<ReturnType<typeof getPassByTokenHash>>;
+  if (existingToken) {
+    try {
+      existingPass = await getPassByTokenHash(hashPassAccessToken(existingToken));
+    } catch {
+      existingPass = null;
+    }
+  }
+
+  // Stack onto an already-active browser pass.
+  if (existingPass && existingToken && isPassActive(existingPass)) {
+    const extendedExpiresAt = stackedPassExpiresAt(existingPass.expiresAt);
+    try {
+      await updatePassExpiresAt(existingPass.passId, extendedExpiresAt);
+      await markPassClaimed(claim.passId, new Date().toISOString());
+      await clearClaimToken(claimKey);
+    } catch {
+      // best-effort
+    }
+    jar.set(STATSTRIKE_PASS_COOKIE, existingToken, passCookieOptions(new Date(extendedExpiresAt)));
+    return jsonNoStore({
+      unlocked: true,
+      expiresAt: extendedExpiresAt,
+      passId: existingPass.passId,
+      extended: true,
+    });
   }
 
   if (claim.expiresAt && !isPassActive({ expiresAt: claim.expiresAt })) {
@@ -54,8 +90,9 @@ export async function POST(req: NextRequest) {
     return jsonNoStore({ error: 'Pass already expired' }, { status: 410 });
   }
 
-  const expires = claim.expiresAt ? new Date(claim.expiresAt) : new Date(Date.now() + 24 * 60 * 60 * 1000);
-  const jar = cookies();
+  const expires = claim.expiresAt
+    ? new Date(claim.expiresAt)
+    : new Date(Date.now() + 24 * 60 * 60 * 1000);
   jar.set(STATSTRIKE_PASS_COOKIE, claim.token, passCookieOptions(expires));
 
   try {
@@ -69,6 +106,7 @@ export async function POST(req: NextRequest) {
     unlocked: true,
     expiresAt: claim.expiresAt || expires.toISOString(),
     passId: claim.passId,
+    extended: false,
   });
 }
 

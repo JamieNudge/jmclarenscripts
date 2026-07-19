@@ -4,9 +4,11 @@ import { useSearchParams } from 'next/navigation';
 import { StatStrikeCreatePassPanel } from '@/components/statstrike/StatStrikeCreatePassPanel';
 
 export function StatStrikeSupportPassSection() {
+  return <StatStrikeCreatePassPanel />;
+}
+
+export function StatStrikePassSuccessSection() {
   const params = useSearchParams();
   const claim = params.get('claim');
-  const pass = params.get('pass');
-  const autoClaimKey = pass === 'claimed' && claim ? claim : null;
-  return <StatStrikeCreatePassPanel autoClaimKey={autoClaimKey} />;
+  return <StatStrikeCreatePassPanel autoClaimKey={claim} variant="status" />;
 }

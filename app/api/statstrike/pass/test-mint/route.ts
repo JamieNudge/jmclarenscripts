@@ -2,21 +2,22 @@ import { randomBytes } from 'node:crypto';
 import { NextRequest } from 'next/server';
 import {
   STATSTRIKE_PASS_CONSENT_TEXT_VERSION,
+  amountGbpToMinor,
   hashPassAccessToken,
   isStatStrikePassAmountGbp,
   mintPassAccessToken,
-  parseConsentFlag,
   passExpiresAtFrom,
   type StatStrikePassRecord,
 } from '@/lib/statstrike/pass';
 import { createPassRecord } from '@/lib/statstrike/pass-store';
+import { parseConsentFlag } from '@/lib/statstrike/pass-constants';
 import { jsonNoStore } from '@/lib/statstrike/pass-session';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
 /**
- * Preview/QA only: mint a pass + claim key without Lemon.
+ * Preview/QA only: mint a pass + claim key without Stripe.
  * Requires STATSTRIKE_PASS_TEST_SECRET and must not run when unset.
  */
 export async function POST(req: NextRequest) {
@@ -48,13 +49,18 @@ export async function POST(req: NextRequest) {
   const rawToken = mintPassAccessToken();
   const passId = `pass_test_${randomBytes(8).toString('hex')}`;
   const claimKey = randomBytes(24).toString('base64url');
-  const orderId = `test_${Date.now()}_${randomBytes(4).toString('hex')}`;
+  const sessionId = `cs_test_${Date.now()}_${randomBytes(4).toString('hex')}`;
 
   const pass: StatStrikePassRecord = {
     passId,
-    lemonOrderId: orderId,
-    lemonCheckoutId: null,
+    provider: 'stripe',
+    stripeCheckoutSessionId: sessionId,
+    stripePaymentIntentId: null,
+    stripeEventId: null,
     amountGbp,
+    amountMinor: amountGbpToMinor(amountGbp),
+    currency: 'gbp',
+    purchaseType: 'supporter_pass_24h',
     createdAt,
     expiresAt: passExpiresAtFrom(createdAt),
     email: typeof o.email === 'string' ? o.email.trim() : null,
@@ -75,6 +81,6 @@ export async function POST(req: NextRequest) {
     passId,
     claimKey,
     expiresAt: pass.expiresAt,
-    claimUrl: `/support/statstrike?pass=claimed&claim=${encodeURIComponent(claimKey)}`,
+    claimUrl: `/support/statstrike/success?claim=${encodeURIComponent(claimKey)}`,
   });
 }

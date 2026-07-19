@@ -86,30 +86,35 @@ IndexedDB store `statstrike-web` / `personalPicks` (`lib/statstrike/personal-sto
 
 **Unlocked when:**
 
-- Valid **24h Lemon Squeezy pass** session (httpOnly cookie), or
+- Valid **24h Stripe Supporter Pass** session (httpOnly cookie), or
 - Local QA: `NEXT_PUBLIC_STATSTRIKE_PERSONAL_ENABLED=1`
 
 Pass holders also **bypass Coming Soon blur** on that browser; anonymous visitors still respect admin blur.
 
-## 24h Lemon Squeezy pass
+## 24h Stripe Supporter Pass
 
 | Path | Role |
 |------|------|
-| `/support/statstrike` | Create Pass UI (amounts, consents) + legacy app support |
-| `POST /api/statstrike/pass/checkout` | Create Lemon checkout |
-| `POST /api/statstrike/pass/webhook` | Signed `order_created` → pass record + claim token |
-| `GET/POST /api/statstrike/pass/session` | Session status / claim cookie |
+| `/support/statstrike` | Create Pass UI (amounts, consents) + app support |
+| `/support/statstrike/success` | Post-checkout claim / confirm access |
+| `/support/statstrike/cancelled` | Checkout cancelled |
+| `POST /api/statstrike/pass/checkout` | Create Stripe Checkout Session |
+| `POST /api/statstrike/pass/webhook` | Signed Stripe events → pass record + claim token |
+| `GET/POST /api/statstrike/pass/session` | Session status / claim cookie (stacks +24h if already active) |
 | `GET /api/statstrike/pass/survey-cron` | Hourly survey sweep (opt-in only) |
 | `POST /api/statstrike/pass/test-mint` | Preview QA mint (requires `STATSTRIKE_PASS_TEST_SECRET`) |
 
-**Product:** £1 / £3 / £5 / £10 → same entitlement (board + personal for 24h from purchase).
+**Product:** £1 / £3 / £5 / £10 → same entitlement (board + personal for 24h from payment fulfilment).
+
+**Identity (v1):** anonymous browser unlock via httpOnly cookie (no GoalLab login yet). Repeat purchase in the same browser stacks remaining time + 24h.
 
 **Consents (Create Pass page only, unchecked by default):** marketing list; survey email at expiry. Welcome email is transactional.
 
-**Env:** see `.env.example` (`LEMONSQUEEZY_*`, optional `STATSTRIKE_PASS_TEST_SECRET`).
+**Env:** `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` (required). Optional `STRIPE_PRICE_ID_1/3/5/10` — otherwise Checkout uses `price_data`. Optional `STATSTRIKE_PASS_TEST_SECRET` for preview mint.
 
-**Deploy:** build on `feature/statstrike-24h-pass`; Vercel **preview** until webhook + unlock + emails work E2E. Do not point Lemon webhooks at production until ready. Rollback tag: `pre-statstrike-24h-pass`.
+**Deploy:** build on `feature/statstrike-24h-pass`; Vercel **preview** until webhook + unlock + emails work E2E. Point Stripe webhooks at the preview URL first. Rollback tag: `pre-statstrike-24h-pass`.
 
+**Note:** Lemon Squeezy was the original provider choice; GoalLab switched to Stripe after Lemon’s acquisition path.
 ## Not wired yet
 
 - FCM web push

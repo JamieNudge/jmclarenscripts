@@ -1,4 +1,3 @@
-import { createHmac } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import {
   hashPassAccessToken,
@@ -6,9 +5,9 @@ import {
   mintPassAccessToken,
   passExpiresAtFrom,
   passTokenMatches,
+  stackedPassExpiresAt,
 } from '@/lib/statstrike/pass';
 import { isStatStrikePassAmountGbp, parseConsentFlag } from '@/lib/statstrike/pass-constants';
-import { verifyLemonWebhookSignature } from '@/lib/statstrike/lemon';
 
 describe('statstrike pass tokens', () => {
   it('hashes and matches opaque tokens', () => {
@@ -26,6 +25,15 @@ describe('statstrike pass tokens', () => {
     expect(isPassActive({ expiresAt: exp }, Date.parse('2026-07-20T11:59:00.000Z'))).toBe(true);
     expect(isPassActive({ expiresAt: exp }, Date.parse('2026-07-20T12:00:01.000Z'))).toBe(false);
   });
+
+  it('stacks repeat purchases from remaining time', () => {
+    const now = Date.parse('2026-07-19T12:00:00.000Z');
+    // 5 hours remaining → +24h = 29h from now
+    const existing = '2026-07-19T17:00:00.000Z';
+    expect(stackedPassExpiresAt(existing, now)).toBe('2026-07-20T17:00:00.000Z');
+    // expired → from now
+    expect(stackedPassExpiresAt('2026-07-19T10:00:00.000Z', now)).toBe('2026-07-20T12:00:00.000Z');
+  });
 });
 
 describe('pass consents / amounts', () => {
@@ -38,16 +46,5 @@ describe('pass consents / amounts', () => {
   it('accepts only £1/3/5/10', () => {
     expect(isStatStrikePassAmountGbp(3)).toBe(true);
     expect(isStatStrikePassAmountGbp(2)).toBe(false);
-  });
-});
-
-describe('lemon webhook signature', () => {
-  it('verifies hmac hex digest', () => {
-    const secret = 'test-secret';
-    const body = '{"meta":{"event_name":"order_created"}}';
-    process.env.LEMONSQUEEZY_WEBHOOK_SECRET = secret;
-    const sig = createHmac('sha256', secret).update(body, 'utf8').digest('hex');
-    expect(verifyLemonWebhookSignature(body, sig)).toBe(true);
-    expect(verifyLemonWebhookSignature(body, 'deadbeef')).toBe(false);
   });
 });
