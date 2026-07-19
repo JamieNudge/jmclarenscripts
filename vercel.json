@@ -2,7 +2,7 @@
   "crons": [
     {
       "path": "/api/statstrike/pass/survey-cron",
-      "schedule": "0 * * * *"
+      "schedule": "0 9 * * *"
     }
   ]
 }
