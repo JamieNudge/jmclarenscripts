@@ -135,8 +135,8 @@ function HotStreakDrawer({
               Current hot streak
             </h3>
             <p className="mt-1 text-sm text-[var(--gl-text-soft)]">
-              {count} successful fixture tip{count === 1 ? '' : 's'} in a row · global across all
-              competitions
+              {count} successful fixture tip{count === 1 ? '' : 's'} in a row · longest recent run
+              across all competitions
             </p>
           </div>
           <button
@@ -272,7 +272,7 @@ export function GoalLabV2LiveMetrics({ layout = 'row' }: { layout?: 'row' | 'sta
                   <MetricInfo text={data.successDefinition} />
                 </div>
                 <p className="mt-1 text-[11px] font-medium uppercase tracking-wide text-[var(--gl-text-muted)]">
-                  Global · fixture tips · all competitions
+                  Longest consecutive run · all competitions
                 </p>
                 {data.hotStreak.count > 0 && data.hotStreak.latest ? (
                   <>
@@ -306,9 +306,9 @@ export function GoalLabV2LiveMetrics({ layout = 'row' }: { layout?: 'row' | 'sta
                   </>
                 ) : (
                   <>
-                    <p className="mt-3 text-lg font-semibold text-[var(--gl-text)]">No active streak</p>
+                    <p className="mt-3 text-lg font-semibold text-[var(--gl-text)]">No hot streak yet</p>
                     <p className="mt-2 text-sm text-[var(--gl-text-soft)] leading-relaxed">
-                      The latest completed forecast ended the previous run.
+                      No consecutive successful fixture tips in the recent settled window.
                     </p>
                     {isStatStrikeWebEnabled() ? (
                       <HubFootballLink

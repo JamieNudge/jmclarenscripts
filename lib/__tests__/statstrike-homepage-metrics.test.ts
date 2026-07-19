@@ -77,23 +77,45 @@ describe('parseDailySelection lastUpdated/version', () => {
 });
 
 describe('homepage metrics', () => {
-  it('computes hot streak from newest settled tip backward', () => {
+  it('uses the longest consecutive run, not only the tail after the last loss', () => {
     const records = [
       rec({ fixtureId: 1, kickoffMs: 1000, isCorrect: true, homeTeam: 'A' }),
-      rec({ fixtureId: 2, kickoffMs: 2000, isCorrect: false, homeTeam: 'B' }),
+      rec({ fixtureId: 2, kickoffMs: 2000, isCorrect: true, homeTeam: 'B' }),
       rec({ fixtureId: 3, kickoffMs: 3000, isCorrect: true, homeTeam: 'C' }),
-      rec({ fixtureId: 4, kickoffMs: 4000, isCorrect: true, homeTeam: 'D' }),
-      rec({ fixtureId: 5, kickoffMs: 5000, isCorrect: null, homeTeam: 'E' }),
+      rec({ fixtureId: 4, kickoffMs: 4000, isCorrect: false, homeTeam: 'D' }),
+      rec({ fixtureId: 5, kickoffMs: 5000, isCorrect: true, homeTeam: 'E' }),
     ];
     const streak = computeHotStreak(records);
-    expect(streak.count).toBe(2);
-    expect(streak.latest?.homeTeam).toBe('D');
-    expect(streak.fixtures.map((f) => f.homeTeam)).toEqual(['D', 'C']);
+    expect(streak.count).toBe(3);
+    expect(streak.latest?.homeTeam).toBe('C');
+    expect(streak.fixtures.map((f) => f.homeTeam)).toEqual(['C', 'B', 'A']);
   });
 
-  it('returns empty streak when the latest settled tip failed', () => {
+  it('prefers the more recent run when two runs share the same length', () => {
     const streak = computeHotStreak([
-      rec({ fixtureId: 1, kickoffMs: 1000, isCorrect: true }),
+      rec({ fixtureId: 1, kickoffMs: 1000, isCorrect: true, homeTeam: 'A' }),
+      rec({ fixtureId: 2, kickoffMs: 2000, isCorrect: true, homeTeam: 'B' }),
+      rec({ fixtureId: 3, kickoffMs: 3000, isCorrect: false, homeTeam: 'C' }),
+      rec({ fixtureId: 4, kickoffMs: 4000, isCorrect: true, homeTeam: 'D' }),
+      rec({ fixtureId: 5, kickoffMs: 5000, isCorrect: true, homeTeam: 'E' }),
+    ]);
+    expect(streak.count).toBe(2);
+    expect(streak.fixtures.map((f) => f.homeTeam)).toEqual(['E', 'D']);
+  });
+
+  it('still finds a run when the latest settled tip failed', () => {
+    const streak = computeHotStreak([
+      rec({ fixtureId: 1, kickoffMs: 1000, isCorrect: true, homeTeam: 'A' }),
+      rec({ fixtureId: 2, kickoffMs: 2000, isCorrect: true, homeTeam: 'B' }),
+      rec({ fixtureId: 3, kickoffMs: 3000, isCorrect: false, homeTeam: 'C' }),
+    ]);
+    expect(streak.count).toBe(2);
+    expect(streak.latest?.homeTeam).toBe('B');
+  });
+
+  it('returns empty streak when there are no successful settled tips', () => {
+    const streak = computeHotStreak([
+      rec({ fixtureId: 1, kickoffMs: 1000, isCorrect: false }),
       rec({ fixtureId: 2, kickoffMs: 2000, isCorrect: false }),
     ]);
     expect(streak.count).toBe(0);

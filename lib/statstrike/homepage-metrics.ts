@@ -65,7 +65,7 @@ export type HomepageMetricsSnapshot = {
 };
 
 export const HOMEPAGE_SUCCESS_DEFINITION =
-  'A successful forecast is one fixture tip on the StatStrike board whose recommended tip band (for example Over 2.5 Goals) matched the confirmed full-time total goals. The hot streak counts consecutive successes across all competitions (global), newest settled fixture first. Postponed, abandoned, and unfinished fixtures are excluded.';
+  'A successful forecast is one fixture tip on the StatStrike board whose recommended tip band (for example Over 2.5 Goals) matched the confirmed full-time total goals. The hot streak is the longest consecutive run of successes across all competitions in the recent window (ties prefer the most recent run). Postponed, abandoned, and unfinished fixtures are excluded.';
 
 function toIso(ms: number | null | undefined): string | null {
   if (ms == null || !Number.isFinite(ms)) return null;
@@ -96,9 +96,9 @@ function recordToStreakFixture(r: StatStrikeTrackRecord): HomepageHotStreakFixtu
 }
 
 /**
- * Consecutive successful settled **fixture tips** across the whole app
- * (every competition), in kickoff order — newest settled tip backward.
- * Not a per-competition streak.
+ * Longest consecutive successful **fixture-tip** run across the whole app
+ * (every competition), in kickoff order. Ties prefer the most recent run.
+ * Unsettled fixtures are skipped (they do not break a run).
  */
 export function computeHotStreak(records: StatStrikeTrackRecord[]): HomepageHotStreak {
   // Prefer the latest selection-day copy when a fixture id appears more than once.
@@ -115,12 +115,23 @@ export function computeHotStreak(records: StatStrikeTrackRecord[]): HomepageHotS
     (a, b) => a.kickoffMs - b.kickoffMs || a.fixtureId - b.fixtureId,
   );
 
-  const newestFirst: StatStrikeTrackRecord[] = [];
-  for (let i = settled.length - 1; i >= 0; i--) {
-    if (settled[i].isCorrect !== true) break;
-    newestFirst.push(settled[i]);
+  let best: StatStrikeTrackRecord[] = [];
+  let current: StatStrikeTrackRecord[] = [];
+
+  for (const r of settled) {
+    if (r.isCorrect === true) {
+      current.push(r);
+      // Prefer longer; if equal length, prefer this (more recent) run.
+      if (current.length >= best.length) {
+        best = current.slice();
+      }
+    } else {
+      current = [];
+    }
   }
 
+  // Newest first for the drawer / “latest” summary.
+  const newestFirst = best.slice().reverse();
   const fixtures = newestFirst
     .map(recordToStreakFixture)
     .filter((f): f is HomepageHotStreakFixture => f != null);
