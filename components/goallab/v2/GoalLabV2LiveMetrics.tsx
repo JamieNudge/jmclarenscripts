@@ -129,7 +129,7 @@ function CardShell({
   const pad = className.includes('!p-') ? className : `p-5 ${className}`;
   return (
     <div
-      className={`flex h-full flex-col rounded-2xl border border-[var(--gl-border)] bg-[var(--gl-surface)] shadow-[var(--gl-shadow)] ${CARD_ACCENT[accent]} ${pad}`}
+      className={`flex h-full w-full flex-col rounded-2xl border border-[var(--gl-border)] bg-[var(--gl-surface)] shadow-[var(--gl-shadow)] ${CARD_ACCENT[accent]} ${pad}`}
     >
       {children}
     </div>
@@ -357,8 +357,8 @@ export function GoalLabV2LiveMetrics({ layout = 'row' }: { layout?: 'row' | 'sta
                 <p className="mt-1 text-[11px] font-medium uppercase tracking-wide text-[var(--gl-text-muted)]">
                   Fixture tips · all competitions
                 </p>
-                <dl className="mt-3 grid grid-cols-3 gap-2 text-center">
-                  <div className="rounded-lg bg-amber-500/10 px-1.5 py-2">
+                <dl className="mt-3 grid w-full grid-cols-3 gap-2 sm:gap-3 text-center">
+                  <div className="flex min-w-0 flex-col items-center justify-center rounded-lg bg-amber-500/10 px-2 py-2.5">
                     <dt className="text-[10px] font-semibold uppercase tracking-wide text-amber-900/70">
                       Hottest 30d
                     </dt>
@@ -366,7 +366,7 @@ export function GoalLabV2LiveMetrics({ layout = 'row' }: { layout?: 'row' | 'sta
                       {hottest?.count ?? 0}
                     </dd>
                   </div>
-                  <div className="rounded-lg bg-amber-500/10 px-1.5 py-2">
+                  <div className="flex min-w-0 flex-col items-center justify-center rounded-lg bg-amber-500/10 px-2 py-2.5">
                     <dt className="text-[10px] font-semibold uppercase tracking-wide text-amber-900/70">
                       Today
                     </dt>
@@ -374,7 +374,7 @@ export function GoalLabV2LiveMetrics({ layout = 'row' }: { layout?: 'row' | 'sta
                       {todayStreak?.count ?? 0}
                     </dd>
                   </div>
-                  <div className="rounded-lg bg-amber-500/10 px-1.5 py-2">
+                  <div className="flex min-w-0 flex-col items-center justify-center rounded-lg bg-amber-500/10 px-2 py-2.5">
                     <dt className="text-[10px] font-semibold uppercase tracking-wide text-amber-900/70">
                       7d avg
                     </dt>
