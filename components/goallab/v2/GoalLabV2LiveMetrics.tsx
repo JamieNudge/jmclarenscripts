@@ -92,16 +92,44 @@ function MetricInfo({ text }: { text: string }) {
   );
 }
 
+/** Small decorative mark — aria-hidden; title text carries meaning. */
+function MetricMark({ emoji, label }: { emoji: string; label: string }) {
+  return (
+    <span
+      className="mr-1.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[13px] leading-none"
+      title={label}
+      aria-hidden
+    >
+      {emoji}
+    </span>
+  );
+}
+
+type CardAccent = 'streak' | 'competition' | 'status' | 'none';
+
+const CARD_ACCENT: Record<CardAccent, string> = {
+  none: '',
+  // Warm ember — restrained, not casino neon
+  streak: 'border-l-[3px] border-l-amber-500/70 bg-gradient-to-br from-amber-50/80 to-transparent',
+  // Cool analytical teal
+  competition: 'border-l-[3px] border-l-teal-600/60 bg-gradient-to-br from-teal-50/70 to-transparent',
+  // Neutral slate with a hint of navy (GoalLab accent family)
+  status: 'border-l-[3px] border-l-[var(--gl-accent)]/50 bg-gradient-to-br from-slate-50/90 to-transparent',
+};
+
 function CardShell({
   children,
   className = '',
+  accent = 'none',
 }: {
   children: ReactNode;
   className?: string;
+  accent?: CardAccent;
 }) {
+  const pad = className.includes('!p-') ? className : `p-5 ${className}`;
   return (
     <div
-      className={`flex h-full flex-col rounded-2xl border border-[var(--gl-border)] bg-[var(--gl-surface)] shadow-[var(--gl-shadow)] ${className.includes('!p-') ? className : `p-5 ${className}`}`}
+      className={`flex h-full flex-col rounded-2xl border border-[var(--gl-border)] bg-[var(--gl-surface)] shadow-[var(--gl-shadow)] ${CARD_ACCENT[accent]} ${pad}`}
     >
       {children}
     </div>
@@ -315,8 +343,9 @@ export function GoalLabV2LiveMetrics({ layout = 'row' }: { layout?: 'row' | 'sta
         <>
           <ul className={cardGridClass}>
             <li>
-              <CardShell className={cardClass}>
+              <CardShell className={cardClass} accent="streak">
                 <div className="flex items-center gap-1">
+                  <MetricMark emoji="🔥" label="Hot streak" />
                   <h3 className="text-sm font-semibold text-[var(--gl-text)]">Current hot streak</h3>
                   <MetricInfo text={data.successDefinition} />
                 </div>
@@ -379,8 +408,9 @@ export function GoalLabV2LiveMetrics({ layout = 'row' }: { layout?: 'row' | 'sta
             </li>
 
             <li>
-              <CardShell className={cardClass}>
+              <CardShell className={cardClass} accent="competition">
                 <div className="flex items-center gap-1">
+                  <MetricMark emoji="📊" label="Best performing competition" />
                   <h3 className="text-sm font-semibold text-[var(--gl-text)]">
                     Best performing competition
                   </h3>
@@ -436,14 +466,19 @@ export function GoalLabV2LiveMetrics({ layout = 'row' }: { layout?: 'row' | 'sta
             </li>
 
             <li>
-              <CardShell className={cardClass}>
+              <CardShell className={cardClass} accent="status">
                 <div className="flex items-center justify-between gap-2">
-                  <h3 className="text-sm font-semibold text-[var(--gl-text)]">Model status</h3>
+                  <div className="flex items-center gap-1 min-w-0">
+                    <MetricMark emoji="📡" label="Model status" />
+                    <h3 className="text-sm font-semibold text-[var(--gl-text)]">Model status</h3>
+                  </div>
                   <span
-                    className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                    className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
                       data.modelStatus.status === 'live'
-                        ? 'bg-[var(--gl-elevated)] text-[var(--gl-text)]'
-                        : 'bg-[var(--gl-elevated)] text-[var(--gl-text-muted)]'
+                        ? 'bg-teal-600/15 text-teal-800'
+                        : data.modelStatus.status === 'delayed'
+                          ? 'bg-amber-500/15 text-amber-900'
+                          : 'bg-[var(--gl-elevated)] text-[var(--gl-text-muted)]'
                     }`}
                   >
                     {statusLabel(data.modelStatus.status)}
