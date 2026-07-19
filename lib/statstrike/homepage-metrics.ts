@@ -65,7 +65,7 @@ export type HomepageMetricsSnapshot = {
 };
 
 export const HOMEPAGE_SUCCESS_DEFINITION =
-  'A successful forecast means the model’s recommended tip band (for example Over 2.5 Goals) matched the confirmed full-time total goals. Postponed, abandoned, and unfinished fixtures are excluded.';
+  'A successful forecast is one fixture tip on the StatStrike board whose recommended tip band (for example Over 2.5 Goals) matched the confirmed full-time total goals. The hot streak counts consecutive successes across all competitions (global), newest settled fixture first. Postponed, abandoned, and unfinished fixtures are excluded.';
 
 function toIso(ms: number | null | undefined): string | null {
   if (ms == null || !Number.isFinite(ms)) return null;
@@ -96,14 +96,24 @@ function recordToStreakFixture(r: StatStrikeTrackRecord): HomepageHotStreakFixtu
 }
 
 /**
- * Consecutive successful settled tips in chronological settlement order
- * (kickoff ascending), counted from the newest settled tip backward.
+ * Consecutive successful settled **fixture tips** across the whole app
+ * (every competition), in kickoff order — newest settled tip backward.
+ * Not a per-competition streak.
  */
 export function computeHotStreak(records: StatStrikeTrackRecord[]): HomepageHotStreak {
-  const settled = records
-    .filter((r) => r.isCorrect != null && r.homeScore != null && r.awayScore != null)
-    .slice()
-    .sort((a, b) => a.kickoffMs - b.kickoffMs || a.fixtureId - b.fixtureId);
+  // Prefer the latest selection-day copy when a fixture id appears more than once.
+  const byId = new Map<number, StatStrikeTrackRecord>();
+  for (const r of records) {
+    if (r.isCorrect == null || r.homeScore == null || r.awayScore == null) continue;
+    const prev = byId.get(r.fixtureId);
+    if (!prev || r.selectionDateKey >= prev.selectionDateKey) {
+      byId.set(r.fixtureId, r);
+    }
+  }
+
+  const settled = Array.from(byId.values()).sort(
+    (a, b) => a.kickoffMs - b.kickoffMs || a.fixtureId - b.fixtureId,
+  );
 
   const newestFirst: StatStrikeTrackRecord[] = [];
   for (let i = settled.length - 1; i >= 0; i--) {

@@ -135,7 +135,8 @@ function HotStreakDrawer({
               Current hot streak
             </h3>
             <p className="mt-1 text-sm text-[var(--gl-text-soft)]">
-              {count} successful tip{count === 1 ? '' : 's'} in a row
+              {count} successful fixture tip{count === 1 ? '' : 's'} in a row · global across all
+              competitions
             </p>
           </div>
           <button
@@ -270,20 +271,18 @@ export function GoalLabV2LiveMetrics({ layout = 'row' }: { layout?: 'row' | 'sta
                   <h3 className="text-sm font-semibold text-[var(--gl-text)]">Current hot streak</h3>
                   <MetricInfo text={data.successDefinition} />
                 </div>
+                <p className="mt-1 text-[11px] font-medium uppercase tracking-wide text-[var(--gl-text-muted)]">
+                  Global · fixture tips · all competitions
+                </p>
                 {data.hotStreak.count > 0 && data.hotStreak.latest ? (
                   <>
                     <p className="mt-3 text-2xl font-semibold tracking-tight text-[var(--gl-text)]">
                       {data.hotStreak.count}{' '}
                       <span className="text-base font-medium text-[var(--gl-text-soft)]">
-                        successful forecast{data.hotStreak.count === 1 ? '' : 's'} in a row
+                        successful fixture tip{data.hotStreak.count === 1 ? '' : 's'} in a row
                       </span>
                     </p>
-                    <p className="mt-3 text-sm text-[var(--gl-text-soft)]">
-                      {data.hotStreak.latest.country
-                        ? `${data.hotStreak.latest.country} · ${data.hotStreak.latest.competition}`
-                        : data.hotStreak.latest.competition}
-                    </p>
-                    <p className="mt-1 text-sm font-medium text-[var(--gl-text)]">
+                    <p className="mt-3 text-sm font-medium text-[var(--gl-text)]">
                       {data.hotStreak.latest.homeTeam} vs {data.hotStreak.latest.awayTeam}
                     </p>
                     <p className="mt-1 text-sm text-[var(--gl-text-soft)]">
@@ -291,6 +290,11 @@ export function GoalLabV2LiveMetrics({ layout = 'row' }: { layout?: 'row' | 'sta
                     </p>
                     <p className="mt-0.5 text-sm text-[var(--gl-text-soft)]">
                       FT: {data.hotStreak.latest.homeScore}–{data.hotStreak.latest.awayScore}
+                    </p>
+                    <p className="mt-2 text-xs text-[var(--gl-text-muted)]">
+                      {data.hotStreak.latest.country
+                        ? `${data.hotStreak.latest.country} · ${data.hotStreak.latest.competition}`
+                        : data.hotStreak.latest.competition}
                     </p>
                     <button
                       type="button"

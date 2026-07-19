@@ -25,7 +25,7 @@ function emptySnapshot(generatedAt: string, error?: string): HomepageMetricsSnap
   return {
     generatedAt,
     successDefinition:
-      'A successful forecast means the model’s recommended tip band (for example Over 2.5 Goals) matched the confirmed full-time total goals. Postponed, abandoned, and unfinished fixtures are excluded.',
+      'A successful forecast is one fixture tip on the StatStrike board whose recommended tip band (for example Over 2.5 Goals) matched the confirmed full-time total goals. The hot streak counts consecutive successes across all competitions (global), newest settled fixture first. Postponed, abandoned, and unfinished fixtures are excluded.',
     hotStreak: {
       count: 0,
       startedAt: null,
