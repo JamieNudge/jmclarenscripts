@@ -32,6 +32,23 @@ function asString(v: unknown): string | null {
   return null;
 }
 
+/** RTDB / Swift ISO8601 string, epoch ms, or epoch seconds. */
+export function parseSelectionLastUpdatedMs(value: unknown): number | null {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    // Heuristic: seconds vs milliseconds.
+    return value < 1e12 ? Math.round(value * 1000) : Math.round(value);
+  }
+  if (typeof value === 'string' && value.trim()) {
+    const asNum = Number(value);
+    if (Number.isFinite(asNum) && value.trim() !== '') {
+      return asNum < 1e12 ? Math.round(asNum * 1000) : Math.round(asNum);
+    }
+    const t = Date.parse(value);
+    return Number.isFinite(t) ? t : null;
+  }
+  return null;
+}
+
 function parseTeam(v: unknown, fallbackName = 'Unknown'): StatStrikeTeam {
   const o = asRecord(v);
   return {
@@ -282,6 +299,14 @@ export function parseDailySelection(raw: unknown): StatStrikeDailySelection | nu
     if (!date && raw == null) return null;
   }
 
+  const versionRaw = o.version;
+  const version =
+    typeof versionRaw === 'string'
+      ? asString(versionRaw)
+      : typeof versionRaw === 'number' && Number.isFinite(versionRaw)
+        ? String(versionRaw)
+        : null;
+
   return {
     date,
     fixtures,
@@ -290,6 +315,8 @@ export function parseDailySelection(raw: unknown): StatStrikeDailySelection | nu
     leagueTrackRecord,
     leagueBandTrackRecord,
     statsByFixtureId,
+    lastUpdatedMs: parseSelectionLastUpdatedMs(o.lastUpdated),
+    version,
   };
 }
 

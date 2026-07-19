@@ -118,4 +118,8 @@ export type StatStrikeDailySelection = {
   leagueTrackRecord: Record<string, StatStrikeLeagueTrackRecord>;
   leagueBandTrackRecord: Record<string, StatStrikeLeagueTrackRecord>;
   statsByFixtureId: Map<number, StatStrikeFixtureStatsSummary>;
+  /** RTDB `lastUpdated` (ISO or ms), when present. */
+  lastUpdatedMs: number | null;
+  /** Optional payload version from Mac / score-worker. */
+  version: string | null;
 };

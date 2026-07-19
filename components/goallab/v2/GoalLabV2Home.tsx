@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { onValue, ref } from 'firebase/database';
 import { GoalLabV2AppsStatus } from '@/components/goallab/v2/GoalLabV2AppsStatus';
 import { GoalLabV2FixtureCard } from '@/components/goallab/v2/GoalLabV2FixtureCard';
+import { GoalLabV2LiveMetrics } from '@/components/goallab/v2/GoalLabV2LiveMetrics';
 import { GoalLabV2ModelPipeline } from '@/components/goallab/v2/GoalLabV2ModelPipeline';
 import { StatStrikeHeroPanel } from '@/components/statstrike/StatStrikeHeroPanel';
 import { StatStrikeAppStoreCta } from '@/components/statstrike/StatStrikeAppStoreCta';
@@ -133,6 +134,8 @@ export function GoalLabV2Home() {
           )}
         </div>
       </section>
+
+      <GoalLabV2LiveMetrics />
 
       {/* Live forecasts */}
       <section className="space-y-6" aria-labelledby="gl-v2-live-heading">

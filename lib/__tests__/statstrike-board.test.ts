@@ -164,6 +164,8 @@ describe('mergeBoardRows', () => {
       leagueTrackRecord: {},
       leagueBandTrackRecord: {},
       statsByFixtureId: new Map(),
+      lastUpdatedMs: null,
+      version: null,
     };
     const today: StatStrikeDailySelection = {
       date: '2026-07-16',
@@ -193,6 +195,8 @@ describe('mergeBoardRows', () => {
       leagueTrackRecord: {},
       leagueBandTrackRecord: {},
       statsByFixtureId: new Map(),
+      lastUpdatedMs: null,
+      version: null,
     };
 
     const rows = mergeBoardRows({
@@ -236,6 +240,8 @@ describe('mergeBoardRows', () => {
       leagueTrackRecord: {},
       leagueBandTrackRecord: {},
       statsByFixtureId: new Map(),
+      lastUpdatedMs: null,
+      version: null,
     };
     const tomorrow: StatStrikeDailySelection = {
       date: '2026-07-17',
@@ -254,6 +260,8 @@ describe('mergeBoardRows', () => {
       leagueTrackRecord: {},
       leagueBandTrackRecord: {},
       statsByFixtureId: new Map(),
+      lastUpdatedMs: null,
+      version: null,
     };
 
     const rows = mergeBoardRows({

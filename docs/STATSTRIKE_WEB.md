@@ -36,6 +36,7 @@ Stored in RTDB at `statstrikeWebConfig`:
 | `/statstrike/fixture/[id]?date=` | Fixture detail (tip, GBC, signals) |
 | `/statstrike/settings` | Legal + premium stubs |
 | `/admin/picks` | Blur kill-switch (+ other owner tools) |
+| `/api/statstrike/homepage-metrics` | Public live metrics snapshot (hot streak, best competition, model status) |
 | `/statstrike/content-rating` | App Store rating page (always on) |
 
 ## Data
@@ -44,6 +45,22 @@ Stored in RTDB at `statstrikeWebConfig`:
 - Merges yesterday **live carry-over** only when viewing **UK calendar today** (iOS-aligned). Browsing Tomorrow/Yesterday shows that day alone.
 - Filters: All / Live / AM–PM–Night / Custom; Best / Upper / Minor; team search.
 - GoalLab “Today’s forecasts” still uses `unanimousExports` — unchanged.
+
+### Homepage live metrics (GoalLab hub)
+
+Public strip on `/football-predictions` (**below the hero**, above “Today’s forecasts”) — not on the portfolio root.
+
+| Card | Calculation |
+|------|-------------|
+| **Current hot streak** | Consecutive successful settled tips, walking newest→oldest by kickoff among `selections` history |
+| **Best performing competition** | Highest tip-band accuracy over the last **30** UK days among competitions with **≥20** settled tips (ties: larger sample, then most recent) |
+| **Model status** | Today’s tip count, unique competitions, settled-today count, and freshness from selection `lastUpdated` |
+
+**Success definition (stable):** the model’s **recommended tip band** (e.g. Over 2.5 Goals) matched confirmed full-time total goals. Unfinished / postponed / abandoned fixtures do not affect the streak or competition ranks. This is **not** “match winner” accuracy.
+
+Served by **`GET /api/statstrike/homepage-metrics`** (Admin SDK, ~2 min cache). Source data is existing RTDB `selections/{yyyy-MM-dd}` — no separate Mac metrics publisher.
+
+Freshness labels: **live** &lt;30m, **delayed** &lt;2h, **stale** thereafter; missing `lastUpdated` → **unknown** (never labelled Live).
 
 ### Goal Band Cascade (GBC)
 
