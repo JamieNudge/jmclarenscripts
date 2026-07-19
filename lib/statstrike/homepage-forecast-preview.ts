@@ -94,6 +94,7 @@ export function boardRowToFixtureListItem(row: StatStrikeBoardRow): FixtureListI
       country: country ?? undefined,
       league: league ?? undefined,
       status: fixture.status ?? undefined,
+      elapsed: fixture.elapsed ?? undefined,
       homeScore: fixture.homeScore ?? undefined,
       awayScore: fixture.awayScore ?? undefined,
       // GoalLab cards read band via recommendedBandLabelForPick (predictedBand / forecastType).

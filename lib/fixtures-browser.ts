@@ -1,7 +1,4 @@
-/**
- * Today's fixtures browser — parse unanimousExports into list/detail shapes.
- */
-
+import { isResultFinishedStatus } from '@/lib/statstrike/correctness';
 import {
   parseUnanimousExport,
   pickKickoffSortTimeMs,
@@ -78,8 +75,10 @@ export function pickScoreDisplay(p: PickRecord): string {
   return '–';
 }
 
-/** True when the forecast band settled as a win; null when not yet decidable. */
+/** True when FT/AET/PEN and the tip band settled as a win; null while in play or undecidable. */
 export function fixtureListItemWinResult(fixture: FixtureListItem): boolean | null {
+  const status = pickText(fixture.pick.status ?? fixture.pick.displayStatus ?? fixture.pick.fixtureStatus);
+  if (!isResultFinishedStatus(status)) return null;
   const hs = num(fixture.pick.homeScore ?? fixture.pick.homeGoals);
   const aws = num(fixture.pick.awayScore ?? fixture.pick.awayGoals);
   if (hs == null || aws == null) return null;

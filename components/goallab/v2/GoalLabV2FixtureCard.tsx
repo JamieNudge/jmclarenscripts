@@ -8,6 +8,22 @@ import {
 } from '@/lib/best-picks-firebase';
 import { fixtureDetailHrefV2 } from '@/components/goallab/v2/paths';
 import { fixtureListItemWinResult, pickForecastDetailLines, type FixtureListItem } from '@/lib/fixtures-browser';
+import { isLiveStatus } from '@/lib/statstrike/parse-selection';
+import { isResultFinishedStatus } from '@/lib/statstrike/correctness';
+
+function pickStatus(fixture: FixtureListItem): string | null {
+  const raw = fixture.pick.status ?? fixture.pick.displayStatus ?? fixture.pick.fixtureStatus;
+  return typeof raw === 'string' && raw.trim() ? raw.trim() : null;
+}
+
+function pickElapsed(fixture: FixtureListItem): number | null {
+  const raw = fixture.pick.elapsed;
+  if (typeof raw === 'number' && Number.isFinite(raw) && raw >= 0) return Math.round(raw);
+  if (typeof raw === 'string' && raw.trim() !== '' && !Number.isNaN(Number(raw))) {
+    return Math.round(Number(raw));
+  }
+  return null;
+}
 
 type Props = {
   fixture: FixtureListItem;
@@ -35,6 +51,10 @@ export function GoalLabV2FixtureCard({
     fixture.kickoffMs != null ? formatKickoffLocalAndUtc(fixture.kickoffMs, visitorTz) : undefined;
   const forecast = pickForecastDetailLines(fixture.pick);
   const won = fixtureListItemWinResult(fixture);
+  const status = pickStatus(fixture);
+  const live = isLiveStatus(status);
+  const finished = isResultFinishedStatus(status);
+  const elapsed = pickElapsed(fixture);
   const href = hrefOverride ?? fixtureDetailHrefV2(fixture.fixtureId, dateKey);
 
   const shellClass = `flex flex-col rounded-2xl border border-[var(--gl-border-strong)] bg-[var(--gl-elevated)] shadow-[var(--gl-shadow)] ${
@@ -70,9 +90,22 @@ export function GoalLabV2FixtureCard({
       </p>
 
       <div className="mt-4 flex flex-wrap items-center gap-2">
-        {won === true ? (
+        {live ? (
+          <span
+            className="inline-flex items-center rounded-full bg-teal-600 px-2.5 py-1 text-[11px] font-black tracking-wide text-white"
+            aria-label={elapsed != null ? `Live ${elapsed} minutes` : 'Live'}
+          >
+            LIVE{elapsed != null ? ` ${elapsed}'` : ''}
+          </span>
+        ) : null}
+        {finished && won === true ? (
           <span className="inline-flex items-center rounded-full bg-amber-300 px-2.5 py-1 text-[11px] font-black tracking-wide text-black">
             WIN
+          </span>
+        ) : null}
+        {finished && won !== true ? (
+          <span className="inline-flex items-center rounded-full bg-[var(--gl-text-muted)]/25 px-2.5 py-1 text-[11px] font-black tracking-wide text-[var(--gl-text)]">
+            FT
           </span>
         ) : null}
         {fixture.scoreDisplay !== '–' ? (
@@ -82,7 +115,6 @@ export function GoalLabV2FixtureCard({
         ) : null}
       </div>
 
-      {/* Tip band sits where the old confidence chip/bar was — clearer for visitors. */}
       {forecast.primary ? (
         <p className="mt-4 text-sm font-semibold text-[var(--gl-accent)]">{forecast.primary}</p>
       ) : null}
