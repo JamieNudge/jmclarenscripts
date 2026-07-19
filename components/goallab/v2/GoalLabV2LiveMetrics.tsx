@@ -63,7 +63,7 @@ function CardShell({
 }) {
   return (
     <div
-      className={`flex h-full flex-col rounded-2xl border border-[var(--gl-border)] bg-[var(--gl-surface)] p-5 shadow-[var(--gl-shadow)] ${className}`}
+      className={`flex h-full flex-col rounded-2xl border border-[var(--gl-border)] bg-[var(--gl-surface)] shadow-[var(--gl-shadow)] ${className.includes('!p-') ? className : `p-5 ${className}`}`}
     >
       {children}
     </div>
@@ -168,13 +168,26 @@ function HotStreakDrawer({
   );
 }
 
-export function GoalLabV2LiveMetrics() {
+export function GoalLabV2LiveMetrics({ layout = 'row' }: { layout?: 'row' | 'stack' }) {
   const [data, setData] = useState<HomepageMetricsSnapshot | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [nowMs, setNowMs] = useState(() => Date.now());
   const titleId = useId();
+  const cardGridClass =
+    layout === 'stack'
+      ? 'grid gap-3 list-none m-0 p-0'
+      : 'grid gap-4 md:grid-cols-2 lg:grid-cols-3 list-none m-0 p-0';
+  const cardClass = layout === 'stack' ? '!p-4' : '';
+  const headingClass =
+    layout === 'stack'
+      ? 'text-xl md:text-2xl font-semibold tracking-tight text-[var(--gl-text)]'
+      : 'text-2xl md:text-3xl font-semibold tracking-tight text-[var(--gl-text)]';
+  const introClass =
+    layout === 'stack'
+      ? 'mt-1.5 text-sm text-[var(--gl-text-soft)] leading-relaxed'
+      : 'mt-2 max-w-2xl text-base text-[var(--gl-text-soft)] leading-relaxed';
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -203,16 +216,13 @@ export function GoalLabV2LiveMetrics() {
   const closeDrawer = useCallback(() => setDrawerOpen(false), []);
 
   return (
-    <section className="space-y-6" aria-labelledby="gl-v2-live-metrics-heading">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <section className="space-y-4 lg:space-y-5" aria-labelledby="gl-v2-live-metrics-heading">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h2
-            id="gl-v2-live-metrics-heading"
-            className="text-2xl md:text-3xl font-semibold tracking-tight text-[var(--gl-text)]"
-          >
+          <h2 id="gl-v2-live-metrics-heading" className={headingClass}>
             Live engine
           </h2>
-          <p className="mt-2 max-w-2xl text-base text-[var(--gl-text-soft)] leading-relaxed">
+          <p className={introClass}>
             Public snapshot of recent tip-band results — activity, form, and freshness from the same
             daily uploads that power StatStrike.
           </p>
@@ -228,19 +238,19 @@ export function GoalLabV2LiveMetrics() {
       </div>
 
       {loading ? (
-        <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 list-none m-0 p-0" aria-busy="true">
+        <ul className={cardGridClass} aria-busy="true">
           <li>
             <SkeletonCard />
           </li>
           <li>
             <SkeletonCard />
           </li>
-          <li className="md:col-span-2 lg:col-span-1">
+          <li>
             <SkeletonCard />
           </li>
         </ul>
       ) : error && !data ? (
-        <CardShell>
+        <CardShell className={cardClass}>
           <p className="text-sm font-medium text-[var(--gl-text)]">Latest metrics unavailable</p>
           <p className="mt-1 text-sm text-[var(--gl-text-muted)]">{error}</p>
           <button
@@ -253,9 +263,9 @@ export function GoalLabV2LiveMetrics() {
         </CardShell>
       ) : data ? (
         <>
-          <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 list-none m-0 p-0">
+          <ul className={cardGridClass}>
             <li>
-              <CardShell>
+              <CardShell className={cardClass}>
                 <div className="flex items-center gap-1">
                   <h3 className="text-sm font-semibold text-[var(--gl-text)]">Current hot streak</h3>
                   <MetricInfo text={data.successDefinition} />
@@ -310,7 +320,7 @@ export function GoalLabV2LiveMetrics() {
             </li>
 
             <li>
-              <CardShell>
+              <CardShell className={cardClass}>
                 <div className="flex items-center gap-1">
                   <h3 className="text-sm font-semibold text-[var(--gl-text)]">
                     Best performing competition
@@ -366,8 +376,8 @@ export function GoalLabV2LiveMetrics() {
               </CardShell>
             </li>
 
-            <li className="md:col-span-2 lg:col-span-1">
-              <CardShell>
+            <li>
+              <CardShell className={cardClass}>
                 <div className="flex items-center justify-between gap-2">
                   <h3 className="text-sm font-semibold text-[var(--gl-text)]">Model status</h3>
                   <span

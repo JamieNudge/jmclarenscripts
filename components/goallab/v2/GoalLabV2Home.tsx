@@ -135,52 +135,60 @@ export function GoalLabV2Home() {
         </div>
       </section>
 
-      <GoalLabV2LiveMetrics />
+      <div className="grid gap-12 lg:grid-cols-2 lg:gap-8 lg:items-start">
+        <GoalLabV2LiveMetrics layout="stack" />
 
-      {/* Live forecasts */}
-      <section className="space-y-6" aria-labelledby="gl-v2-live-heading">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h2 id="gl-v2-live-heading" className="text-2xl md:text-3xl font-semibold tracking-tight text-[var(--gl-text)]">
-              Today&apos;s forecasts
-            </h2>
-            <p className="mt-2 text-base text-[var(--gl-text-soft)] leading-relaxed">
-              From the daily upload — tap a card for forecast detail.
-            </p>
+        {/* Live forecasts */}
+        <section className="space-y-4 lg:space-y-5" aria-labelledby="gl-v2-live-heading">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <h2
+                id="gl-v2-live-heading"
+                className="text-xl md:text-2xl font-semibold tracking-tight text-[var(--gl-text)]"
+              >
+                Today&apos;s forecasts
+              </h2>
+              <p className="mt-1.5 text-sm text-[var(--gl-text-soft)] leading-relaxed">
+                From the daily upload — tap a card for forecast detail.
+              </p>
+            </div>
+            <HubFootballLink
+              href={GOAL_LAB_V2_FIXTURES_PATH}
+              className="text-sm font-semibold text-[var(--gl-accent)] underline-offset-2 hover:underline shrink-0"
+            >
+              View all forecasts →
+            </HubFootballLink>
           </div>
-          <HubFootballLink
-            href={GOAL_LAB_V2_FIXTURES_PATH}
-            className="text-sm font-semibold text-[var(--gl-accent)] underline-offset-2 hover:underline shrink-0"
-          >
-            View all forecasts →
-          </HubFootballLink>
-        </div>
 
-        {!loading && grid.length > 0 ? (
-          <div className="space-y-5">
-            <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 list-none m-0 p-0">
-              {grid.map((fixture) => (
-                <li key={String(fixture.fixtureId)}>
-                  <GoalLabV2FixtureCard fixture={fixture} dateKey={dateKey} />
-                </li>
+          {!loading && grid.length > 0 ? (
+            <div className="space-y-4">
+              <ul className="grid gap-3 list-none m-0 p-0">
+                {grid.map((fixture) => (
+                  <li key={String(fixture.fixtureId)}>
+                    <GoalLabV2FixtureCard fixture={fixture} dateKey={dateKey} />
+                  </li>
+                ))}
+              </ul>
+              {statStrikeAppStoreUrl ? (
+                <p className="text-sm text-[var(--gl-text-soft)]">
+                  More in the app — <StatStrikeAppStoreCta href={statStrikeAppStoreUrl} variant="inline" />
+                </p>
+              ) : null}
+            </div>
+          ) : !loading ? (
+            <p className="text-sm text-[var(--gl-text-muted)]">No fixtures to preview for this date.</p>
+          ) : (
+            <ul className="grid gap-3 list-none m-0 p-0" aria-hidden>
+              {Array.from({ length: 3 }).map((_, i) => (
+                <li
+                  key={i}
+                  className="h-36 rounded-2xl border border-[var(--gl-border)] bg-[var(--gl-surface)] animate-pulse"
+                />
               ))}
             </ul>
-            {statStrikeAppStoreUrl ? (
-              <p className="text-sm text-[var(--gl-text-soft)]">
-                More in the app — <StatStrikeAppStoreCta href={statStrikeAppStoreUrl} variant="inline" />
-              </p>
-            ) : null}
-          </div>
-        ) : !loading ? (
-          <p className="text-sm text-[var(--gl-text-muted)]">No fixtures to preview for this date.</p>
-        ) : (
-          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 list-none m-0 p-0" aria-hidden>
-            {Array.from({ length: 3 }).map((_, i) => (
-              <li key={i} className="h-40 rounded-2xl border border-[var(--gl-border)] bg-[var(--gl-surface)] animate-pulse" />
-            ))}
-          </ul>
-        )}
-      </section>
+          )}
+        </section>
+      </div>
 
       <GoalLabV2ModelPipeline />
 
