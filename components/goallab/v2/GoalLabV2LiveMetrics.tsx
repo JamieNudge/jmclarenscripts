@@ -29,6 +29,44 @@ function formatRelative(iso: string | null | undefined, nowMs: number): string |
   return `${days} day${days === 1 ? '' : 's'} ago`;
 }
 
+const STREAK_TZ = 'Europe/London';
+
+function formatStreakDay(iso: string): string {
+  const t = Date.parse(iso);
+  if (!Number.isFinite(t)) return iso;
+  return new Intl.DateTimeFormat('en-GB', {
+    timeZone: STREAK_TZ,
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }).format(new Date(t));
+}
+
+function formatStreakDayTime(iso: string): string {
+  const t = Date.parse(iso);
+  if (!Number.isFinite(t)) return iso;
+  return new Intl.DateTimeFormat('en-GB', {
+    timeZone: STREAK_TZ,
+    day: 'numeric',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).format(new Date(t));
+}
+
+/** e.g. "Fri 17 Jul 2026 – Sun 19 Jul 2026" or a single day when the run is same-day. */
+function formatStreakPeriod(startedAt: string | null, endedAt: string | null): string | null {
+  if (!startedAt && !endedAt) return null;
+  if (!startedAt) return endedAt ? formatStreakDay(endedAt) : null;
+  if (!endedAt) return formatStreakDay(startedAt);
+  const startDay = formatStreakDay(startedAt);
+  const endDay = formatStreakDay(endedAt);
+  if (startDay === endDay) return startDay;
+  return `${startDay} – ${endDay}`;
+}
+
 function statusLabel(status: HomepageMetricsSnapshot['modelStatus']['status']): string {
   switch (status) {
     case 'live':
@@ -87,12 +125,14 @@ function HotStreakDrawer({
   fixtures,
   count,
   titleId,
+  periodLabel,
 }: {
   open: boolean;
   onClose: () => void;
   fixtures: HomepageHotStreakFixture[];
   count: number;
   titleId: string;
+  periodLabel: string | null;
 }) {
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -138,6 +178,9 @@ function HotStreakDrawer({
               {count} successful fixture tip{count === 1 ? '' : 's'} in a row · longest recent run
               across all competitions
             </p>
+            {periodLabel ? (
+              <p className="mt-1 text-sm tabular-nums text-[var(--gl-text-muted)]">{periodLabel}</p>
+            ) : null}
           </div>
           <button
             type="button"
@@ -152,6 +195,9 @@ function HotStreakDrawer({
             <li key={`${f.fixtureId}-${f.kickoffMs}`} className="px-5 py-4">
               <p className="text-xs font-semibold uppercase tracking-wide text-[var(--gl-text-muted)]">
                 {f.country ? `${f.country} · ${f.competition}` : f.competition}
+              </p>
+              <p className="mt-0.5 text-xs tabular-nums text-[var(--gl-text-muted)]">
+                {formatStreakDayTime(new Date(f.kickoffMs).toISOString())} UK
               </p>
               <p className="mt-1 text-sm font-semibold text-[var(--gl-text)]">
                 {f.homeTeam} vs {f.awayTeam}
@@ -215,6 +261,9 @@ export function GoalLabV2LiveMetrics({ layout = 'row' }: { layout?: 'row' | 'sta
   }, [load]);
 
   const closeDrawer = useCallback(() => setDrawerOpen(false), []);
+  const streakPeriod = data
+    ? formatStreakPeriod(data.hotStreak.startedAt, data.hotStreak.lastUpdatedAt)
+    : null;
 
   return (
     <section className="space-y-4 lg:space-y-5" aria-labelledby="gl-v2-live-metrics-heading">
@@ -282,6 +331,12 @@ export function GoalLabV2LiveMetrics({ layout = 'row' }: { layout?: 'row' | 'sta
                         successful fixture tip{data.hotStreak.count === 1 ? '' : 's'} in a row
                       </span>
                     </p>
+                    {streakPeriod ? (
+                      <p className="mt-2 text-sm tabular-nums text-[var(--gl-text-soft)]">
+                        {streakPeriod}
+                        <span className="text-[var(--gl-text-muted)]"> · UK</span>
+                      </p>
+                    ) : null}
                     <p className="mt-3 text-sm font-medium text-[var(--gl-text)]">
                       {data.hotStreak.latest.homeTeam} vs {data.hotStreak.latest.awayTeam}
                     </p>
@@ -451,6 +506,7 @@ export function GoalLabV2LiveMetrics({ layout = 'row' }: { layout?: 'row' | 'sta
             fixtures={data.hotStreak.fixtures}
             count={data.hotStreak.count}
             titleId={titleId}
+            periodLabel={streakPeriod ? `${streakPeriod} · UK` : null}
           />
         </>
       ) : null}
