@@ -1,10 +1,12 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { Suspense } from 'react';
+import { StatStrikeSupportPassSection } from '@/components/statstrike/StatStrikeSupportPassSection';
 
 export const metadata: Metadata = {
-  title: 'StatStrike — Support',
+  title: 'StatStrike — Support & 24h Pass',
   description:
-    'Support information for the StatStrike app (iOS & Android), including how to get help with predictions, subscriptions, and contact the developer.',
+    'Create a StatStrike 24-hour web pass (£1–£10), or get help with the StatStrike iOS and Android apps.',
 };
 
 export default function StatStrikeSupportPage() {
@@ -21,38 +23,28 @@ export default function StatStrikeSupportPage() {
           Back to GoalLab
         </Link>
 
-        <h1 className="text-3xl md:text-4xl font-bold mb-4">
-          StatStrike — Support
-        </h1>
+        <h1 className="text-3xl md:text-4xl font-bold mb-2">Support The Goal Lab</h1>
         <p className="text-sm text-white/60 mb-8">
-          Last updated: {new Date().getFullYear()}
+          StatStrike web · 24-hour pass · last updated {new Date().getFullYear()}
         </p>
 
-        <section className="space-y-6 text-sm md:text-base leading-relaxed text-white/90">
-          <p>
-            Thanks for using StatStrike. This page explains how to get help, report issues,
-            and share feedback about the app (iOS and Android).
-          </p>
+        <Suspense
+          fallback={
+            <div className="rounded-2xl border border-white/15 bg-white/5 p-5 text-sm text-white/70">
+              Loading pass options…
+            </div>
+          }
+        >
+          <StatStrikeSupportPassSection />
+        </Suspense>
 
-          <h2 className="text-xl font-semibold mt-6">Getting Help</h2>
+        <section className="mt-12 space-y-6 text-sm md:text-base leading-relaxed text-white/90">
+          <h2 className="text-xl font-semibold">App support (iOS &amp; Android)</h2>
           <p>
-            If you&apos;re having trouble — for example, predictions or track record not loading,
-            subscription, ad removal, or free trial issues, or the app crashing — please reach out
-            with as much detail as you can:
+            If you&apos;re having trouble with the native apps — predictions, subscriptions, ads, or
+            crashes — email with device model, OS version, what you expected, and what happened:
           </p>
-          <ul className="list-disc list-inside space-y-1 ml-4">
-            <li>Your device (iPhone/Android), model and OS version.</li>
-            <li>What you expected to happen.</li>
-            <li>What actually happened (including any error messages, if shown).</li>
-            <li>Whether the issue happens every time or only occasionally.</li>
-            <li>A screenshot or screen recording if possible.</li>
-          </ul>
-
-          <h2 className="text-xl font-semibold mt-6">Contact</h2>
           <p>
-            For support, bug reports or feature requests:
-          </p>
-          <p className="mt-2">
             <span className="font-semibold">Email:</span>{' '}
             <a
               href="mailto:jmclarenscripts@gmail.com?subject=StatStrike%20Support"
@@ -61,12 +53,9 @@ export default function StatStrikeSupportPage() {
               jmclarenscripts@gmail.com
             </a>
           </p>
-
-          <h2 className="text-xl font-semibold mt-6">What to Expect</h2>
-          <p>
-            StatStrike is an indie app. Response times may vary, but bug reports and feedback
-            are taken seriously and, where possible, fixes and improvements are included in
-            future updates on the App Store and Google Play.
+          <p className="text-white/70">
+            Web pass questions (checkout, unlock, consents) can use the same address with subject
+            “StatStrike Web Pass”.
           </p>
         </section>
       </div>

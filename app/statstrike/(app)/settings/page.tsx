@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { StatStrikeAppStoreCta } from '@/components/statstrike/StatStrikeAppStoreCta';
 import { apps } from '@/lib/apps-data';
+import { passCreatePath } from '@/lib/statstrike/pass-constants';
 
 const appStoreUrl = apps.find((a) => a.id === 'stat-strike')?.appStoreUrl;
 
@@ -31,27 +32,30 @@ export default function StatStrikeSettingsPage() {
           <h2 className="font-semibold text-black">About</h2>
           <p>
             Browser version of StatStrike. Coming Soon blur is controlled from the GoalLab admin
-            page. Web subscriptions are not enabled yet.
+            page. A one-time 24h web pass unlocks the board and Your Picks / My Record on this
+            browser.
           </p>
         </section>
 
         <section className="rounded-2xl border border-black/10 bg-white p-5 space-y-3">
-          <h2 className="font-semibold text-black">Premium (iOS for now)</h2>
+          <h2 className="font-semibold text-black">24h web pass</h2>
           <p className="text-black/80">
-            Your Picks and personal track record use on-device IndexedDB on web, ready for
-            Stripe/Patreon accounts. Until then the UI stays App Store–gated (set{' '}
-            <code className="text-xs">NEXT_PUBLIC_STATSTRIKE_PERSONAL_ENABLED=1</code> locally to
-            unlock for QA). Export/import helpers exist in code; public CSV UI ships with accounts.
+            Create a pass (£1 / £3 / £5 / £10 — same entitlement) on the support page. Your Picks and
+            My Record stay on this device (IndexedDB) while the pass is active.
           </p>
-          {appStoreUrl ? <StatStrikeAppStoreCta href={appStoreUrl} size="sm" /> : null}
-          <ul className="space-y-2 text-black/75">
-            <li className="rounded-lg border border-black/8 bg-black/[0.02] px-3 py-2">
-              Export / Import track record — locked
-            </li>
-            <li className="rounded-lg border border-black/8 bg-black/[0.02] px-3 py-2">
-              Clear track record — locked
-            </li>
-          </ul>
+          <Link
+            href={passCreatePath()}
+            className="inline-flex items-center justify-center rounded-xl bg-amber-300 px-4 py-2.5 text-sm font-bold text-black hover:bg-amber-200"
+          >
+            Get 24h access
+          </Link>
+          {appStoreUrl ? (
+            <StatStrikeAppStoreCta
+              href={appStoreUrl}
+              label="Also on the App Store"
+              size="sm"
+            />
+          ) : null}
         </section>
 
         <section className="rounded-2xl border border-black/10 bg-white p-5 space-y-2">
@@ -84,8 +88,8 @@ export default function StatStrikeSettingsPage() {
               </Link>
             </li>
             <li>
-              <Link href="/support/statstrike" className="text-[#0b3d5c] underline-offset-2 hover:underline">
-                Support
+              <Link href={passCreatePath()} className="text-[#0b3d5c] underline-offset-2 hover:underline">
+                Support &amp; Create Pass
               </Link>
             </li>
           </ul>

@@ -1,6 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
+import Link from 'next/link';
 import { StatStrikeAppStoreCta } from '@/components/statstrike/StatStrikeAppStoreCta';
 
 type Props = {
@@ -12,6 +13,10 @@ type Props = {
   ctaLabel?: string;
   /** When true, CTA uses StatStrike icon + App Store styling */
   ctaStatStrike?: boolean;
+  /**
+   * Same-origin navigation (no new tab). Use for Create Pass and other in-site links.
+   */
+  ctaInternal?: boolean;
   className?: string;
   /** Min height so empty/loading still looks like a panel */
   minHeightClassName?: string;
@@ -36,22 +41,25 @@ export function ComingSoonBlur({
   ctaHref,
   ctaLabel,
   ctaStatStrike = false,
+  ctaInternal = false,
   className = '',
   minHeightClassName = 'min-h-[10rem]',
   centerBadge = false,
   ctaPlacement = 'bottom',
 }: Props) {
+  const buttonClass =
+    'inline-flex max-w-full items-center justify-center rounded-xl bg-[#0b3d5c] px-3 py-2 text-center text-[11px] font-semibold leading-snug text-white shadow-sm hover:opacity-90 sm:text-xs sm:px-4 sm:py-2.5';
+
   const cta =
     ctaHref && ctaLabel ? (
-      ctaStatStrike ? (
+      ctaStatStrike && !ctaInternal ? (
         <StatStrikeAppStoreCta href={ctaHref} label={ctaLabel} size="sm" />
+      ) : ctaInternal ? (
+        <Link href={ctaHref} className={buttonClass}>
+          {ctaLabel}
+        </Link>
       ) : (
-        <a
-          href={ctaHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex max-w-full items-center justify-center rounded-xl bg-[#0b3d5c] px-3 py-2 text-center text-[11px] font-semibold leading-snug text-white shadow-sm hover:opacity-90 sm:text-xs sm:px-4 sm:py-2.5"
-        >
+        <a href={ctaHref} target="_blank" rel="noopener noreferrer" className={buttonClass}>
           {ctaLabel}
         </a>
       )

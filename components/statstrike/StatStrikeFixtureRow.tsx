@@ -12,7 +12,7 @@ type Props = {
   row: StatStrikeBoardRow;
   compact?: boolean;
   starred?: boolean;
-  /** Premium stub — star opens App Store gate until Stripe (or toggles when personal unlocked). */
+  /** Premium stub — star opens Create Pass gate until unlocked (or toggles when personal unlocked). */
   onStarClick?: () => void;
 };
 
@@ -150,7 +150,7 @@ export function StatStrikeFixtureRow({ row, compact = false, starred = false, on
         {onStarClick && !compact ? (
           <button
             type="button"
-            aria-label={starred ? 'Remove from Your Picks' : 'Add to Your Picks (Premium)'}
+            aria-label={starred ? 'Remove from Your Picks' : 'Add to Your Picks (24h pass)'}
             aria-pressed={starred}
             className={`shrink-0 self-start rounded-lg px-2 py-1 text-base leading-none hover:bg-black/[0.04] ${
               starred ? 'text-amber-500' : 'text-black/75 hover:text-amber-500'

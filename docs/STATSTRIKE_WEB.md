@@ -34,7 +34,8 @@ Stored in RTDB at `statstrikeWebConfig`:
 | GoalLab `/` hero right | Live StatStrike panel when enabled |
 | `/statstrike` | Full board (filters, day nav, tabs) |
 | `/statstrike/fixture/[id]?date=` | Fixture detail (tip, GBC, signals) |
-| `/statstrike/settings` | Legal + premium stubs |
+| `/statstrike/settings` | Legal + 24h pass link |
+| `/support/statstrike` | Create Pass + app support |
 | `/admin/picks` | Blur kill-switch (+ other owner tools) |
 | `/api/statstrike/homepage-metrics` | Public live metrics snapshot (hot streak, best competition, model status) |
 | `/statstrike/content-rating` | App Store rating page (always on) |
@@ -81,17 +82,39 @@ Same cohort rules as iOS `BestPerformingDigest` / `goalBandCascadeSuccessRate`.
 
 ### Personal track (gated)
 
-IndexedDB store `statstrike-web` / `personalPicks` is implemented (`lib/statstrike/personal-store.ts`) for future Stripe/Patreon accounts. **Production UX stays App Store–gated** (star, Your Picks, My Record). Local QA unlock:
+IndexedDB store `statstrike-web` / `personalPicks` (`lib/statstrike/personal-store.ts`).
 
-```bash
-NEXT_PUBLIC_STATSTRIKE_PERSONAL_ENABLED=1
-```
+**Unlocked when:**
+
+- Valid **24h Lemon Squeezy pass** session (httpOnly cookie), or
+- Local QA: `NEXT_PUBLIC_STATSTRIKE_PERSONAL_ENABLED=1`
+
+Pass holders also **bypass Coming Soon blur** on that browser; anonymous visitors still respect admin blur.
+
+## 24h Lemon Squeezy pass
+
+| Path | Role |
+|------|------|
+| `/support/statstrike` | Create Pass UI (amounts, consents) + legacy app support |
+| `POST /api/statstrike/pass/checkout` | Create Lemon checkout |
+| `POST /api/statstrike/pass/webhook` | Signed `order_created` → pass record + claim token |
+| `GET/POST /api/statstrike/pass/session` | Session status / claim cookie |
+| `GET /api/statstrike/pass/survey-cron` | Hourly survey sweep (opt-in only) |
+| `POST /api/statstrike/pass/test-mint` | Preview QA mint (requires `STATSTRIKE_PASS_TEST_SECRET`) |
+
+**Product:** £1 / £3 / £5 / £10 → same entitlement (board + personal for 24h from purchase).
+
+**Consents (Create Pass page only, unchecked by default):** marketing list; survey email at expiry. Welcome email is transactional.
+
+**Env:** see `.env.example` (`LEMONSQUEEZY_*`, optional `STATSTRIKE_PASS_TEST_SECRET`).
+
+**Deploy:** build on `feature/statstrike-24h-pass`; Vercel **preview** until webhook + unlock + emails work E2E. Do not point Lemon webhooks at production until ready. Rollback tag: `pre-statstrike-24h-pass`.
 
 ## Not wired yet
 
-- Stripe / Patreon / login (personal UI gated until then)
 - FCM web push
 - Public CSV export/import UI (helpers exist in personal-store)
+- Site-wide consent popup (deferred)
 - Dashboard modules (Today’s Matches, My Teams, Alerts, Watchlist, …) — deferred
 
 ## Local
@@ -99,3 +122,4 @@ NEXT_PUBLIC_STATSTRIKE_PERSONAL_ENABLED=1
 1. Copy Firebase vars from `.env.example`.
 2. Set `NEXT_PUBLIC_STATSTRIKE_WEB_ENABLED=1`.
 3. `npm run dev` → `/statstrike` and `/admin/picks` (turn blur OFF to work interactively).
+4. Optional: `NEXT_PUBLIC_STATSTRIKE_PERSONAL_ENABLED=1` or mint a test pass via `/api/statstrike/pass/test-mint`.
