@@ -69,17 +69,26 @@ export function StatStrikeBoardFilters({
   return (
     <div className={`space-y-2 ${compact ? 'px-1' : ''}`}>
       <div className="flex flex-wrap gap-1.5">
-        {TIME_CHIPS.map((chip) => (
-          <button
-            key={chip.id}
-            type="button"
-            className={`relative ${chipClass(filters.time === chip.id)}`}
-            onClick={() => onChange({ ...filters, time: chip.id })}
-          >
-            {chip.label}
-            <ChipCountBadge count={chipCounts?.time[chip.id]} />
-          </button>
-        ))}
+        {TIME_CHIPS.map((chip) => {
+          const active = filters.time === chip.id;
+          return (
+            <button
+              key={chip.id}
+              type="button"
+              className={`relative ${chipClass(active)}`}
+              onClick={() =>
+                onChange({
+                  ...filters,
+                  // Tap active non-All chip → reset to All (iOS parity).
+                  time: active && chip.id !== 'all' ? 'all' : chip.id,
+                })
+              }
+            >
+              {chip.label}
+              <ChipCountBadge count={chipCounts?.time[chip.id]} />
+            </button>
+          );
+        })}
       </div>
 
       {filters.time === 'custom' ? (
