@@ -149,7 +149,8 @@ export function GoalLabV2Home() {
                 Today&apos;s forecasts
               </h2>
               <p className="mt-1.5 text-sm text-[var(--gl-text-soft)] leading-relaxed">
-                From the daily upload — tap a card for forecast detail.
+                From the daily upload — tap a card for forecast detail and see historical league
+                success and key signals.
               </p>
             </div>
             <HubFootballLink
