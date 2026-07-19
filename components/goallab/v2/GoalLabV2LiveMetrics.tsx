@@ -200,11 +200,10 @@ function HotStreakDrawer({
         <div className="flex items-start justify-between gap-3 border-b border-[var(--gl-border)] px-5 py-4">
           <div>
             <h3 id={titleId} className="text-lg font-semibold text-[var(--gl-text)]">
-              Current hot streak
+              Hottest streak last 30 days
             </h3>
             <p className="mt-1 text-sm text-[var(--gl-text-soft)]">
-              {count} successful fixture tip{count === 1 ? '' : 's'} in a row · longest recent run
-              across all competitions
+              {count} successful fixture tip{count === 1 ? '' : 's'} in a row
             </p>
             {periodLabel ? (
               <p className="mt-1 text-sm tabular-nums text-[var(--gl-text-muted)]">{periodLabel}</p>
@@ -272,7 +271,7 @@ export function GoalLabV2LiveMetrics({ layout = 'row' }: { layout?: 'row' | 'sta
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json = (await res.json()) as HomepageMetricsSnapshot & { error?: string };
       setData(json);
-      if (json.error && !json.hotStreak.count && !json.bestCompetition) {
+      if (json.error && !json.hotStreak.hottest30d.count && !json.bestCompetition) {
         setError(json.error === 'admin-unconfigured' ? 'Metrics temporarily unavailable.' : json.error);
       }
     } catch (e) {
@@ -289,9 +288,15 @@ export function GoalLabV2LiveMetrics({ layout = 'row' }: { layout?: 'row' | 'sta
   }, [load]);
 
   const closeDrawer = useCallback(() => setDrawerOpen(false), []);
-  const streakPeriod = data
-    ? formatStreakPeriod(data.hotStreak.startedAt, data.hotStreak.lastUpdatedAt)
+  const hottest = data?.hotStreak.hottest30d;
+  const todayStreak = data?.hotStreak.today;
+  const streakPeriod = hottest
+    ? formatStreakPeriod(hottest.startedAt, hottest.lastUpdatedAt)
     : null;
+  const avgLabel =
+    data?.hotStreak.averageRunLength7d != null
+      ? (Math.round(data.hotStreak.averageRunLength7d * 10) / 10).toFixed(1)
+      : null;
 
   return (
     <section className="space-y-4 lg:space-y-5" aria-labelledby="gl-v2-live-metrics-heading">
@@ -346,53 +351,85 @@ export function GoalLabV2LiveMetrics({ layout = 'row' }: { layout?: 'row' | 'sta
               <CardShell className={cardClass} accent="streak">
                 <div className="flex items-center gap-1">
                   <MetricMark emoji="🔥" label="Hot streak" />
-                  <h3 className="text-sm font-semibold text-[var(--gl-text)]">Current hot streak</h3>
+                  <h3 className="text-sm font-semibold text-[var(--gl-text)]">Hot streaks</h3>
                   <MetricInfo text={data.successDefinition} />
                 </div>
                 <p className="mt-1 text-[11px] font-medium uppercase tracking-wide text-[var(--gl-text-muted)]">
-                  Longest consecutive run · all competitions
+                  Fixture tips · all competitions
                 </p>
-                {data.hotStreak.count > 0 && data.hotStreak.latest ? (
+                <dl className="mt-3 grid grid-cols-3 gap-2 text-center">
+                  <div className="rounded-lg bg-amber-500/10 px-1.5 py-2">
+                    <dt className="text-[10px] font-semibold uppercase tracking-wide text-amber-900/70">
+                      Hottest 30d
+                    </dt>
+                    <dd className="mt-0.5 text-xl font-semibold tabular-nums text-[var(--gl-text)]">
+                      {hottest?.count ?? 0}
+                    </dd>
+                  </div>
+                  <div className="rounded-lg bg-amber-500/10 px-1.5 py-2">
+                    <dt className="text-[10px] font-semibold uppercase tracking-wide text-amber-900/70">
+                      Today
+                    </dt>
+                    <dd className="mt-0.5 text-xl font-semibold tabular-nums text-[var(--gl-text)]">
+                      {todayStreak?.count ?? 0}
+                    </dd>
+                  </div>
+                  <div className="rounded-lg bg-amber-500/10 px-1.5 py-2">
+                    <dt className="text-[10px] font-semibold uppercase tracking-wide text-amber-900/70">
+                      7d avg
+                    </dt>
+                    <dd className="mt-0.5 text-xl font-semibold tabular-nums text-[var(--gl-text)]">
+                      {avgLabel ?? '—'}
+                    </dd>
+                  </div>
+                </dl>
+                <p className="mt-2 text-[11px] text-[var(--gl-text-muted)] leading-snug">
+                  Today: {todayStreak?.successfulCount ?? 0}/{todayStreak?.settledCount ?? 0}{' '}
+                  successful
+                  {data.hotStreak.runCount7d > 0
+                    ? ` · ${data.hotStreak.runCount7d} run${data.hotStreak.runCount7d === 1 ? '' : 's'} in 7d`
+                    : ''}
+                </p>
+                {hottest && hottest.count > 0 && hottest.latest ? (
                   <>
-                    <p className="mt-3 text-2xl font-semibold tracking-tight text-[var(--gl-text)]">
-                      {data.hotStreak.count}{' '}
-                      <span className="text-base font-medium text-[var(--gl-text-soft)]">
-                        successful fixture tip{data.hotStreak.count === 1 ? '' : 's'} in a row
-                      </span>
-                    </p>
                     {streakPeriod ? (
-                      <p className="mt-2 text-sm tabular-nums text-[var(--gl-text-soft)]">
-                        {streakPeriod}
+                      <p className="mt-3 text-sm tabular-nums text-[var(--gl-text-soft)]">
+                        Hottest streak (30 days): {streakPeriod}
                         <span className="text-[var(--gl-text-muted)]"> · UK</span>
                       </p>
-                    ) : null}
-                    <p className="mt-3 text-sm font-medium text-[var(--gl-text)]">
-                      {data.hotStreak.latest.homeTeam} vs {data.hotStreak.latest.awayTeam}
+                    ) : (
+                      <p className="mt-3 text-sm text-[var(--gl-text-soft)]">
+                        Hottest streak last {data.hotStreak.hottestWindowDays} days
+                      </p>
+                    )}
+                    <p className="mt-2 text-sm font-medium text-[var(--gl-text)]">
+                      {hottest.latest.homeTeam} vs {hottest.latest.awayTeam}
                     </p>
                     <p className="mt-1 text-sm text-[var(--gl-text-soft)]">
-                      Forecast: {data.hotStreak.latest.forecast}
+                      Forecast: {hottest.latest.forecast}
                     </p>
                     <p className="mt-0.5 text-sm text-[var(--gl-text-soft)]">
-                      FT: {data.hotStreak.latest.homeScore}–{data.hotStreak.latest.awayScore}
+                      FT: {hottest.latest.homeScore}–{hottest.latest.awayScore}
                     </p>
                     <p className="mt-2 text-xs text-[var(--gl-text-muted)]">
-                      {data.hotStreak.latest.country
-                        ? `${data.hotStreak.latest.country} · ${data.hotStreak.latest.competition}`
-                        : data.hotStreak.latest.competition}
+                      {hottest.latest.country
+                        ? `${hottest.latest.country} · ${hottest.latest.competition}`
+                        : hottest.latest.competition}
                     </p>
                     <button
                       type="button"
                       onClick={() => setDrawerOpen(true)}
                       className="mt-4 self-start text-sm font-semibold text-[var(--gl-accent)] underline-offset-2 hover:underline"
                     >
-                      View all {data.hotStreak.count} fixtures
+                      View all {hottest.count} fixtures in hottest streak
                     </button>
                   </>
                 ) : (
                   <>
                     <p className="mt-3 text-lg font-semibold text-[var(--gl-text)]">No hot streak yet</p>
                     <p className="mt-2 text-sm text-[var(--gl-text-soft)] leading-relaxed">
-                      No consecutive successful fixture tips in the recent settled window.
+                      No consecutive successful fixture tips in the last{' '}
+                      {data.hotStreak.hottestWindowDays} days.
                     </p>
                     {isStatStrikeWebEnabled() ? (
                       <HubFootballLink
@@ -538,8 +575,8 @@ export function GoalLabV2LiveMetrics({ layout = 'row' }: { layout?: 'row' | 'sta
           <HotStreakDrawer
             open={drawerOpen}
             onClose={closeDrawer}
-            fixtures={data.hotStreak.fixtures}
-            count={data.hotStreak.count}
+            fixtures={data.hotStreak.hottest30d.fixtures}
+            count={data.hotStreak.hottest30d.count}
             titleId={titleId}
             periodLabel={streakPeriod ? `${streakPeriod} · UK` : null}
           />

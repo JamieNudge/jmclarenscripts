@@ -3,6 +3,8 @@ import {
   buildHomepageMetricsSnapshot,
   computeBestCompetition,
   computeHotStreak,
+  computeHotStreakBundle,
+  averageStreakRunLength,
   modelStatusFromFreshness,
   HOMEPAGE_DELAYED_MS,
   HOMEPAGE_FRESH_MS,
@@ -122,6 +124,42 @@ describe('homepage metrics', () => {
     expect(streak.latest).toBeNull();
   });
 
+  it('bundles 30d hottest, today, and 7d average run length', () => {
+    const records = [
+      rec({ fixtureId: 1, kickoffMs: 1000, isCorrect: true, selectionDateKey: '2026-07-14', homeTeam: 'A' }),
+      rec({ fixtureId: 2, kickoffMs: 2000, isCorrect: true, selectionDateKey: '2026-07-14', homeTeam: 'B' }),
+      rec({ fixtureId: 3, kickoffMs: 3000, isCorrect: false, selectionDateKey: '2026-07-15', homeTeam: 'C' }),
+      rec({ fixtureId: 4, kickoffMs: 4000, isCorrect: true, selectionDateKey: '2026-07-16', homeTeam: 'D' }),
+      rec({ fixtureId: 5, kickoffMs: 5000, isCorrect: true, selectionDateKey: '2026-07-16', homeTeam: 'E' }),
+      rec({ fixtureId: 6, kickoffMs: 6000, isCorrect: true, selectionDateKey: '2026-07-16', homeTeam: 'F' }),
+    ];
+    const bundle = computeHotStreakBundle({
+      records,
+      todayDateKey: '2026-07-16',
+      recentDateKeys: ['2026-07-14', '2026-07-15', '2026-07-16'],
+    });
+    expect(bundle.hottest30d.count).toBe(3);
+    expect(bundle.today.count).toBe(3);
+    expect(bundle.today.settledCount).toBe(3);
+    expect(bundle.today.successfulCount).toBe(3);
+    // runs: [2] on 14th, [3] on 16th → avg 2.5
+    expect(bundle.averageRunLength7d).toBeCloseTo(2.5);
+    expect(bundle.runCount7d).toBe(2);
+    expect(bundle.hottestWindowDays).toBe(30);
+    expect(bundle.averageWindowDays).toBe(7);
+  });
+
+  it('averages maximal win-run lengths', () => {
+    const { average, runCount } = averageStreakRunLength([
+      rec({ fixtureId: 1, kickoffMs: 1, isCorrect: true }),
+      rec({ fixtureId: 2, kickoffMs: 2, isCorrect: true }),
+      rec({ fixtureId: 3, kickoffMs: 3, isCorrect: false }),
+      rec({ fixtureId: 4, kickoffMs: 4, isCorrect: true }),
+    ]);
+    expect(runCount).toBe(2);
+    expect(average).toBeCloseTo(1.5);
+  });
+
   it('ranks best competition with min sample and tie-breakers', () => {
     const records: StatStrikeTrackRecord[] = [];
     for (let i = 0; i < 20; i++) {
@@ -215,10 +253,13 @@ describe('homepage metrics', () => {
       ],
       todaySelection: sel,
       todayDateKey: '2026-07-16',
+      recentDateKeys: ['2026-07-16'],
       now: new Date('2026-07-16T12:05:00Z'),
       minSample: 1,
     });
-    expect(snap.hotStreak.count).toBe(1);
+    expect(snap.hotStreak.hottest30d.count).toBe(1);
+    expect(snap.hotStreak.today.count).toBe(1);
+    expect(snap.hotStreak.averageRunLength7d).toBe(1);
     expect(snap.modelStatus.status).toBe('live');
     expect(snap.modelStatus.forecastsGeneratedToday).toBe(1);
     expect(snap.successDefinition).toMatch(/tip band/i);

@@ -52,7 +52,7 @@ Public strip on `/football-predictions` (**below the hero**, above “Today’s 
 
 | Card | Calculation |
 |------|-------------|
-| **Current hot streak** | Longest consecutive successful **fixture tips** across **all competitions** in the recent window (kickoff order). Ties prefer the most recent run — not merely the tail after the latest loss. |
+| **Hot streaks** | Three figures: **Hottest 30d** (longest consecutive fixture-tip run in the last 30 UK days); **Today** (longest run among today’s tips); **7d avg** (mean length of maximal win-runs in the last 7 UK days). Drawer lists fixtures in the hottest 30-day streak. |
 | **Best performing competition** | Highest tip-band accuracy over the last **30** UK days among competitions with **≥20** settled tips (ties: larger sample, then most recent) |
 | **Model status** | Today’s tip count, unique competitions, settled-today count, and freshness from selection `lastUpdated` |
 

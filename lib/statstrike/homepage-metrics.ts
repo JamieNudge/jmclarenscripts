@@ -2,8 +2,11 @@ import type { StatStrikeDailySelection, StatStrikePredictionLevel } from '@/lib/
 import type { StatStrikeTrackRecord } from '@/lib/statstrike/track-record';
 import { recordsFromSelection } from '@/lib/statstrike/track-record';
 
-/** UK selection days loaded for streak + competition ranking. */
+/** UK selection days loaded for competition ranking + streak history. */
 export const HOMEPAGE_METRICS_WINDOW_DAYS = 30;
+
+/** Streak headline + average use this shorter window so older runs don’t dominate. */
+export const HOMEPAGE_STREAK_WINDOW_DAYS = 7;
 
 /** Minimum settled tips before a competition can be “best”. */
 export const HOMEPAGE_BEST_COMPETITION_MIN_SAMPLE = 20;
@@ -27,12 +30,29 @@ export type HomepageHotStreakFixture = {
   selectionDateKey: string;
 };
 
-export type HomepageHotStreak = {
+export type HomepageStreakRun = {
   count: number;
   startedAt: string | null;
   lastUpdatedAt: string | null;
   latest: HomepageHotStreakFixture | null;
   fixtures: HomepageHotStreakFixture[];
+};
+
+export type HomepageHotStreak = {
+  /** Longest consecutive run in the last 30 UK selection days (“hottest streak”). */
+  hottest30d: HomepageStreakRun;
+  /** Longest consecutive run among today’s selection-day tips. */
+  today: HomepageStreakRun & {
+    settledCount: number;
+    successfulCount: number;
+  };
+  /** Mean length of maximal win-runs in the last 7 UK selection days. */
+  averageRunLength7d: number | null;
+  runCount7d: number;
+  /** Days used for hottest30d. */
+  hottestWindowDays: number;
+  /** Days used for the 7d average. */
+  averageWindowDays: number;
 };
 
 export type HomepageBestCompetition = {
@@ -65,7 +85,7 @@ export type HomepageMetricsSnapshot = {
 };
 
 export const HOMEPAGE_SUCCESS_DEFINITION =
-  'A successful forecast is one fixture tip on the StatStrike board whose recommended tip band (for example Over 2.5 Goals) matched the confirmed full-time total goals. The hot streak is the longest consecutive run of successes across all competitions in the recent window (ties prefer the most recent run). Postponed, abandoned, and unfinished fixtures are excluded.';
+  'A successful forecast is one fixture tip on the StatStrike board whose recommended tip band (for example Over 2.5 Goals) matched the confirmed full-time total goals. Hot streak metrics use consecutive successes across all competitions (kickoff order): hottest streak over the last 30 UK days, today’s longest run, and the average win-run length over the last 7 UK days. Postponed, abandoned, and unfinished fixtures are excluded.';
 
 function toIso(ms: number | null | undefined): string | null {
   if (ms == null || !Number.isFinite(ms)) return null;
@@ -95,13 +115,17 @@ function recordToStreakFixture(r: StatStrikeTrackRecord): HomepageHotStreakFixtu
   };
 }
 
-/**
- * Longest consecutive successful **fixture-tip** run across the whole app
- * (every competition), in kickoff order. Ties prefer the most recent run.
- * Unsettled fixtures are skipped (they do not break a run).
- */
-export function computeHotStreak(records: StatStrikeTrackRecord[]): HomepageHotStreak {
-  // Prefer the latest selection-day copy when a fixture id appears more than once.
+function emptyStreakRun(): HomepageStreakRun {
+  return {
+    count: 0,
+    startedAt: null,
+    lastUpdatedAt: null,
+    latest: null,
+    fixtures: [],
+  };
+}
+
+function dedupeSettled(records: StatStrikeTrackRecord[]): StatStrikeTrackRecord[] {
   const byId = new Map<number, StatStrikeTrackRecord>();
   for (const r of records) {
     if (r.isCorrect == null || r.homeScore == null || r.awayScore == null) continue;
@@ -110,35 +134,18 @@ export function computeHotStreak(records: StatStrikeTrackRecord[]): HomepageHotS
       byId.set(r.fixtureId, r);
     }
   }
-
-  const settled = Array.from(byId.values()).sort(
+  return Array.from(byId.values()).sort(
     (a, b) => a.kickoffMs - b.kickoffMs || a.fixtureId - b.fixtureId,
   );
+}
 
-  let best: StatStrikeTrackRecord[] = [];
-  let current: StatStrikeTrackRecord[] = [];
-
-  for (const r of settled) {
-    if (r.isCorrect === true) {
-      current.push(r);
-      // Prefer longer; if equal length, prefer this (more recent) run.
-      if (current.length >= best.length) {
-        best = current.slice();
-      }
-    } else {
-      current = [];
-    }
-  }
-
-  // Newest first for the drawer / “latest” summary.
+function runFromRecords(best: StatStrikeTrackRecord[]): HomepageStreakRun {
   const newestFirst = best.slice().reverse();
   const fixtures = newestFirst
     .map(recordToStreakFixture)
     .filter((f): f is HomepageHotStreakFixture => f != null);
-
   const latest = fixtures[0] ?? null;
   const oldest = fixtures.length ? fixtures[fixtures.length - 1] : null;
-
   return {
     count: fixtures.length,
     startedAt: oldest ? toIso(oldest.kickoffMs) : null,
@@ -146,6 +153,99 @@ export function computeHotStreak(records: StatStrikeTrackRecord[]): HomepageHotS
     latest,
     fixtures,
   };
+}
+
+/**
+ * Longest consecutive successful fixture-tip run (kickoff order).
+ * Ties prefer the most recent run. Unsettled tips are omitted (do not break runs).
+ */
+export function longestStreakRun(records: StatStrikeTrackRecord[]): HomepageStreakRun {
+  const settled = dedupeSettled(records);
+  let best: StatStrikeTrackRecord[] = [];
+  let current: StatStrikeTrackRecord[] = [];
+
+  for (const r of settled) {
+    if (r.isCorrect === true) {
+      current.push(r);
+      if (current.length >= best.length) best = current.slice();
+    } else {
+      current = [];
+    }
+  }
+
+  return runFromRecords(best);
+}
+
+/** Lengths of every maximal win-run in chronological settled order. */
+export function streakRunLengths(records: StatStrikeTrackRecord[]): number[] {
+  const settled = dedupeSettled(records);
+  const lengths: number[] = [];
+  let cur = 0;
+  for (const r of settled) {
+    if (r.isCorrect === true) {
+      cur += 1;
+    } else if (cur > 0) {
+      lengths.push(cur);
+      cur = 0;
+    }
+  }
+  if (cur > 0) lengths.push(cur);
+  return lengths;
+}
+
+export function averageStreakRunLength(records: StatStrikeTrackRecord[]): {
+  average: number | null;
+  runCount: number;
+} {
+  const lengths = streakRunLengths(records);
+  if (!lengths.length) return { average: null, runCount: 0 };
+  const sum = lengths.reduce((a, b) => a + b, 0);
+  return { average: sum / lengths.length, runCount: lengths.length };
+}
+
+function filterBySelectionKeys(
+  records: StatStrikeTrackRecord[],
+  allowed: Set<string>,
+): StatStrikeTrackRecord[] {
+  return records.filter((r) => allowed.has(r.selectionDateKey));
+}
+
+/**
+ * Hot streak bundle: 30-day hottest run, today longest, 7-day average run length.
+ */
+export function computeHotStreakBundle(args: {
+  records: StatStrikeTrackRecord[];
+  todayDateKey: string;
+  averageWindowDays?: number;
+  hottestWindowDays?: number;
+  recentDateKeys: string[];
+}): HomepageHotStreak {
+  const averageWindowDays = args.averageWindowDays ?? HOMEPAGE_STREAK_WINDOW_DAYS;
+  const hottestWindowDays = args.hottestWindowDays ?? HOMEPAGE_METRICS_WINDOW_DAYS;
+  const recentKeys = new Set(args.recentDateKeys);
+  const recentRecords = filterBySelectionKeys(args.records, recentKeys);
+  const todayRecords = args.records.filter((r) => r.selectionDateKey === args.todayDateKey);
+  const todaySettled = dedupeSettled(todayRecords);
+  const { average, runCount } = averageStreakRunLength(recentRecords);
+  const todayRun = longestStreakRun(todayRecords);
+
+  return {
+    hottest30d: longestStreakRun(args.records),
+    today: {
+      ...todayRun,
+      settledCount: todaySettled.length,
+      successfulCount: todaySettled.filter((r) => r.isCorrect === true).length,
+    },
+    averageRunLength7d: average,
+    runCount7d: runCount,
+    hottestWindowDays,
+    averageWindowDays,
+  };
+}
+
+/** @deprecated Use longestStreakRun — alias for older tests. */
+export function computeHotStreak(records: StatStrikeTrackRecord[]): HomepageStreakRun {
+  return longestStreakRun(records);
 }
 
 /**
@@ -253,12 +353,15 @@ export function buildHomepageMetricsSnapshot(args: {
   records: StatStrikeTrackRecord[];
   todaySelection: StatStrikeDailySelection | null;
   todayDateKey: string;
+  recentDateKeys: string[];
   now?: Date;
   windowDays?: number;
+  streakWindowDays?: number;
   minSample?: number;
 }): HomepageMetricsSnapshot {
   const now = args.now ?? new Date();
   const windowDays = args.windowDays ?? HOMEPAGE_METRICS_WINDOW_DAYS;
+  const streakWindowDays = args.streakWindowDays ?? HOMEPAGE_STREAK_WINDOW_DAYS;
   const minSample = args.minSample ?? HOMEPAGE_BEST_COMPETITION_MIN_SAMPLE;
   const todayRecords = args.todaySelection
     ? recordsFromSelection(args.todaySelection, args.todayDateKey)
@@ -267,7 +370,13 @@ export function buildHomepageMetricsSnapshot(args: {
   return {
     generatedAt: now.toISOString(),
     successDefinition: HOMEPAGE_SUCCESS_DEFINITION,
-    hotStreak: computeHotStreak(args.records),
+    hotStreak: computeHotStreakBundle({
+      records: args.records,
+      todayDateKey: args.todayDateKey,
+      averageWindowDays: streakWindowDays,
+      hottestWindowDays: windowDays,
+      recentDateKeys: args.recentDateKeys,
+    }),
     bestCompetition: computeBestCompetition(args.records, { minSample, windowDays }),
     modelStatus: computeModelStatus(args.todaySelection, todayRecords, now.getTime()),
   };

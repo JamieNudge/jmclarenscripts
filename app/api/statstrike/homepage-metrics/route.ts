@@ -3,6 +3,8 @@ import { getDatabase } from 'firebase-admin/database';
 import { getFirebaseAdminApp } from '@/lib/firebase-admin';
 import {
   HOMEPAGE_METRICS_WINDOW_DAYS,
+  HOMEPAGE_STREAK_WINDOW_DAYS,
+  HOMEPAGE_SUCCESS_DEFINITION,
   buildHomepageMetricsSnapshot,
   type HomepageMetricsSnapshot,
 } from '@/lib/statstrike/homepage-metrics';
@@ -21,17 +23,27 @@ const CACHE_HEADERS = {
   'Cache-Control': 'public, s-maxage=120, stale-while-revalidate=300',
 };
 
+function emptyStreakRun() {
+  return {
+    count: 0,
+    startedAt: null,
+    lastUpdatedAt: null,
+    latest: null,
+    fixtures: [],
+  };
+}
+
 function emptySnapshot(generatedAt: string, error?: string): HomepageMetricsSnapshot & { error?: string } {
   return {
     generatedAt,
-    successDefinition:
-      'A successful forecast is one fixture tip on the StatStrike board whose recommended tip band (for example Over 2.5 Goals) matched the confirmed full-time total goals. The hot streak is the longest consecutive run of successes across all competitions in the recent window (ties prefer the most recent run). Postponed, abandoned, and unfinished fixtures are excluded.',
+    successDefinition: HOMEPAGE_SUCCESS_DEFINITION,
     hotStreak: {
-      count: 0,
-      startedAt: null,
-      lastUpdatedAt: null,
-      latest: null,
-      fixtures: [],
+      hottest30d: emptyStreakRun(),
+      today: { ...emptyStreakRun(), settledCount: 0, successfulCount: 0 },
+      averageRunLength7d: null,
+      runCount7d: 0,
+      hottestWindowDays: HOMEPAGE_METRICS_WINDOW_DAYS,
+      averageWindowDays: HOMEPAGE_STREAK_WINDOW_DAYS,
     },
     bestCompetition: null,
     modelStatus: {
@@ -67,6 +79,10 @@ export async function GET() {
     for (let i = -(HOMEPAGE_METRICS_WINDOW_DAYS - 1); i <= 0; i++) {
       dateKeys.push(ukSelectionDateKeyOffset(i));
     }
+    const streakDateKeys: string[] = [];
+    for (let i = -(HOMEPAGE_STREAK_WINDOW_DAYS - 1); i <= 0; i++) {
+      streakDateKeys.push(ukSelectionDateKeyOffset(i));
+    }
 
     const snaps = await Promise.all(
       dateKeys.map((dateKey) => db.ref(selectionsPathForDateKey(dateKey)).once('value')),
@@ -85,6 +101,7 @@ export async function GET() {
       records,
       todaySelection,
       todayDateKey: todayKey,
+      recentDateKeys: streakDateKeys,
     });
 
     return NextResponse.json(snapshot, { headers: CACHE_HEADERS });
