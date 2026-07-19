@@ -105,7 +105,7 @@ describe('pickHomepageForecastPreview', () => {
 });
 
 describe('boardRowToFixtureListItem', () => {
-  it('maps band, score, and confidence', () => {
+  it('maps tip band and score for GoalLab cards', () => {
     const item = boardRowToFixtureListItem(
       row(
         { id: 42, status: 'FT', homeScore: 2, awayScore: 1, kickoffMs: 1 },
@@ -114,7 +114,8 @@ describe('boardRowToFixtureListItem', () => {
     );
     expect(item.fixtureId).toBe(42);
     expect(item.scoreDisplay).toBe('2–1');
-    expect(item.pick.confidence).toBe(80);
-    expect(item.pick.recommendedLevel).toBe('Over 2.5 Goals');
+    expect(item.pick.confidence).toBeUndefined();
+    expect(item.pick.predictedBand).toBe('Over 2.5 Goals');
+    expect(item.pick.forecastType).toBe('Over 2.5 Goals');
   });
 });

@@ -9,14 +9,6 @@ import {
 import { fixtureDetailHrefV2 } from '@/components/goallab/v2/paths';
 import { fixtureListItemWinResult, pickForecastDetailLines, type FixtureListItem } from '@/lib/fixtures-browser';
 
-function pickConfidence(fixture: FixtureListItem): number | null {
-  const conf = fixture.pick.confidence;
-  if (typeof conf === 'number' && Number.isFinite(conf) && conf > 0) {
-    return Math.min(100, Math.round(conf));
-  }
-  return null;
-}
-
 type Props = {
   fixture: FixtureListItem;
   dateKey: string;
@@ -42,7 +34,6 @@ export function GoalLabV2FixtureCard({
   const kickoffTitle =
     fixture.kickoffMs != null ? formatKickoffLocalAndUtc(fixture.kickoffMs, visitorTz) : undefined;
   const forecast = pickForecastDetailLines(fixture.pick);
-  const confidence = pickConfidence(fixture);
   const won = fixtureListItemWinResult(fixture);
   const href = hrefOverride ?? fixtureDetailHrefV2(fixture.fixtureId, dateKey);
 
@@ -84,16 +75,6 @@ export function GoalLabV2FixtureCard({
             WIN
           </span>
         ) : null}
-        {forecast.primary ? (
-          <span className="inline-flex items-center rounded-lg border border-[color-mix(in_srgb,var(--gl-accent)_35%,transparent)] bg-[var(--gl-accent-soft)] px-2.5 py-1 text-xs font-semibold text-[var(--gl-accent)]">
-            {forecast.primary}
-          </span>
-        ) : null}
-        {confidence != null ? (
-          <span className="inline-flex items-center rounded-lg border border-[var(--gl-border-strong)] bg-[var(--gl-surface)] px-2.5 py-1 text-xs font-medium tabular-nums text-[var(--gl-text-soft)]">
-            {confidence}% confidence
-          </span>
-        ) : null}
         {fixture.scoreDisplay !== '–' ? (
           <span className="inline-flex items-center rounded-lg border border-[var(--gl-border-strong)] bg-[var(--gl-surface)] px-2.5 py-1 text-xs font-semibold tabular-nums text-[var(--gl-text)]">
             {fixture.scoreDisplay}
@@ -101,20 +82,13 @@ export function GoalLabV2FixtureCard({
         ) : null}
       </div>
 
-      {confidence != null ? (
-        <div
-          className="mt-4 h-1.5 w-full overflow-hidden rounded-full bg-[var(--gl-elevated)]"
-          aria-hidden
-        >
-          <div
-            className="h-full rounded-full bg-[var(--gl-accent)] transition-[width] duration-700 ease-out"
-            style={{ width: `${confidence}%` }}
-          />
-        </div>
+      {/* Tip band sits where the old confidence chip/bar was — clearer for visitors. */}
+      {forecast.primary ? (
+        <p className="mt-4 text-sm font-semibold text-[var(--gl-accent)]">{forecast.primary}</p>
       ) : null}
 
       {interactive ? (
-        <p className="mt-4 text-sm font-medium text-[var(--gl-accent)] group-hover:text-[var(--gl-accent-hover)]">
+        <p className="mt-3 text-sm font-medium text-[var(--gl-accent)] group-hover:text-[var(--gl-accent-hover)]">
           View forecast
           <span className="ml-1 inline-block transition-transform group-hover:translate-x-0.5" aria-hidden>
             →

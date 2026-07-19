@@ -76,10 +76,6 @@ export function boardRowToFixtureListItem(row: StatStrikeBoardRow): FixtureListI
     country && league ? `${country} · ${league}` : league || country || 'Other';
   const band = prediction?.recommendedLevel || prediction?.level || null;
   const score = scoreLabel(fixture);
-  const confidence =
-    prediction && prediction.totalCriteria > 0
-      ? Math.round((prediction.matchedCriteria / prediction.totalCriteria) * 100)
-      : null;
 
   return {
     fixtureId: fixture.id,
@@ -100,11 +96,13 @@ export function boardRowToFixtureListItem(row: StatStrikeBoardRow): FixtureListI
       status: fixture.status ?? undefined,
       homeScore: fixture.homeScore ?? undefined,
       awayScore: fixture.awayScore ?? undefined,
+      // GoalLab cards read band via recommendedBandLabelForPick (predictedBand / forecastType).
+      predictedBand: band ?? undefined,
+      forecastType: band ?? undefined,
       recommendedLevel: band ?? undefined,
       level: band ?? undefined,
-      confidence: confidence ?? undefined,
-      matchedCriteria: prediction?.matchedCriteria,
-      totalCriteria: prediction?.totalCriteria,
+      bookmakerOdds: prediction?.bookmakerOdds ?? undefined,
+      significantStats: prediction?.significantStats,
     },
   };
 }
