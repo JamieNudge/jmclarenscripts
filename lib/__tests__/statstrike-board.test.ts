@@ -132,6 +132,46 @@ describe('parseDailySelection', () => {
     });
     expect(sel!.predictionsByFixtureId.get(1)?.goalBandCascade).toBeNull();
   });
+
+  it('parses fixtures and predictions when RTDB returns numeric-keyed object maps', () => {
+    const sel = parseDailySelection({
+      date: '2026-07-16',
+      fixtures: {
+        '0': {
+          id: 99,
+          date: '2026-07-16T15:00:00.000Z',
+          homeTeam: { id: 1, name: 'Alpha' },
+          awayTeam: { id: 2, name: 'Beta' },
+          league: { id: 3, name: 'Liga', country: 'Test' },
+          status: 'NS',
+        },
+      },
+      predictions: {
+        '0': {
+          fixtureId: 99,
+          prediction: {
+            level: 'Over 2.5 Goals',
+            matchedCriteria: 7,
+            totalCriteria: 11,
+            significantStats: [],
+            goalBandCascade: {
+              source: 'signal-review',
+              recommendedBands: ['O2.5', 'O3.5'],
+              forecasterConfidence: 90,
+              qualifiers: ['criteriaExact'],
+            },
+          },
+        },
+      },
+      leaguePerformance: {},
+    });
+    expect(sel).not.toBeNull();
+    expect(sel!.fixtures).toHaveLength(1);
+    expect(sel!.fixtures[0].id).toBe(99);
+    const gbc = sel!.predictionsByFixtureId.get(99)?.goalBandCascade;
+    expect(gbc).not.toBeNull();
+    expect(gbc!.recommendedBands).toEqual(['O2.5', 'O3.5']);
+  });
 });
 
 describe('goalBandCascade helpers', () => {

@@ -32,6 +32,17 @@ function asString(v: unknown): string | null {
   return null;
 }
 
+/**
+ * Firebase RTDB may return arrays as numeric-keyed objects after partial rewrites
+ * (common after morning catch-up uploads). Accept both shapes — same pattern as stats.
+ */
+function asArrayOrMapValues(raw: unknown): unknown[] {
+  if (Array.isArray(raw)) return raw;
+  const o = asRecord(raw);
+  if (!o) return [];
+  return Object.values(o);
+}
+
 /** RTDB / Swift ISO8601 string, epoch ms, or epoch seconds. */
 export function parseSelectionLastUpdatedMs(value: unknown): number | null {
   if (typeof value === 'number' && Number.isFinite(value)) {
@@ -195,19 +206,9 @@ function parseFixtureStatsSummary(row: Record<string, unknown>): StatStrikeFixtu
 function parseStatsByFixtureId(raw: unknown): Map<number, StatStrikeFixtureStatsSummary> {
   const out = new Map<number, StatStrikeFixtureStatsSummary>();
   const rows: Record<string, unknown>[] = [];
-  if (Array.isArray(raw)) {
-    for (const item of raw) {
-      const r = asRecord(item);
-      if (r) rows.push(r);
-    }
-  } else {
-    const o = asRecord(raw);
-    if (o) {
-      for (const v of Object.values(o)) {
-        const r = asRecord(v);
-        if (r) rows.push(r);
-      }
-    }
+  for (const item of asArrayOrMapValues(raw)) {
+    const r = asRecord(item);
+    if (r) rows.push(r);
   }
   for (const r of rows) {
     const fixture = asRecord(r.fixture);
@@ -259,26 +260,20 @@ export function parseDailySelection(raw: unknown): StatStrikeDailySelection | nu
   const o = asRecord(raw);
   if (!o) return null;
 
-  const fixturesRaw = o.fixtures;
   const fixtures: StatStrikeFixture[] = [];
-  if (Array.isArray(fixturesRaw)) {
-    for (const f of fixturesRaw) {
-      const parsed = parseFixture(f);
-      if (parsed) fixtures.push(parsed);
-    }
+  for (const f of asArrayOrMapValues(o.fixtures)) {
+    const parsed = parseFixture(f);
+    if (parsed) fixtures.push(parsed);
   }
 
   const predictionsByFixtureId = new Map<number, StatStrikePrediction>();
-  const predsRaw = o.predictions;
-  if (Array.isArray(predsRaw)) {
-    for (const p of predsRaw) {
-      const pr = asRecord(p);
-      if (!pr) continue;
-      const fixtureId = asNumber(pr.fixtureId) ?? asNumber(pr.fixtureID);
-      if (fixtureId == null) continue;
-      const prediction = parsePredictionPayload(pr.prediction) ?? parsePredictionPayload(pr);
-      if (prediction) predictionsByFixtureId.set(fixtureId, prediction);
-    }
+  for (const p of asArrayOrMapValues(o.predictions)) {
+    const pr = asRecord(p);
+    if (!pr) continue;
+    const fixtureId = asNumber(pr.fixtureId) ?? asNumber(pr.fixtureID);
+    if (fixtureId == null) continue;
+    const prediction = parsePredictionPayload(pr.prediction) ?? parsePredictionPayload(pr);
+    if (prediction) predictionsByFixtureId.set(fixtureId, prediction);
   }
 
   const leaguePerformance: Record<string, number> = {};

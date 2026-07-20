@@ -68,6 +68,8 @@ Optional metadata on a `/selections/{date}` prediction (same shape as iOS Deskto
 
 Research’s separate `goalBandCascadeSelections/{date}` feed is unrelated to the StatStrike board.
 
+**Late catch-up uploads:** Web reads the same `/selections/{date}` node as iOS. If an evening auto-run misses and a morning sidecar catch-up rewrites the day, open `/statstrike` (use **Refresh** or refocus the tab). GBC badges appear on the StatStrike board / GBC filter — not on GoalLab homepage forecast cards. Parser accepts Firebase array or numeric-keyed object maps for fixtures/predictions (same as stats).
+
 ### Best Performing + GBC track rates
 
 Best Performing tab loads the last **7** UK selection days (`useStatStrikeHistoryWindow`) and computes:

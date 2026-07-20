@@ -187,15 +187,17 @@ export function useStatStrikeBoard(initialDayOffset = 0) {
 
     const onVis = () => {
       if (document.visibilityState !== 'visible') return;
+      // Re-subscribe so late catch-up uploads (e.g. morning GBC sidecar) land even if
+      // the RTDB connection briefly stalled while the tab was hidden.
       if (dayOffsetRef.current === 0) {
         const nextToday = ukSelectionDateKey();
         if (nextToday !== todayKeyRef.current) {
           attach('visibility-new-day');
         } else {
-          publish('visibility');
+          attach('visibility-resubscribe');
         }
       } else {
-        publish('visibility');
+        attach('visibility-resubscribe-offset');
       }
     };
     document.addEventListener('visibilitychange', onVis);
