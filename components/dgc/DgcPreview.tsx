@@ -39,6 +39,12 @@ export default function DgcPreview({
   const [hoveredHit, setHoveredHit] = useState<HandleHit | null>(null);
   const [readout, setReadout] = useState<string | null>(null);
 
+  const playback = controller.transientPreview;
+  const previewDocument = playback
+    ? { ...controller.document, canvas: playback.canvas, layers: playback.layers }
+    : controller.document;
+  const previewLayerStates = playback ? playback.layerStates : controller.layerStates;
+
   useEffect(() => {
     const node = containerRef.current;
     if (!node) return;
@@ -55,8 +61,8 @@ export default function DgcPreview({
   }, [fullscreen]);
 
   const layout = useMemo(
-    () => new CanvasLayout(size, controller.document.canvas),
-    [size, controller.document.canvas],
+    () => new CanvasLayout(size, previewDocument.canvas),
+    [size, previewDocument.canvas],
   );
   const field = layout.fieldScreenRect;
   const band = layout.totalPopulationBandScreenRect;
@@ -66,8 +72,8 @@ export default function DgcPreview({
     ? layerHandleLabelsForId(controller.document.layers, active.id)
     : { start: 'A', end: 'B' };
   const bandColor =
-    controller.document.canvas.totalPopulationColorHex || DEFAULT_TOTAL_POPULATION_COLOR_HEX;
-  const displayLayerIndices = Array.from(controller.document.layers.keys()).reverse();
+    previewDocument.canvas.totalPopulationColorHex || DEFAULT_TOTAL_POPULATION_COLOR_HEX;
+  const displayLayerIndices = Array.from(previewDocument.layers.keys()).reverse();
 
   const layerPickerLayout = useMemo(() => {
     const canvasRight = layout.screenRect.x + layout.screenRect.width;
@@ -104,10 +110,10 @@ export default function DgcPreview({
   }, [field, layout.screenRect, size.width]);
 
   const visibleLayerPolygons = useMemo(() => {
-    return controller.document.layers
+    return previewDocument.layers
       .map((layer) => {
         if (!layer.isVisible) return null;
-        const state = controller.layerStates[layer.id];
+        const state = previewLayerStates[layer.id];
         if (!state?.result) return null;
         const { result } = state;
 
@@ -126,7 +132,7 @@ export default function DgcPreview({
           layer,
           state,
           result,
-          isActive: layer.id === controller.document.activeLayerID,
+          isActive: !playback && layer.id === controller.document.activeLayerID,
           vertices,
           screenPoints,
           points: screenPoints.map((point) => `${point.x},${point.y}`).join(' '),
@@ -135,7 +141,7 @@ export default function DgcPreview({
       })
       .filter((entry): entry is NonNullable<typeof entry> => entry !== null)
       .sort((left, right) => right.area - left.area);
-  }, [controller.document.activeLayerID, controller.document.layers, controller.layerStates, layout]);
+  }, [controller.document.activeLayerID, playback, previewDocument.layers, previewLayerStates, layout]);
 
   const pointerToScreen = useCallback((event: React.PointerEvent | PointerEvent) => {
     const rect = containerRef.current?.getBoundingClientRect();
@@ -182,6 +188,7 @@ export default function DgcPreview({
   };
 
   const onPointerDown = (event: React.PointerEvent) => {
+    if (playback) return;
     const point = pointerToScreen(event);
     const hit = nearestHandle(point);
     if (hit) {
@@ -200,6 +207,7 @@ export default function DgcPreview({
   };
 
   const onPointerMove = (event: React.PointerEvent) => {
+    if (playback) return;
     const point = pointerToScreen(event);
     const labels = active
       ? layerHandleLabelsForId(controller.document.layers, active.id)
@@ -302,17 +310,17 @@ export default function DgcPreview({
                 fontSize={14}
                 fontWeight={500}
               >
-                {controller.document.canvas.totalPopulationLabel.trim() ||
+                {previewDocument.canvas.totalPopulationLabel.trim() ||
                   'Total Population'}
               </text>
             </>
           ) : null}
 
           <line
-            x1={layout.screenPointCanvas(0, fieldOriginY(controller.document.canvas)).x}
-            y1={layout.screenPointCanvas(0, fieldOriginY(controller.document.canvas)).y}
-            x2={layout.screenPointCanvas(contentWidth(controller.document.canvas), fieldOriginY(controller.document.canvas)).x}
-            y2={layout.screenPointCanvas(contentWidth(controller.document.canvas), fieldOriginY(controller.document.canvas)).y}
+            x1={layout.screenPointCanvas(0, fieldOriginY(previewDocument.canvas)).x}
+            y1={layout.screenPointCanvas(0, fieldOriginY(previewDocument.canvas)).y}
+            x2={layout.screenPointCanvas(contentWidth(previewDocument.canvas), fieldOriginY(previewDocument.canvas)).x}
+            y2={layout.screenPointCanvas(contentWidth(previewDocument.canvas), fieldOriginY(previewDocument.canvas)).y}
             stroke="var(--dgc-preview-axis)"
             strokeWidth={2}
             strokeLinecap="round"
@@ -364,7 +372,7 @@ export default function DgcPreview({
             );
           })}
 
-          {visibleLayerPolygons.map(({ layer, state, result, isActive }) => {
+          {!playback && visibleLayerPolygons.map(({ layer, state, result, isActive }) => {
             const labels = layerHandleLabelsForId(controller.document.layers, layer.id);
             const startHovered =
               hoveredHit?.layerId === layer.id && hoveredHit.handle === 'start';
@@ -410,8 +418,8 @@ export default function DgcPreview({
           }}
         >
           {displayLayerIndices.map((index) => {
-            const layer = controller.document.layers[index];
-            const isActive = layer.id === controller.document.activeLayerID;
+            const layer = previewDocument.layers[index];
+            const isActive = !playback && layer.id === controller.document.activeLayerID;
             return (
               <div
                 key={layer.id}
@@ -423,6 +431,7 @@ export default function DgcPreview({
               >
                 <button
                   type="button"
+                  disabled={!!playback}
                   onClick={() => controller.selectLayer(layer.id)}
                   className="w-full text-left"
                   title={layer.name}
@@ -442,7 +451,11 @@ export default function DgcPreview({
           })}
         </div>
 
-        {readout ? (
+        {playback ? (
+          <div className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full border border-[var(--dgc-accent-border)] bg-[var(--dgc-preview-overlay-strong)] px-4 py-2 text-sm font-semibold text-[var(--dgc-text)]">
+            {playback.label}
+          </div>
+        ) : readout ? (
           <div className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full border border-[var(--dgc-border)] bg-[var(--dgc-preview-overlay-strong)] px-4 py-2 text-sm font-semibold text-[var(--dgc-text)]">
             {readout}
           </div>

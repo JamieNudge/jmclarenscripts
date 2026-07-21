@@ -4,6 +4,7 @@ import {
   makeDefaultLayer,
   makeNewDocument,
   newLayerId,
+  normalizeTimelineStates,
   recalculateLayerStates,
   SKETCH_PRESETS,
   touchDocument,
@@ -24,11 +25,22 @@ import {
 } from './sketch-preset-store';
 import { areaForRegion, solve } from './partition-solver';
 import type {
+  CanvasSettings,
+  DesignLayer,
   DGCDesignDocument,
   LayerSolveState,
   PartitionEdge,
+  SavedYearState,
 } from './types';
 import { maxStartX, effectiveFieldWidth, normalizeCanvas, normalizeExportPreferences, syncFieldWidth } from './types';
+import type { WealthYearDesign } from './wealth-data/to-design-state';
+
+export interface TransientPreview {
+  canvas: CanvasSettings;
+  layers: DesignLayer[];
+  layerStates: Record<string, LayerSolveState>;
+  label: string;
+}
 
 const MIN_FRACTION = 0.0001;
 const MAX_FRACTION = 0.9999;
@@ -40,6 +52,7 @@ export function useDgcDocument(initial?: DGCDesignDocument) {
   const [exportWholeComposition, setExportWholeComposition] = useState(true);
   const [customSketchPresets, setCustomSketchPresets] = useState<CustomSketchPreset[]>([]);
   const [copyResultConfirmationVisible, setCopyResultConfirmationVisible] = useState(false);
+  const [transientPreview, setTransientPreviewState] = useState<TransientPreview | null>(null);
 
   useEffect(() => {
     setCustomSketchPresets(loadCustomSketchPresets());
@@ -65,11 +78,13 @@ export function useDgcDocument(initial?: DGCDesignDocument) {
       ...layer,
       startX: Math.min(Math.max(layer.startX, 0), maxStart),
     }));
+    setTransientPreviewState(null);
     setDocument({
       ...next,
       canvas,
       layers,
       exportPreferences: normalizeExportPreferences(next.exportPreferences),
+      timelineStates: normalizeTimelineStates(next.timelineStates),
     });
   }, []);
 
@@ -385,6 +400,103 @@ export function useDgcDocument(initial?: DGCDesignDocument) {
     [mutate],
   );
 
+  // ----- Wealth data year application -----
+
+  const applyWealthYearDesign = useCallback(
+    (design: WealthYearDesign) => {
+      setTransientPreviewState(null);
+      mutate((d) => {
+        d.canvas = syncFieldWidth(normalizeCanvas(design.canvas));
+        d.layers = structuredClone(design.layers);
+        d.activeLayerID = d.layers[0].id;
+      });
+    },
+    [mutate],
+  );
+
+  // ----- Timeline states -----
+
+  const timelineStates = useMemo(
+    () => normalizeTimelineStates(document.timelineStates),
+    [document.timelineStates],
+  );
+
+  const saveTimelineState = useCallback(
+    (state: SavedYearState) => {
+      mutate((d) => {
+        const existing = normalizeTimelineStates(d.timelineStates);
+        const withoutYear = existing.filter((entry) => entry.year !== state.year);
+        d.timelineStates = normalizeTimelineStates([...withoutYear, state]);
+      });
+    },
+    [mutate],
+  );
+
+  const deleteTimelineState = useCallback(
+    (id: string) => {
+      mutate((d) => {
+        d.timelineStates = normalizeTimelineStates(d.timelineStates).filter(
+          (entry) => entry.id !== id,
+        );
+      });
+    },
+    [mutate],
+  );
+
+  const restoreTimelineState = useCallback(
+    (id: string) => {
+      setTransientPreviewState(null);
+      mutate((d) => {
+        const state = normalizeTimelineStates(d.timelineStates).find(
+          (entry) => entry.id === id,
+        );
+        if (!state) return;
+        d.canvas = syncFieldWidth(normalizeCanvas(state.canvas));
+        d.layers = structuredClone(state.layers);
+        d.activeLayerID = d.layers[0].id;
+      });
+    },
+    [mutate],
+  );
+
+  // ----- Transient playback preview (not persisted, no document churn) -----
+
+  const setTransientPreview = useCallback(
+    (frame: { canvas: CanvasSettings; layers: DesignLayer[]; label: string } | null) => {
+      if (!frame) {
+        setTransientPreviewState(null);
+        return;
+      }
+      const canvas = syncFieldWidth(frame.canvas);
+      const layerStates: Record<string, LayerSolveState> = {};
+      for (const layer of frame.layers) {
+        const input = {
+          width: effectiveFieldWidth(canvas),
+          height: canvas.fieldHeight,
+          startX: layer.startX,
+          areaFraction: layer.areaFraction,
+          minStartX: 0,
+        };
+        try {
+          layerStates[layer.id] = { input, result: solve(input), errorMessage: null };
+        } catch (error) {
+          layerStates[layer.id] = {
+            input,
+            result: null,
+            errorMessage: error instanceof Error ? error.message : 'Solver failed.',
+          };
+        }
+      }
+      setTransientPreviewState({
+        canvas,
+        layers: frame.layers,
+        layerStates,
+        label: frame.label,
+      });
+    },
+    [],
+  );
+
   const active = activeLayer(document);
   const activeState: LayerSolveState | undefined = active
     ? layerStates[active.id]
@@ -430,6 +542,13 @@ export function useDgcDocument(initial?: DGCDesignDocument) {
     updatePngScale,
     updatePngTransparentBackground,
     updateJobName,
+    applyWealthYearDesign,
+    timelineStates,
+    saveTimelineState,
+    deleteTimelineState,
+    restoreTimelineState,
+    transientPreview,
+    setTransientPreview,
     sketchPresets: SKETCH_PRESETS,
     canAddLayer: canAddLayer(document.layers.length),
     maxLayers: MAX_LAYERS,

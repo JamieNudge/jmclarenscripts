@@ -9,6 +9,7 @@ import DgcInputForm from './DgcInputForm';
 import DgcPreview from './DgcPreview';
 import DgcResultExport from './DgcResultExport';
 import DgcAppearanceToggle from './DgcAppearanceToggle';
+import DgcTimelinePanel from './DgcTimelinePanel';
 
 export default function DgcEditor() {
   const [boot] = useState(() => readInitialSavedJob());
@@ -104,6 +105,7 @@ export default function DgcEditor() {
             controller={controller}
             onRequestFullscreen={() => setFullscreen(true)}
           />
+          <DgcTimelinePanel controller={controller} />
           <DgcResultExport controller={controller} persistence={persistence} />
         </div>
       </main>

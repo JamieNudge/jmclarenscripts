@@ -48,7 +48,26 @@ export function makeNewDocument(name = ''): DGCDesignDocument {
     layers: [layer],
     activeLayerID: layer.id,
     exportPreferences: { ...DEFAULT_EXPORT_PREFERENCES },
+    timelineStates: [],
   };
+}
+
+export function normalizeTimelineStates(
+  states: DGCDesignDocument['timelineStates'],
+): NonNullable<DGCDesignDocument['timelineStates']> {
+  if (!Array.isArray(states)) return [];
+  return states
+    .filter(
+      (state) =>
+        state &&
+        typeof state.id === 'string' &&
+        typeof state.year === 'number' &&
+        Array.isArray(state.layers) &&
+        state.layers.length > 0 &&
+        !!state.canvas,
+    )
+    .map((state) => ({ ...state, canvas: normalizeCanvas(state.canvas) }))
+    .sort((a, b) => a.year - b.year);
 }
 
 export function touchDocument(document: DGCDesignDocument): DGCDesignDocument {
@@ -100,6 +119,7 @@ export function parseDocumentJson(raw: string): DGCDesignDocument {
   }
   parsed.canvas = normalizeCanvas(parsed.canvas);
   parsed.exportPreferences = normalizeExportPreferences(parsed.exportPreferences);
+  parsed.timelineStates = normalizeTimelineStates(parsed.timelineStates);
   const maxStart = maxStartX(parsed.canvas);
   for (const layer of parsed.layers) {
     layer.startX = Math.min(Math.max(layer.startX, 0), maxStart);

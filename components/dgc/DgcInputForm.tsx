@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { LayerAreaPercentInput } from '@/components/dgc/LayerAreaPercentInput';
-import { formatNumber } from '@/lib/dgc/document';
+import { formatNumber, newLayerId } from '@/lib/dgc/document';
 import type { DgcDocumentController } from '@/lib/dgc/use-dgc-document';
 import { layerHandleLabelsForId, layerHandlePairLabel, MAX_LAYERS } from '@/lib/dgc/layer-handles';
 import type { CustomSketchPreset } from '@/lib/dgc/sketch-preset-store';
@@ -11,6 +11,12 @@ import {
   DEFAULT_TOTAL_POPULATION_LABEL,
   edgeDisplayName,
 } from '@/lib/dgc/types';
+import { getWealthDataset } from '@/lib/dgc/wealth-data';
+import { formatStatValue } from '@/lib/dgc/wealth-data/schema';
+import {
+  wealthRowToDesign,
+  wealthYearEligibility,
+} from '@/lib/dgc/wealth-data/to-design-state';
 
 function parseNumericInput(raw: string): number | null {
   const cleaned = raw.trim().replace(/%/g, '').replace(/,/g, '.');
@@ -192,6 +198,8 @@ export default function DgcInputForm({ controller }: { controller: DgcDocumentCo
         </p>
       </Panel>
 
+      <WealthYearPanel controller={controller} />
+
       <Panel title="Built-in Sketch Cases">
         <div className="space-y-2">
           {controller.sketchPresets.map((preset) => (
@@ -331,6 +339,112 @@ export default function DgcInputForm({ controller }: { controller: DgcDocumentCo
         </div>
       ) : null}
     </div>
+  );
+}
+
+function WealthYearPanel({ controller }: { controller: DgcDocumentController }) {
+  const dataset = useMemo(() => getWealthDataset(), []);
+  const eligibleRows = useMemo(
+    () =>
+      dataset.rows.map((row) => ({
+        row,
+        eligibility: wealthYearEligibility(row),
+      })),
+    [dataset],
+  );
+  const defaultYear =
+    eligibleRows.filter((entry) => entry.eligibility.eligible).at(-1)?.row.reportYear ?? null;
+  const [selectedYear, setSelectedYear] = useState<number | null>(defaultYear);
+
+  const selected = eligibleRows.find((entry) => entry.row.reportYear === selectedYear) ?? null;
+
+  const handleApply = (alsoSaveState: boolean) => {
+    if (!selected?.eligibility.eligible) return;
+    const design = wealthRowToDesign(selected.row, dataset.version);
+    controller.applyWealthYearDesign(design);
+    if (alsoSaveState) {
+      controller.saveTimelineState({
+        id: newLayerId(),
+        year: design.year,
+        label: String(design.year),
+        datasetVersion: dataset.version,
+        provenance: design.provenance,
+        savedAt: new Date().toISOString(),
+        canvas: design.canvas,
+        layers: design.layers,
+      });
+    }
+  };
+
+  return (
+    <Panel title="Historical Wealth Data">
+      <p className="text-xs text-[var(--dgc-text-faint)]">
+        Fill every field from the verified US household wealth dataset instead of typing values.
+        Population axis is normalised to 0–100 with wealth-percentile boundaries at 50 / 90 / 99 /
+        99.9; each layer&apos;s area is the share of total wealth held below that boundary.{' '}
+        <a href="/dgc/data" className="text-sky-400 underline hover:text-sky-300">
+          Check the data
+        </a>
+      </p>
+      <label className="block space-y-1">
+        <span className="text-base font-semibold text-[var(--dgc-text)]">Year</span>
+        <select
+          className="w-full rounded-lg border border-[var(--dgc-border)] bg-[var(--dgc-input)] px-3 py-2 text-[var(--dgc-text)]"
+          value={selectedYear ?? ''}
+          onChange={(event) => setSelectedYear(Number(event.target.value))}
+        >
+          {eligibleRows.map(({ row, eligibility }) => (
+            <option key={row.reportYear} value={row.reportYear} disabled={!eligibility.eligible}>
+              {row.reportYear}
+              {eligibility.eligible ? '' : ' — incomplete data'}
+            </option>
+          ))}
+        </select>
+      </label>
+
+      {selected ? (
+        selected.eligibility.eligible ? (
+          <div className="space-y-1 rounded-lg border border-[var(--dgc-border-soft)] bg-[var(--dgc-hover)] p-3 text-xs text-[var(--dgc-text-soft)]">
+            <p>
+              Population {formatStatValue(selected.row.totalPopulation)} · Households{' '}
+              {formatStatValue(selected.row.householdCount)} · Total wealth{' '}
+              {formatStatValue(selected.row.totalHouseholdWealth)}
+            </p>
+            <p>
+              Shares — bottom 50%: {formatStatValue(selected.row.shareBottom50Pct)} · 50–90%:{' '}
+              {formatStatValue(selected.row.share50to90Pct)} · 90–99%:{' '}
+              {formatStatValue(selected.row.share90to99Pct)} · 99–99.9%:{' '}
+              {formatStatValue(selected.row.share99to999Pct)} · top 0.1%:{' '}
+              {formatStatValue(selected.row.shareTop01Pct)}
+            </p>
+            <p>Zero/negative wealth: {formatStatValue(selected.row.zeroOrNegativeWealth)}</p>
+          </div>
+        ) : (
+          <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-[var(--dgc-text-soft)]">
+            {selected.eligibility.reason}
+          </p>
+        )
+      ) : null}
+
+      <div className="flex flex-wrap gap-2">
+        <button
+          type="button"
+          disabled={!selected?.eligibility.eligible}
+          onClick={() => handleApply(false)}
+          className="rounded-lg bg-sky-600 px-3 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          Apply year to diagram
+        </button>
+        <button
+          type="button"
+          disabled={!selected?.eligibility.eligible}
+          onClick={() => handleApply(true)}
+          className="rounded-lg border border-[var(--dgc-border)] px-3 py-2 text-sm text-[var(--dgc-text)] hover:bg-[var(--dgc-hover)] disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          Apply &amp; save as timeline state
+        </button>
+      </div>
+    </Panel>
   );
 }
 

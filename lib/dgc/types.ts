@@ -162,6 +162,18 @@ export function normalizeExportPreferences(
   };
 }
 
+/** A saved diagram snapshot for one dataset year, used by the timeline player. */
+export interface SavedYearState {
+  id: string;
+  year: number;
+  label: string;
+  datasetVersion: string;
+  provenance: string;
+  savedAt: string;
+  canvas: CanvasSettings;
+  layers: DesignLayer[];
+}
+
 export interface DGCDesignDocument {
   name: string;
   createdAt: string;
@@ -170,6 +182,8 @@ export interface DGCDesignDocument {
   layers: DesignLayer[];
   activeLayerID: string;
   exportPreferences: ExportPreferences;
+  /** Optional in stored JSON for backward compatibility; normalized to []. */
+  timelineStates?: SavedYearState[];
 }
 
 export interface Point2D {
