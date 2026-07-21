@@ -479,6 +479,25 @@ function WealthYearPanel({ controller }: { controller: DgcDocumentController }) 
         </div>
       </div>
 
+      <div className="grid gap-2 sm:grid-cols-2">
+        <button
+          type="button"
+          disabled={!selected?.eligibility.eligible}
+          onClick={() => handleApply(true)}
+          className="rounded-lg bg-sky-600 px-3 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          Add {selectedYear} to timeline
+        </button>
+        <button
+          type="button"
+          disabled={!selected?.eligibility.eligible}
+          onClick={() => handleApply(false)}
+          className="rounded-lg border border-[var(--dgc-border)] px-3 py-2 text-sm text-[var(--dgc-text)] hover:bg-[var(--dgc-hover)] disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          Load selected year
+        </button>
+      </div>
+
       {selected ? (
         selected.eligibility.eligible ? (
           <div className="space-y-3 rounded-xl border border-[var(--dgc-border-soft)] bg-[var(--dgc-hover)] p-3 text-xs text-[var(--dgc-text-soft)]">
@@ -507,24 +526,10 @@ function WealthYearPanel({ controller }: { controller: DgcDocumentController }) 
         )
       ) : null}
 
-      <div className="flex flex-wrap gap-2">
-        <button
-          type="button"
-          disabled={!selected?.eligibility.eligible}
-          onClick={() => handleApply(false)}
-          className="rounded-lg bg-sky-600 px-3 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          Load selected year
-        </button>
-        <button
-          type="button"
-          disabled={!selected?.eligibility.eligible}
-          onClick={() => handleApply(true)}
-          className="rounded-lg border border-[var(--dgc-border)] px-3 py-2 text-sm text-[var(--dgc-text)] hover:bg-[var(--dgc-hover)] disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          Add year to timeline
-        </button>
-      </div>
+      <p className="text-xs text-[var(--dgc-text-faint)]">
+        Use <span className="font-medium text-[var(--dgc-text-soft)]">Add {selectedYear} to timeline</span>{' '}
+        for animation. The Timeline panel&apos;s manual save is only for custom hand-edited diagrams.
+      </p>
     </Panel>
   );
 }

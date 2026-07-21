@@ -31,6 +31,7 @@ export default function DgcTimelinePanel({
   setTransientPreviewRef.current = controller.setTransientPreview;
 
   const canAnimate = states.length >= 2;
+  const hasGeometryChange = statesHaveGeometryChange(states);
 
   const showFrame = useCallback(
     (value: number) => {
@@ -191,65 +192,76 @@ export default function DgcTimelinePanel({
           </p>
         </div>
       ) : (
-        <ul className="space-y-2">
-          {states.map((state) => (
-            <li
-              key={state.id}
-              className="flex flex-wrap items-center gap-2 rounded-xl border border-[var(--dgc-border-soft)] px-3 py-2"
-            >
-              <div className="min-w-0 flex-1">
-                <p className="font-semibold text-[var(--dgc-text)]">{state.label}</p>
-                <p className="truncate text-xs text-[var(--dgc-text-muted)]" title={state.provenance}>
-                  {state.provenance}
-                </p>
-              </div>
-              <button
-                type="button"
-                className="rounded-lg border border-[var(--dgc-border)] px-2.5 py-1.5 text-xs text-[var(--dgc-text)] hover:bg-[var(--dgc-hover)]"
-                onClick={() => handleRestore(state)}
+        <div className="space-y-3">
+          {!hasGeometryChange ? (
+            <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-[var(--dgc-text-soft)]">
+              These saved states have the same diagram shape, so Play can only count through the
+              years. Use the Historical Wealth Data button above: add one year, pick another year,
+              then add that year to timeline.
+            </div>
+          ) : null}
+          <ul className="space-y-2">
+            {states.map((state) => (
+              <li
+                key={state.id}
+                className="flex flex-wrap items-center gap-2 rounded-xl border border-[var(--dgc-border-soft)] px-3 py-2"
               >
-                Restore
-              </button>
-              <button
-                type="button"
-                className="rounded-lg border border-[var(--dgc-border)] px-2.5 py-1.5 text-xs text-[var(--dgc-text)] hover:bg-[var(--dgc-hover)]"
-                onClick={() => handleUpdateState(state)}
-                title="Replace this state with the current diagram"
-              >
-                Update
-              </button>
-              <button
-                type="button"
-                className="rounded-lg px-2.5 py-1.5 text-xs text-[var(--dgc-danger-text)] hover:bg-[var(--dgc-hover)]"
-                onClick={() => handleDelete(state)}
-              >
-                Delete
-              </button>
-            </li>
-          ))}
-        </ul>
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold text-[var(--dgc-text)]">{state.label}</p>
+                  <p className="truncate text-xs text-[var(--dgc-text-muted)]" title={state.provenance}>
+                    {state.provenance}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  className="rounded-lg border border-[var(--dgc-border)] px-2.5 py-1.5 text-xs text-[var(--dgc-text)] hover:bg-[var(--dgc-hover)]"
+                  onClick={() => handleRestore(state)}
+                >
+                  Restore
+                </button>
+                <button
+                  type="button"
+                  className="rounded-lg border border-[var(--dgc-border)] px-2.5 py-1.5 text-xs text-[var(--dgc-text)] hover:bg-[var(--dgc-hover)]"
+                  onClick={() => handleUpdateState(state)}
+                  title="Replace this state with the current diagram"
+                >
+                  Update
+                </button>
+                <button
+                  type="button"
+                  className="rounded-lg px-2.5 py-1.5 text-xs text-[var(--dgc-danger-text)] hover:bg-[var(--dgc-hover)]"
+                  onClick={() => handleDelete(state)}
+                >
+                  Delete
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
 
-      <div className="flex flex-wrap items-center gap-2 border-t border-[var(--dgc-border-soft)] pt-3">
-        <input
-          className="w-24 rounded-lg border border-[var(--dgc-border)] bg-[var(--dgc-input)] px-3 py-2 text-sm text-[var(--dgc-text)]"
-          value={saveYearDraft}
-          inputMode="numeric"
-          placeholder="Year"
-          onChange={(event) => setSaveYearDraft(event.target.value)}
-        />
-        <button
-          type="button"
-          disabled={!saveYearDraft.trim()}
-          onClick={handleSaveCurrent}
-          className="rounded-lg bg-sky-600 px-3 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          Save current diagram
-        </button>
-        <span className="text-xs text-[var(--dgc-text-faint)]">
-          Use this for manual diagrams; the data panel can add verified years directly.
-        </span>
-      </div>
+      <details className="border-t border-[var(--dgc-border-soft)] pt-3">
+        <summary className="cursor-pointer text-sm text-[var(--dgc-text-muted)]">
+          Save a custom hand-edited diagram instead
+        </summary>
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <input
+            className="w-24 rounded-lg border border-[var(--dgc-border)] bg-[var(--dgc-input)] px-3 py-2 text-sm text-[var(--dgc-text)]"
+            value={saveYearDraft}
+            inputMode="numeric"
+            placeholder="Year"
+            onChange={(event) => setSaveYearDraft(event.target.value)}
+          />
+          <button
+            type="button"
+            disabled={!saveYearDraft.trim()}
+            onClick={handleSaveCurrent}
+            className="rounded-lg border border-[var(--dgc-border)] px-3 py-2 text-sm text-[var(--dgc-text)] disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            Save manual state
+          </button>
+        </div>
+      </details>
 
       <div className="space-y-2 border-t border-[var(--dgc-border-soft)] pt-3">
         <div className="flex flex-wrap items-center gap-3">
@@ -306,4 +318,20 @@ export default function DgcTimelinePanel({
       </div>
     </section>
   );
+}
+
+function statesHaveGeometryChange(states: SavedYearState[]) {
+  if (states.length < 2) return true;
+  const first = states[0];
+  return states.slice(1).some((state) => {
+    if (state.layers.length !== first.layers.length) return true;
+    return state.layers.some((layer, index) => {
+      const firstLayer = first.layers[index];
+      if (!firstLayer) return true;
+      return (
+        Math.abs(layer.startX - firstLayer.startX) > 0.0001 ||
+        Math.abs(layer.areaFraction - firstLayer.areaFraction) > 0.0001
+      );
+    });
+  });
 }
