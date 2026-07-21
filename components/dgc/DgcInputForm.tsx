@@ -386,6 +386,38 @@ function WealthYearPanel({ controller }: { controller: DgcDocumentController }) 
           Check the data
         </a>
       </p>
+      <details className="group rounded-lg border border-[var(--dgc-border-soft)] bg-[var(--dgc-hover)]">
+        <summary className="flex cursor-pointer list-none items-center gap-2 px-3 py-2 text-xs font-semibold text-[var(--dgc-text-soft)] [&::-webkit-details-marker]:hidden">
+          <span
+            aria-hidden="true"
+            className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[var(--dgc-border-strong)] font-serif text-[11px]"
+          >
+            i
+          </span>
+          Why are years before 1965 unavailable?
+          <span
+            aria-hidden="true"
+            className="ml-auto text-[var(--dgc-text-muted)] transition-transform group-open:rotate-180"
+          >
+            ▾
+          </span>
+        </summary>
+        <div className="space-y-2 border-t border-[var(--dgc-border-soft)] px-3 py-3 text-xs leading-relaxed text-[var(--dgc-text-soft)]">
+          <p>
+            The historical primary sources report top 10%, top 1%, and top 0.1% wealth shares,
+            but do not report the bottom 50% / 50–90% split before 1962. The first complete
+            five-year dataset point is therefore 1965.
+          </p>
+          <p>
+            This diagram needs all five wealth groups, so earlier years are disabled rather than
+            filled with estimates. The verified full-diagram and animation range is 1965–2025.
+          </p>
+          <p>
+            Earlier decades could only be shown using a separate reduced three-layer view for the
+            top 10%, top 1%, and top 0.1%; that is not mixed into this comparable timeline.
+          </p>
+        </div>
+      </details>
       <label className="block space-y-1">
         <span className="text-base font-semibold text-[var(--dgc-text)]">Year</span>
         <select
