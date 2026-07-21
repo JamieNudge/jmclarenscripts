@@ -6,11 +6,12 @@ import { pathnameToLongFpPath } from '@/lib/hub-football-routes';
 
 /**
  * One reserved horizontal Auto ads region for pages that don’t already include placeholders
- * (blog and best-picks define their own). Skips portfolio home, admin, and blog/football-predictions trees.
+ * (blog and best-picks define their own). Skips portfolio home, admin, DGC, and blog/football-predictions trees.
  */
 function showGlobalPlaceholder(pathname: string, hostname: string): boolean {
   const longPath = pathnameToLongFpPath(pathname, hostname) ?? pathname;
   if (longPath === '/' || longPath.startsWith('/admin')) return false;
+  if (longPath === '/dgc' || longPath.startsWith('/dgc/')) return false;
   if (longPath === '/blog' || longPath.startsWith('/blog/')) return false;
   if (longPath.startsWith('/football-predictions')) return false;
   return true;

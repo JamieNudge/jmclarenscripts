@@ -7,6 +7,7 @@ import { isHubHostname } from '@/lib/hub-football-routes';
 export function shouldInjectAdSenseInInitialHtml(pathname: string, host: string): boolean {
   const p = pathname || '/';
   if (p.startsWith('/admin')) return false;
+  if (p === '/dgc' || p.startsWith('/dgc/')) return false;
   const hub = isHubHostname(host);
   if ((p === '/' || p === '') && !hub) return false;
   return true;
