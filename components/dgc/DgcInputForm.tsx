@@ -14,6 +14,7 @@ import {
 import { getWealthDataset } from '@/lib/dgc/wealth-data';
 import { formatStatValue } from '@/lib/dgc/wealth-data/schema';
 import {
+  WEALTH_LAYER_BLUEPRINT,
   wealthRowToDesign,
   wealthYearEligibility,
 } from '@/lib/dgc/wealth-data/to-design-state';
@@ -143,64 +144,70 @@ export default function DgcInputForm({ controller }: { controller: DgcDocumentCo
     <div className="space-y-4">
       <h2 className="text-2xl font-semibold text-[var(--dgc-text)]">Inputs</h2>
 
-      <Panel title="Total Population">
-        <EditableNumericField
-          title="Width"
-          value={document.canvas.totalPopulationWidth}
-          onCommit={controller.updateTotalPopulationWidth}
-          prompt="e.g. 12"
-        />
-        <EditableNumericField
-          title="Height"
-          value={document.canvas.totalPopulationHeight}
-          onCommit={controller.updateTotalPopulationHeight}
-          prompt="e.g. 1"
-        />
-        <label className="block space-y-1">
-          <span className="text-base font-semibold text-[var(--dgc-text)]">Label</span>
-          <input
-            className="w-full rounded-lg border border-[var(--dgc-border)] bg-[var(--dgc-input)] px-3 py-2 text-[var(--dgc-text)]"
-            value={document.canvas.totalPopulationLabel}
-            placeholder={DEFAULT_TOTAL_POPULATION_LABEL}
-            onChange={(event) => controller.updateTotalPopulationLabel(event.target.value)}
-          />
-        </label>
-        <label className="flex items-center gap-3">
-          <span className="text-base font-semibold text-[var(--dgc-text)]">Colour</span>
-          <input
-            type="color"
-            value={document.canvas.totalPopulationColorHex || DEFAULT_TOTAL_POPULATION_COLOR_HEX}
-            onChange={(event) => controller.updateTotalPopulationColorHex(event.target.value)}
-            className="h-10 w-14 cursor-pointer rounded border border-[var(--dgc-border)] bg-transparent"
-            aria-label="Total Population colour"
-          />
-        </label>
-      </Panel>
-
-      <Panel title="Field of Wealth">
-        <EditableNumericField
-          title="Width (% of Total Population)"
-          value={document.canvas.fieldOfWealthWidthPercent}
-          onCommit={controller.updateFieldOfWealthWidthPercent}
-          prompt="e.g. 100"
-          suffix="%"
-        />
-        <EditableNumericField
-          title="Height"
-          value={document.canvas.fieldHeight}
-          onCommit={controller.updateFieldHeight}
-          prompt="e.g. 8"
-        />
-        <p className="text-sm text-[var(--dgc-text-soft)]">
-          Field of Wealth sits above Total Population, left-aligned at the width percentage you
-          set. Each layer starts on the bottom edge of the field; drag the end handle or type that
-          layer&apos;s Field of Wealth % to move the endpoint on the preview.
-        </p>
-      </Panel>
-
       <WealthYearPanel controller={controller} />
 
-      <Panel title="Built-in Sketch Cases">
+      <CollapsiblePanel title="Manual Geometry" summary="Fine-tune population and field dimensions.">
+        <div className="space-y-4">
+          <div className="space-y-3 rounded-xl border border-[var(--dgc-border-soft)] p-3">
+            <h4 className="font-semibold text-[var(--dgc-text)]">Total Population</h4>
+            <EditableNumericField
+              title="Width"
+              value={document.canvas.totalPopulationWidth}
+              onCommit={controller.updateTotalPopulationWidth}
+              prompt="e.g. 12"
+            />
+            <EditableNumericField
+              title="Height"
+              value={document.canvas.totalPopulationHeight}
+              onCommit={controller.updateTotalPopulationHeight}
+              prompt="e.g. 1"
+            />
+            <label className="block space-y-1">
+              <span className="text-base font-semibold text-[var(--dgc-text)]">Label</span>
+              <input
+                className="w-full rounded-lg border border-[var(--dgc-border)] bg-[var(--dgc-input)] px-3 py-2 text-[var(--dgc-text)]"
+                value={document.canvas.totalPopulationLabel}
+                placeholder={DEFAULT_TOTAL_POPULATION_LABEL}
+                onChange={(event) => controller.updateTotalPopulationLabel(event.target.value)}
+              />
+            </label>
+            <label className="flex items-center gap-3">
+              <span className="text-base font-semibold text-[var(--dgc-text)]">Colour</span>
+              <input
+                type="color"
+                value={document.canvas.totalPopulationColorHex || DEFAULT_TOTAL_POPULATION_COLOR_HEX}
+                onChange={(event) => controller.updateTotalPopulationColorHex(event.target.value)}
+                className="h-10 w-14 cursor-pointer rounded border border-[var(--dgc-border)] bg-transparent"
+                aria-label="Total Population colour"
+              />
+            </label>
+          </div>
+
+          <div className="space-y-3 rounded-xl border border-[var(--dgc-border-soft)] p-3">
+            <h4 className="font-semibold text-[var(--dgc-text)]">Field of Wealth</h4>
+            <EditableNumericField
+              title="Width (% of Total Population)"
+              value={document.canvas.fieldOfWealthWidthPercent}
+              onCommit={controller.updateFieldOfWealthWidthPercent}
+              prompt="e.g. 100"
+              suffix="%"
+            />
+            <EditableNumericField
+              title="Height"
+              value={document.canvas.fieldHeight}
+              onCommit={controller.updateFieldHeight}
+              prompt="e.g. 8"
+            />
+            <p className="text-sm text-[var(--dgc-text-soft)]">
+              Field of Wealth sits above Total Population, left-aligned at the width percentage you
+              set. Each layer starts on the bottom edge of the field; drag the end handle or type the
+              wealth area target to move the endpoint on the preview.
+            </p>
+          </div>
+        </div>
+      </CollapsiblePanel>
+
+      <CollapsiblePanel title="Built-in Sketch Cases" summary="Optional manual starting points.">
         <div className="space-y-2">
           {controller.sketchPresets.map((preset) => (
             <button
@@ -219,9 +226,9 @@ export default function DgcInputForm({ controller }: { controller: DgcDocumentCo
         <p className="text-xs text-[var(--dgc-text-faint)]">
           Applies start position and area target to the active layer.
         </p>
-      </Panel>
+      </CollapsiblePanel>
 
-      <Panel title="My Presets">
+      <CollapsiblePanel title="My Presets" summary="Save or reuse manual layer settings.">
         {controller.customSketchPresets.length === 0 ? (
           <p className="text-sm text-[var(--dgc-text-muted)]">
             No custom presets yet. Save the active layer&apos;s settings below.
@@ -282,7 +289,7 @@ export default function DgcInputForm({ controller }: { controller: DgcDocumentCo
             Save Active Layer as Preset
           </button>
         </div>
-      </Panel>
+      </CollapsiblePanel>
 
       <DgcLayersPanel controller={controller} displayLayerIndices={displayLayerIndices} />
 
@@ -352,11 +359,18 @@ function WealthYearPanel({ controller }: { controller: DgcDocumentController }) 
       })),
     [dataset],
   );
+  const selectableRows = eligibleRows.filter((entry) => entry.eligibility.eligible);
   const defaultYear =
-    eligibleRows.filter((entry) => entry.eligibility.eligible).at(-1)?.row.reportYear ?? null;
+    selectableRows.at(-1)?.row.reportYear ?? null;
   const [selectedYear, setSelectedYear] = useState<number | null>(defaultYear);
 
   const selected = eligibleRows.find((entry) => entry.row.reportYear === selectedYear) ?? null;
+  const selectedIndex = Math.max(
+    selectableRows.findIndex((entry) => entry.row.reportYear === selectedYear),
+    0,
+  );
+  const earliestYear = selectableRows[0]?.row.reportYear;
+  const latestYear = selectableRows.at(-1)?.row.reportYear;
 
   const handleApply = (alsoSaveState: boolean) => {
     if (!selected?.eligibility.eligible) return;
@@ -378,23 +392,26 @@ function WealthYearPanel({ controller }: { controller: DgcDocumentController }) 
 
   return (
     <Panel title="Historical Wealth Data">
-      <p className="text-xs text-[var(--dgc-text-faint)]">
-        Fill every field from the verified US household wealth dataset instead of typing values.
-        Population axis is normalised to 0–100 with wealth-percentile boundaries at 50 / 90 / 99 /
-        99.9; each layer&apos;s area is the share of total wealth held below that boundary.{' '}
-        <a href="/dgc/data" className="text-sky-400 underline hover:text-sky-300">
-          Check the data
-        </a>
-      </p>
-      <details className="group rounded-lg border border-[var(--dgc-border-soft)] bg-[var(--dgc-hover)]">
-        <summary className="flex cursor-pointer list-none items-center gap-2 px-3 py-2 text-xs font-semibold text-[var(--dgc-text-soft)] [&::-webkit-details-marker]:hidden">
+      <div className="rounded-xl border border-sky-500/20 bg-sky-500/10 p-3">
+        <p className="text-sm font-medium text-[var(--dgc-text)]">Start from verified data</p>
+        <p className="mt-1 text-xs leading-relaxed text-[var(--dgc-text-soft)]">
+          Pick a year and load the diagram from the verified US household wealth dataset. The
+          population axis is normalised to 0–100 with boundaries at 50 / 90 / 99 / 99.9.{' '}
+          <a href="/dgc/data" className="text-sky-400 underline hover:text-sky-300">
+            Check the data
+          </a>
+        </p>
+      </div>
+
+      <details className="group rounded-lg border border-[var(--dgc-border-soft)] bg-[var(--dgc-hover)]/60">
+        <summary className="flex cursor-pointer list-none items-center gap-2 px-3 py-2 text-xs font-medium text-[var(--dgc-text-soft)] [&::-webkit-details-marker]:hidden">
           <span
             aria-hidden="true"
-            className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[var(--dgc-border-strong)] font-serif text-[11px]"
+            className="inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-[var(--dgc-border-strong)] font-serif text-[10px]"
           >
             i
           </span>
-          Why are years before 1965 unavailable?
+          Why only {earliestYear}–{latestYear}?
           <span
             aria-hidden="true"
             className="ml-auto text-[var(--dgc-text-muted)] transition-transform group-open:rotate-180"
@@ -418,38 +435,70 @@ function WealthYearPanel({ controller }: { controller: DgcDocumentController }) 
           </p>
         </div>
       </details>
-      <label className="block space-y-1">
-        <span className="text-base font-semibold text-[var(--dgc-text)]">Year</span>
-        <select
-          className="w-full rounded-lg border border-[var(--dgc-border)] bg-[var(--dgc-input)] px-3 py-2 text-[var(--dgc-text)]"
-          value={selectedYear ?? ''}
-          onChange={(event) => setSelectedYear(Number(event.target.value))}
-        >
-          {eligibleRows.map(({ row, eligibility }) => (
-            <option key={row.reportYear} value={row.reportYear} disabled={!eligibility.eligible}>
+
+      <div className="space-y-2">
+        <div className="flex items-center justify-between gap-3">
+          <span className="text-base font-semibold text-[var(--dgc-text)]">Year</span>
+          <span className="rounded-full bg-[var(--dgc-chip)] px-3 py-1 text-sm font-semibold text-[var(--dgc-text)]">
+            {selectedYear}
+          </span>
+        </div>
+        <input
+          type="range"
+          min={0}
+          max={Math.max(selectableRows.length - 1, 0)}
+          step={1}
+          value={selectedIndex}
+          onChange={(event) => {
+            const next = selectableRows[Number(event.target.value)];
+            if (next) setSelectedYear(next.row.reportYear);
+          }}
+          className="w-full accent-sky-500"
+          aria-label="Historical wealth data year"
+        />
+        <div className="flex justify-between text-[10px] text-[var(--dgc-text-muted)]">
+          <span>{earliestYear}</span>
+          <span>{selectableRows[Math.floor(selectableRows.length / 2)]?.row.reportYear}</span>
+          <span>{latestYear}</span>
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {selectableRows.map(({ row }) => (
+            <button
+              key={row.reportYear}
+              type="button"
+              onClick={() => setSelectedYear(row.reportYear)}
+              className={`rounded-full px-2.5 py-1 text-xs transition ${
+                row.reportYear === selectedYear
+                  ? 'bg-sky-600 font-semibold text-white'
+                  : 'bg-[var(--dgc-chip)] text-[var(--dgc-text-soft)] hover:bg-[var(--dgc-hover-strong)]'
+              }`}
+            >
               {row.reportYear}
-              {eligibility.eligible ? '' : ' — incomplete data'}
-            </option>
+            </button>
           ))}
-        </select>
-      </label>
+        </div>
+      </div>
 
       {selected ? (
         selected.eligibility.eligible ? (
-          <div className="space-y-1 rounded-lg border border-[var(--dgc-border-soft)] bg-[var(--dgc-hover)] p-3 text-xs text-[var(--dgc-text-soft)]">
-            <p>
-              Population {formatStatValue(selected.row.totalPopulation)} · Households{' '}
-              {formatStatValue(selected.row.householdCount)} · Total wealth{' '}
-              {formatStatValue(selected.row.totalHouseholdWealth)}
-            </p>
-            <p>
-              Shares — bottom 50%: {formatStatValue(selected.row.shareBottom50Pct)} · 50–90%:{' '}
-              {formatStatValue(selected.row.share50to90Pct)} · 90–99%:{' '}
-              {formatStatValue(selected.row.share90to99Pct)} · 99–99.9%:{' '}
-              {formatStatValue(selected.row.share99to999Pct)} · top 0.1%:{' '}
-              {formatStatValue(selected.row.shareTop01Pct)}
-            </p>
-            <p>Zero/negative wealth: {formatStatValue(selected.row.zeroOrNegativeWealth)}</p>
+          <div className="space-y-3 rounded-xl border border-[var(--dgc-border-soft)] bg-[var(--dgc-hover)] p-3 text-xs text-[var(--dgc-text-soft)]">
+            <div className="grid grid-cols-2 gap-2">
+              <MetricChip label="Population" value={formatStatValue(selected.row.totalPopulation)} />
+              <MetricChip label="Households" value={formatStatValue(selected.row.householdCount)} />
+              <MetricChip label="Total wealth" value={formatStatValue(selected.row.totalHouseholdWealth)} />
+              <MetricChip label="Zero/negative" value={formatStatValue(selected.row.zeroOrNegativeWealth)} />
+            </div>
+            <div className="space-y-2">
+              <p className="font-semibold text-[var(--dgc-text)]">Wealth bucket shares</p>
+              <div className="grid grid-cols-2 gap-1.5">
+                <MetricChip label="Bottom 50%" value={formatStatValue(selected.row.shareBottom50Pct)} />
+                <MetricChip label="50-90%" value={formatStatValue(selected.row.share50to90Pct)} />
+                <MetricChip label="90-99%" value={formatStatValue(selected.row.share90to99Pct)} />
+                <MetricChip label="99-99.9%" value={formatStatValue(selected.row.share99to999Pct)} />
+                <MetricChip label="Top 0.1%" value={formatStatValue(selected.row.shareTop01Pct)} />
+              </div>
+            </div>
+            <WealthLayerLegend />
           </div>
         ) : (
           <p className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-[var(--dgc-text-soft)]">
@@ -465,7 +514,7 @@ function WealthYearPanel({ controller }: { controller: DgcDocumentController }) 
           onClick={() => handleApply(false)}
           className="rounded-lg bg-sky-600 px-3 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-40"
         >
-          Apply year to diagram
+          Load selected year
         </button>
         <button
           type="button"
@@ -473,10 +522,43 @@ function WealthYearPanel({ controller }: { controller: DgcDocumentController }) 
           onClick={() => handleApply(true)}
           className="rounded-lg border border-[var(--dgc-border)] px-3 py-2 text-sm text-[var(--dgc-text)] hover:bg-[var(--dgc-hover)] disabled:cursor-not-allowed disabled:opacity-40"
         >
-          Apply &amp; save as timeline state
+          Add year to timeline
         </button>
       </div>
     </Panel>
+  );
+}
+
+function MetricChip({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg border border-[var(--dgc-border-soft)] bg-[var(--dgc-panel)] px-2.5 py-2">
+      <p className="text-[10px] uppercase tracking-wide text-[var(--dgc-text-muted)]">{label}</p>
+      <p className="mt-0.5 font-semibold text-[var(--dgc-text)]">{value}</p>
+    </div>
+  );
+}
+
+function WealthLayerLegend() {
+  return (
+    <div className="space-y-2 border-t border-[var(--dgc-border-soft)] pt-3">
+      <p className="text-[11px] font-semibold text-[var(--dgc-text)]">
+        Diagram layers are cumulative wealth boundaries
+      </p>
+      <div className="grid gap-1.5">
+        {WEALTH_LAYER_BLUEPRINT.map((layer) => (
+          <div key={layer.boundary} className="flex items-center gap-2 text-[11px]">
+            <span
+              className="h-2.5 w-2.5 rounded-full"
+              style={{ backgroundColor: layer.colorHex }}
+              aria-hidden="true"
+            />
+            <span className="text-[var(--dgc-text-soft)]">
+              {layer.name} boundary at {layer.boundary}% of population
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -683,5 +765,33 @@ function Panel({ title, children }: { title: string; children: ReactNode }) {
       <h3 className="text-lg font-semibold text-[var(--dgc-text)]">{title}</h3>
       {children}
     </section>
+  );
+}
+
+function CollapsiblePanel({
+  title,
+  summary,
+  children,
+}: {
+  title: string;
+  summary: string;
+  children: ReactNode;
+}) {
+  return (
+    <details className="group rounded-2xl border border-[var(--dgc-border)] bg-[var(--dgc-panel)] p-4">
+      <summary className="flex cursor-pointer list-none items-start justify-between gap-3 [&::-webkit-details-marker]:hidden">
+        <span>
+          <span className="block text-lg font-semibold text-[var(--dgc-text)]">{title}</span>
+          <span className="mt-0.5 block text-xs text-[var(--dgc-text-muted)]">{summary}</span>
+        </span>
+        <span
+          aria-hidden="true"
+          className="mt-1 text-[var(--dgc-text-muted)] transition-transform group-open:rotate-180"
+        >
+          ▾
+        </span>
+      </summary>
+      <div className="mt-4 space-y-3">{children}</div>
+    </details>
   );
 }

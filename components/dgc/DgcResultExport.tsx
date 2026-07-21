@@ -35,7 +35,7 @@ export default function DgcResultExport({
   controller: DgcDocumentController;
   persistence: Persistence;
 }) {
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(false);
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const [exportStatus, setExportStatus] = useState<ExportStatus>(null);
   const [exportingId, setExportingId] = useState<ExportPresetId | 'custom' | null>(
@@ -157,7 +157,14 @@ Area fraction: ${formatNumber(result.areaFraction * 100)}%`;
         className="flex w-full items-center justify-between text-left"
         onClick={() => setExpanded((value) => !value)}
       >
-        <span className="text-xl font-semibold text-[var(--dgc-text)]">Result & Export</span>
+        <span>
+          <span className="block text-xl font-semibold text-[var(--dgc-text)]">Result & Export</span>
+          {!expanded ? (
+            <span className="mt-1 block text-xs text-[var(--dgc-text-muted)]">
+              Save editable files or download finished artwork when you are ready.
+            </span>
+          ) : null}
+        </span>
         <span className="text-sm text-[var(--dgc-text-muted)]">{expanded ? 'Hide controls' : 'Show controls'}</span>
       </button>
 

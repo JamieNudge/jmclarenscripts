@@ -175,11 +175,17 @@ export default function DgcTimelinePanel({
       </div>
 
       {states.length === 0 ? (
-        <p className="text-sm text-[var(--dgc-text-soft)]">
-          No saved states yet. Apply a dataset year from the Historical Wealth Data panel (or set
-          up the diagram manually), then save it here as a state. With two or more states you can
-          animate the change between years.
-        </p>
+        <div className="rounded-xl border border-sky-500/20 bg-sky-500/10 p-4">
+          <p className="font-semibold text-[var(--dgc-text)]">Build a year-by-year comparison</p>
+          <ol className="mt-2 space-y-1.5 text-sm text-[var(--dgc-text-soft)]">
+            <li>1. Choose a year in Historical Wealth Data.</li>
+            <li>2. Click Add year to timeline.</li>
+            <li>3. Pick another year, add it, then press Play.</li>
+          </ol>
+          <p className="mt-3 text-xs text-[var(--dgc-text-faint)]">
+            Two or more saved years unlock the animation controls.
+          </p>
+        </div>
       ) : (
         <ul className="space-y-2">
           {states.map((state) => (
@@ -234,10 +240,10 @@ export default function DgcTimelinePanel({
           onClick={handleSaveCurrent}
           className="rounded-lg bg-sky-600 px-3 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-40"
         >
-          Save current diagram as state
+          Save current diagram
         </button>
         <span className="text-xs text-[var(--dgc-text-faint)]">
-          Saving a year that already exists replaces that state.
+          Use this for manual diagrams; the data panel can add verified years directly.
         </span>
       </div>
 

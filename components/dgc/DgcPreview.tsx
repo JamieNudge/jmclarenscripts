@@ -74,6 +74,7 @@ export default function DgcPreview({
   const bandColor =
     previewDocument.canvas.totalPopulationColorHex || DEFAULT_TOTAL_POPULATION_COLOR_HEX;
   const displayLayerIndices = Array.from(previewDocument.layers.keys()).reverse();
+  const dataBadge = playback?.label ?? dataYearBadge(previewDocument.canvas.totalPopulationLabel);
 
   const layerPickerLayout = useMemo(() => {
     const canvasRight = layout.screenRect.x + layout.screenRect.width;
@@ -252,7 +253,14 @@ export default function DgcPreview({
   return (
     <section className="rounded-2xl border border-[var(--dgc-border)] bg-[var(--dgc-panel)] p-3 shadow-lg">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <h2 className="text-xl font-semibold text-[var(--dgc-text)]">Field of Wealth - Preview</h2>
+        <div>
+          <h2 className="text-xl font-semibold text-[var(--dgc-text)]">Field of Wealth - Preview</h2>
+          {dataBadge ? (
+            <p className="mt-1 inline-flex rounded-full border border-sky-500/30 bg-sky-500/10 px-3 py-1 text-xs font-medium text-[var(--dgc-text-soft)]">
+              {dataBadge}
+            </p>
+          ) : null}
+        </div>
         {onRequestFullscreen && !fullscreen ? (
           <button
             type="button"
@@ -578,4 +586,10 @@ function isPointInPolygon(point: { x: number; y: number }, polygon: { x: number;
 function formatNumber(value: number) {
   if (Number.isInteger(value)) return String(value);
   return value.toLocaleString(undefined, { maximumFractionDigits: 4 });
+}
+
+function dataYearBadge(label: string) {
+  const match = label.match(/US Population\s+(\d{4})/);
+  if (!match) return null;
+  return `${match[1]} · verified wealth data`;
 }
