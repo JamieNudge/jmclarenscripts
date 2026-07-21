@@ -24,25 +24,29 @@ export default function DgcTimelinePanel({
   const animationRef = useRef<number | null>(null);
   const lastTickRef = useRef<number | null>(null);
   const progressRef = useRef(0);
+  const statesRef = useRef(states);
+  const setTransientPreviewRef = useRef(controller.setTransientPreview);
   progressRef.current = progress;
+  statesRef.current = states;
+  setTransientPreviewRef.current = controller.setTransientPreview;
 
   const canAnimate = states.length >= 2;
 
   const showFrame = useCallback(
     (value: number) => {
-      const frame = timelineFrame(controller.timelineStates, value);
+      const frame = timelineFrame(statesRef.current, value);
       if (!frame) return;
       const yearLabel =
         frame.fromYear === frame.toYear
           ? String(frame.fromYear)
           : `${Math.round(frame.currentYear)} — animating ${frame.fromYear} → ${frame.toYear}`;
-      controller.setTransientPreview({
+      setTransientPreviewRef.current({
         canvas: frame.canvas,
         layers: frame.layers,
         label: yearLabel,
       });
     },
-    [controller],
+    [],
   );
 
   const stopPlayback = useCallback(
@@ -54,10 +58,10 @@ export default function DgcTimelinePanel({
         animationRef.current = null;
       }
       if (clearPreview) {
-        controller.setTransientPreview(null);
+        setTransientPreviewRef.current(null);
       }
     },
-    [controller],
+    [],
   );
 
   useEffect(() => {
