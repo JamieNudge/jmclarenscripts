@@ -37,11 +37,15 @@ function lerpLayers(a: DesignLayer[], b: DesignLayer[], t: number): DesignLayer[
   const count = Math.min(a.length, b.length);
   const layers: DesignLayer[] = [];
   for (let index = 0; index < count; index += 1) {
-    const nearest = t < 0.5 ? a[index] : b[index];
+    const from = a[index];
+    const to = b[index];
     layers.push({
-      ...nearest,
-      startX: lerp(a[index].startX, b[index].startX, t),
-      areaFraction: lerp(a[index].areaFraction, b[index].areaFraction, t),
+      ...from,
+      // Keep stable layer ids/names/colors during playback so React updates the
+      // existing SVG polygons instead of swapping keyed elements mid-animation.
+      name: to.name,
+      startX: lerp(from.startX, to.startX, t),
+      areaFraction: lerp(from.areaFraction, to.areaFraction, t),
     });
   }
   return layers;

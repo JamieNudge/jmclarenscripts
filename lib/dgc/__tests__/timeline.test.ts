@@ -3,6 +3,8 @@ import { interpolateStates, timelineFrame } from '../timeline';
 import { makeNewDocument, parseDocumentJson, serializeDocument } from '../document';
 import type { SavedYearState } from '../types';
 import { DEFAULT_CANVAS, syncFieldWidth } from '../types';
+import { getWealthDataset } from '../wealth-data';
+import { wealthRowToDesign } from '../wealth-data/to-design-state';
 
 function makeState(year: number, startX: number, areaFraction: number): SavedYearState {
   return {
@@ -76,6 +78,43 @@ describe('timelineFrame', () => {
     const states = [makeState(2020, 9, 0.7), makeState(1990, 0, 0.1)];
     expect(timelineFrame(states, 0)?.currentYear).toBe(1990);
     expect(timelineFrame(states, 1)?.currentYear).toBe(2020);
+  });
+
+  it('interpolates real wealth-year layer geometry with stable layer ids', () => {
+    const dataset = getWealthDataset();
+    const stateForYear = (year: number): SavedYearState => {
+      const row = dataset.rows.find((entry) => entry.reportYear === year);
+      if (!row) throw new Error(`Missing ${year}`);
+      const design = wealthRowToDesign(row, dataset.version);
+      return {
+        id: `state-${year}`,
+        year,
+        label: String(year),
+        datasetVersion: dataset.version,
+        provenance: design.provenance,
+        savedAt: new Date().toISOString(),
+        canvas: design.canvas,
+        layers: design.layers,
+      };
+    };
+
+    const start = stateForYear(1965);
+    const end = stateForYear(2025);
+    const firstFrame = timelineFrame([start, end], 0);
+    const midFrame = timelineFrame([start, end], 0.5);
+    const lastFrame = timelineFrame([start, end], 1);
+
+    expect(firstFrame?.layers.map((layer) => layer.id)).toEqual(
+      midFrame?.layers.map((layer) => layer.id),
+    );
+    expect(firstFrame?.layers.map((layer) => layer.id)).toEqual(
+      lastFrame?.layers.map((layer) => layer.id),
+    );
+    expect(midFrame?.layers[0].areaFraction).not.toBe(firstFrame?.layers[0].areaFraction);
+    expect(lastFrame?.layers[0].areaFraction).not.toBe(firstFrame?.layers[0].areaFraction);
+    expect(midFrame?.layers[3].areaFraction).toBeLessThan(
+      firstFrame?.layers[3].areaFraction ?? 0,
+    );
   });
 });
 
