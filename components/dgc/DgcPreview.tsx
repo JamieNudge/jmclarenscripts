@@ -353,6 +353,31 @@ export default function DgcPreview({
           >
             Field of Wealth
           </text>
+          {playback ? (
+            <>
+              <text
+                x={field.x + field.width / 2}
+                y={field.y + field.height + 34}
+                textAnchor="middle"
+                fill="var(--dgc-preview-label)"
+                fontSize={12}
+                fontWeight={600}
+              >
+                Population percentile boundary (0-100%)
+              </text>
+              <text
+                x={field.x - 18}
+                y={field.y + field.height / 2}
+                textAnchor="middle"
+                fill="var(--dgc-preview-label)"
+                fontSize={12}
+                fontWeight={600}
+                transform={`rotate(-90 ${field.x - 18} ${field.y + field.height / 2})`}
+              >
+                Wealth share area
+              </text>
+            </>
+          ) : null}
 
           {visibleLayerPolygons.map(({ layer, isActive, points }) => {
             return (
@@ -428,6 +453,7 @@ export default function DgcPreview({
           {displayLayerIndices.map((index) => {
             const layer = previewDocument.layers[index];
             const isActive = !playback && layer.id === controller.document.activeLayerID;
+            const layerLabel = playback ? wealthLayerShortName(layer.name) : layerHandlePairLabel(index);
             return (
               <div
                 key={layer.id}
@@ -445,13 +471,17 @@ export default function DgcPreview({
                   title={layer.name}
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <span className="font-mono text-xs font-bold">{layerHandlePairLabel(index)}</span>
+                    <span className={`${playback ? '' : 'font-mono'} text-xs font-bold`}>
+                      {layerLabel}
+                    </span>
                     <span className={`text-xs font-semibold ${isActive ? '' : 'opacity-80'}`}>
                       {formatNumber(layer.areaFraction * 100)}%
                     </span>
                   </div>
-                  <span className={`mt-1 block truncate text-xs ${isActive ? '' : 'opacity-80'}`}>
-                    {layer.name}
+                  <span className={`mt-1 block text-xs ${isActive ? '' : 'opacity-80'}`}>
+                    {playback
+                      ? `Population boundary ${formatNumber(layer.startX)}%`
+                      : layer.name}
                   </span>
                 </button>
               </div>
@@ -459,11 +489,7 @@ export default function DgcPreview({
           })}
         </div>
 
-        {playback ? (
-          <div className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full border border-[var(--dgc-accent-border)] bg-[var(--dgc-preview-overlay-strong)] px-4 py-2 text-sm font-semibold text-[var(--dgc-text)]">
-            {playback.label}
-          </div>
-        ) : readout ? (
+        {!playback && readout ? (
           <div className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full border border-[var(--dgc-border)] bg-[var(--dgc-preview-overlay-strong)] px-4 py-2 text-sm font-semibold text-[var(--dgc-text)]">
             {readout}
           </div>
@@ -592,4 +618,8 @@ function dataYearBadge(label: string) {
   const match = label.match(/US Population\s+(\d{4})/);
   if (!match) return null;
   return `${match[1]} · verified wealth data`;
+}
+
+function wealthLayerShortName(name: string) {
+  return name.split('—')[0]?.trim() || name;
 }

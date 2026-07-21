@@ -100,13 +100,15 @@ export default function DgcEditor() {
           </div>
         </aside>
 
-        <div className="space-y-4">
-          <DgcPreview
-            controller={controller}
-            onRequestFullscreen={() => setFullscreen(true)}
-          />
-          <DgcTimelinePanel controller={controller} />
-          <DgcResultExport controller={controller} persistence={persistence} />
+        <div className="lg:sticky lg:top-6 lg:self-start">
+          <div className="space-y-4 overflow-y-auto pr-1 max-h-[calc(100dvh-6rem)] lg:h-[calc(100dvh-8.25rem)] lg:max-h-[calc(100dvh-8.25rem)]">
+            <DgcPreview
+              controller={controller}
+              onRequestFullscreen={() => setFullscreen(true)}
+            />
+            <DgcTimelinePanel controller={controller} />
+            <DgcResultExport controller={controller} persistence={persistence} />
+          </div>
         </div>
       </main>
     </div>
