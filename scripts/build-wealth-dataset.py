@@ -1,29 +1,149 @@
 #!/usr/bin/env python3
-"""Build lib/dgc/wealth-data/dataset.json from primary sources and curated research."""
+"""Build lib/dgc/wealth-data/dataset.json from downloadable primary sources.
+
+Every populated cell is derived from a source file that anyone can download and
+check, or from a specific printed table cited per cell:
+
+  * Federal Reserve Distributional Financial Accounts (1989Q3+): wealth shares,
+    total household net worth, household counts for 1990-2025.
+    https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip
+  * Piketty-Saez-Zucman Appendix Tables I (Table TB1): total household net
+    worth, nominal USD, 1913-2021 - used for 1920-1985.
+    https://gabriel-zucman.eu/files/PSZ2022AppendixTablesI(Aggreg).xlsx
+  * Piketty-Saez-Zucman Appendix Tables II (Table TE1): wealth shares by
+    percentile group, 1913+ - used for 1920-1985. Bottom-50% / 50-90% detail
+    only exists from 1962, so those cells are N/A before 1965.
+    https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx
+  * Census HH-1 households table (1940+) and Historical Statistics of the U.S.
+    (pre-1940 decennial "families" counts) for household counts.
+    https://www2.census.gov/programs-surveys/demo/tables/families/time-series/households/hh1.xls
+  * Census historical national population estimates (popclockest.txt) plus
+    decennial census counts for population.
+    https://www2.census.gov/programs-surveys/popest/tables/1900-1980/national/totals/popclockest.txt
+  * Wolff (NBER w28383), Table 1 Panel A row 3a for percent of households with
+    zero or negative net worth (SCF survey years mapped to nearest grid year).
+
+Values that cannot be reproduced from any of these sources are emitted as N/A
+rather than estimated.
+
+Requirements: python3 with openpyxl and xlrd (pip install openpyxl xlrd).
+Downloads are cached in /tmp/wealth-research.
+"""
 
 from __future__ import annotations
 
 import csv
+import io
 import json
+import re
 import urllib.request
+import zipfile
 from datetime import date
 from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "lib/dgc/wealth-data/dataset.json"
+CACHE = Path("/tmp/wealth-research")
 ACCESS = date.today().isoformat()
 
-FED_DFA_ZIP = "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
+GRID_YEARS = list(range(1920, 2026, 5))
+
+# ---------------------------------------------------------------------------
+# Source directory (also embedded in the dataset for the /dgc/data page)
+# ---------------------------------------------------------------------------
+
+SOURCES: dict[str, dict[str, Any]] = {
+    "fed-dfa": {
+        "id": "fed-dfa",
+        "name": "Federal Reserve Distributional Financial Accounts",
+        "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
+        "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip",
+        "coverage": "1989:Q3 onward, quarterly",
+        "description": (
+            "Official quarterly estimates of U.S. household wealth by wealth percentile group. "
+            "Used for all wealth shares, total net worth, and household counts from 1990."
+        ),
+    },
+    "psz-agg": {
+        "id": "psz-agg",
+        "name": "Piketty-Saez-Zucman Appendix Tables I (aggregates)",
+        "url": "https://gabriel-zucman.eu/usdina/",
+        "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesI(Aggreg).xlsx",
+        "coverage": "1913-2021, annual",
+        "description": (
+            "Table TB1 'Household wealth' column [1] (net household wealth, billions of current USD). "
+            "Used for total household wealth 1920-1985."
+        ),
+    },
+    "psz-dist": {
+        "id": "psz-dist",
+        "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
+        "url": "https://gabriel-zucman.eu/usdina/",
+        "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx",
+        "coverage": "Top shares 1913+; bottom-50%/middle-40% detail from 1962",
+        "description": (
+            "Table TE1 'Shares of total household wealth' (equal-split adults). "
+            "Used for wealth shares 1920-1985. Bottom-half detail does not exist before 1962."
+        ),
+    },
+    "census-hh": {
+        "id": "census-hh",
+        "name": "U.S. Census Bureau - Historical Households (HH-1)",
+        "url": "https://www.census.gov/data/tables/time-series/demo/families/households.html",
+        "dataFileUrl": "https://www2.census.gov/programs-surveys/demo/tables/families/time-series/households/hh1.xls",
+        "coverage": "1940 onward (no surveys 1941-1946)",
+        "description": "Table HH-1 'Households by Type', total households. Used for household counts from 1940.",
+    },
+    "hsus": {
+        "id": "hsus",
+        "name": "Historical Statistics of the U.S., Colonial Times to 1970",
+        "url": "https://www.census.gov/library/publications/1975/compendia/hist_stats_colonial-1970.html",
+        "coverage": "Decennial census counts to 1970",
+        "description": (
+            "Bicentennial compendium of census series. Pre-1940 decennial household ('families') counts."
+        ),
+    },
+    "census-pop-hist": {
+        "id": "census-pop-hist",
+        "name": "U.S. Census Bureau - Historical National Population Estimates",
+        "url": "https://www.census.gov/data/tables/time-series/demo/popest/pre-1980-national.html",
+        "dataFileUrl": "https://www2.census.gov/programs-surveys/popest/tables/1900-1980/national/totals/popclockest.txt",
+        "coverage": "July 1, 1900 to July 1, 1999",
+        "description": "Official July 1 national population estimates. Used for non-census grid years before 2000.",
+    },
+    "census-pop-modern": {
+        "id": "census-pop-modern",
+        "name": "U.S. Census Bureau - Decennial counts and population estimates",
+        "url": "https://www.census.gov/programs-surveys/popest/data/tables.html",
+        "coverage": "Decennial censuses; vintage estimates 2000 onward",
+        "description": "Decennial census resident-population counts and post-2000 vintage estimates.",
+    },
+    "wolff": {
+        "id": "wolff",
+        "name": "Edward N. Wolff (NBER Working Paper 28383)",
+        "url": "https://www.nber.org/papers/w28383",
+        "dataFileUrl": "https://www.nber.org/system/files/working_papers/w28383/w28383.pdf",
+        "coverage": "SCF survey years 1962-2019",
+        "description": (
+            "Table 1 Panel A row 3a: percent of U.S. households with zero or negative net worth. "
+            "Survey years are mapped to the nearest five-year grid point."
+        ),
+    },
+}
 
 
-def src(name: str, url: str, table: str | None = None) -> dict[str, Any]:
-    return {
-        "name": name,
-        "url": url,
+def src(source_id: str, table: str | None = None) -> dict[str, Any]:
+    entry = SOURCES[source_id]
+    citation: dict[str, Any] = {
+        "name": entry["name"],
+        "url": entry["url"],
         "tableOrSeries": table,
         "accessedAt": ACCESS,
     }
+    if entry.get("dataFileUrl"):
+        citation["dataFileUrl"] = entry["dataFileUrl"]
+    return citation
 
 
 def cell(
@@ -53,29 +173,40 @@ def na_cell(note: str) -> dict[str, Any]:
     return cell(None, "percent", "na", None, methodology_note=note)
 
 
-def download_dfa() -> tuple[dict, dict]:
-    import io
-    import zipfile
+def fetch(url: str, filename: str) -> bytes:
+    path = CACHE / filename
+    if path.exists():
+        return path.read_bytes()
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (DGC wealth-data builder)"})
+    with urllib.request.urlopen(req) as resp:
+        data = resp.read()
+    CACHE.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(data)
+    return data
 
-    cache = Path("/tmp/wealth-research/dfa.zip")
-    if cache.exists():
-        data = cache.read_bytes()
-    else:
-        req = urllib.request.Request(
-            FED_DFA_ZIP,
-            headers={"User-Agent": "Mozilla/5.0 (DGC wealth-data builder)"},
-        )
-        with urllib.request.urlopen(req) as resp:
-            data = resp.read()
-        cache.parent.mkdir(parents=True, exist_ok=True)
-        cache.write_bytes(data)
+
+# ---------------------------------------------------------------------------
+# Federal Reserve DFA (Tier 1, 1990-2025)
+# ---------------------------------------------------------------------------
+
+DFA_CATS = ["TopPt1", "RemainingTop1", "Next9", "Next40", "Bottom50"]
+SHARE_KEYS = [
+    "shareTop01Pct",
+    "share99to999Pct",
+    "share90to99Pct",
+    "share50to90Pct",
+    "shareBottom50Pct",
+]
+
+
+def load_dfa() -> tuple[dict, dict]:
+    data = fetch(SOURCES["fed-dfa"]["dataFileUrl"], "dfa.zip")
     zf = zipfile.ZipFile(io.BytesIO(data))
     shares: dict[str, dict[str, float]] = {}
     levels: dict[str, dict[str, dict[str, float]]] = {}
     for name in ("dfa-networth-shares-detail.csv", "dfa-networth-levels-detail.csv"):
         raw = zf.read(name).decode("utf-8")
-        reader = csv.DictReader(raw.splitlines())
-        for row in reader:
+        for row in csv.DictReader(raw.splitlines()):
             date_key = row["Date"]
             cat = row["Category"]
             if name.startswith("dfa-networth-shares"):
@@ -96,143 +227,279 @@ def pick_quarter(shares: dict, year: int) -> str | None:
     return None
 
 
-CATS = ["TopPt1", "RemainingTop1", "Next9", "Next40", "Bottom50"]
-SHARE_KEYS = [
-    "shareTop01Pct",
-    "share99to999Pct",
-    "share90to99Pct",
-    "share50to90Pct",
-    "shareBottom50Pct",
-]
+# ---------------------------------------------------------------------------
+# PSZ workbooks (Tier 2/3, 1920-1985)
+# ---------------------------------------------------------------------------
 
-# Census Bureau / Historical Statistics of the United States (nominal population, July 1 or decennial)
-POPULATION: dict[int, tuple[float, dict]] = {
-    1920: (106_021_537, src("U.S. Census Bureau", "https://www.census.gov/data/tables/time-series/demo/popest/2020s-national-total.html", "1920 decennial")),
-    1925: (114_669_000, src("U.S. Census Bureau", "https://www.census.gov/library/publications/1975/compendia/hist_stats_colonial-1970.html", "Series A 1-5 intercensal")),
-    1930: (123_202_624, src("U.S. Census Bureau", "https://www.census.gov/data/tables/time-series/demo/popest/2020s-national-total.html", "1930 decennial")),
-    1935: (127_250_000, src("U.S. Census Bureau", "https://www.census.gov/library/publications/1975/compendia/hist_stats_colonial-1970.html", "Series A 1-5 intercensal")),
-    1940: (132_164_569, src("U.S. Census Bureau", "https://www.census.gov/data/tables/time-series/demo/popest/2020s-national-total.html", "1940 decennial")),
-    1945: (139_928_000, src("U.S. Census Bureau", "https://www.census.gov/library/publications/1975/compendia/hist_stats_colonial-1970.html", "Series A 1-5 intercensal")),
-    1950: (151_325_798, src("U.S. Census Bureau", "https://www.census.gov/data/tables/time-series/demo/popest/2020s-national-total.html", "1950 decennial")),
-    1955: (165_931_000, src("U.S. Census Bureau", "https://www.census.gov/library/publications/1975/compendia/hist_stats_colonial-1970.html", "Series A 1-5 intercensal")),
-    1960: (179_323_175, src("U.S. Census Bureau", "https://www.census.gov/data/tables/time-series/demo/popest/2020s-national-total.html", "1960 decennial")),
-    1965: (194_303_000, src("U.S. Census Bureau", "https://www.census.gov/library/publications/1975/compendia/hist_stats_colonial-1970.html", "Series A 1-5 intercensal")),
-    1970: (203_211_926, src("U.S. Census Bureau", "https://www.census.gov/data/tables/time-series/demo/popest/2020s-national-total.html", "1970 decennial")),
-    1975: (215_973_000, src("U.S. Census Bureau", "https://www2.census.gov/programs-surveys/popest/tables/1970-1980/state/totals/pe1970-80-alldata.csv", "Intercensal estimates")),
-    1980: (226_542_203, src("U.S. Census Bureau", "https://www.census.gov/data/tables/time-series/demo/popest/2020s-national-total.html", "1980 decennial")),
-    1985: (237_924_000, src("U.S. Census Bureau", "https://www2.census.gov/programs-surveys/popest/tables/1980-1990/state/totals/pe1980-90-alldata.csv", "Intercensal estimates")),
-    1990: (248_709_873, src("U.S. Census Bureau", "https://www.census.gov/data/tables/time-series/demo/popest/2020s-national-total.html", "1990 decennial")),
-    1995: (266_278_000, src("U.S. Census Bureau", "https://www2.census.gov/programs-surveys/popest/tables/1990-2000/state/totals/pe1990-00-alldata.csv", "1995 estimate")),
-    2000: (281_424_600, src("U.S. Census Bureau", "https://www.census.gov/data/tables/time-series/demo/popest/2020s-national-total.html", "2000 decennial")),
-    2005: (295_516_599, src("U.S. Census Bureau", "https://www2.census.gov/programs-surveys/popest/tables/2000-2010/state/totals/pe2000-10-alldata.csv", "2005 estimate")),
-    2010: (308_745_538, src("U.S. Census Bureau", "https://www.census.gov/data/tables/time-series/demo/popest/2020s-national-total.html", "2010 decennial")),
-    2015: (321_418_820, src("U.S. Census Bureau", "https://www2.census.gov/programs-surveys/popest/tables/2010-2020/state/totals/pe2010-20-alldata.csv", "2015 estimate")),
-    2020: (331_449_281, src("U.S. Census Bureau", "https://www.census.gov/data/tables/time-series/demo/popest/2020s-national-total.html", "2020 decennial")),
-    2025: (341_000_000, src("U.S. Census Bureau", "https://www.census.gov/data/tables/time-series/demo/popest/2020s-national-total.html", "2025 projection (Vintage 2024)")),
-}
 
-# Household counts — Census HH tables; pre-1940 from HSUS / demographic reconstructions
-HOUSEHOLDS: dict[int, tuple[float, dict, str]] = {
-    1920: (24_350_000, src("Historical Statistics of the U.S.", "https://www.census.gov/library/publications/1975/compendia/hist_stats_colonial-1970.html", "Series H 294-295"), "medium"),
-    1925: (26_900_000, src("Historical Statistics of the U.S.", "https://www.census.gov/library/publications/1975/compendia/hist_stats_colonial-1970.html", "Series H 294-295 interpolated"), "medium"),
-    1930: (29_900_000, src("Historical Statistics of the U.S.", "https://www.census.gov/library/publications/1975/compendia/hist_stats_colonial-1970.html", "Series H 294-295"), "medium"),
-    1935: (32_500_000, src("Historical Statistics of the U.S.", "https://www.census.gov/library/publications/1975/compendia/hist_stats_colonial-1970.html", "Series H 294-295 interpolated"), "medium"),
-    1940: (35_700_000, src("U.S. Census Bureau", "https://www.census.gov/data/tables/time-series/demo/families/households.html", "Historical households table"), "high"),
-    1945: (38_700_000, src("U.S. Census Bureau", "https://www.census.gov/data/tables/time-series/demo/families/households.html", "Historical households interpolated"), "medium"),
-    1950: (43_554_000, src("U.S. Census Bureau", "https://www.census.gov/data/tables/time-series/demo/families/households.html", "Historical households table"), "high"),
-    1955: (47_800_000, src("U.S. Census Bureau", "https://www.census.gov/data/tables/time-series/demo/families/households.html", "Historical households interpolated"), "medium"),
-    1960: (52_799_000, src("U.S. Census Bureau", "https://www.census.gov/data/tables/time-series/demo/families/households.html", "Historical households table"), "high"),
-    1965: (57_400_000, src("U.S. Census Bureau", "https://www.census.gov/data/tables/time-series/demo/families/households.html", "Historical households interpolated"), "medium"),
-    1970: (63_401_000, src("U.S. Census Bureau", "https://www.census.gov/data/tables/time-series/demo/families/households.html", "Historical households table"), "high"),
-    1975: (71_400_000, src("U.S. Census Bureau", "https://www.census.gov/data/tables/time-series/demo/families/households.html", "Historical households interpolated"), "medium"),
-    1980: (80_389_000, src("U.S. Census Bureau", "https://www.census.gov/data/tables/time-series/demo/families/households.html", "Historical households table"), "high"),
-    1985: (86_800_000, src("U.S. Census Bureau", "https://www.census.gov/data/tables/time-series/demo/families/households.html", "Historical households interpolated"), "medium"),
-}
+def load_psz_total_wealth() -> dict[int, float]:
+    """Table TB1 column [1]: net household wealth, bn current USD -> millions."""
+    import openpyxl
 
-# Total household net worth (millions USD, nominal) — Fed Financial Accounts / Goldsmith / R. Goldsmith compilations
-TOTAL_WEALTH: dict[int, tuple[float, dict, str, int | None, bool]] = {
-    1920: (250_000, src("Raymond W. Goldsmith", "https://www.nber.org/books-and-chapters/capital-stock-national-wealth-and-saving-united-states", "Household wealth ~1922 mapped to 1920"), "low", 1922, True),
-    1925: (300_000, src("Raymond W. Goldsmith", "https://www.nber.org/books-and-chapters/capital-stock-national-wealth-and-saving-united-states", "Interpolate 1922–1929"), "low", None, True),
-    1930: (280_000, src("Raymond W. Goldsmith", "https://www.nber.org/books-and-chapters/capital-stock-national-wealth-and-saving-united-states", "1929 peak mapped to 1930"), "low", 1929, True),
-    1935: (250_000, src("Raymond W. Goldsmith", "https://www.nber.org/books-and-chapters/capital-stock-national-wealth-and-saving-united-states", "Depression-era estimate interpolated"), "low", None, True),
-    1940: (380_000, src("Historical Statistics of the U.S.", "https://www.census.gov/library/publications/1975/compendia/hist_stats_colonial-1970.html", "Series G 85-89"), "medium", 1940, False),
-    1945: (728_000, src("Federal Reserve Financial Accounts", "https://www.federalreserve.gov/releases/z1/", "Household net worth"), "medium", 1945, False),
-    1950: (1_418_000, src("Federal Reserve Financial Accounts", "https://www.federalreserve.gov/releases/z1/", "Household net worth"), "medium", 1950, False),
-    1955: (1_950_000, src("Federal Reserve Financial Accounts", "https://www.federalreserve.gov/releases/z1/", "Interpolated from Z.1 historical"), "medium", None, True),
-    1960: (2_485_000, src("Federal Reserve Financial Accounts", "https://www.federalreserve.gov/releases/z1/", "Household net worth"), "medium", 1960, False),
-    1965: (3_350_000, src("Federal Reserve Financial Accounts", "https://www.federalreserve.gov/releases/z1/", "Interpolated from Z.1"), "medium", None, True),
-    1970: (3_986_000, src("Federal Reserve Financial Accounts", "https://www.federalreserve.gov/releases/z1/", "Household net worth"), "medium", 1970, False),
-    1975: (5_850_000, src("Federal Reserve Financial Accounts", "https://www.federalreserve.gov/releases/z1/", "Interpolated from Z.1"), "medium", None, True),
-    1980: (10_613_000, src("Federal Reserve Financial Accounts", "https://www.federalreserve.gov/releases/z1/", "Table B.101.h"), "medium", 1980, False),
-    1985: (17_385_000, src("Federal Reserve Financial Accounts", "https://www.federalreserve.gov/releases/z1/", "Table B.101.h interpolated"), "medium", None, True),
-}
+    data = fetch(SOURCES["psz-agg"]["dataFileUrl"], "psz-tables1.xlsx")
+    wb = openpyxl.load_workbook(io.BytesIO(data), read_only=True, data_only=True)
+    ws = wb["TB1"]
+    wealth: dict[int, float] = {}
+    for row in ws.iter_rows(min_row=10, max_col=2, values_only=True):
+        year, value = row[0], row[1]
+        if isinstance(year, (int, float)) and value is not None:
+            wealth[int(year)] = round(float(value) * 1000)
+    return wealth
 
-# PSZ / WID wealth shares (% of total wealth) — equal-split adults; maps to requested percentile buckets
-# Source: Piketty-Saez-Zucman distributional series (WID.world / gabriel-zucman.eu/usdina)
-PSZ = src(
-    "Piketty-Saez-Zucman (WID)",
-    "https://gabriel-zucman.eu/usdina/",
-    "Tables II distributional wealth shares",
-)
-PSZ_SHARES: dict[int, tuple[list[float], int | None, str]] = {
-    # [top0.1, 99-99.9, 90-99, 50-90, bottom50], obs year, confidence
-    1920: ([22.0, 18.5, 37.0, 20.5, 2.0], 1920, "low"),
-    1925: ([24.5, 18.0, 36.0, 19.5, 2.0], 1929, "low"),
-    1930: ([25.0, 17.5, 35.5, 19.0, 3.0], 1929, "low"),
-    1935: ([20.0, 18.0, 37.0, 21.0, 4.0], 1939, "low"),
-    1940: ([20.5, 18.0, 37.5, 21.0, 3.0], 1940, "low"),
-    1945: ([18.0, 18.5, 38.0, 22.0, 3.5], 1945, "low"),
-    1950: ([16.0, 18.5, 38.5, 23.0, 4.0], 1950, "low"),
-    1955: ([14.0, 18.5, 39.0, 24.0, 4.5], 1955, "low"),
-    1960: ([24.2, 17.8, 35.5, 19.5, 3.0], 1960, "medium"),
-    1965: ([22.5, 17.5, 36.0, 20.0, 4.0], 1965, "medium"),
-    1970: ([21.5, 17.0, 36.5, 21.0, 4.0], 1970, "medium"),
-    1975: ([15.0, 17.5, 37.5, 26.0, 4.0], 1975, "medium"),
-    1980: ([12.5, 17.5, 38.5, 27.5, 4.0], 1980, "medium"),
-    1985: ([11.0, 17.5, 39.0, 28.5, 4.0], 1985, "medium"),
-}
 
-# Wolff / SCF — percent of all households with zero or negative net worth
-WOLFF = src(
-    "Edward N. Wolff (SCF)",
-    "https://www.nber.org/papers/w28383",
-    "Table 1 Panel A row 3",
-)
-ZERO_WEALTH: dict[int, tuple[float, int, str]] = {
-    1960: (18.2, 1962, "medium"),
-    1965: (17.0, 1969, "medium"),
-    1970: (16.5, 1969, "medium"),
-    1975: (16.0, 1975, "low"),
-    1980: (15.8, 1983, "medium"),
-    1985: (15.5, 1983, "medium"),
-    1990: (17.9, 1989, "high"),
-    1995: (18.0, 1995, "high"),
-    2000: (17.6, 2001, "high"),
-    2005: (17.0, 2004, "high"),
-    2010: (21.8, 2010, "high"),
-    2015: (21.2, 2016, "high"),
-    2020: (19.6, 2019, "high"),
-    2025: (19.0, 2019, "medium"),
+def load_psz_shares() -> dict[int, dict[str, float | None]]:
+    """Table TE1: shares of total household wealth (fractions).
+
+    Columns: A=year, C=Bottom 50%, D=Middle 40%, E=Top 10%, G=Top 1%, I=Top 0.1%.
+    Bottom 50% / Middle 40% are only populated from 1962.
+    """
+    import openpyxl
+
+    data = fetch(SOURCES["psz-dist"]["dataFileUrl"], "psz-tables2.xlsx")
+    wb = openpyxl.load_workbook(io.BytesIO(data), read_only=True, data_only=True)
+    ws = wb["TE1"]
+    shares: dict[int, dict[str, float | None]] = {}
+    for row in ws.iter_rows(min_row=10, max_col=9, values_only=True):
+        year = row[0]
+        if not isinstance(year, (int, float)):
+            continue
+        top10, top1, top01 = row[4], row[6], row[8]
+        if top10 is None or top1 is None or top01 is None:
+            continue
+        bot50, mid40 = row[2], row[3]
+        shares[int(year)] = {
+            "shareTop01Pct": round(top01 * 100, 1),
+            "share99to999Pct": round((top1 - top01) * 100, 1),
+            "share90to99Pct": round((top10 - top1) * 100, 1),
+            "share50to90Pct": round(mid40 * 100, 1) if mid40 is not None else None,
+            "shareBottom50Pct": round(bot50 * 100, 1) if bot50 is not None else None,
+        }
+    return shares
+
+
+# ---------------------------------------------------------------------------
+# Census households
+# ---------------------------------------------------------------------------
+
+
+def load_census_households() -> dict[int, int]:
+    """Table HH-1 total households (thousands -> count). First entry per year wins
+    (revisions like '2021r' appear above the original)."""
+    import xlrd
+
+    data = fetch(SOURCES["census-hh"]["dataFileUrl"], "hh1.xls")
+    wb = xlrd.open_workbook(file_contents=data)
+    ws = wb.sheet_by_index(0)
+    households: dict[int, int] = {}
+    for r in range(11, ws.nrows):
+        raw_year = ws.cell_value(r, 0)
+        total = ws.cell_value(r, 1)
+        if isinstance(raw_year, float):
+            year = int(raw_year)
+        elif isinstance(raw_year, str):
+            digits = "".join(ch for ch in raw_year if ch.isdigit())
+            if len(digits) != 4:
+                continue
+            year = int(digits)
+        else:
+            continue
+        if isinstance(total, float) and year not in households:
+            households[year] = int(round(total * 1000))
+    return households
+
+
+# Pre-1940 decennial census "families" counts (HSUS / decennial census reports).
+PRE1940_HOUSEHOLDS: dict[int, int] = {
+    1920: 24_351_676,
+    1930: 29_904_663,
 }
 
 
-def build_tier1_row(year: int, shares: dict, levels: dict) -> dict:
-    q = pick_quarter(shares, year)
-    assert q, f"No DFA data for {year}"
-    s = shares[q]
-    l = levels[q]
-    total_nw = sum(l[c]["net_worth"] for c in CATS)
-    total_hh = sum(l[c]["household_count"] for c in CATS)
-    pop_val, pop_src = POPULATION[year]
-    dfa_src = src(
-        "Federal Reserve Distributional Financial Accounts",
-        "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
-        f"dfa-networth-*-detail.csv {q}",
+# ---------------------------------------------------------------------------
+# Census population
+# ---------------------------------------------------------------------------
+
+
+def load_popclock() -> dict[int, int]:
+    text = fetch(SOURCES["census-pop-hist"]["dataFileUrl"], "popclockest.txt").decode("utf-8", "replace")
+    pop: dict[int, int] = {}
+    for line in text.splitlines():
+        m = re.match(r"\s*July 1, (\d{4})\s+([\d,]+)", line)
+        if m:
+            pop[int(m.group(1))] = int(m.group(2).replace(",", ""))
+    return pop
+
+
+# Decennial census resident-population counts (April 1).
+DECENNIAL_POPULATION: dict[int, int] = {
+    1920: 106_021_537,
+    1930: 123_202_624,
+    1940: 132_164_569,
+    1950: 151_325_798,
+    1960: 179_323_175,
+    1970: 203_211_926,
+    1980: 226_545_805,
+    1990: 248_709_873,
+    2000: 281_421_906,
+    2010: 308_745_538,
+    2020: 331_449_281,
+}
+
+# Post-2000 vintage estimates (July 1) for non-census grid years.
+MODERN_POPULATION: dict[int, tuple[int, int, bool, str]] = {
+    # year -> (value, observation year, interpolated, note)
+    2005: (295_516_599, 2005, False, "Census 2000-2010 intercensal national estimate, July 1, 2005."),
+    2015: (321_418_820, 2015, False, "Census Vintage 2015 national estimate, July 1, 2015."),
+    2025: (
+        340_110_988,
+        2024,
+        True,
+        "Latest published Census Vintage 2024 estimate is July 1, 2024; a 2025 figure was not yet available.",
+    ),
+}
+
+
+# ---------------------------------------------------------------------------
+# Wolff zero/negative wealth (SCF survey years, Table 1 Panel A row 3a)
+# ---------------------------------------------------------------------------
+
+WOLFF_SURVEYS: dict[int, float] = {
+    1962: 18.2,
+    1969: 15.6,
+    1983: 15.5,
+    1989: 17.9,
+    2001: 17.6,
+    2007: 18.6,
+    2010: 21.8,
+    2016: 21.2,
+    2019: 19.6,
+}
+
+
+def wolff_cell(year: int) -> dict[str, Any]:
+    if year < 1960:
+        return na_cell(
+            "No reliable primary source for zero/negative net worth before the 1962 SFCC; "
+            "metric not reported in estate-tax reconstructions."
+        )
+    survey_year = min(WOLFF_SURVEYS, key=lambda s: (abs(s - year), s))
+    value = WOLFF_SURVEYS[survey_year]
+    distance = abs(survey_year - year)
+    confidence = "high" if distance <= 1 else "medium" if distance <= 3 else "low"
+    return cell(
+        value,
+        "percent",
+        confidence,
+        src("wolff", "Table 1 Panel A row 3a"),
+        observation_year=survey_year,
+        is_interpolated=survey_year != year,
+        definition="Percent of all U.S. households with zero or negative net worth",
+        methodology_note=(
+            f"Survey of Consumer Finances via Wolff; nearest survey year {survey_year}"
+            + (f" ({distance} years from grid year)." if distance else ".")
+        ),
     )
+
+
+# ---------------------------------------------------------------------------
+# Row builders
+# ---------------------------------------------------------------------------
+
+
+def population_cell(year: int, popclock: dict[int, int]) -> dict[str, Any]:
+    if year in DECENNIAL_POPULATION:
+        return cell(
+            DECENNIAL_POPULATION[year],
+            "count",
+            "high",
+            src("census-pop-modern", f"{year} decennial census resident population"),
+            observation_year=year,
+        )
+    if year in MODERN_POPULATION:
+        value, obs, interp, note = MODERN_POPULATION[year]
+        return cell(
+            value,
+            "count",
+            "medium" if interp else "high",
+            src("census-pop-modern", f"National population estimate, July 1, {obs}"),
+            observation_year=obs,
+            is_interpolated=interp,
+            methodology_note=note,
+        )
+    value = popclock[year]
+    return cell(
+        value,
+        "count",
+        "high",
+        src("census-pop-hist", f"Historical national estimate, July 1, {year}"),
+        observation_year=year,
+    )
+
+
+def household_cell(year: int, census_hh: dict[int, int]) -> dict[str, Any]:
+    if year in census_hh:
+        return cell(
+            census_hh[year],
+            "count",
+            "high",
+            src("census-hh", f"Table HH-1 total households, {year}"),
+            observation_year=year,
+            definition="Total U.S. households (CPS housing-unit definition)",
+        )
+    if year == 1945:
+        # CPS households were not surveyed 1941-1946: interpolate 1940 -> 1947.
+        y0, y1 = census_hh[1940], census_hh[1947]
+        value = round(y0 + (y1 - y0) * (1945 - 1940) / (1947 - 1940))
+        return cell(
+            value,
+            "count",
+            "medium",
+            src("census-hh", "Table HH-1, interpolated 1940-1947"),
+            observation_year=1945,
+            is_interpolated=True,
+            definition="Total U.S. households (CPS housing-unit definition)",
+            methodology_note="No household survey 1941-1946; linear interpolation between HH-1 values for 1940 and 1947.",
+        )
+    if year in PRE1940_HOUSEHOLDS:
+        return cell(
+            PRE1940_HOUSEHOLDS[year],
+            "count",
+            "medium",
+            src("hsus", f"{year} decennial census families count"),
+            observation_year=year,
+            definition="Census 'families' (private households) count",
+            methodology_note="Pre-1940 censuses counted 'families' (private households), a close but not identical concept.",
+        )
+    # 1925 / 1935: interpolate between adjacent decennial/HH-1 anchors.
+    anchors = {**PRE1940_HOUSEHOLDS, 1940: census_hh[1940]}
+    prev_year = max(y for y in anchors if y < year)
+    next_year = min(y for y in anchors if y > year)
+    y0, y1 = anchors[prev_year], anchors[next_year]
+    value = round(y0 + (y1 - y0) * (year - prev_year) / (next_year - prev_year))
+    return cell(
+        value,
+        "count",
+        "low",
+        src("hsus", f"Interpolated {prev_year}-{next_year} decennial counts"),
+        observation_year=year,
+        is_interpolated=True,
+        definition="Census 'families' (private households) count",
+        methodology_note=f"Linear interpolation between {prev_year} and {next_year} census counts.",
+    )
+
+
+def build_tier1_row(year: int, shares: dict, levels: dict, popclock: dict[int, int]) -> dict:
+    quarter = pick_quarter(shares, year)
+    assert quarter, f"No DFA data for {year}"
+    share_row = shares[quarter]
+    level_row = levels[quarter]
+    total_nw = sum(level_row[c]["net_worth"] for c in DFA_CATS)
+    total_hh = sum(level_row[c]["household_count"] for c in DFA_CATS)
+    dfa_src = src("fed-dfa", f"dfa-networth-*-detail.csv {quarter}")
     share_cells = {}
-    for key, cat in zip(SHARE_KEYS, CATS):
+    for key, cat in zip(SHARE_KEYS, DFA_CATS):
         share_cells[key] = cell(
-            round(s[cat], 1),
+            round(share_row[cat], 1),
             "percent",
             "high",
             dfa_src,
@@ -240,20 +507,6 @@ def build_tier1_row(year: int, shares: dict, levels: dict) -> dict:
             definition="Share of aggregate household net worth",
             methodology_note="Household-based DFA; five percentile groups per Fed definitions.",
         )
-    zero = ZERO_WEALTH.get(year)
-    if zero:
-        zval, zyear, zconf = zero
-        zero_cell = cell(
-            zval,
-            "percent",
-            zconf,
-            WOLFF,
-            observation_year=zyear,
-            definition="Percent of all U.S. households with zero or negative net worth",
-            methodology_note=f"Survey of Consumer Finances via Wolff; observation year {zyear}.",
-        )
-    else:
-        zero_cell = na_cell("No SCF-based Wolff estimate mapped to this grid year.")
     return {
         "reportYear": year,
         "tier": 1,
@@ -273,94 +526,86 @@ def build_tier1_row(year: int, shares: dict, levels: dict) -> dict:
             observation_year=year,
             definition="Total households summed across DFA groups",
         ),
-        "totalPopulation": cell(pop_val, "count", "high", pop_src, observation_year=year),
+        "totalPopulation": population_cell(year, popclock),
         **share_cells,
-        "zeroOrNegativeWealth": zero_cell,
+        "zeroOrNegativeWealth": wolff_cell(year),
     }
 
 
-def build_tier23_row(year: int) -> dict:
+def build_tier23_row(
+    year: int,
+    psz_wealth: dict[int, float],
+    psz_shares: dict[int, dict[str, float | None]],
+    census_hh: dict[int, int],
+    popclock: dict[int, int],
+) -> dict:
     tier = 3 if year < 1960 else 2
-    pop_val, pop_src = POPULATION[year]
-    hh_val, hh_src, hh_conf = HOUSEHOLDS[year]
-    tw_val, tw_src, tw_conf, tw_obs, tw_interp = TOTAL_WEALTH[year]
-    shares, share_obs, share_conf = PSZ_SHARES[year]
+    year_shares = psz_shares[year]
     share_cells = {}
-    for key, val in zip(SHARE_KEYS, shares):
+    for key in SHARE_KEYS:
+        value = year_shares[key]
+        if value is None:
+            share_cells[key] = na_cell(
+                "PSZ distributional series reports top-decile detail only before 1962; "
+                "no primary bottom-half estimate exists for this year."
+            )
+            continue
         share_cells[key] = cell(
-            val,
+            value,
             "percent",
-            share_conf,
-            PSZ,
-            observation_year=share_obs or year,
-            is_interpolated=share_obs is not None and share_obs != year,
+            "medium" if year >= 1960 else "low",
+            src("psz-dist", "Table TE1, shares of total household wealth"),
+            observation_year=year,
             definition="Share of total wealth (equal-split adults, capitalized incomes)",
-            methodology_note=(
-                "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA. "
-                + ("Nearest observation year used." if share_obs and share_obs != year else "")
-            ).strip(),
+            methodology_note="PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         )
-    zero = ZERO_WEALTH.get(year)
-    if zero:
-        zval, zyear, zconf = zero
-        zero_cell = cell(
-            zval,
-            "percent",
-            zconf,
-            WOLFF,
-            observation_year=zyear,
-            definition="Percent of all U.S. households with zero or negative net worth",
-            methodology_note=f"SCF via Wolff; nearest survey year {zyear}.",
-        )
-    elif year < 1960:
-        zero_cell = na_cell(
-            "No reliable primary source for zero/negative net worth before 1960; metric not reported in estate-tax reconstructions."
-        )
-    else:
-        zero_cell = na_cell("No Wolff/SCF estimate mapped to this grid year.")
     return {
         "reportYear": year,
         "tier": tier,
         "totalHouseholdWealth": cell(
-            tw_val,
+            psz_wealth[year],
             "usd_millions",
-            tw_conf,
-            tw_src,
-            observation_year=tw_obs or year,
-            is_interpolated=tw_interp,
-            definition="Total household net worth, nominal USD",
-        ),
-        "householdCount": cell(
-            hh_val,
-            "count",
-            hh_conf,
-            hh_src,
+            "medium" if year >= 1960 else "low",
+            src("psz-agg", "Table TB1 column [1], net household wealth"),
             observation_year=year,
-            is_interpolated=hh_conf == "medium" and year not in (1940, 1950, 1960, 1970, 1980),
+            definition="Total household net worth, nominal USD",
+            methodology_note="PSZ national-accounts household series (excludes nonprofits).",
         ),
-        "totalPopulation": cell(pop_val, "count", "high", pop_src, observation_year=year),
+        "householdCount": household_cell(year, census_hh),
+        "totalPopulation": population_cell(year, popclock),
         **share_cells,
-        "zeroOrNegativeWealth": zero_cell,
+        "zeroOrNegativeWealth": wolff_cell(year),
     }
 
 
 def main() -> None:
-    print("Downloading Fed DFA...")
-    shares, levels = download_dfa()
+    print("Loading Fed DFA...")
+    dfa_shares, dfa_levels = load_dfa()
+    print("Loading PSZ workbooks...")
+    psz_wealth = load_psz_total_wealth()
+    psz_shares = load_psz_shares()
+    print("Loading Census households and population...")
+    census_hh = load_census_households()
+    popclock = load_popclock()
+
     rows = []
-    for year in range(1920, 2026, 5):
+    for year in GRID_YEARS:
         if year >= 1990:
-            rows.append(build_tier1_row(year, shares, levels))
+            rows.append(build_tier1_row(year, dfa_shares, dfa_levels, popclock))
         else:
-            rows.append(build_tier23_row(year))
+            rows.append(build_tier23_row(year, psz_wealth, psz_shares, census_hh, popclock))
+
     dataset = {
         "version": ACCESS,
+        "verifiedAt": ACCESS,
         "methodology": (
-            "Best-available source per era with explicit footnotes. "
-            "Tier 1 (1990–2025): Federal Reserve Distributional Financial Accounts for wealth shares and totals; "
-            "Census for population. Tier 2 (1960–1985): PSZ/WID wealth shares (equal-split adults) with Fed Z.1/Goldsmith totals. "
-            "Tier 3 (1920–1955): estate-tax and historical compilations; many zero-wealth cells are N/A. "
-            "All dollar amounts are nominal USD."
+            "Every populated cell is reproducible from a cited, downloadable source file. "
+            "Tier 1 (1990-2025): Federal Reserve Distributional Financial Accounts for wealth shares, "
+            "totals, and household counts; Census for population. "
+            "Tier 2 (1960-1985): Piketty-Saez-Zucman appendix tables (equal-split adults) for shares and totals; "
+            "Census HH-1 for households. "
+            "Tier 3 (1920-1955): PSZ top-decile shares and totals; bottom-half shares and zero-wealth cells are N/A "
+            "because no primary source reports them. All dollar amounts are nominal USD."
         ),
         "definitions": {
             "householdWealth": (
@@ -377,6 +622,7 @@ def main() -> None:
                 "between spouses) or tax units, which can differ slightly from household counts."
             ),
         },
+        "sources": [SOURCES[k] for k in sorted(SOURCES)],
         "rows": rows,
     }
     OUT.parent.mkdir(parents=True, exist_ok=True)

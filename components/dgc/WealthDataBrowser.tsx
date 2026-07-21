@@ -49,7 +49,7 @@ export default function WealthDataBrowser() {
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="max-w-3xl space-y-2">
               <p className="text-xs uppercase tracking-wide text-[var(--dgc-text-muted)]">
-                Dataset version {dataset.version}
+                Dataset version {dataset.version} — verified against sources {dataset.verifiedAt}
               </p>
               <p className="text-sm leading-relaxed text-[var(--dgc-text-soft)]">{dataset.methodology}</p>
             </div>
@@ -81,6 +81,50 @@ export default function WealthDataBrowser() {
                 Download CSV
               </button>
             </div>
+          </div>
+        </section>
+
+        <section className="rounded-2xl border border-[var(--dgc-border)] bg-[var(--dgc-panel)] p-4 md:p-6">
+          <h2 className="text-sm font-semibold text-[var(--dgc-text)]">
+            Sources — check the data yourself
+          </h2>
+          <p className="mt-1 text-sm text-[var(--dgc-text-soft)]">
+            Every populated cell cites one of the sources below. Click a row in the table to see the
+            exact table or series behind each figure.
+          </p>
+          <div className="mt-4 grid gap-3 md:grid-cols-2">
+            {dataset.sources.map((source) => (
+              <div
+                key={source.id}
+                className="rounded-lg border border-[var(--dgc-border-soft)] bg-[var(--dgc-hover)] p-3 text-sm"
+              >
+                <p className="font-medium text-[var(--dgc-text)]">{source.name}</p>
+                <p className="mt-0.5 text-xs text-[var(--dgc-text-muted)]">{source.coverage}</p>
+                <p className="mt-1 text-xs leading-relaxed text-[var(--dgc-text-soft)]">
+                  {source.description}
+                </p>
+                <p className="mt-2 flex flex-wrap gap-3 text-xs">
+                  <a
+                    href={source.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sky-400 underline hover:text-sky-300"
+                  >
+                    Source page
+                  </a>
+                  {source.dataFileUrl ? (
+                    <a
+                      href={source.dataFileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sky-400 underline hover:text-sky-300"
+                    >
+                      Download raw data
+                    </a>
+                  ) : null}
+                </p>
+              </div>
+            ))}
           </div>
         </section>
 

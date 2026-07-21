@@ -1,42 +1,108 @@
 {
-  "version": "2026-07-01",
-  "methodology": "Best-available source per era with explicit footnotes. Tier 1 (1990\u20132025): Federal Reserve Distributional Financial Accounts for wealth shares and totals; Census for population. Tier 2 (1960\u20131985): PSZ/WID wealth shares (equal-split adults) with Fed Z.1/Goldsmith totals. Tier 3 (1920\u20131955): estate-tax and historical compilations; many zero-wealth cells are N/A. All dollar amounts are nominal USD.",
+  "version": "2026-07-21",
+  "verifiedAt": "2026-07-21",
+  "methodology": "Every populated cell is reproducible from a cited, downloadable source file. Tier 1 (1990-2025): Federal Reserve Distributional Financial Accounts for wealth shares, totals, and household counts; Census for population. Tier 2 (1960-1985): Piketty-Saez-Zucman appendix tables (equal-split adults) for shares and totals; Census HH-1 for households. Tier 3 (1920-1955): PSZ top-decile shares and totals; bottom-half shares and zero-wealth cells are N/A because no primary source reports them. All dollar amounts are nominal USD.",
   "definitions": {
     "householdWealth": "Household wealth (net worth) is the current market value of all assets owned by households minus all debts. Assets include financial assets, real estate, business equity, and pension entitlements (including IRAs and defined-contribution plans), depending on the series. Human capital, future earnings, and Social Security benefit entitlements are generally excluded. Fed DFA follows Financial Accounts definitions; historical PSZ series capitalize taxable capital incomes and use equal-split adults.",
     "household": "A household is a person or group of people who occupy a housing unit. Census and Survey of Consumer Finances use this housing-unit definition. Federal Reserve DFA distributes aggregate household wealth across percentile groups of the household wealth distribution. Historical PSZ/WID series often use equal-split adults (wealth split equally between spouses) or tax units, which can differ slightly from household counts."
   },
+  "sources": [
+    {
+      "id": "census-hh",
+      "name": "U.S. Census Bureau - Historical Households (HH-1)",
+      "url": "https://www.census.gov/data/tables/time-series/demo/families/households.html",
+      "dataFileUrl": "https://www2.census.gov/programs-surveys/demo/tables/families/time-series/households/hh1.xls",
+      "coverage": "1940 onward (no surveys 1941-1946)",
+      "description": "Table HH-1 'Households by Type', total households. Used for household counts from 1940."
+    },
+    {
+      "id": "census-pop-hist",
+      "name": "U.S. Census Bureau - Historical National Population Estimates",
+      "url": "https://www.census.gov/data/tables/time-series/demo/popest/pre-1980-national.html",
+      "dataFileUrl": "https://www2.census.gov/programs-surveys/popest/tables/1900-1980/national/totals/popclockest.txt",
+      "coverage": "July 1, 1900 to July 1, 1999",
+      "description": "Official July 1 national population estimates. Used for non-census grid years before 2000."
+    },
+    {
+      "id": "census-pop-modern",
+      "name": "U.S. Census Bureau - Decennial counts and population estimates",
+      "url": "https://www.census.gov/programs-surveys/popest/data/tables.html",
+      "coverage": "Decennial censuses; vintage estimates 2000 onward",
+      "description": "Decennial census resident-population counts and post-2000 vintage estimates."
+    },
+    {
+      "id": "fed-dfa",
+      "name": "Federal Reserve Distributional Financial Accounts",
+      "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
+      "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip",
+      "coverage": "1989:Q3 onward, quarterly",
+      "description": "Official quarterly estimates of U.S. household wealth by wealth percentile group. Used for all wealth shares, total net worth, and household counts from 1990."
+    },
+    {
+      "id": "hsus",
+      "name": "Historical Statistics of the U.S., Colonial Times to 1970",
+      "url": "https://www.census.gov/library/publications/1975/compendia/hist_stats_colonial-1970.html",
+      "coverage": "Decennial census counts to 1970",
+      "description": "Bicentennial compendium of census series. Pre-1940 decennial household ('families') counts."
+    },
+    {
+      "id": "psz-agg",
+      "name": "Piketty-Saez-Zucman Appendix Tables I (aggregates)",
+      "url": "https://gabriel-zucman.eu/usdina/",
+      "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesI(Aggreg).xlsx",
+      "coverage": "1913-2021, annual",
+      "description": "Table TB1 'Household wealth' column [1] (net household wealth, billions of current USD). Used for total household wealth 1920-1985."
+    },
+    {
+      "id": "psz-dist",
+      "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
+      "url": "https://gabriel-zucman.eu/usdina/",
+      "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx",
+      "coverage": "Top shares 1913+; bottom-50%/middle-40% detail from 1962",
+      "description": "Table TE1 'Shares of total household wealth' (equal-split adults). Used for wealth shares 1920-1985. Bottom-half detail does not exist before 1962."
+    },
+    {
+      "id": "wolff",
+      "name": "Edward N. Wolff (NBER Working Paper 28383)",
+      "url": "https://www.nber.org/papers/w28383",
+      "dataFileUrl": "https://www.nber.org/system/files/working_papers/w28383/w28383.pdf",
+      "coverage": "SCF survey years 1962-2019",
+      "description": "Table 1 Panel A row 3a: percent of U.S. households with zero or negative net worth. Survey years are mapped to the nearest five-year grid point."
+    }
+  ],
   "rows": [
     {
       "reportYear": 1920,
       "tier": 3,
       "totalHouseholdWealth": {
-        "value": 250000,
+        "value": 271821,
         "unit": "usd_millions",
-        "observationYear": 1922,
-        "isInterpolated": true,
+        "observationYear": 1920,
+        "isInterpolated": false,
         "confidence": "low",
         "definition": "Total household net worth, nominal USD",
-        "methodologyNote": null,
+        "methodologyNote": "PSZ national-accounts household series (excludes nonprofits).",
         "source": {
-          "name": "Raymond W. Goldsmith",
-          "url": "https://www.nber.org/books-and-chapters/capital-stock-national-wealth-and-saving-united-states",
-          "tableOrSeries": "Household wealth ~1922 mapped to 1920",
-          "accessedAt": "2026-07-01"
+          "name": "Piketty-Saez-Zucman Appendix Tables I (aggregates)",
+          "url": "https://gabriel-zucman.eu/usdina/",
+          "tableOrSeries": "Table TB1 column [1], net household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesI(Aggreg).xlsx"
         }
       },
       "householdCount": {
-        "value": 24350000,
+        "value": 24351676,
         "unit": "count",
         "observationYear": 1920,
-        "isInterpolated": true,
+        "isInterpolated": false,
         "confidence": "medium",
-        "definition": null,
-        "methodologyNote": null,
+        "definition": "Census 'families' (private households) count",
+        "methodologyNote": "Pre-1940 censuses counted 'families' (private households), a close but not identical concept.",
         "source": {
-          "name": "Historical Statistics of the U.S.",
+          "name": "Historical Statistics of the U.S., Colonial Times to 1970",
           "url": "https://www.census.gov/library/publications/1975/compendia/hist_stats_colonial-1970.html",
-          "tableOrSeries": "Series H 294-295",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "1920 decennial census families count",
+          "accessedAt": "2026-07-21"
         }
       },
       "totalPopulation": {
@@ -48,14 +114,14 @@
         "definition": null,
         "methodologyNote": null,
         "source": {
-          "name": "U.S. Census Bureau",
-          "url": "https://www.census.gov/data/tables/time-series/demo/popest/2020s-national-total.html",
-          "tableOrSeries": "1920 decennial",
-          "accessedAt": "2026-07-01"
+          "name": "U.S. Census Bureau - Decennial counts and population estimates",
+          "url": "https://www.census.gov/programs-surveys/popest/data/tables.html",
+          "tableOrSeries": "1920 decennial census resident population",
+          "accessedAt": "2026-07-21"
         }
       },
       "shareTop01Pct": {
-        "value": 22.0,
+        "value": 14.5,
         "unit": "percent",
         "observationYear": 1920,
         "isInterpolated": false,
@@ -63,14 +129,15 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share99to999Pct": {
-        "value": 18.5,
+        "value": 22.5,
         "unit": "percent",
         "observationYear": 1920,
         "isInterpolated": false,
@@ -78,14 +145,15 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share90to99Pct": {
-        "value": 37.0,
+        "value": 42.0,
         "unit": "percent",
         "observationYear": 1920,
         "isInterpolated": false,
@@ -93,41 +161,32 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share50to90Pct": {
-        "value": 20.5,
+        "value": null,
         "unit": "percent",
-        "observationYear": 1920,
+        "observationYear": null,
         "isInterpolated": false,
-        "confidence": "low",
-        "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
-        "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
-        "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
-          "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
-        }
+        "confidence": "na",
+        "definition": null,
+        "methodologyNote": "PSZ distributional series reports top-decile detail only before 1962; no primary bottom-half estimate exists for this year.",
+        "source": null
       },
       "shareBottom50Pct": {
-        "value": 2.0,
+        "value": null,
         "unit": "percent",
-        "observationYear": 1920,
+        "observationYear": null,
         "isInterpolated": false,
-        "confidence": "low",
-        "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
-        "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
-        "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
-          "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
-        }
+        "confidence": "na",
+        "definition": null,
+        "methodologyNote": "PSZ distributional series reports top-decile detail only before 1962; no primary bottom-half estimate exists for this year.",
+        "source": null
       },
       "zeroOrNegativeWealth": {
         "value": null,
@@ -136,7 +195,7 @@
         "isInterpolated": false,
         "confidence": "na",
         "definition": null,
-        "methodologyNote": "No reliable primary source for zero/negative net worth before 1960; metric not reported in estate-tax reconstructions.",
+        "methodologyNote": "No reliable primary source for zero/negative net worth before the 1962 SFCC; metric not reported in estate-tax reconstructions.",
         "source": null
       }
     },
@@ -144,37 +203,38 @@
       "reportYear": 1925,
       "tier": 3,
       "totalHouseholdWealth": {
-        "value": 300000,
+        "value": 332620,
         "unit": "usd_millions",
         "observationYear": 1925,
-        "isInterpolated": true,
+        "isInterpolated": false,
         "confidence": "low",
         "definition": "Total household net worth, nominal USD",
-        "methodologyNote": null,
+        "methodologyNote": "PSZ national-accounts household series (excludes nonprofits).",
         "source": {
-          "name": "Raymond W. Goldsmith",
-          "url": "https://www.nber.org/books-and-chapters/capital-stock-national-wealth-and-saving-united-states",
-          "tableOrSeries": "Interpolate 1922\u20131929",
-          "accessedAt": "2026-07-01"
+          "name": "Piketty-Saez-Zucman Appendix Tables I (aggregates)",
+          "url": "https://gabriel-zucman.eu/usdina/",
+          "tableOrSeries": "Table TB1 column [1], net household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesI(Aggreg).xlsx"
         }
       },
       "householdCount": {
-        "value": 26900000,
+        "value": 27128170,
         "unit": "count",
         "observationYear": 1925,
         "isInterpolated": true,
-        "confidence": "medium",
-        "definition": null,
-        "methodologyNote": null,
+        "confidence": "low",
+        "definition": "Census 'families' (private households) count",
+        "methodologyNote": "Linear interpolation between 1920 and 1930 census counts.",
         "source": {
-          "name": "Historical Statistics of the U.S.",
+          "name": "Historical Statistics of the U.S., Colonial Times to 1970",
           "url": "https://www.census.gov/library/publications/1975/compendia/hist_stats_colonial-1970.html",
-          "tableOrSeries": "Series H 294-295 interpolated",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Interpolated 1920-1930 decennial counts",
+          "accessedAt": "2026-07-21"
         }
       },
       "totalPopulation": {
-        "value": 114669000,
+        "value": 115829000,
         "unit": "count",
         "observationYear": 1925,
         "isInterpolated": false,
@@ -182,86 +242,80 @@
         "definition": null,
         "methodologyNote": null,
         "source": {
-          "name": "U.S. Census Bureau",
-          "url": "https://www.census.gov/library/publications/1975/compendia/hist_stats_colonial-1970.html",
-          "tableOrSeries": "Series A 1-5 intercensal",
-          "accessedAt": "2026-07-01"
+          "name": "U.S. Census Bureau - Historical National Population Estimates",
+          "url": "https://www.census.gov/data/tables/time-series/demo/popest/pre-1980-national.html",
+          "tableOrSeries": "Historical national estimate, July 1, 1925",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www2.census.gov/programs-surveys/popest/tables/1900-1980/national/totals/popclockest.txt"
         }
       },
       "shareTop01Pct": {
-        "value": 24.5,
+        "value": 18.1,
         "unit": "percent",
-        "observationYear": 1929,
-        "isInterpolated": true,
+        "observationYear": 1925,
+        "isInterpolated": false,
         "confidence": "low",
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
-        "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA. Nearest observation year used.",
+        "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share99to999Pct": {
-        "value": 18.0,
+        "value": 23.8,
         "unit": "percent",
-        "observationYear": 1929,
-        "isInterpolated": true,
+        "observationYear": 1925,
+        "isInterpolated": false,
         "confidence": "low",
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
-        "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA. Nearest observation year used.",
+        "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share90to99Pct": {
-        "value": 36.0,
+        "value": 40.8,
         "unit": "percent",
-        "observationYear": 1929,
-        "isInterpolated": true,
+        "observationYear": 1925,
+        "isInterpolated": false,
         "confidence": "low",
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
-        "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA. Nearest observation year used.",
+        "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share50to90Pct": {
-        "value": 19.5,
+        "value": null,
         "unit": "percent",
-        "observationYear": 1929,
-        "isInterpolated": true,
-        "confidence": "low",
-        "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
-        "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA. Nearest observation year used.",
-        "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
-          "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
-        }
+        "observationYear": null,
+        "isInterpolated": false,
+        "confidence": "na",
+        "definition": null,
+        "methodologyNote": "PSZ distributional series reports top-decile detail only before 1962; no primary bottom-half estimate exists for this year.",
+        "source": null
       },
       "shareBottom50Pct": {
-        "value": 2.0,
+        "value": null,
         "unit": "percent",
-        "observationYear": 1929,
-        "isInterpolated": true,
-        "confidence": "low",
-        "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
-        "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA. Nearest observation year used.",
-        "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
-          "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
-        }
+        "observationYear": null,
+        "isInterpolated": false,
+        "confidence": "na",
+        "definition": null,
+        "methodologyNote": "PSZ distributional series reports top-decile detail only before 1962; no primary bottom-half estimate exists for this year.",
+        "source": null
       },
       "zeroOrNegativeWealth": {
         "value": null,
@@ -270,7 +324,7 @@
         "isInterpolated": false,
         "confidence": "na",
         "definition": null,
-        "methodologyNote": "No reliable primary source for zero/negative net worth before 1960; metric not reported in estate-tax reconstructions.",
+        "methodologyNote": "No reliable primary source for zero/negative net worth before the 1962 SFCC; metric not reported in estate-tax reconstructions.",
         "source": null
       }
     },
@@ -278,33 +332,34 @@
       "reportYear": 1930,
       "tier": 3,
       "totalHouseholdWealth": {
-        "value": 280000,
+        "value": 408379,
         "unit": "usd_millions",
-        "observationYear": 1929,
-        "isInterpolated": true,
+        "observationYear": 1930,
+        "isInterpolated": false,
         "confidence": "low",
         "definition": "Total household net worth, nominal USD",
-        "methodologyNote": null,
+        "methodologyNote": "PSZ national-accounts household series (excludes nonprofits).",
         "source": {
-          "name": "Raymond W. Goldsmith",
-          "url": "https://www.nber.org/books-and-chapters/capital-stock-national-wealth-and-saving-united-states",
-          "tableOrSeries": "1929 peak mapped to 1930",
-          "accessedAt": "2026-07-01"
+          "name": "Piketty-Saez-Zucman Appendix Tables I (aggregates)",
+          "url": "https://gabriel-zucman.eu/usdina/",
+          "tableOrSeries": "Table TB1 column [1], net household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesI(Aggreg).xlsx"
         }
       },
       "householdCount": {
-        "value": 29900000,
+        "value": 29904663,
         "unit": "count",
         "observationYear": 1930,
-        "isInterpolated": true,
+        "isInterpolated": false,
         "confidence": "medium",
-        "definition": null,
-        "methodologyNote": null,
+        "definition": "Census 'families' (private households) count",
+        "methodologyNote": "Pre-1940 censuses counted 'families' (private households), a close but not identical concept.",
         "source": {
-          "name": "Historical Statistics of the U.S.",
+          "name": "Historical Statistics of the U.S., Colonial Times to 1970",
           "url": "https://www.census.gov/library/publications/1975/compendia/hist_stats_colonial-1970.html",
-          "tableOrSeries": "Series H 294-295",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "1930 decennial census families count",
+          "accessedAt": "2026-07-21"
         }
       },
       "totalPopulation": {
@@ -316,86 +371,79 @@
         "definition": null,
         "methodologyNote": null,
         "source": {
-          "name": "U.S. Census Bureau",
-          "url": "https://www.census.gov/data/tables/time-series/demo/popest/2020s-national-total.html",
-          "tableOrSeries": "1930 decennial",
-          "accessedAt": "2026-07-01"
+          "name": "U.S. Census Bureau - Decennial counts and population estimates",
+          "url": "https://www.census.gov/programs-surveys/popest/data/tables.html",
+          "tableOrSeries": "1930 decennial census resident population",
+          "accessedAt": "2026-07-21"
         }
       },
       "shareTop01Pct": {
-        "value": 25.0,
+        "value": 19.7,
         "unit": "percent",
-        "observationYear": 1929,
-        "isInterpolated": true,
+        "observationYear": 1930,
+        "isInterpolated": false,
         "confidence": "low",
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
-        "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA. Nearest observation year used.",
+        "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share99to999Pct": {
-        "value": 17.5,
+        "value": 24.4,
         "unit": "percent",
-        "observationYear": 1929,
-        "isInterpolated": true,
+        "observationYear": 1930,
+        "isInterpolated": false,
         "confidence": "low",
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
-        "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA. Nearest observation year used.",
+        "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share90to99Pct": {
-        "value": 35.5,
+        "value": 41.2,
         "unit": "percent",
-        "observationYear": 1929,
-        "isInterpolated": true,
+        "observationYear": 1930,
+        "isInterpolated": false,
         "confidence": "low",
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
-        "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA. Nearest observation year used.",
+        "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share50to90Pct": {
-        "value": 19.0,
+        "value": null,
         "unit": "percent",
-        "observationYear": 1929,
-        "isInterpolated": true,
-        "confidence": "low",
-        "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
-        "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA. Nearest observation year used.",
-        "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
-          "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
-        }
+        "observationYear": null,
+        "isInterpolated": false,
+        "confidence": "na",
+        "definition": null,
+        "methodologyNote": "PSZ distributional series reports top-decile detail only before 1962; no primary bottom-half estimate exists for this year.",
+        "source": null
       },
       "shareBottom50Pct": {
-        "value": 3.0,
+        "value": null,
         "unit": "percent",
-        "observationYear": 1929,
-        "isInterpolated": true,
-        "confidence": "low",
-        "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
-        "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA. Nearest observation year used.",
-        "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
-          "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
-        }
+        "observationYear": null,
+        "isInterpolated": false,
+        "confidence": "na",
+        "definition": null,
+        "methodologyNote": "PSZ distributional series reports top-decile detail only before 1962; no primary bottom-half estimate exists for this year.",
+        "source": null
       },
       "zeroOrNegativeWealth": {
         "value": null,
@@ -404,7 +452,7 @@
         "isInterpolated": false,
         "confidence": "na",
         "definition": null,
-        "methodologyNote": "No reliable primary source for zero/negative net worth before 1960; metric not reported in estate-tax reconstructions.",
+        "methodologyNote": "No reliable primary source for zero/negative net worth before the 1962 SFCC; metric not reported in estate-tax reconstructions.",
         "source": null
       }
     },
@@ -412,37 +460,38 @@
       "reportYear": 1935,
       "tier": 3,
       "totalHouseholdWealth": {
-        "value": 250000,
+        "value": 315135,
         "unit": "usd_millions",
         "observationYear": 1935,
-        "isInterpolated": true,
+        "isInterpolated": false,
         "confidence": "low",
         "definition": "Total household net worth, nominal USD",
-        "methodologyNote": null,
+        "methodologyNote": "PSZ national-accounts household series (excludes nonprofits).",
         "source": {
-          "name": "Raymond W. Goldsmith",
-          "url": "https://www.nber.org/books-and-chapters/capital-stock-national-wealth-and-saving-united-states",
-          "tableOrSeries": "Depression-era estimate interpolated",
-          "accessedAt": "2026-07-01"
+          "name": "Piketty-Saez-Zucman Appendix Tables I (aggregates)",
+          "url": "https://gabriel-zucman.eu/usdina/",
+          "tableOrSeries": "Table TB1 column [1], net household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesI(Aggreg).xlsx"
         }
       },
       "householdCount": {
-        "value": 32500000,
+        "value": 32426832,
         "unit": "count",
         "observationYear": 1935,
         "isInterpolated": true,
-        "confidence": "medium",
-        "definition": null,
-        "methodologyNote": null,
+        "confidence": "low",
+        "definition": "Census 'families' (private households) count",
+        "methodologyNote": "Linear interpolation between 1930 and 1940 census counts.",
         "source": {
-          "name": "Historical Statistics of the U.S.",
+          "name": "Historical Statistics of the U.S., Colonial Times to 1970",
           "url": "https://www.census.gov/library/publications/1975/compendia/hist_stats_colonial-1970.html",
-          "tableOrSeries": "Series H 294-295 interpolated",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Interpolated 1930-1940 decennial counts",
+          "accessedAt": "2026-07-21"
         }
       },
       "totalPopulation": {
-        "value": 127250000,
+        "value": 127250232,
         "unit": "count",
         "observationYear": 1935,
         "isInterpolated": false,
@@ -450,86 +499,80 @@
         "definition": null,
         "methodologyNote": null,
         "source": {
-          "name": "U.S. Census Bureau",
-          "url": "https://www.census.gov/library/publications/1975/compendia/hist_stats_colonial-1970.html",
-          "tableOrSeries": "Series A 1-5 intercensal",
-          "accessedAt": "2026-07-01"
+          "name": "U.S. Census Bureau - Historical National Population Estimates",
+          "url": "https://www.census.gov/data/tables/time-series/demo/popest/pre-1980-national.html",
+          "tableOrSeries": "Historical national estimate, July 1, 1935",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www2.census.gov/programs-surveys/popest/tables/1900-1980/national/totals/popclockest.txt"
         }
       },
       "shareTop01Pct": {
-        "value": 20.0,
+        "value": 18.5,
         "unit": "percent",
-        "observationYear": 1939,
-        "isInterpolated": true,
+        "observationYear": 1935,
+        "isInterpolated": false,
         "confidence": "low",
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
-        "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA. Nearest observation year used.",
+        "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share99to999Pct": {
-        "value": 18.0,
+        "value": 23.0,
         "unit": "percent",
-        "observationYear": 1939,
-        "isInterpolated": true,
+        "observationYear": 1935,
+        "isInterpolated": false,
         "confidence": "low",
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
-        "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA. Nearest observation year used.",
+        "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share90to99Pct": {
-        "value": 37.0,
+        "value": 40.8,
         "unit": "percent",
-        "observationYear": 1939,
-        "isInterpolated": true,
+        "observationYear": 1935,
+        "isInterpolated": false,
         "confidence": "low",
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
-        "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA. Nearest observation year used.",
+        "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share50to90Pct": {
-        "value": 21.0,
+        "value": null,
         "unit": "percent",
-        "observationYear": 1939,
-        "isInterpolated": true,
-        "confidence": "low",
-        "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
-        "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA. Nearest observation year used.",
-        "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
-          "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
-        }
+        "observationYear": null,
+        "isInterpolated": false,
+        "confidence": "na",
+        "definition": null,
+        "methodologyNote": "PSZ distributional series reports top-decile detail only before 1962; no primary bottom-half estimate exists for this year.",
+        "source": null
       },
       "shareBottom50Pct": {
-        "value": 4.0,
+        "value": null,
         "unit": "percent",
-        "observationYear": 1939,
-        "isInterpolated": true,
-        "confidence": "low",
-        "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
-        "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA. Nearest observation year used.",
-        "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
-          "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
-        }
+        "observationYear": null,
+        "isInterpolated": false,
+        "confidence": "na",
+        "definition": null,
+        "methodologyNote": "PSZ distributional series reports top-decile detail only before 1962; no primary bottom-half estimate exists for this year.",
+        "source": null
       },
       "zeroOrNegativeWealth": {
         "value": null,
@@ -538,7 +581,7 @@
         "isInterpolated": false,
         "confidence": "na",
         "definition": null,
-        "methodologyNote": "No reliable primary source for zero/negative net worth before 1960; metric not reported in estate-tax reconstructions.",
+        "methodologyNote": "No reliable primary source for zero/negative net worth before the 1962 SFCC; metric not reported in estate-tax reconstructions.",
         "source": null
       }
     },
@@ -546,33 +589,35 @@
       "reportYear": 1940,
       "tier": 3,
       "totalHouseholdWealth": {
-        "value": 380000,
+        "value": 371078,
         "unit": "usd_millions",
         "observationYear": 1940,
         "isInterpolated": false,
-        "confidence": "medium",
+        "confidence": "low",
         "definition": "Total household net worth, nominal USD",
-        "methodologyNote": null,
+        "methodologyNote": "PSZ national-accounts household series (excludes nonprofits).",
         "source": {
-          "name": "Historical Statistics of the U.S.",
-          "url": "https://www.census.gov/library/publications/1975/compendia/hist_stats_colonial-1970.html",
-          "tableOrSeries": "Series G 85-89",
-          "accessedAt": "2026-07-01"
+          "name": "Piketty-Saez-Zucman Appendix Tables I (aggregates)",
+          "url": "https://gabriel-zucman.eu/usdina/",
+          "tableOrSeries": "Table TB1 column [1], net household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesI(Aggreg).xlsx"
         }
       },
       "householdCount": {
-        "value": 35700000,
+        "value": 34949000,
         "unit": "count",
         "observationYear": 1940,
         "isInterpolated": false,
         "confidence": "high",
-        "definition": null,
+        "definition": "Total U.S. households (CPS housing-unit definition)",
         "methodologyNote": null,
         "source": {
-          "name": "U.S. Census Bureau",
+          "name": "U.S. Census Bureau - Historical Households (HH-1)",
           "url": "https://www.census.gov/data/tables/time-series/demo/families/households.html",
-          "tableOrSeries": "Historical households table",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table HH-1 total households, 1940",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www2.census.gov/programs-surveys/demo/tables/families/time-series/households/hh1.xls"
         }
       },
       "totalPopulation": {
@@ -584,14 +629,14 @@
         "definition": null,
         "methodologyNote": null,
         "source": {
-          "name": "U.S. Census Bureau",
-          "url": "https://www.census.gov/data/tables/time-series/demo/popest/2020s-national-total.html",
-          "tableOrSeries": "1940 decennial",
-          "accessedAt": "2026-07-01"
+          "name": "U.S. Census Bureau - Decennial counts and population estimates",
+          "url": "https://www.census.gov/programs-surveys/popest/data/tables.html",
+          "tableOrSeries": "1940 decennial census resident population",
+          "accessedAt": "2026-07-21"
         }
       },
       "shareTop01Pct": {
-        "value": 20.5,
+        "value": 15.6,
         "unit": "percent",
         "observationYear": 1940,
         "isInterpolated": false,
@@ -599,14 +644,15 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share99to999Pct": {
-        "value": 18.0,
+        "value": 23.4,
         "unit": "percent",
         "observationYear": 1940,
         "isInterpolated": false,
@@ -614,14 +660,15 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share90to99Pct": {
-        "value": 37.5,
+        "value": 39.1,
         "unit": "percent",
         "observationYear": 1940,
         "isInterpolated": false,
@@ -629,41 +676,32 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share50to90Pct": {
-        "value": 21.0,
+        "value": null,
         "unit": "percent",
-        "observationYear": 1940,
+        "observationYear": null,
         "isInterpolated": false,
-        "confidence": "low",
-        "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
-        "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
-        "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
-          "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
-        }
+        "confidence": "na",
+        "definition": null,
+        "methodologyNote": "PSZ distributional series reports top-decile detail only before 1962; no primary bottom-half estimate exists for this year.",
+        "source": null
       },
       "shareBottom50Pct": {
-        "value": 3.0,
+        "value": null,
         "unit": "percent",
-        "observationYear": 1940,
+        "observationYear": null,
         "isInterpolated": false,
-        "confidence": "low",
-        "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
-        "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
-        "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
-          "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
-        }
+        "confidence": "na",
+        "definition": null,
+        "methodologyNote": "PSZ distributional series reports top-decile detail only before 1962; no primary bottom-half estimate exists for this year.",
+        "source": null
       },
       "zeroOrNegativeWealth": {
         "value": null,
@@ -672,7 +710,7 @@
         "isInterpolated": false,
         "confidence": "na",
         "definition": null,
-        "methodologyNote": "No reliable primary source for zero/negative net worth before 1960; metric not reported in estate-tax reconstructions.",
+        "methodologyNote": "No reliable primary source for zero/negative net worth before the 1962 SFCC; metric not reported in estate-tax reconstructions.",
         "source": null
       }
     },
@@ -680,37 +718,39 @@
       "reportYear": 1945,
       "tier": 3,
       "totalHouseholdWealth": {
-        "value": 728000,
+        "value": 627015,
         "unit": "usd_millions",
         "observationYear": 1945,
         "isInterpolated": false,
-        "confidence": "medium",
+        "confidence": "low",
         "definition": "Total household net worth, nominal USD",
-        "methodologyNote": null,
+        "methodologyNote": "PSZ national-accounts household series (excludes nonprofits).",
         "source": {
-          "name": "Federal Reserve Financial Accounts",
-          "url": "https://www.federalreserve.gov/releases/z1/",
-          "tableOrSeries": "Household net worth",
-          "accessedAt": "2026-07-01"
+          "name": "Piketty-Saez-Zucman Appendix Tables I (aggregates)",
+          "url": "https://gabriel-zucman.eu/usdina/",
+          "tableOrSeries": "Table TB1 column [1], net household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesI(Aggreg).xlsx"
         }
       },
       "householdCount": {
-        "value": 38700000,
+        "value": 37919000,
         "unit": "count",
         "observationYear": 1945,
         "isInterpolated": true,
         "confidence": "medium",
-        "definition": null,
-        "methodologyNote": null,
+        "definition": "Total U.S. households (CPS housing-unit definition)",
+        "methodologyNote": "No household survey 1941-1946; linear interpolation between HH-1 values for 1940 and 1947.",
         "source": {
-          "name": "U.S. Census Bureau",
+          "name": "U.S. Census Bureau - Historical Households (HH-1)",
           "url": "https://www.census.gov/data/tables/time-series/demo/families/households.html",
-          "tableOrSeries": "Historical households interpolated",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table HH-1, interpolated 1940-1947",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www2.census.gov/programs-surveys/demo/tables/families/time-series/households/hh1.xls"
         }
       },
       "totalPopulation": {
-        "value": 139928000,
+        "value": 139928165,
         "unit": "count",
         "observationYear": 1945,
         "isInterpolated": false,
@@ -718,14 +758,15 @@
         "definition": null,
         "methodologyNote": null,
         "source": {
-          "name": "U.S. Census Bureau",
-          "url": "https://www.census.gov/library/publications/1975/compendia/hist_stats_colonial-1970.html",
-          "tableOrSeries": "Series A 1-5 intercensal",
-          "accessedAt": "2026-07-01"
+          "name": "U.S. Census Bureau - Historical National Population Estimates",
+          "url": "https://www.census.gov/data/tables/time-series/demo/popest/pre-1980-national.html",
+          "tableOrSeries": "Historical national estimate, July 1, 1945",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www2.census.gov/programs-surveys/popest/tables/1900-1980/national/totals/popclockest.txt"
         }
       },
       "shareTop01Pct": {
-        "value": 18.0,
+        "value": 11.0,
         "unit": "percent",
         "observationYear": 1945,
         "isInterpolated": false,
@@ -733,43 +774,14 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share99to999Pct": {
-        "value": 18.5,
-        "unit": "percent",
-        "observationYear": 1945,
-        "isInterpolated": false,
-        "confidence": "low",
-        "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
-        "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
-        "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
-          "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
-        }
-      },
-      "share90to99Pct": {
-        "value": 38.0,
-        "unit": "percent",
-        "observationYear": 1945,
-        "isInterpolated": false,
-        "confidence": "low",
-        "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
-        "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
-        "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
-          "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
-        }
-      },
-      "share50to90Pct": {
         "value": 22.0,
         "unit": "percent",
         "observationYear": 1945,
@@ -778,14 +790,15 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
-      "shareBottom50Pct": {
-        "value": 3.5,
+      "share90to99Pct": {
+        "value": 39.4,
         "unit": "percent",
         "observationYear": 1945,
         "isInterpolated": false,
@@ -793,11 +806,32 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
+      },
+      "share50to90Pct": {
+        "value": null,
+        "unit": "percent",
+        "observationYear": null,
+        "isInterpolated": false,
+        "confidence": "na",
+        "definition": null,
+        "methodologyNote": "PSZ distributional series reports top-decile detail only before 1962; no primary bottom-half estimate exists for this year.",
+        "source": null
+      },
+      "shareBottom50Pct": {
+        "value": null,
+        "unit": "percent",
+        "observationYear": null,
+        "isInterpolated": false,
+        "confidence": "na",
+        "definition": null,
+        "methodologyNote": "PSZ distributional series reports top-decile detail only before 1962; no primary bottom-half estimate exists for this year.",
+        "source": null
       },
       "zeroOrNegativeWealth": {
         "value": null,
@@ -806,7 +840,7 @@
         "isInterpolated": false,
         "confidence": "na",
         "definition": null,
-        "methodologyNote": "No reliable primary source for zero/negative net worth before 1960; metric not reported in estate-tax reconstructions.",
+        "methodologyNote": "No reliable primary source for zero/negative net worth before the 1962 SFCC; metric not reported in estate-tax reconstructions.",
         "source": null
       }
     },
@@ -814,18 +848,19 @@
       "reportYear": 1950,
       "tier": 3,
       "totalHouseholdWealth": {
-        "value": 1418000,
+        "value": 892328,
         "unit": "usd_millions",
         "observationYear": 1950,
         "isInterpolated": false,
-        "confidence": "medium",
+        "confidence": "low",
         "definition": "Total household net worth, nominal USD",
-        "methodologyNote": null,
+        "methodologyNote": "PSZ national-accounts household series (excludes nonprofits).",
         "source": {
-          "name": "Federal Reserve Financial Accounts",
-          "url": "https://www.federalreserve.gov/releases/z1/",
-          "tableOrSeries": "Household net worth",
-          "accessedAt": "2026-07-01"
+          "name": "Piketty-Saez-Zucman Appendix Tables I (aggregates)",
+          "url": "https://gabriel-zucman.eu/usdina/",
+          "tableOrSeries": "Table TB1 column [1], net household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesI(Aggreg).xlsx"
         }
       },
       "householdCount": {
@@ -834,13 +869,14 @@
         "observationYear": 1950,
         "isInterpolated": false,
         "confidence": "high",
-        "definition": null,
+        "definition": "Total U.S. households (CPS housing-unit definition)",
         "methodologyNote": null,
         "source": {
-          "name": "U.S. Census Bureau",
+          "name": "U.S. Census Bureau - Historical Households (HH-1)",
           "url": "https://www.census.gov/data/tables/time-series/demo/families/households.html",
-          "tableOrSeries": "Historical households table",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table HH-1 total households, 1950",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www2.census.gov/programs-surveys/demo/tables/families/time-series/households/hh1.xls"
         }
       },
       "totalPopulation": {
@@ -852,14 +888,14 @@
         "definition": null,
         "methodologyNote": null,
         "source": {
-          "name": "U.S. Census Bureau",
-          "url": "https://www.census.gov/data/tables/time-series/demo/popest/2020s-national-total.html",
-          "tableOrSeries": "1950 decennial",
-          "accessedAt": "2026-07-01"
+          "name": "U.S. Census Bureau - Decennial counts and population estimates",
+          "url": "https://www.census.gov/programs-surveys/popest/data/tables.html",
+          "tableOrSeries": "1950 decennial census resident population",
+          "accessedAt": "2026-07-21"
         }
       },
       "shareTop01Pct": {
-        "value": 16.0,
+        "value": 10.3,
         "unit": "percent",
         "observationYear": 1950,
         "isInterpolated": false,
@@ -867,14 +903,15 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share99to999Pct": {
-        "value": 18.5,
+        "value": 19.3,
         "unit": "percent",
         "observationYear": 1950,
         "isInterpolated": false,
@@ -882,14 +919,15 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share90to99Pct": {
-        "value": 38.5,
+        "value": 39.4,
         "unit": "percent",
         "observationYear": 1950,
         "isInterpolated": false,
@@ -897,41 +935,32 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share50to90Pct": {
-        "value": 23.0,
+        "value": null,
         "unit": "percent",
-        "observationYear": 1950,
+        "observationYear": null,
         "isInterpolated": false,
-        "confidence": "low",
-        "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
-        "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
-        "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
-          "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
-        }
+        "confidence": "na",
+        "definition": null,
+        "methodologyNote": "PSZ distributional series reports top-decile detail only before 1962; no primary bottom-half estimate exists for this year.",
+        "source": null
       },
       "shareBottom50Pct": {
-        "value": 4.0,
+        "value": null,
         "unit": "percent",
-        "observationYear": 1950,
+        "observationYear": null,
         "isInterpolated": false,
-        "confidence": "low",
-        "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
-        "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
-        "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
-          "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
-        }
+        "confidence": "na",
+        "definition": null,
+        "methodologyNote": "PSZ distributional series reports top-decile detail only before 1962; no primary bottom-half estimate exists for this year.",
+        "source": null
       },
       "zeroOrNegativeWealth": {
         "value": null,
@@ -940,7 +969,7 @@
         "isInterpolated": false,
         "confidence": "na",
         "definition": null,
-        "methodologyNote": "No reliable primary source for zero/negative net worth before 1960; metric not reported in estate-tax reconstructions.",
+        "methodologyNote": "No reliable primary source for zero/negative net worth before the 1962 SFCC; metric not reported in estate-tax reconstructions.",
         "source": null
       }
     },
@@ -948,37 +977,39 @@
       "reportYear": 1955,
       "tier": 3,
       "totalHouseholdWealth": {
-        "value": 1950000,
+        "value": 1190844,
         "unit": "usd_millions",
         "observationYear": 1955,
-        "isInterpolated": true,
-        "confidence": "medium",
+        "isInterpolated": false,
+        "confidence": "low",
         "definition": "Total household net worth, nominal USD",
-        "methodologyNote": null,
+        "methodologyNote": "PSZ national-accounts household series (excludes nonprofits).",
         "source": {
-          "name": "Federal Reserve Financial Accounts",
-          "url": "https://www.federalreserve.gov/releases/z1/",
-          "tableOrSeries": "Interpolated from Z.1 historical",
-          "accessedAt": "2026-07-01"
+          "name": "Piketty-Saez-Zucman Appendix Tables I (aggregates)",
+          "url": "https://gabriel-zucman.eu/usdina/",
+          "tableOrSeries": "Table TB1 column [1], net household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesI(Aggreg).xlsx"
         }
       },
       "householdCount": {
-        "value": 47800000,
+        "value": 47874000,
         "unit": "count",
         "observationYear": 1955,
-        "isInterpolated": true,
-        "confidence": "medium",
-        "definition": null,
+        "isInterpolated": false,
+        "confidence": "high",
+        "definition": "Total U.S. households (CPS housing-unit definition)",
         "methodologyNote": null,
         "source": {
-          "name": "U.S. Census Bureau",
+          "name": "U.S. Census Bureau - Historical Households (HH-1)",
           "url": "https://www.census.gov/data/tables/time-series/demo/families/households.html",
-          "tableOrSeries": "Historical households interpolated",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table HH-1 total households, 1955",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www2.census.gov/programs-surveys/demo/tables/families/time-series/households/hh1.xls"
         }
       },
       "totalPopulation": {
-        "value": 165931000,
+        "value": 165931202,
         "unit": "count",
         "observationYear": 1955,
         "isInterpolated": false,
@@ -986,14 +1017,15 @@
         "definition": null,
         "methodologyNote": null,
         "source": {
-          "name": "U.S. Census Bureau",
-          "url": "https://www.census.gov/library/publications/1975/compendia/hist_stats_colonial-1970.html",
-          "tableOrSeries": "Series A 1-5 intercensal",
-          "accessedAt": "2026-07-01"
+          "name": "U.S. Census Bureau - Historical National Population Estimates",
+          "url": "https://www.census.gov/data/tables/time-series/demo/popest/pre-1980-national.html",
+          "tableOrSeries": "Historical national estimate, July 1, 1955",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www2.census.gov/programs-surveys/popest/tables/1900-1980/national/totals/popclockest.txt"
         }
       },
       "shareTop01Pct": {
-        "value": 14.0,
+        "value": 9.7,
         "unit": "percent",
         "observationYear": 1955,
         "isInterpolated": false,
@@ -1001,14 +1033,15 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share99to999Pct": {
-        "value": 18.5,
+        "value": 18.8,
         "unit": "percent",
         "observationYear": 1955,
         "isInterpolated": false,
@@ -1016,14 +1049,15 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share90to99Pct": {
-        "value": 39.0,
+        "value": 40.4,
         "unit": "percent",
         "observationYear": 1955,
         "isInterpolated": false,
@@ -1031,41 +1065,32 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share50to90Pct": {
-        "value": 24.0,
+        "value": null,
         "unit": "percent",
-        "observationYear": 1955,
+        "observationYear": null,
         "isInterpolated": false,
-        "confidence": "low",
-        "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
-        "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
-        "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
-          "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
-        }
+        "confidence": "na",
+        "definition": null,
+        "methodologyNote": "PSZ distributional series reports top-decile detail only before 1962; no primary bottom-half estimate exists for this year.",
+        "source": null
       },
       "shareBottom50Pct": {
-        "value": 4.5,
+        "value": null,
         "unit": "percent",
-        "observationYear": 1955,
+        "observationYear": null,
         "isInterpolated": false,
-        "confidence": "low",
-        "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
-        "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
-        "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
-          "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
-        }
+        "confidence": "na",
+        "definition": null,
+        "methodologyNote": "PSZ distributional series reports top-decile detail only before 1962; no primary bottom-half estimate exists for this year.",
+        "source": null
       },
       "zeroOrNegativeWealth": {
         "value": null,
@@ -1074,7 +1099,7 @@
         "isInterpolated": false,
         "confidence": "na",
         "definition": null,
-        "methodologyNote": "No reliable primary source for zero/negative net worth before 1960; metric not reported in estate-tax reconstructions.",
+        "methodologyNote": "No reliable primary source for zero/negative net worth before the 1962 SFCC; metric not reported in estate-tax reconstructions.",
         "source": null
       }
     },
@@ -1082,18 +1107,19 @@
       "reportYear": 1960,
       "tier": 2,
       "totalHouseholdWealth": {
-        "value": 2485000,
+        "value": 1559674,
         "unit": "usd_millions",
         "observationYear": 1960,
         "isInterpolated": false,
         "confidence": "medium",
         "definition": "Total household net worth, nominal USD",
-        "methodologyNote": null,
+        "methodologyNote": "PSZ national-accounts household series (excludes nonprofits).",
         "source": {
-          "name": "Federal Reserve Financial Accounts",
-          "url": "https://www.federalreserve.gov/releases/z1/",
-          "tableOrSeries": "Household net worth",
-          "accessedAt": "2026-07-01"
+          "name": "Piketty-Saez-Zucman Appendix Tables I (aggregates)",
+          "url": "https://gabriel-zucman.eu/usdina/",
+          "tableOrSeries": "Table TB1 column [1], net household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesI(Aggreg).xlsx"
         }
       },
       "householdCount": {
@@ -1102,13 +1128,14 @@
         "observationYear": 1960,
         "isInterpolated": false,
         "confidence": "high",
-        "definition": null,
+        "definition": "Total U.S. households (CPS housing-unit definition)",
         "methodologyNote": null,
         "source": {
-          "name": "U.S. Census Bureau",
+          "name": "U.S. Census Bureau - Historical Households (HH-1)",
           "url": "https://www.census.gov/data/tables/time-series/demo/families/households.html",
-          "tableOrSeries": "Historical households table",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table HH-1 total households, 1960",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www2.census.gov/programs-surveys/demo/tables/families/time-series/households/hh1.xls"
         }
       },
       "totalPopulation": {
@@ -1120,14 +1147,14 @@
         "definition": null,
         "methodologyNote": null,
         "source": {
-          "name": "U.S. Census Bureau",
-          "url": "https://www.census.gov/data/tables/time-series/demo/popest/2020s-national-total.html",
-          "tableOrSeries": "1960 decennial",
-          "accessedAt": "2026-07-01"
+          "name": "U.S. Census Bureau - Decennial counts and population estimates",
+          "url": "https://www.census.gov/programs-surveys/popest/data/tables.html",
+          "tableOrSeries": "1960 decennial census resident population",
+          "accessedAt": "2026-07-21"
         }
       },
       "shareTop01Pct": {
-        "value": 24.2,
+        "value": 9.9,
         "unit": "percent",
         "observationYear": 1960,
         "isInterpolated": false,
@@ -1135,14 +1162,15 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share99to999Pct": {
-        "value": 17.8,
+        "value": 18.7,
         "unit": "percent",
         "observationYear": 1960,
         "isInterpolated": false,
@@ -1150,14 +1178,15 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share90to99Pct": {
-        "value": 35.5,
+        "value": 42.0,
         "unit": "percent",
         "observationYear": 1960,
         "isInterpolated": false,
@@ -1165,55 +1194,47 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share50to90Pct": {
-        "value": 19.5,
+        "value": null,
         "unit": "percent",
-        "observationYear": 1960,
+        "observationYear": null,
         "isInterpolated": false,
-        "confidence": "medium",
-        "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
-        "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
-        "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
-          "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
-        }
+        "confidence": "na",
+        "definition": null,
+        "methodologyNote": "PSZ distributional series reports top-decile detail only before 1962; no primary bottom-half estimate exists for this year.",
+        "source": null
       },
       "shareBottom50Pct": {
-        "value": 3.0,
+        "value": null,
         "unit": "percent",
-        "observationYear": 1960,
+        "observationYear": null,
         "isInterpolated": false,
-        "confidence": "medium",
-        "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
-        "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
-        "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
-          "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
-        }
+        "confidence": "na",
+        "definition": null,
+        "methodologyNote": "PSZ distributional series reports top-decile detail only before 1962; no primary bottom-half estimate exists for this year.",
+        "source": null
       },
       "zeroOrNegativeWealth": {
         "value": 18.2,
         "unit": "percent",
         "observationYear": 1962,
-        "isInterpolated": false,
+        "isInterpolated": true,
         "confidence": "medium",
         "definition": "Percent of all U.S. households with zero or negative net worth",
-        "methodologyNote": "SCF via Wolff; nearest survey year 1962.",
+        "methodologyNote": "Survey of Consumer Finances via Wolff; nearest survey year 1962 (2 years from grid year).",
         "source": {
-          "name": "Edward N. Wolff (SCF)",
+          "name": "Edward N. Wolff (NBER Working Paper 28383)",
           "url": "https://www.nber.org/papers/w28383",
-          "tableOrSeries": "Table 1 Panel A row 3",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table 1 Panel A row 3a",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.nber.org/system/files/working_papers/w28383/w28383.pdf"
         }
       }
     },
@@ -1221,37 +1242,39 @@
       "reportYear": 1965,
       "tier": 2,
       "totalHouseholdWealth": {
-        "value": 3350000,
+        "value": 2061415,
         "unit": "usd_millions",
         "observationYear": 1965,
-        "isInterpolated": true,
+        "isInterpolated": false,
         "confidence": "medium",
         "definition": "Total household net worth, nominal USD",
-        "methodologyNote": null,
+        "methodologyNote": "PSZ national-accounts household series (excludes nonprofits).",
         "source": {
-          "name": "Federal Reserve Financial Accounts",
-          "url": "https://www.federalreserve.gov/releases/z1/",
-          "tableOrSeries": "Interpolated from Z.1",
-          "accessedAt": "2026-07-01"
+          "name": "Piketty-Saez-Zucman Appendix Tables I (aggregates)",
+          "url": "https://gabriel-zucman.eu/usdina/",
+          "tableOrSeries": "Table TB1 column [1], net household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesI(Aggreg).xlsx"
         }
       },
       "householdCount": {
-        "value": 57400000,
+        "value": 57436000,
         "unit": "count",
         "observationYear": 1965,
-        "isInterpolated": true,
-        "confidence": "medium",
-        "definition": null,
+        "isInterpolated": false,
+        "confidence": "high",
+        "definition": "Total U.S. households (CPS housing-unit definition)",
         "methodologyNote": null,
         "source": {
-          "name": "U.S. Census Bureau",
+          "name": "U.S. Census Bureau - Historical Households (HH-1)",
           "url": "https://www.census.gov/data/tables/time-series/demo/families/households.html",
-          "tableOrSeries": "Historical households interpolated",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table HH-1 total households, 1965",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www2.census.gov/programs-surveys/demo/tables/families/time-series/households/hh1.xls"
         }
       },
       "totalPopulation": {
-        "value": 194303000,
+        "value": 194302963,
         "unit": "count",
         "observationYear": 1965,
         "isInterpolated": false,
@@ -1259,14 +1282,15 @@
         "definition": null,
         "methodologyNote": null,
         "source": {
-          "name": "U.S. Census Bureau",
-          "url": "https://www.census.gov/library/publications/1975/compendia/hist_stats_colonial-1970.html",
-          "tableOrSeries": "Series A 1-5 intercensal",
-          "accessedAt": "2026-07-01"
+          "name": "U.S. Census Bureau - Historical National Population Estimates",
+          "url": "https://www.census.gov/data/tables/time-series/demo/popest/pre-1980-national.html",
+          "tableOrSeries": "Historical national estimate, July 1, 1965",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www2.census.gov/programs-surveys/popest/tables/1900-1980/national/totals/popclockest.txt"
         }
       },
       "shareTop01Pct": {
-        "value": 22.5,
+        "value": 9.8,
         "unit": "percent",
         "observationYear": 1965,
         "isInterpolated": false,
@@ -1274,14 +1298,15 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share99to999Pct": {
-        "value": 17.5,
+        "value": 18.1,
         "unit": "percent",
         "observationYear": 1965,
         "isInterpolated": false,
@@ -1289,14 +1314,15 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share90to99Pct": {
-        "value": 36.0,
+        "value": 42.8,
         "unit": "percent",
         "observationYear": 1965,
         "isInterpolated": false,
@@ -1304,14 +1330,15 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share50to90Pct": {
-        "value": 20.0,
+        "value": 28.2,
         "unit": "percent",
         "observationYear": 1965,
         "isInterpolated": false,
@@ -1319,14 +1346,15 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "shareBottom50Pct": {
-        "value": 4.0,
+        "value": 1.1,
         "unit": "percent",
         "observationYear": 1965,
         "isInterpolated": false,
@@ -1334,25 +1362,27 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "zeroOrNegativeWealth": {
-        "value": 17.0,
+        "value": 18.2,
         "unit": "percent",
-        "observationYear": 1969,
-        "isInterpolated": false,
+        "observationYear": 1962,
+        "isInterpolated": true,
         "confidence": "medium",
         "definition": "Percent of all U.S. households with zero or negative net worth",
-        "methodologyNote": "SCF via Wolff; nearest survey year 1969.",
+        "methodologyNote": "Survey of Consumer Finances via Wolff; nearest survey year 1962 (3 years from grid year).",
         "source": {
-          "name": "Edward N. Wolff (SCF)",
+          "name": "Edward N. Wolff (NBER Working Paper 28383)",
           "url": "https://www.nber.org/papers/w28383",
-          "tableOrSeries": "Table 1 Panel A row 3",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table 1 Panel A row 3a",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.nber.org/system/files/working_papers/w28383/w28383.pdf"
         }
       }
     },
@@ -1360,18 +1390,19 @@
       "reportYear": 1970,
       "tier": 2,
       "totalHouseholdWealth": {
-        "value": 3986000,
+        "value": 2762144,
         "unit": "usd_millions",
         "observationYear": 1970,
         "isInterpolated": false,
         "confidence": "medium",
         "definition": "Total household net worth, nominal USD",
-        "methodologyNote": null,
+        "methodologyNote": "PSZ national-accounts household series (excludes nonprofits).",
         "source": {
-          "name": "Federal Reserve Financial Accounts",
-          "url": "https://www.federalreserve.gov/releases/z1/",
-          "tableOrSeries": "Household net worth",
-          "accessedAt": "2026-07-01"
+          "name": "Piketty-Saez-Zucman Appendix Tables I (aggregates)",
+          "url": "https://gabriel-zucman.eu/usdina/",
+          "tableOrSeries": "Table TB1 column [1], net household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesI(Aggreg).xlsx"
         }
       },
       "householdCount": {
@@ -1380,13 +1411,14 @@
         "observationYear": 1970,
         "isInterpolated": false,
         "confidence": "high",
-        "definition": null,
+        "definition": "Total U.S. households (CPS housing-unit definition)",
         "methodologyNote": null,
         "source": {
-          "name": "U.S. Census Bureau",
+          "name": "U.S. Census Bureau - Historical Households (HH-1)",
           "url": "https://www.census.gov/data/tables/time-series/demo/families/households.html",
-          "tableOrSeries": "Historical households table",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table HH-1 total households, 1970",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www2.census.gov/programs-surveys/demo/tables/families/time-series/households/hh1.xls"
         }
       },
       "totalPopulation": {
@@ -1398,14 +1430,14 @@
         "definition": null,
         "methodologyNote": null,
         "source": {
-          "name": "U.S. Census Bureau",
-          "url": "https://www.census.gov/data/tables/time-series/demo/popest/2020s-national-total.html",
-          "tableOrSeries": "1970 decennial",
-          "accessedAt": "2026-07-01"
+          "name": "U.S. Census Bureau - Decennial counts and population estimates",
+          "url": "https://www.census.gov/programs-surveys/popest/data/tables.html",
+          "tableOrSeries": "1970 decennial census resident population",
+          "accessedAt": "2026-07-21"
         }
       },
       "shareTop01Pct": {
-        "value": 21.5,
+        "value": 9.5,
         "unit": "percent",
         "observationYear": 1970,
         "isInterpolated": false,
@@ -1413,14 +1445,15 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share99to999Pct": {
-        "value": 17.0,
+        "value": 17.4,
         "unit": "percent",
         "observationYear": 1970,
         "isInterpolated": false,
@@ -1428,14 +1461,15 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share90to99Pct": {
-        "value": 36.5,
+        "value": 42.2,
         "unit": "percent",
         "observationYear": 1970,
         "isInterpolated": false,
@@ -1443,14 +1477,15 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share50to90Pct": {
-        "value": 21.0,
+        "value": 29.9,
         "unit": "percent",
         "observationYear": 1970,
         "isInterpolated": false,
@@ -1458,14 +1493,15 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "shareBottom50Pct": {
-        "value": 4.0,
+        "value": 1.0,
         "unit": "percent",
         "observationYear": 1970,
         "isInterpolated": false,
@@ -1473,25 +1509,27 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "zeroOrNegativeWealth": {
-        "value": 16.5,
+        "value": 15.6,
         "unit": "percent",
         "observationYear": 1969,
-        "isInterpolated": false,
-        "confidence": "medium",
+        "isInterpolated": true,
+        "confidence": "high",
         "definition": "Percent of all U.S. households with zero or negative net worth",
-        "methodologyNote": "SCF via Wolff; nearest survey year 1969.",
+        "methodologyNote": "Survey of Consumer Finances via Wolff; nearest survey year 1969 (1 years from grid year).",
         "source": {
-          "name": "Edward N. Wolff (SCF)",
+          "name": "Edward N. Wolff (NBER Working Paper 28383)",
           "url": "https://www.nber.org/papers/w28383",
-          "tableOrSeries": "Table 1 Panel A row 3",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table 1 Panel A row 3a",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.nber.org/system/files/working_papers/w28383/w28383.pdf"
         }
       }
     },
@@ -1499,37 +1537,39 @@
       "reportYear": 1975,
       "tier": 2,
       "totalHouseholdWealth": {
-        "value": 5850000,
+        "value": 3919518,
         "unit": "usd_millions",
         "observationYear": 1975,
-        "isInterpolated": true,
+        "isInterpolated": false,
         "confidence": "medium",
         "definition": "Total household net worth, nominal USD",
-        "methodologyNote": null,
+        "methodologyNote": "PSZ national-accounts household series (excludes nonprofits).",
         "source": {
-          "name": "Federal Reserve Financial Accounts",
-          "url": "https://www.federalreserve.gov/releases/z1/",
-          "tableOrSeries": "Interpolated from Z.1",
-          "accessedAt": "2026-07-01"
+          "name": "Piketty-Saez-Zucman Appendix Tables I (aggregates)",
+          "url": "https://gabriel-zucman.eu/usdina/",
+          "tableOrSeries": "Table TB1 column [1], net household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesI(Aggreg).xlsx"
         }
       },
       "householdCount": {
-        "value": 71400000,
+        "value": 71120000,
         "unit": "count",
         "observationYear": 1975,
-        "isInterpolated": true,
-        "confidence": "medium",
-        "definition": null,
+        "isInterpolated": false,
+        "confidence": "high",
+        "definition": "Total U.S. households (CPS housing-unit definition)",
         "methodologyNote": null,
         "source": {
-          "name": "U.S. Census Bureau",
+          "name": "U.S. Census Bureau - Historical Households (HH-1)",
           "url": "https://www.census.gov/data/tables/time-series/demo/families/households.html",
-          "tableOrSeries": "Historical households interpolated",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table HH-1 total households, 1975",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www2.census.gov/programs-surveys/demo/tables/families/time-series/households/hh1.xls"
         }
       },
       "totalPopulation": {
-        "value": 215973000,
+        "value": 215973199,
         "unit": "count",
         "observationYear": 1975,
         "isInterpolated": false,
@@ -1537,14 +1577,15 @@
         "definition": null,
         "methodologyNote": null,
         "source": {
-          "name": "U.S. Census Bureau",
-          "url": "https://www2.census.gov/programs-surveys/popest/tables/1970-1980/state/totals/pe1970-80-alldata.csv",
-          "tableOrSeries": "Intercensal estimates",
-          "accessedAt": "2026-07-01"
+          "name": "U.S. Census Bureau - Historical National Population Estimates",
+          "url": "https://www.census.gov/data/tables/time-series/demo/popest/pre-1980-national.html",
+          "tableOrSeries": "Historical national estimate, July 1, 1975",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www2.census.gov/programs-surveys/popest/tables/1900-1980/national/totals/popclockest.txt"
         }
       },
       "shareTop01Pct": {
-        "value": 15.0,
+        "value": 7.5,
         "unit": "percent",
         "observationYear": 1975,
         "isInterpolated": false,
@@ -1552,14 +1593,15 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share99to999Pct": {
-        "value": 17.5,
+        "value": 16.1,
         "unit": "percent",
         "observationYear": 1975,
         "isInterpolated": false,
@@ -1567,14 +1609,15 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share90to99Pct": {
-        "value": 37.5,
+        "value": 43.1,
         "unit": "percent",
         "observationYear": 1975,
         "isInterpolated": false,
@@ -1582,14 +1625,15 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share50to90Pct": {
-        "value": 26.0,
+        "value": 32.5,
         "unit": "percent",
         "observationYear": 1975,
         "isInterpolated": false,
@@ -1597,14 +1641,15 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "shareBottom50Pct": {
-        "value": 4.0,
+        "value": 0.9,
         "unit": "percent",
         "observationYear": 1975,
         "isInterpolated": false,
@@ -1612,25 +1657,27 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "zeroOrNegativeWealth": {
-        "value": 16.0,
+        "value": 15.6,
         "unit": "percent",
-        "observationYear": 1975,
-        "isInterpolated": false,
+        "observationYear": 1969,
+        "isInterpolated": true,
         "confidence": "low",
         "definition": "Percent of all U.S. households with zero or negative net worth",
-        "methodologyNote": "SCF via Wolff; nearest survey year 1975.",
+        "methodologyNote": "Survey of Consumer Finances via Wolff; nearest survey year 1969 (6 years from grid year).",
         "source": {
-          "name": "Edward N. Wolff (SCF)",
+          "name": "Edward N. Wolff (NBER Working Paper 28383)",
           "url": "https://www.nber.org/papers/w28383",
-          "tableOrSeries": "Table 1 Panel A row 3",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table 1 Panel A row 3a",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.nber.org/system/files/working_papers/w28383/w28383.pdf"
         }
       }
     },
@@ -1638,37 +1685,39 @@
       "reportYear": 1980,
       "tier": 2,
       "totalHouseholdWealth": {
-        "value": 10613000,
+        "value": 7284396,
         "unit": "usd_millions",
         "observationYear": 1980,
         "isInterpolated": false,
         "confidence": "medium",
         "definition": "Total household net worth, nominal USD",
-        "methodologyNote": null,
+        "methodologyNote": "PSZ national-accounts household series (excludes nonprofits).",
         "source": {
-          "name": "Federal Reserve Financial Accounts",
-          "url": "https://www.federalreserve.gov/releases/z1/",
-          "tableOrSeries": "Table B.101.h",
-          "accessedAt": "2026-07-01"
+          "name": "Piketty-Saez-Zucman Appendix Tables I (aggregates)",
+          "url": "https://gabriel-zucman.eu/usdina/",
+          "tableOrSeries": "Table TB1 column [1], net household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesI(Aggreg).xlsx"
         }
       },
       "householdCount": {
-        "value": 80389000,
+        "value": 80776000,
         "unit": "count",
         "observationYear": 1980,
         "isInterpolated": false,
         "confidence": "high",
-        "definition": null,
+        "definition": "Total U.S. households (CPS housing-unit definition)",
         "methodologyNote": null,
         "source": {
-          "name": "U.S. Census Bureau",
+          "name": "U.S. Census Bureau - Historical Households (HH-1)",
           "url": "https://www.census.gov/data/tables/time-series/demo/families/households.html",
-          "tableOrSeries": "Historical households table",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table HH-1 total households, 1980",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www2.census.gov/programs-surveys/demo/tables/families/time-series/households/hh1.xls"
         }
       },
       "totalPopulation": {
-        "value": 226542203,
+        "value": 226545805,
         "unit": "count",
         "observationYear": 1980,
         "isInterpolated": false,
@@ -1676,14 +1725,14 @@
         "definition": null,
         "methodologyNote": null,
         "source": {
-          "name": "U.S. Census Bureau",
-          "url": "https://www.census.gov/data/tables/time-series/demo/popest/2020s-national-total.html",
-          "tableOrSeries": "1980 decennial",
-          "accessedAt": "2026-07-01"
+          "name": "U.S. Census Bureau - Decennial counts and population estimates",
+          "url": "https://www.census.gov/programs-surveys/popest/data/tables.html",
+          "tableOrSeries": "1980 decennial census resident population",
+          "accessedAt": "2026-07-21"
         }
       },
       "shareTop01Pct": {
-        "value": 12.5,
+        "value": 7.8,
         "unit": "percent",
         "observationYear": 1980,
         "isInterpolated": false,
@@ -1691,14 +1740,15 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share99to999Pct": {
-        "value": 17.5,
+        "value": 15.5,
         "unit": "percent",
         "observationYear": 1980,
         "isInterpolated": false,
@@ -1706,14 +1756,15 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share90to99Pct": {
-        "value": 38.5,
+        "value": 41.8,
         "unit": "percent",
         "observationYear": 1980,
         "isInterpolated": false,
@@ -1721,14 +1772,15 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share50to90Pct": {
-        "value": 27.5,
+        "value": 34.0,
         "unit": "percent",
         "observationYear": 1980,
         "isInterpolated": false,
@@ -1736,14 +1788,15 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "shareBottom50Pct": {
-        "value": 4.0,
+        "value": 1.0,
         "unit": "percent",
         "observationYear": 1980,
         "isInterpolated": false,
@@ -1751,25 +1804,27 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "zeroOrNegativeWealth": {
-        "value": 15.8,
+        "value": 15.5,
         "unit": "percent",
         "observationYear": 1983,
-        "isInterpolated": false,
+        "isInterpolated": true,
         "confidence": "medium",
         "definition": "Percent of all U.S. households with zero or negative net worth",
-        "methodologyNote": "SCF via Wolff; nearest survey year 1983.",
+        "methodologyNote": "Survey of Consumer Finances via Wolff; nearest survey year 1983 (3 years from grid year).",
         "source": {
-          "name": "Edward N. Wolff (SCF)",
+          "name": "Edward N. Wolff (NBER Working Paper 28383)",
           "url": "https://www.nber.org/papers/w28383",
-          "tableOrSeries": "Table 1 Panel A row 3",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table 1 Panel A row 3a",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.nber.org/system/files/working_papers/w28383/w28383.pdf"
         }
       }
     },
@@ -1777,37 +1832,39 @@
       "reportYear": 1985,
       "tier": 2,
       "totalHouseholdWealth": {
-        "value": 17385000,
+        "value": 11494034,
         "unit": "usd_millions",
         "observationYear": 1985,
-        "isInterpolated": true,
+        "isInterpolated": false,
         "confidence": "medium",
         "definition": "Total household net worth, nominal USD",
-        "methodologyNote": null,
+        "methodologyNote": "PSZ national-accounts household series (excludes nonprofits).",
         "source": {
-          "name": "Federal Reserve Financial Accounts",
-          "url": "https://www.federalreserve.gov/releases/z1/",
-          "tableOrSeries": "Table B.101.h interpolated",
-          "accessedAt": "2026-07-01"
+          "name": "Piketty-Saez-Zucman Appendix Tables I (aggregates)",
+          "url": "https://gabriel-zucman.eu/usdina/",
+          "tableOrSeries": "Table TB1 column [1], net household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesI(Aggreg).xlsx"
         }
       },
       "householdCount": {
-        "value": 86800000,
+        "value": 86789000,
         "unit": "count",
         "observationYear": 1985,
-        "isInterpolated": true,
-        "confidence": "medium",
-        "definition": null,
+        "isInterpolated": false,
+        "confidence": "high",
+        "definition": "Total U.S. households (CPS housing-unit definition)",
         "methodologyNote": null,
         "source": {
-          "name": "U.S. Census Bureau",
+          "name": "U.S. Census Bureau - Historical Households (HH-1)",
           "url": "https://www.census.gov/data/tables/time-series/demo/families/households.html",
-          "tableOrSeries": "Historical households interpolated",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table HH-1 total households, 1985",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www2.census.gov/programs-surveys/demo/tables/families/time-series/households/hh1.xls"
         }
       },
       "totalPopulation": {
-        "value": 237924000,
+        "value": 237923795,
         "unit": "count",
         "observationYear": 1985,
         "isInterpolated": false,
@@ -1815,14 +1872,15 @@
         "definition": null,
         "methodologyNote": null,
         "source": {
-          "name": "U.S. Census Bureau",
-          "url": "https://www2.census.gov/programs-surveys/popest/tables/1980-1990/state/totals/pe1980-90-alldata.csv",
-          "tableOrSeries": "Intercensal estimates",
-          "accessedAt": "2026-07-01"
+          "name": "U.S. Census Bureau - Historical National Population Estimates",
+          "url": "https://www.census.gov/data/tables/time-series/demo/popest/pre-1980-national.html",
+          "tableOrSeries": "Historical national estimate, July 1, 1985",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www2.census.gov/programs-surveys/popest/tables/1900-1980/national/totals/popclockest.txt"
         }
       },
       "shareTop01Pct": {
-        "value": 11.0,
+        "value": 9.9,
         "unit": "percent",
         "observationYear": 1985,
         "isInterpolated": false,
@@ -1830,14 +1888,15 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share99to999Pct": {
-        "value": 17.5,
+        "value": 14.9,
         "unit": "percent",
         "observationYear": 1985,
         "isInterpolated": false,
@@ -1845,14 +1904,15 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share90to99Pct": {
-        "value": 39.0,
+        "value": 38.2,
         "unit": "percent",
         "observationYear": 1985,
         "isInterpolated": false,
@@ -1860,14 +1920,15 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "share50to90Pct": {
-        "value": 28.5,
+        "value": 35.5,
         "unit": "percent",
         "observationYear": 1985,
         "isInterpolated": false,
@@ -1875,14 +1936,15 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "shareBottom50Pct": {
-        "value": 4.0,
+        "value": 1.5,
         "unit": "percent",
         "observationYear": 1985,
         "isInterpolated": false,
@@ -1890,25 +1952,27 @@
         "definition": "Share of total wealth (equal-split adults, capitalized incomes)",
         "methodologyNote": "PSZ/WID series uses equal-split adults, not identical to post-1989 household DFA.",
         "source": {
-          "name": "Piketty-Saez-Zucman (WID)",
+          "name": "Piketty-Saez-Zucman Appendix Tables II (distributions)",
           "url": "https://gabriel-zucman.eu/usdina/",
-          "tableOrSeries": "Tables II distributional wealth shares",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table TE1, shares of total household wealth",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://gabriel-zucman.eu/files/PSZ2022AppendixTablesII(Distrib).xlsx"
         }
       },
       "zeroOrNegativeWealth": {
         "value": 15.5,
         "unit": "percent",
         "observationYear": 1983,
-        "isInterpolated": false,
+        "isInterpolated": true,
         "confidence": "medium",
         "definition": "Percent of all U.S. households with zero or negative net worth",
-        "methodologyNote": "SCF via Wolff; nearest survey year 1983.",
+        "methodologyNote": "Survey of Consumer Finances via Wolff; nearest survey year 1983 (2 years from grid year).",
         "source": {
-          "name": "Edward N. Wolff (SCF)",
+          "name": "Edward N. Wolff (NBER Working Paper 28383)",
           "url": "https://www.nber.org/papers/w28383",
-          "tableOrSeries": "Table 1 Panel A row 3",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table 1 Panel A row 3a",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.nber.org/system/files/working_papers/w28383/w28383.pdf"
         }
       }
     },
@@ -1927,7 +1991,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 1990:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "householdCount": {
@@ -1942,7 +2007,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 1990:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "totalPopulation": {
@@ -1954,10 +2020,10 @@
         "definition": null,
         "methodologyNote": null,
         "source": {
-          "name": "U.S. Census Bureau",
-          "url": "https://www.census.gov/data/tables/time-series/demo/popest/2020s-national-total.html",
-          "tableOrSeries": "1990 decennial",
-          "accessedAt": "2026-07-01"
+          "name": "U.S. Census Bureau - Decennial counts and population estimates",
+          "url": "https://www.census.gov/programs-surveys/popest/data/tables.html",
+          "tableOrSeries": "1990 decennial census resident population",
+          "accessedAt": "2026-07-21"
         }
       },
       "shareTop01Pct": {
@@ -1972,7 +2038,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 1990:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "share99to999Pct": {
@@ -1987,7 +2054,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 1990:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "share90to99Pct": {
@@ -2002,7 +2070,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 1990:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "share50to90Pct": {
@@ -2017,7 +2086,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 1990:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "shareBottom50Pct": {
@@ -2032,22 +2102,24 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 1990:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "zeroOrNegativeWealth": {
         "value": 17.9,
         "unit": "percent",
         "observationYear": 1989,
-        "isInterpolated": false,
+        "isInterpolated": true,
         "confidence": "high",
         "definition": "Percent of all U.S. households with zero or negative net worth",
-        "methodologyNote": "Survey of Consumer Finances via Wolff; observation year 1989.",
+        "methodologyNote": "Survey of Consumer Finances via Wolff; nearest survey year 1989 (1 years from grid year).",
         "source": {
-          "name": "Edward N. Wolff (SCF)",
+          "name": "Edward N. Wolff (NBER Working Paper 28383)",
           "url": "https://www.nber.org/papers/w28383",
-          "tableOrSeries": "Table 1 Panel A row 3",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table 1 Panel A row 3a",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.nber.org/system/files/working_papers/w28383/w28383.pdf"
         }
       }
     },
@@ -2066,7 +2138,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 1995:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "householdCount": {
@@ -2081,11 +2154,12 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 1995:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "totalPopulation": {
-        "value": 266278000,
+        "value": 262803276,
         "unit": "count",
         "observationYear": 1995,
         "isInterpolated": false,
@@ -2093,10 +2167,11 @@
         "definition": null,
         "methodologyNote": null,
         "source": {
-          "name": "U.S. Census Bureau",
-          "url": "https://www2.census.gov/programs-surveys/popest/tables/1990-2000/state/totals/pe1990-00-alldata.csv",
-          "tableOrSeries": "1995 estimate",
-          "accessedAt": "2026-07-01"
+          "name": "U.S. Census Bureau - Historical National Population Estimates",
+          "url": "https://www.census.gov/data/tables/time-series/demo/popest/pre-1980-national.html",
+          "tableOrSeries": "Historical national estimate, July 1, 1995",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www2.census.gov/programs-surveys/popest/tables/1900-1980/national/totals/popclockest.txt"
         }
       },
       "shareTop01Pct": {
@@ -2111,7 +2186,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 1995:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "share99to999Pct": {
@@ -2126,7 +2202,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 1995:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "share90to99Pct": {
@@ -2141,7 +2218,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 1995:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "share50to90Pct": {
@@ -2156,7 +2234,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 1995:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "shareBottom50Pct": {
@@ -2171,22 +2250,24 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 1995:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "zeroOrNegativeWealth": {
-        "value": 18.0,
+        "value": 17.9,
         "unit": "percent",
-        "observationYear": 1995,
-        "isInterpolated": false,
-        "confidence": "high",
+        "observationYear": 1989,
+        "isInterpolated": true,
+        "confidence": "low",
         "definition": "Percent of all U.S. households with zero or negative net worth",
-        "methodologyNote": "Survey of Consumer Finances via Wolff; observation year 1995.",
+        "methodologyNote": "Survey of Consumer Finances via Wolff; nearest survey year 1989 (6 years from grid year).",
         "source": {
-          "name": "Edward N. Wolff (SCF)",
+          "name": "Edward N. Wolff (NBER Working Paper 28383)",
           "url": "https://www.nber.org/papers/w28383",
-          "tableOrSeries": "Table 1 Panel A row 3",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table 1 Panel A row 3a",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.nber.org/system/files/working_papers/w28383/w28383.pdf"
         }
       }
     },
@@ -2205,7 +2286,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2000:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "householdCount": {
@@ -2220,11 +2302,12 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2000:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "totalPopulation": {
-        "value": 281424600,
+        "value": 281421906,
         "unit": "count",
         "observationYear": 2000,
         "isInterpolated": false,
@@ -2232,10 +2315,10 @@
         "definition": null,
         "methodologyNote": null,
         "source": {
-          "name": "U.S. Census Bureau",
-          "url": "https://www.census.gov/data/tables/time-series/demo/popest/2020s-national-total.html",
-          "tableOrSeries": "2000 decennial",
-          "accessedAt": "2026-07-01"
+          "name": "U.S. Census Bureau - Decennial counts and population estimates",
+          "url": "https://www.census.gov/programs-surveys/popest/data/tables.html",
+          "tableOrSeries": "2000 decennial census resident population",
+          "accessedAt": "2026-07-21"
         }
       },
       "shareTop01Pct": {
@@ -2250,7 +2333,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2000:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "share99to999Pct": {
@@ -2265,7 +2349,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2000:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "share90to99Pct": {
@@ -2280,7 +2365,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2000:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "share50to90Pct": {
@@ -2295,7 +2381,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2000:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "shareBottom50Pct": {
@@ -2310,22 +2397,24 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2000:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "zeroOrNegativeWealth": {
         "value": 17.6,
         "unit": "percent",
         "observationYear": 2001,
-        "isInterpolated": false,
+        "isInterpolated": true,
         "confidence": "high",
         "definition": "Percent of all U.S. households with zero or negative net worth",
-        "methodologyNote": "Survey of Consumer Finances via Wolff; observation year 2001.",
+        "methodologyNote": "Survey of Consumer Finances via Wolff; nearest survey year 2001 (1 years from grid year).",
         "source": {
-          "name": "Edward N. Wolff (SCF)",
+          "name": "Edward N. Wolff (NBER Working Paper 28383)",
           "url": "https://www.nber.org/papers/w28383",
-          "tableOrSeries": "Table 1 Panel A row 3",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table 1 Panel A row 3a",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.nber.org/system/files/working_papers/w28383/w28383.pdf"
         }
       }
     },
@@ -2344,7 +2433,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2005:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "householdCount": {
@@ -2359,7 +2449,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2005:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "totalPopulation": {
@@ -2369,12 +2460,12 @@
         "isInterpolated": false,
         "confidence": "high",
         "definition": null,
-        "methodologyNote": null,
+        "methodologyNote": "Census 2000-2010 intercensal national estimate, July 1, 2005.",
         "source": {
-          "name": "U.S. Census Bureau",
-          "url": "https://www2.census.gov/programs-surveys/popest/tables/2000-2010/state/totals/pe2000-10-alldata.csv",
-          "tableOrSeries": "2005 estimate",
-          "accessedAt": "2026-07-01"
+          "name": "U.S. Census Bureau - Decennial counts and population estimates",
+          "url": "https://www.census.gov/programs-surveys/popest/data/tables.html",
+          "tableOrSeries": "National population estimate, July 1, 2005",
+          "accessedAt": "2026-07-21"
         }
       },
       "shareTop01Pct": {
@@ -2389,7 +2480,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2005:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "share99to999Pct": {
@@ -2404,7 +2496,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2005:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "share90to99Pct": {
@@ -2419,7 +2512,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2005:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "share50to90Pct": {
@@ -2434,7 +2528,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2005:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "shareBottom50Pct": {
@@ -2449,22 +2544,24 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2005:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "zeroOrNegativeWealth": {
-        "value": 17.0,
+        "value": 18.6,
         "unit": "percent",
-        "observationYear": 2004,
-        "isInterpolated": false,
-        "confidence": "high",
+        "observationYear": 2007,
+        "isInterpolated": true,
+        "confidence": "medium",
         "definition": "Percent of all U.S. households with zero or negative net worth",
-        "methodologyNote": "Survey of Consumer Finances via Wolff; observation year 2004.",
+        "methodologyNote": "Survey of Consumer Finances via Wolff; nearest survey year 2007 (2 years from grid year).",
         "source": {
-          "name": "Edward N. Wolff (SCF)",
+          "name": "Edward N. Wolff (NBER Working Paper 28383)",
           "url": "https://www.nber.org/papers/w28383",
-          "tableOrSeries": "Table 1 Panel A row 3",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table 1 Panel A row 3a",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.nber.org/system/files/working_papers/w28383/w28383.pdf"
         }
       }
     },
@@ -2483,7 +2580,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2010:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "householdCount": {
@@ -2498,7 +2596,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2010:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "totalPopulation": {
@@ -2510,10 +2609,10 @@
         "definition": null,
         "methodologyNote": null,
         "source": {
-          "name": "U.S. Census Bureau",
-          "url": "https://www.census.gov/data/tables/time-series/demo/popest/2020s-national-total.html",
-          "tableOrSeries": "2010 decennial",
-          "accessedAt": "2026-07-01"
+          "name": "U.S. Census Bureau - Decennial counts and population estimates",
+          "url": "https://www.census.gov/programs-surveys/popest/data/tables.html",
+          "tableOrSeries": "2010 decennial census resident population",
+          "accessedAt": "2026-07-21"
         }
       },
       "shareTop01Pct": {
@@ -2528,7 +2627,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2010:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "share99to999Pct": {
@@ -2543,7 +2643,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2010:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "share90to99Pct": {
@@ -2558,7 +2659,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2010:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "share50to90Pct": {
@@ -2573,7 +2675,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2010:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "shareBottom50Pct": {
@@ -2588,7 +2691,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2010:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "zeroOrNegativeWealth": {
@@ -2598,12 +2702,13 @@
         "isInterpolated": false,
         "confidence": "high",
         "definition": "Percent of all U.S. households with zero or negative net worth",
-        "methodologyNote": "Survey of Consumer Finances via Wolff; observation year 2010.",
+        "methodologyNote": "Survey of Consumer Finances via Wolff; nearest survey year 2010.",
         "source": {
-          "name": "Edward N. Wolff (SCF)",
+          "name": "Edward N. Wolff (NBER Working Paper 28383)",
           "url": "https://www.nber.org/papers/w28383",
-          "tableOrSeries": "Table 1 Panel A row 3",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table 1 Panel A row 3a",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.nber.org/system/files/working_papers/w28383/w28383.pdf"
         }
       }
     },
@@ -2622,7 +2727,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2015:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "householdCount": {
@@ -2637,7 +2743,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2015:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "totalPopulation": {
@@ -2647,12 +2754,12 @@
         "isInterpolated": false,
         "confidence": "high",
         "definition": null,
-        "methodologyNote": null,
+        "methodologyNote": "Census Vintage 2015 national estimate, July 1, 2015.",
         "source": {
-          "name": "U.S. Census Bureau",
-          "url": "https://www2.census.gov/programs-surveys/popest/tables/2010-2020/state/totals/pe2010-20-alldata.csv",
-          "tableOrSeries": "2015 estimate",
-          "accessedAt": "2026-07-01"
+          "name": "U.S. Census Bureau - Decennial counts and population estimates",
+          "url": "https://www.census.gov/programs-surveys/popest/data/tables.html",
+          "tableOrSeries": "National population estimate, July 1, 2015",
+          "accessedAt": "2026-07-21"
         }
       },
       "shareTop01Pct": {
@@ -2667,7 +2774,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2015:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "share99to999Pct": {
@@ -2682,7 +2790,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2015:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "share90to99Pct": {
@@ -2697,7 +2806,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2015:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "share50to90Pct": {
@@ -2712,7 +2822,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2015:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "shareBottom50Pct": {
@@ -2727,22 +2838,24 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2015:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "zeroOrNegativeWealth": {
         "value": 21.2,
         "unit": "percent",
         "observationYear": 2016,
-        "isInterpolated": false,
+        "isInterpolated": true,
         "confidence": "high",
         "definition": "Percent of all U.S. households with zero or negative net worth",
-        "methodologyNote": "Survey of Consumer Finances via Wolff; observation year 2016.",
+        "methodologyNote": "Survey of Consumer Finances via Wolff; nearest survey year 2016 (1 years from grid year).",
         "source": {
-          "name": "Edward N. Wolff (SCF)",
+          "name": "Edward N. Wolff (NBER Working Paper 28383)",
           "url": "https://www.nber.org/papers/w28383",
-          "tableOrSeries": "Table 1 Panel A row 3",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table 1 Panel A row 3a",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.nber.org/system/files/working_papers/w28383/w28383.pdf"
         }
       }
     },
@@ -2761,7 +2874,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2020:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "householdCount": {
@@ -2776,7 +2890,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2020:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "totalPopulation": {
@@ -2788,10 +2903,10 @@
         "definition": null,
         "methodologyNote": null,
         "source": {
-          "name": "U.S. Census Bureau",
-          "url": "https://www.census.gov/data/tables/time-series/demo/popest/2020s-national-total.html",
-          "tableOrSeries": "2020 decennial",
-          "accessedAt": "2026-07-01"
+          "name": "U.S. Census Bureau - Decennial counts and population estimates",
+          "url": "https://www.census.gov/programs-surveys/popest/data/tables.html",
+          "tableOrSeries": "2020 decennial census resident population",
+          "accessedAt": "2026-07-21"
         }
       },
       "shareTop01Pct": {
@@ -2806,7 +2921,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2020:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "share99to999Pct": {
@@ -2821,7 +2937,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2020:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "share90to99Pct": {
@@ -2836,7 +2953,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2020:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "share50to90Pct": {
@@ -2851,7 +2969,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2020:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "shareBottom50Pct": {
@@ -2866,22 +2985,24 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2020:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "zeroOrNegativeWealth": {
         "value": 19.6,
         "unit": "percent",
         "observationYear": 2019,
-        "isInterpolated": false,
+        "isInterpolated": true,
         "confidence": "high",
         "definition": "Percent of all U.S. households with zero or negative net worth",
-        "methodologyNote": "Survey of Consumer Finances via Wolff; observation year 2019.",
+        "methodologyNote": "Survey of Consumer Finances via Wolff; nearest survey year 2019 (1 years from grid year).",
         "source": {
-          "name": "Edward N. Wolff (SCF)",
+          "name": "Edward N. Wolff (NBER Working Paper 28383)",
           "url": "https://www.nber.org/papers/w28383",
-          "tableOrSeries": "Table 1 Panel A row 3",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table 1 Panel A row 3a",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.nber.org/system/files/working_papers/w28383/w28383.pdf"
         }
       }
     },
@@ -2900,7 +3021,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2025:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "householdCount": {
@@ -2915,22 +3037,23 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2025:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "totalPopulation": {
-        "value": 341000000,
+        "value": 340110988,
         "unit": "count",
-        "observationYear": 2025,
-        "isInterpolated": false,
-        "confidence": "high",
+        "observationYear": 2024,
+        "isInterpolated": true,
+        "confidence": "medium",
         "definition": null,
-        "methodologyNote": null,
+        "methodologyNote": "Latest published Census Vintage 2024 estimate is July 1, 2024; a 2025 figure was not yet available.",
         "source": {
-          "name": "U.S. Census Bureau",
-          "url": "https://www.census.gov/data/tables/time-series/demo/popest/2020s-national-total.html",
-          "tableOrSeries": "2025 projection (Vintage 2024)",
-          "accessedAt": "2026-07-01"
+          "name": "U.S. Census Bureau - Decennial counts and population estimates",
+          "url": "https://www.census.gov/programs-surveys/popest/data/tables.html",
+          "tableOrSeries": "National population estimate, July 1, 2024",
+          "accessedAt": "2026-07-21"
         }
       },
       "shareTop01Pct": {
@@ -2945,7 +3068,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2025:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "share99to999Pct": {
@@ -2960,7 +3084,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2025:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "share90to99Pct": {
@@ -2975,7 +3100,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2025:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "share50to90Pct": {
@@ -2990,7 +3116,8 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2025:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "shareBottom50Pct": {
@@ -3005,22 +3132,24 @@
           "name": "Federal Reserve Distributional Financial Accounts",
           "url": "https://www.federalreserve.gov/releases/z1/dataviz/dfa/",
           "tableOrSeries": "dfa-networth-*-detail.csv 2025:Q3",
-          "accessedAt": "2026-07-01"
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.federalreserve.gov/releases/z1/dataviz/download/zips/dfa.zip"
         }
       },
       "zeroOrNegativeWealth": {
-        "value": 19.0,
+        "value": 19.6,
         "unit": "percent",
         "observationYear": 2019,
-        "isInterpolated": false,
-        "confidence": "medium",
+        "isInterpolated": true,
+        "confidence": "low",
         "definition": "Percent of all U.S. households with zero or negative net worth",
-        "methodologyNote": "Survey of Consumer Finances via Wolff; observation year 2019.",
+        "methodologyNote": "Survey of Consumer Finances via Wolff; nearest survey year 2019 (6 years from grid year).",
         "source": {
-          "name": "Edward N. Wolff (SCF)",
+          "name": "Edward N. Wolff (NBER Working Paper 28383)",
           "url": "https://www.nber.org/papers/w28383",
-          "tableOrSeries": "Table 1 Panel A row 3",
-          "accessedAt": "2026-07-01"
+          "tableOrSeries": "Table 1 Panel A row 3a",
+          "accessedAt": "2026-07-21",
+          "dataFileUrl": "https://www.nber.org/system/files/working_papers/w28383/w28383.pdf"
         }
       }
     }

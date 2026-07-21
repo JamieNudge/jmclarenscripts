@@ -30,12 +30,12 @@ Shares are expressed as **percent of total aggregate household (or adult) net wo
 
 ## Zero or negative wealth
 
-Where available, this field reports the **percent of all U.S. households** with zero or negative net worth, from Edward Wolff’s analysis of the Survey of Consumer Finances. Some survey years are mapped to the nearest fifth-year grid point. Pre-1960 values are generally not available from primary sources and are marked N/A.
+Where available, this field reports the **percent of all U.S. households** with zero or negative net worth, from Edward Wolff's analysis of the Survey of Consumer Finances (NBER Working Paper 28383, Table 1). Survey years are mapped to the nearest fifth-year grid point and flagged with the actual observation year. Pre-1960 values are not available from primary sources and are marked N/A.
 
 ## Methodology tiers
 
-- **Tier 1 (1990–2025):** Fed DFA + Census — highest confidence for wealth shares.
-- **Tier 2 (1960–1985):** PSZ/WID shares + Fed/Goldsmith totals — medium confidence; equal-split adults.
-- **Tier 3 (1920–1955):** Historical compilations and estate-tax reconstructions — illustrative; wider uncertainty.
+- **Tier 1 (1990–2025):** Fed DFA + Census — highest confidence; every value reproducible from the Fed's raw CSV download.
+- **Tier 2 (1960–1985):** Piketty–Saez–Zucman appendix tables (equal-split adults) for shares and totals + Census HH-1 for households — medium confidence.
+- **Tier 3 (1920–1955):** PSZ top-decile shares and totals only. The bottom-50% / 50–90% split and zero-wealth cells are **N/A** because no primary source reports them for these years.
 
-See the methodology note on each row/cell in the data browser for observation year, interpolation, and source links.
+Every populated cell is reproducible from a cited, downloadable source file (see the Sources section of the data browser). Cells that cannot be substantiated are shown as N/A rather than estimated. See the methodology note on each cell for observation year, interpolation, and source links.

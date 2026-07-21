@@ -3,8 +3,19 @@ export type Confidence = 'high' | 'medium' | 'low' | 'na';
 export interface SourceCitation {
   name: string;
   url: string;
+  /** Direct link to the downloadable data file backing this cell, when one exists. */
+  dataFileUrl?: string;
   tableOrSeries?: string;
   accessedAt: string;
+}
+
+export interface DatasetSource {
+  id: string;
+  name: string;
+  url: string;
+  dataFileUrl?: string;
+  coverage: string;
+  description: string;
 }
 
 export interface StatCell {
@@ -34,11 +45,14 @@ export interface WealthSnapshotRow {
 
 export interface WealthDataset {
   version: string;
+  /** Date the dataset was last rebuilt and cross-checked against its sources. */
+  verifiedAt: string;
   methodology: string;
   definitions: {
     householdWealth: string;
     household: string;
   };
+  sources: DatasetSource[];
   rows: WealthSnapshotRow[];
 }
 

@@ -57,6 +57,19 @@ function CellDetail({ cell, label }: { cell: StatCell; label: string }) {
             {cell.source.name}
           </a>
           {cell.source.tableOrSeries ? ` — ${cell.source.tableOrSeries}` : ''}
+          {cell.source.dataFileUrl ? (
+            <>
+              {' · '}
+              <a
+                href={cell.source.dataFileUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sky-200 underline hover:text-sky-100"
+              >
+                raw data file
+              </a>
+            </>
+          ) : null}
         </p>
       ) : null}
     </div>
