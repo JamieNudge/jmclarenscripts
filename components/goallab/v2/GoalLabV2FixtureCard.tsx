@@ -7,12 +7,20 @@ import {
   formatKickoffShortLocalAndUtc,
 } from '@/lib/best-picks-firebase';
 import { fixtureDetailHrefV2 } from '@/components/goallab/v2/paths';
-import { pickForecastDetailLines, type FixtureListItem } from '@/lib/fixtures-browser';
+import { fixtureListItemWinResult, pickForecastDetailLines, type FixtureListItem } from '@/lib/fixtures-browser';
+import { isLiveStatus } from '@/lib/statstrike/parse-selection';
+import { isResultFinishedStatus } from '@/lib/statstrike/correctness';
 
-function pickConfidence(fixture: FixtureListItem): number | null {
-  const conf = fixture.pick.confidence;
-  if (typeof conf === 'number' && Number.isFinite(conf) && conf > 0) {
-    return Math.min(100, Math.round(conf));
+function pickStatus(fixture: FixtureListItem): string | null {
+  const raw = fixture.pick.status ?? fixture.pick.displayStatus ?? fixture.pick.fixtureStatus;
+  return typeof raw === 'string' && raw.trim() ? raw.trim() : null;
+}
+
+function pickElapsed(fixture: FixtureListItem): number | null {
+  const raw = fixture.pick.elapsed;
+  if (typeof raw === 'number' && Number.isFinite(raw) && raw >= 0) return Math.round(raw);
+  if (typeof raw === 'string' && raw.trim() !== '' && !Number.isNaN(Number(raw))) {
+    return Math.round(Number(raw));
   }
   return null;
 }
@@ -21,30 +29,50 @@ type Props = {
   fixture: FixtureListItem;
   dateKey: string;
   featured?: boolean;
+  /**
+   * When false, render a display cell (fixture + band) with no link to detail.
+   * Used on /fixtures — the list page is the Forecasts experience.
+   */
+  interactive?: boolean;
+  /** Override detail href (e.g. StatStrike fixture page for board-backed previews). */
+  href?: string;
 };
 
-export function GoalLabV2FixtureCard({ fixture, dateKey, featured = false }: Props) {
+export function GoalLabV2FixtureCard({
+  fixture,
+  dateKey,
+  featured = false,
+  interactive = true,
+  href: hrefOverride,
+}: Props) {
   const visitorTz = useVisitorTimeZone();
   const kickoffShort = formatKickoffShortLocalAndUtc(fixture.kickoffMs, visitorTz);
   const kickoffTitle =
     fixture.kickoffMs != null ? formatKickoffLocalAndUtc(fixture.kickoffMs, visitorTz) : undefined;
   const forecast = pickForecastDetailLines(fixture.pick);
-  const confidence = pickConfidence(fixture);
-  const href = fixtureDetailHrefV2(fixture.fixtureId, dateKey);
+  const won = fixtureListItemWinResult(fixture);
+  const status = pickStatus(fixture);
+  const live = isLiveStatus(status);
+  const finished = isResultFinishedStatus(status);
+  const elapsed = pickElapsed(fixture);
+  const href = hrefOverride ?? fixtureDetailHrefV2(fixture.fixtureId, dateKey);
 
-  return (
-    <HubFootballLink
-      href={href}
-      className={`group flex flex-col rounded-2xl border border-[var(--gl-border)] bg-[var(--gl-surface)] shadow-[var(--gl-shadow)] transition-colors outline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--gl-accent)] hover:border-[var(--gl-border-strong)] ${
-        featured ? 'p-5 md:p-6' : 'p-4'
-      }`}
-    >
+  const shellClass = `flex flex-col rounded-2xl border border-[var(--gl-border-strong)] bg-[var(--gl-elevated)] shadow-[var(--gl-shadow)] ${
+    featured ? 'p-5 md:p-6' : 'p-4'
+  } ${
+    interactive
+      ? 'group transition-colors outline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--gl-accent)] hover:border-[var(--gl-accent)]/40'
+      : ''
+  }`;
+
+  const body = (
+    <>
       <div className="flex items-start justify-between gap-3">
-        <p className="text-xs font-medium uppercase tracking-wide text-[var(--gl-text-muted)] truncate">
+        <p className="text-xs font-medium uppercase tracking-wide text-[var(--gl-text-soft)] truncate">
           {fixture.leagueKey}
         </p>
         <p
-          className="shrink-0 text-xs tabular-nums text-[var(--gl-text-muted)]"
+          className="shrink-0 text-xs tabular-nums text-[var(--gl-text-soft)]"
           title={kickoffTitle}
         >
           {kickoffShort}
@@ -62,41 +90,53 @@ export function GoalLabV2FixtureCard({ fixture, dateKey, featured = false }: Pro
       </p>
 
       <div className="mt-4 flex flex-wrap items-center gap-2">
-        {forecast.primary ? (
-          <span className="inline-flex items-center rounded-lg bg-[var(--gl-accent-soft)] px-2.5 py-1 text-xs font-semibold text-[var(--gl-accent)]">
-            {forecast.primary}
+        {live ? (
+          <span
+            className="inline-flex items-center rounded-full bg-teal-600 px-2.5 py-1 text-[11px] font-black tracking-wide text-white"
+            aria-label={elapsed != null ? `Live ${elapsed} minutes` : 'Live'}
+          >
+            LIVE{elapsed != null ? ` ${elapsed}'` : ''}
           </span>
         ) : null}
-        {confidence != null ? (
-          <span className="inline-flex items-center rounded-lg border border-[var(--gl-border)] px-2.5 py-1 text-xs font-medium tabular-nums text-[var(--gl-text-soft)]">
-            {confidence}% confidence
+        {finished && won === true ? (
+          <span className="inline-flex items-center rounded-full bg-amber-300 px-2.5 py-1 text-[11px] font-black tracking-wide text-black">
+            WIN
+          </span>
+        ) : null}
+        {finished && won !== true ? (
+          <span className="inline-flex items-center rounded-full bg-[var(--gl-text-muted)]/25 px-2.5 py-1 text-[11px] font-black tracking-wide text-[var(--gl-text)]">
+            FT
           </span>
         ) : null}
         {fixture.scoreDisplay !== '–' ? (
-          <span className="inline-flex items-center rounded-lg border border-[var(--gl-border)] px-2.5 py-1 text-xs font-semibold tabular-nums text-[var(--gl-text)]">
+          <span className="inline-flex items-center rounded-lg border border-[var(--gl-border-strong)] bg-[var(--gl-surface)] px-2.5 py-1 text-xs font-semibold tabular-nums text-[var(--gl-text)]">
             {fixture.scoreDisplay}
           </span>
         ) : null}
       </div>
 
-      {confidence != null ? (
-        <div
-          className="mt-4 h-1.5 w-full overflow-hidden rounded-full bg-[var(--gl-elevated)]"
-          aria-hidden
-        >
-          <div
-            className="h-full rounded-full bg-[var(--gl-accent)] transition-[width] duration-700 ease-out"
-            style={{ width: `${confidence}%` }}
-          />
-        </div>
+      {forecast.primary ? (
+        <p className="mt-4 text-sm font-semibold text-[var(--gl-accent)]">{forecast.primary}</p>
       ) : null}
 
-      <p className="mt-4 text-sm font-medium text-[var(--gl-accent)] group-hover:text-[var(--gl-accent-hover)]">
-        View forecast
-        <span className="ml-1 inline-block transition-transform group-hover:translate-x-0.5" aria-hidden>
-          →
-        </span>
-      </p>
+      {interactive ? (
+        <p className="mt-3 text-sm font-medium text-[var(--gl-accent)] group-hover:text-[var(--gl-accent-hover)]">
+          View forecast
+          <span className="ml-1 inline-block transition-transform group-hover:translate-x-0.5" aria-hidden>
+            →
+          </span>
+        </p>
+      ) : null}
+    </>
+  );
+
+  if (!interactive) {
+    return <article className={shellClass}>{body}</article>;
+  }
+
+  return (
+    <HubFootballLink href={href} className={shellClass}>
+      {body}
     </HubFootballLink>
   );
 }

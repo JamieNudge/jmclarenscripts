@@ -7,9 +7,10 @@ import { apps } from '@/lib/apps-data';
 import type { BplHubPublicPayload, BplCompactFixture } from '@/lib/bpl-hub';
 import { useBestPicksLondonDateKey } from '@/hooks/useBestPicksLondonDateKey';
 import { FOOTBALL_PREDICTIONS_RESEARCH_SELECTIONS_PATH } from '@/lib/football-predictions-brand';
+import { StatStrikeAppStoreCta } from '@/components/statstrike/StatStrikeAppStoreCta';
 
 function resultPillClass(r: BplCompactFixture['result']): string {
-  if (r === 'win') return 'text-[var(--hub-success)] border-[var(--hub-success-border)] bg-[var(--hub-success-bg)]';
+  if (r === 'win') return 'text-black border-amber-300 bg-amber-300';
   if (r === 'loss') return 'text-[var(--hub-danger)] border-[var(--hub-danger-border)] bg-[var(--hub-danger-bg)]';
   if (r === 'void' || r === 'push') return 'text-[var(--hub-heading-accent)] border-[var(--hub-warn-border)] bg-[var(--hub-warn-bg)]';
   if (r === 'dropped' || r === 'pending' || r === null) return 'text-[var(--hub-text-soft)] border-[var(--hub-border-soft)] bg-[var(--hub-chip)]';
@@ -24,7 +25,7 @@ function formatYmdForDisplay(ymd: string): string {
 }
 
 function resultLabel(r: BplCompactFixture['result']): string {
-  if (r === 'win') return 'W';
+  if (r === 'win') return 'WIN';
   if (r === 'loss') return 'L';
   if (r === 'void') return 'Void';
   if (r === 'push') return 'Push';
@@ -103,14 +104,12 @@ function DownloadAppTeaser({ hiddenCount }: { hiddenCount: number }) {
         {hiddenCount > 0 ? ` with ${hiddenCount} more available in the app today.` : '.'}
       </p>
       {statStrikeAppStoreUrl ? (
-        <a
+        <StatStrikeAppStoreCta
           href={statStrikeAppStoreUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-3 inline-flex items-center justify-center rounded-lg bg-[var(--hub-cta-bg)] px-3 py-2 text-xs font-semibold text-[var(--hub-cta-text)] transition-opacity hover:opacity-90"
-        >
-          Download StatStrike on iOS
-        </a>
+          label="Download StatStrike on iOS"
+          size="sm"
+          className="mt-3"
+        />
       ) : null}
     </div>
   );

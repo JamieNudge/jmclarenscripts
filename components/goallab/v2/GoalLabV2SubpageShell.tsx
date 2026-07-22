@@ -35,7 +35,7 @@ export function GoalLabV2SubpageShell({
               href={GOAL_LAB_V2_HOME_PATH}
               className="inline-flex items-center gap-2 text-sm text-[var(--gl-text-muted)] hover:text-[var(--gl-text)] transition-colors"
             >
-              <span aria-hidden>←</span> Back to GoalLab
+              <span aria-hidden>←</span> Back to Home
             </HubFootballLink>
           </div>
         ) : null}

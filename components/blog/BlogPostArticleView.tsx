@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { AdSenseAutoPlaceholder } from '@/components/AdSenseAutoPlaceholder';
 import { MarkdownBody } from '@/components/blog/MarkdownBody';
 import { splitBlogMarkdownForAdPlaceholders } from '@/lib/blog-body-ad-slots';
 import { resolveBlogCategoryLabel } from '@/lib/blog-category';
@@ -51,17 +50,7 @@ export function BlogPostArticleView({
         if (seg.type === 'markdown') {
           return <MarkdownBody key={`md-${i}`} markdown={seg.markdown} />;
         }
-        return (
-          <div
-            key={`ad-${i}`}
-            className="my-8 w-full"
-          >
-            <AdSenseAutoPlaceholder
-              orientation="horizontal"
-              className="w-full min-h-[90px] !border-[var(--hub-border-strong)] !bg-[var(--hub-elevated)] !text-[var(--hub-text-muted)]"
-            />
-          </div>
-        );
+        return null;
       })}
     </article>
   );

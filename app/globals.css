@@ -308,7 +308,7 @@ body.best-picks-route .bp-best-picks-surface,
   --gl-border: rgba(255, 255, 255, 0.1);
   --gl-border-strong: rgba(255, 255, 255, 0.16);
   --gl-accent: #60a5fa;
-  --gl-accent-soft: rgba(96, 165, 250, 0.16);
+  --gl-accent-soft: rgba(96, 165, 250, 0.22);
   --gl-accent-hover: #93c5fd;
   --gl-success: #34d399;
   --gl-warn: #fbbf24;

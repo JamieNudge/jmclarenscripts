@@ -5,11 +5,23 @@ import { onValue, ref } from 'firebase/database';
 import { GoalLabV2FixtureCard } from '@/components/goallab/v2/GoalLabV2FixtureCard';
 import { GOAL_LAB_V2_HOME_PATH } from '@/components/goallab/v2/paths';
 import { HubFootballLink } from '@/components/hub/HubFootballLink';
+import { StatStrikeAppStoreCta } from '@/components/statstrike/StatStrikeAppStoreCta';
 import { useBestPicksLondonDateKey } from '@/hooks/useBestPicksLondonDateKey';
-import { groupFixturesByLeague, parseFixturesFromUnanimousExport, sortFixturesByKickoff } from '@/lib/fixtures-browser';
+import { apps } from '@/lib/apps-data';
+import {
+  groupFixturesByLeague,
+  parseFixturesFromUnanimousExport,
+  sortFixturesByKickoff,
+} from '@/lib/fixtures-browser';
 import { statStrikeRtdbPathsFromEnv } from '@/lib/best-picks-firebase';
 import { getFirebaseRealtimeDb, isFirebaseClientConfigured } from '@/lib/firebase-client';
 
+const statStrikeAppStoreUrl = apps.find((a) => a.id === 'stat-strike')?.appStoreUrl;
+
+/**
+ * GoalLab Forecasts board — full day of compact fixture + goal-band cells.
+ * No detail-route navigation; deeper tools live in StatStrike.
+ */
 export function GoalLabV2FixturesList() {
   const dateKey = useBestPicksLondonDateKey();
   const [exportVal, setExportVal] = useState<unknown>(null);
@@ -65,19 +77,20 @@ export function GoalLabV2FixturesList() {
           href={GOAL_LAB_V2_HOME_PATH}
           className="inline-flex items-center gap-2 text-sm text-[var(--gl-text-muted)] hover:text-[var(--gl-text)] transition-colors"
         >
-          <span aria-hidden>←</span> Back to GoalLab
+          <span aria-hidden>←</span> Back to Home
         </HubFootballLink>
       </div>
 
       <header className="space-y-2 max-w-2xl">
         <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-[var(--gl-text)]">Forecasts</h1>
         <p className="text-base text-[var(--gl-text-soft)] leading-relaxed">
-          Day <span className="tabular-nums text-[var(--gl-accent)]">{dateKey}</span> from the daily upload. Open a
-          fixture for forecast detail.
+          Day <span className="tabular-nums text-[var(--gl-accent)]">{dateKey}</span> — fixture and
+          goal-band forecasts for the day. Deeper boards and track record live in StatStrike.
         </p>
-        {configured && !loading && !error && totalCount > 0 ? (
-          <p className="text-sm tabular-nums text-[var(--gl-text-muted)]">
-            {totalCount} fixture{totalCount === 1 ? '' : 's'}
+        {statStrikeAppStoreUrl ? (
+          <p className="text-sm text-[var(--gl-text-soft)] pt-1">
+            Full StatStrike experience —{' '}
+            <StatStrikeAppStoreCta href={statStrikeAppStoreUrl} variant="inline" />
           </p>
         ) : null}
       </header>
@@ -97,22 +110,30 @@ export function GoalLabV2FixturesList() {
         <p className="text-sm text-[var(--gl-text-soft)]">No fixtures for {dateKey} yet.</p>
       ) : null}
 
-      {configured && !loading && !error && groups.length > 0 ? (
-        <div className="space-y-10">
-          {groups.map((group) => (
-            <section key={group.leagueKey} className="space-y-4">
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--gl-text-muted)]">
-                {group.leagueKey}
-              </h2>
-              <ul className="grid gap-4 sm:grid-cols-2 list-none m-0 p-0">
-                {group.fixtures.map((fixture) => (
-                  <li key={String(fixture.fixtureId)}>
-                    <GoalLabV2FixtureCard fixture={fixture} dateKey={dateKey} />
-                  </li>
-                ))}
-              </ul>
-            </section>
-          ))}
+      {configured && !loading && !error && totalCount > 0 ? (
+        <div className="space-y-8">
+          <div className="space-y-10">
+            {groups.map((group) => (
+              <section key={group.leagueKey} className="space-y-4">
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--gl-text-muted)]">
+                  {group.leagueKey}
+                </h2>
+                <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 list-none m-0 p-0">
+                  {group.fixtures.map((fixture) => (
+                    <li key={String(fixture.fixtureId)}>
+                      <GoalLabV2FixtureCard fixture={fixture} dateKey={dateKey} interactive={false} />
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ))}
+          </div>
+          {statStrikeAppStoreUrl ? (
+            <p className="text-sm text-[var(--gl-text-soft)]">
+              Full StatStrike experience —{' '}
+              <StatStrikeAppStoreCta href={statStrikeAppStoreUrl} variant="inline" />
+            </p>
+          ) : null}
         </div>
       ) : null}
     </div>

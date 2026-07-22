@@ -1,7 +1,4 @@
-/**
- * Today's fixtures browser — parse unanimousExports into list/detail shapes.
- */
-
+import { isResultFinishedStatus } from '@/lib/statstrike/correctness';
 import {
   parseUnanimousExport,
   pickKickoffSortTimeMs,
@@ -76,6 +73,25 @@ export function pickScoreDisplay(p: PickRecord): string {
   const raw = pickText(p.score ?? p.fullTimeScore ?? p.finalScore);
   if (raw) return raw.replace(/\s+/g, '');
   return '–';
+}
+
+/** True when FT/AET/PEN and the tip band settled as a win; null while in play or undecidable. */
+export function fixtureListItemWinResult(fixture: FixtureListItem): boolean | null {
+  const status = pickText(fixture.pick.status ?? fixture.pick.displayStatus ?? fixture.pick.fixtureStatus);
+  if (!isResultFinishedStatus(status)) return null;
+  const hs = num(fixture.pick.homeScore ?? fixture.pick.homeGoals);
+  const aws = num(fixture.pick.awayScore ?? fixture.pick.awayGoals);
+  if (hs == null || aws == null) return null;
+  const band = recommendedBandLabelForPick(fixture.pick);
+  if (!band) return null;
+  const total = hs + aws;
+  const lower = band.toLowerCase();
+  if (lower.includes('under 2.5')) return total <= 2;
+  if (lower.includes('over 5.5')) return total > 5;
+  if (lower.includes('over 4.5')) return total > 4;
+  if (lower.includes('over 3.5')) return total > 3;
+  if (lower.includes('over 2.5')) return total > 2;
+  return null;
 }
 
 function leagueKeyForPick(p: PickRecord): string {
