@@ -5,11 +5,16 @@ import { useEffect, useState } from 'react';
 import { get, ref } from 'firebase/database';
 import { getFirebaseRealtimeDb, isFirebaseClientConfigured } from '@/lib/firebase-client';
 import { formatKickoffLocal, scoreLabel } from '@/lib/statstrike/board-merge';
-import { isResultFinishedStatus, predictionResultForFixture } from '@/lib/statstrike/correctness';
+import {
+  bttsPredictionResultForFixture,
+  isResultFinishedStatus,
+  predictionResultForFixture,
+} from '@/lib/statstrike/correctness';
 import { displayBandRows } from '@/lib/statstrike/goal-band-cascade';
 import type { StatStrikeFixture, StatStrikePrediction } from '@/lib/statstrike/models';
+import { parseBTTSSelectionsPayload, predictionFromBTTSPick } from '@/lib/statstrike/btts-selections';
 import { isBestPerformingLeague, enrichBoardRowDisplay, isLiveStatus, parseDailySelection } from '@/lib/statstrike/parse-selection';
-import { selectionsPathForDateKey } from '@/lib/statstrike/uk-date';
+import { bttsSelectionsPathForDateKey, selectionsPathForDateKey } from '@/lib/statstrike/uk-date';
 
 type Props = {
   fixtureId: number;
@@ -24,6 +29,7 @@ type DetailState =
       status: 'ready';
       fixture: StatStrikeFixture;
       prediction: StatStrikePrediction | null;
+      bttsPrediction: StatStrikePrediction | null;
       bestPerformingLeague: boolean;
       selectionDateKey: string;
       trackRecordDisplay: {
@@ -54,8 +60,11 @@ export function StatStrikeFixtureDetail({ fixtureId, dateKey }: Props) {
       }
 
       try {
-        const snap = await get(ref(db, selectionsPathForDateKey(dateKey)));
-        const sel = parseDailySelection(snap.val());
+        const [selSnap, bttsSnap] = await Promise.all([
+          get(ref(db, selectionsPathForDateKey(dateKey))),
+          get(ref(db, bttsSelectionsPathForDateKey(dateKey))),
+        ]);
+        const sel = parseDailySelection(selSnap.val());
         if (!sel) {
           if (!cancelled) setState({ status: 'missing' });
           return;
@@ -67,11 +76,14 @@ export function StatStrikeFixtureDetail({ fixtureId, dateKey }: Props) {
         }
         const prediction = sel.predictionsByFixtureId.get(fixtureId) ?? null;
         const display = enrichBoardRowDisplay(fixture, prediction, sel);
+        const bttsPick = parseBTTSSelectionsPayload(bttsSnap.val())?.picksByFixtureId.get(fixtureId);
+        const bttsPrediction = bttsPick ? predictionFromBTTSPick(bttsPick) : null;
         if (!cancelled) {
           setState({
             status: 'ready',
             fixture,
             prediction,
+            bttsPrediction,
             bestPerformingLeague: isBestPerformingLeague(fixture, sel.leaguePerformance),
             selectionDateKey: dateKey,
             trackRecordDisplay: display.trackRecordDisplay,
@@ -111,18 +123,25 @@ export function StatStrikeFixtureDetail({ fixtureId, dateKey }: Props) {
     );
   }
 
-  const { fixture, prediction, bestPerformingLeague, trackRecordDisplay, keySignalLines } = state;
+  const { fixture, prediction, bttsPrediction, bestPerformingLeague, trackRecordDisplay, keySignalLines } =
+    state;
   const live = isLiveStatus(fixture.status);
   const finished = isResultFinishedStatus(fixture.status);
   const won = predictionResultForFixture(fixture, prediction);
+  const bttsWon = bttsPredictionResultForFixture(fixture, bttsPrediction);
   const score = scoreLabel(fixture);
   const band = prediction?.recommendedLevel || prediction?.level || '—';
+  const bttsBand = bttsPrediction?.recommendedLevel || bttsPrediction?.level || null;
   const cascade = prediction?.goalBandCascade ?? null;
   const cascadeRows = cascade ? displayBandRows(cascade) : [];
   const leagueLabel = [fixture.league.country, fixture.league.name].filter(Boolean).join(' · ');
   const confidencePct =
     prediction && prediction.totalCriteria > 0
       ? Math.round((prediction.matchedCriteria / prediction.totalCriteria) * 100)
+      : null;
+  const bttsConfidencePct =
+    bttsPrediction && bttsPrediction.totalCriteria > 0
+      ? Math.round((bttsPrediction.matchedCriteria / bttsPrediction.totalCriteria) * 100)
       : null;
 
   return (
@@ -169,6 +188,20 @@ export function StatStrikeFixtureDetail({ fixtureId, dateKey }: Props) {
         <p className="mt-3 inline-flex rounded-md bg-[#0b3d5c]/10 px-2 py-1 text-sm font-semibold text-[#0b3d5c]">
           {band}
         </p>
+        {bttsBand ? (
+          <p className="mt-2 inline-flex items-center gap-2 rounded-md bg-teal-700/15 px-2 py-1 text-sm font-semibold text-teal-900">
+            <span>{bttsBand}</span>
+            {finished && bttsWon != null ? (
+              <span
+                className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-black ${
+                  bttsWon ? 'bg-amber-300 text-black' : 'bg-black/25 text-white'
+                }`}
+              >
+                {bttsWon ? 'WIN' : 'FT'}
+              </span>
+            ) : null}
+          </p>
+        ) : null}
       </header>
 
       <section className="rounded-2xl border border-black/10 bg-white p-4 shadow-sm">
@@ -176,6 +209,23 @@ export function StatStrikeFixtureDetail({ fixtureId, dateKey }: Props) {
         <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-3 gap-y-2 text-sm text-black/75">
           <dt className="font-semibold text-black/80">Tip</dt>
           <dd>{band}</dd>
+          {bttsBand ? (
+            <>
+              <dt className="font-semibold text-black/80">BTTS</dt>
+              <dd>
+                {bttsBand}
+                {finished && bttsWon != null ? (bttsWon ? ' · WIN' : ' · FT') : ''}
+              </dd>
+            </>
+          ) : null}
+          {bttsConfidencePct != null ? (
+            <>
+              <dt className="font-semibold text-black/80">BTTS conf.</dt>
+              <dd className="tabular-nums">
+                {bttsPrediction!.matchedCriteria}/{bttsPrediction!.totalCriteria} ({bttsConfidencePct}%)
+              </dd>
+            </>
+          ) : null}
           {prediction?.recommendedLevel && prediction.recommendedLevel !== prediction.level ? (
             <>
               <dt className="font-semibold text-black/80">Primary</dt>

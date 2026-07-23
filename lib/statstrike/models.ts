@@ -7,6 +7,8 @@ export type StatStrikePredictionLevel =
   | 'Over 4.5 Goals'
   | 'Over 5.5+ Goals'
   | 'Under 2.5 Goals'
+  | 'BTTS Yes'
+  | 'BTTS No'
   | string;
 
 export type StatStrikeTeam = {
@@ -72,6 +74,8 @@ export type StatStrikePrediction = {
 export type StatStrikeBoardRow = {
   fixture: StatStrikeFixture;
   prediction: StatStrikePrediction | null;
+  /** Optional second tip from `/bttsSelections` (iOS fixtureBTTSPredictions). */
+  bttsPrediction?: StatStrikePrediction | null;
   /** From selections.leaguePerformance ("Country - League" >= 70). */
   bestPerformingLeague: boolean;
   /** Carried from yesterday UK selection (live only). */

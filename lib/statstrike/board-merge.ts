@@ -1,4 +1,8 @@
 import type { StatStrikeBoardRow, StatStrikeDailySelection, StatStrikeFixture } from '@/lib/statstrike/models';
+import {
+  predictionFromBTTSPick,
+  type BTTSSelectionPick,
+} from '@/lib/statstrike/btts-selections';
 import { isResultFinishedStatus } from '@/lib/statstrike/correctness';
 import {
   FINISHED_STATUSES,
@@ -42,6 +46,19 @@ function shouldShowOnBoard(
   return false;
 }
 
+function resolveBTTSPick(args: {
+  fixtureId: number;
+  fromYesterday: boolean;
+  todayPicks: Map<number, BTTSSelectionPick> | null | undefined;
+  yesterdayPicks: Map<number, BTTSSelectionPick> | null | undefined;
+}): BTTSSelectionPick | null {
+  const { fixtureId, fromYesterday, todayPicks, yesterdayPicks } = args;
+  if (fromYesterday) {
+    return yesterdayPicks?.get(fixtureId) ?? todayPicks?.get(fixtureId) ?? null;
+  }
+  return todayPicks?.get(fixtureId) ?? null;
+}
+
 /**
  * Merge selected-day selection with optional previous-day live carry-over.
  * Carry-over is only for the current UK business day (iOS `isCurrentSelectionDay`) —
@@ -55,10 +72,16 @@ export function mergeBoardRows(args: {
   nowMs?: number;
   /** When false, only the selected day is shown (no relative-yesterday merge). Default true. */
   includeYesterdayCarryOver?: boolean;
+  /** `/bttsSelections` picks for the selected day. */
+  todayBTTSPicks?: Map<number, BTTSSelectionPick> | null;
+  /** `/bttsSelections` picks for the previous day (carry-over). */
+  yesterdayBTTSPicks?: Map<number, BTTSSelectionPick> | null;
 }): StatStrikeBoardRow[] {
   const nowMs = args.nowMs ?? Date.now();
   const byId = new Map<number, StatStrikeBoardRow>();
   const includeCarry = args.includeYesterdayCarryOver !== false;
+  const todayBTTS = args.todayBTTSPicks ?? null;
+  const yesterdayBTTS = args.yesterdayBTTSPicks ?? null;
 
   const lpToday = args.today?.leaguePerformance ?? {};
   const lpYest = args.yesterday?.leaguePerformance ?? {};
@@ -70,9 +93,16 @@ export function mergeBoardRows(args: {
       if (!prediction || prediction.matchedCriteria <= 0) continue;
       if (!shouldShowOnBoard(fixture, true, nowMs, { allowFinishedResults: false })) continue;
       const display = enrichBoardRowDisplay(fixture, prediction, args.yesterday);
+      const bttsPick = resolveBTTSPick({
+        fixtureId: fixture.id,
+        fromYesterday: true,
+        todayPicks: todayBTTS,
+        yesterdayPicks: yesterdayBTTS,
+      });
       byId.set(fixture.id, {
         fixture,
         prediction,
+        bttsPrediction: bttsPick ? predictionFromBTTSPick(bttsPick) : null,
         bestPerformingLeague: isBestPerformingLeague(fixture, { ...lpYest, ...lpToday }),
         fromYesterday: true,
         selectionDateKey: args.yesterdayKey,
@@ -88,9 +118,16 @@ export function mergeBoardRows(args: {
       if (!prediction || prediction.matchedCriteria <= 0) continue;
       if (!shouldShowOnBoard(fixture, true, nowMs, { allowFinishedResults: true })) continue;
       const display = enrichBoardRowDisplay(fixture, prediction, args.today);
+      const bttsPick = resolveBTTSPick({
+        fixtureId: fixture.id,
+        fromYesterday: false,
+        todayPicks: todayBTTS,
+        yesterdayPicks: yesterdayBTTS,
+      });
       byId.set(fixture.id, {
         fixture,
         prediction,
+        bttsPrediction: bttsPick ? predictionFromBTTSPick(bttsPick) : null,
         bestPerformingLeague: isBestPerformingLeague(fixture, lpToday),
         fromYesterday: false,
         selectionDateKey: args.todayKey,
@@ -148,6 +185,8 @@ export function buildBoardRefreshResult(args: {
   reason: string;
   nowMs?: number;
   includeYesterdayCarryOver?: boolean;
+  todayBTTSPicks?: Map<number, BTTSSelectionPick> | null;
+  yesterdayBTTSPicks?: Map<number, BTTSSelectionPick> | null;
 }): BoardRefreshResult {
   const rows = mergeBoardRows(args);
   const yesterdayCarryCount = rows.filter((r) => r.fromYesterday).length;

@@ -4,9 +4,14 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { onValue, ref, type Unsubscribe } from 'firebase/database';
 import { getFirebaseRealtimeDb, isFirebaseClientConfigured } from '@/lib/firebase-client';
 import { buildBoardRefreshResult, type BoardRefreshResult } from '@/lib/statstrike/board-merge';
+import {
+  parseBTTSSelectionsPayload,
+  type BTTSSelectionPick,
+} from '@/lib/statstrike/btts-selections';
 import type { StatStrikeDailySelection } from '@/lib/statstrike/models';
 import { parseDailySelection } from '@/lib/statstrike/parse-selection';
 import {
+  bttsSelectionsPathForDateKey,
   msUntilNextUkSelectionDay,
   selectionsPathForDateKey,
   ukSelectionDateKey,
@@ -48,6 +53,8 @@ export function useStatStrikeBoard(initialDayOffset = 0) {
 
   const todaySel = useRef<StatStrikeDailySelection | null>(null);
   const yestSel = useRef<StatStrikeDailySelection | null>(null);
+  const todayBTTS = useRef<Map<number, BTTSSelectionPick> | null>(null);
+  const yestBTTS = useRef<Map<number, BTTSSelectionPick> | null>(null);
   const todayKeyRef = useRef(keys0.todayKey);
   const yesterdayKeyRef = useRef(keys0.yesterdayKey);
   const dayOffsetRef = useRef(initialDayOffset);
@@ -60,6 +67,8 @@ export function useStatStrikeBoard(initialDayOffset = 0) {
       today: todaySel.current,
       yesterday: viewingCurrentDay ? yestSel.current : null,
       includeYesterdayCarryOver: viewingCurrentDay,
+      todayBTTSPicks: todayBTTS.current,
+      yesterdayBTTSPicks: viewingCurrentDay ? yestBTTS.current : null,
       reason,
     });
     setState((s) => ({
@@ -113,6 +122,8 @@ export function useStatStrikeBoard(initialDayOffset = 0) {
       yesterdayKeyRef.current = yesterdayKey;
       todaySel.current = null;
       yestSel.current = null;
+      todayBTTS.current = null;
+      yestBTTS.current = null;
 
       setState((s) => ({
         ...s,
@@ -125,6 +136,7 @@ export function useStatStrikeBoard(initialDayOffset = 0) {
       }));
 
       const todayPath = selectionsPathForDateKey(todayKey);
+      const todayBTTSPath = bttsSelectionsPathForDateKey(todayKey);
 
       unsubs.push(
         onValue(
@@ -145,9 +157,26 @@ export function useStatStrikeBoard(initialDayOffset = 0) {
         ),
       );
 
+      unsubs.push(
+        onValue(
+          ref(db, todayBTTSPath),
+          (snap) => {
+            if (cancelled) return;
+            todayBTTS.current = parseBTTSSelectionsPayload(snap.val())?.picksByFixtureId ?? new Map();
+            publish(`${reason}:today-btts`);
+          },
+          () => {
+            if (cancelled) return;
+            todayBTTS.current = new Map();
+            publish(`${reason}:today-btts-empty`);
+          },
+        ),
+      );
+
       // Previous-day live carry-over only while viewing UK calendar today (iOS isCurrentSelectionDay).
       if (viewingCurrentDay) {
         const yestPath = selectionsPathForDateKey(yesterdayKey);
+        const yestBTTSPath = bttsSelectionsPathForDateKey(yesterdayKey);
         unsubs.push(
           onValue(
             ref(db, yestPath),
@@ -160,6 +189,21 @@ export function useStatStrikeBoard(initialDayOffset = 0) {
               if (cancelled) return;
               yestSel.current = null;
               publish(`${reason}:yesterday-empty`);
+            },
+          ),
+        );
+        unsubs.push(
+          onValue(
+            ref(db, yestBTTSPath),
+            (snap) => {
+              if (cancelled) return;
+              yestBTTS.current = parseBTTSSelectionsPayload(snap.val())?.picksByFixtureId ?? new Map();
+              publish(`${reason}:yesterday-btts`);
+            },
+            () => {
+              if (cancelled) return;
+              yestBTTS.current = new Map();
+              publish(`${reason}:yesterday-btts-empty`);
             },
           ),
         );

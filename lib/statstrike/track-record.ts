@@ -1,5 +1,9 @@
 import { isWinningForecast, predictionResultForFixture } from '@/lib/statstrike/correctness';
 import type { StatStrikeDailySelection, StatStrikePredictionLevel } from '@/lib/statstrike/models';
+import {
+  predictionFromBTTSPick,
+  type BTTSSelectionPick,
+} from '@/lib/statstrike/btts-selections';
 import { isBestPerformingLeague } from '@/lib/statstrike/parse-selection';
 
 /** Settled or pending app-level track row derived from a selections day. */
@@ -83,6 +87,47 @@ export function recordsFromSelection(
       bestPerformingLeague: isBestPerformingLeague(fixture, lp),
       hasGoalBandCascade: prediction.goalBandCascade != null,
       decimalOdds: prediction.bookmakerOdds ?? null,
+      selectionDateKey: dateKey,
+    });
+  }
+
+  return out;
+}
+
+/**
+ * BTTS track rows joined to the same-day selection fixture (scores + league).
+ * Skips picks whose fixture is not on that day's `/selections` board (iOS parity).
+ */
+export function recordsFromBTTSSelections(
+  picks: Map<number, BTTSSelectionPick> | BTTSSelectionPick[],
+  sel: StatStrikeDailySelection | null,
+  dateKey: string,
+): StatStrikeTrackRecord[] {
+  if (!sel) return [];
+  const pickList = picks instanceof Map ? Array.from(picks.values()) : picks;
+  const out: StatStrikeTrackRecord[] = [];
+  const lp = sel.leaguePerformance ?? {};
+  const fixtureById = new Map(sel.fixtures.map((f) => [f.id, f]));
+
+  for (const pick of pickList) {
+    const fixture = fixtureById.get(pick.fixtureId);
+    if (!fixture) continue;
+    const prediction = predictionFromBTTSPick(pick);
+    const isCorrect = predictionResultForFixture(fixture, prediction);
+    out.push({
+      fixtureId: fixture.id,
+      homeTeam: fixture.homeTeam.name,
+      awayTeam: fixture.awayTeam.name,
+      league: fixture.league.name,
+      country: fixture.league.country,
+      kickoffMs: fixture.kickoffMs,
+      tipBand: pick.level,
+      homeScore: fixture.homeScore ?? null,
+      awayScore: fixture.awayScore ?? null,
+      isCorrect,
+      bestPerformingLeague: isBestPerformingLeague(fixture, lp),
+      hasGoalBandCascade: false,
+      decimalOdds: null,
       selectionDateKey: dateKey,
     });
   }
@@ -219,5 +264,5 @@ export function settleTipBand(
   finished: boolean,
 ): boolean | null {
   if (!finished || homeScore == null || awayScore == null) return null;
-  return isWinningForecast(tipBand, homeScore + awayScore);
+  return isWinningForecast(tipBand, homeScore, awayScore);
 }

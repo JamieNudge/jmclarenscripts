@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useId, useState } from 'react';
 import type { StatStrikeBoardRow } from '@/lib/statstrike/models';
 import { formatKickoffLocal, scoreLabel } from '@/lib/statstrike/board-merge';
-import { isResultFinishedStatus, predictionResultForFixture } from '@/lib/statstrike/correctness';
+import { isResultFinishedStatus, predictionResultForFixture, bttsPredictionResultForFixture } from '@/lib/statstrike/correctness';
 import { displayBandRows } from '@/lib/statstrike/goal-band-cascade';
 import { isLiveStatus } from '@/lib/statstrike/parse-selection';
 
@@ -17,21 +17,34 @@ type Props = {
 };
 
 export function StatStrikeFixtureRow({ row, compact = false, starred = false, onStarClick }: Props) {
-  const { fixture, prediction, bestPerformingLeague, fromYesterday, trackRecordDisplay, keySignalLines } =
-    row;
+  const {
+    fixture,
+    prediction,
+    bttsPrediction,
+    bestPerformingLeague,
+    fromYesterday,
+    trackRecordDisplay,
+    keySignalLines,
+  } = row;
   const [open, setOpen] = useState(false);
   const panelId = useId();
   const live = isLiveStatus(fixture.status);
   const finished = isResultFinishedStatus(fixture.status);
   const won = predictionResultForFixture(fixture, prediction);
+  const bttsWon = bttsPredictionResultForFixture(fixture, bttsPrediction);
   const score = scoreLabel(fixture);
   const band = prediction?.recommendedLevel || prediction?.level || '—';
+  const bttsBand = bttsPrediction?.recommendedLevel || bttsPrediction?.level || null;
   const cascade = prediction?.goalBandCascade ?? null;
   const cascadeRows = cascade ? displayBandRows(cascade) : [];
   const leagueLabel = [fixture.league.country, fixture.league.name].filter(Boolean).join(' · ');
   const confidencePct =
     prediction && prediction.totalCriteria > 0
       ? Math.round((prediction.matchedCriteria / prediction.totalCriteria) * 100)
+      : null;
+  const bttsConfidencePct =
+    bttsPrediction && bttsPrediction.totalCriteria > 0
+      ? Math.round((bttsPrediction.matchedCriteria / bttsPrediction.totalCriteria) * 100)
       : null;
 
   return (
@@ -104,6 +117,20 @@ export function StatStrikeFixtureRow({ row, compact = false, starred = false, on
             <p className="mt-1 inline-flex max-w-[9.5rem] rounded-md bg-[#0b3d5c]/10 px-1.5 py-0.5 text-[11px] font-semibold text-[#0b3d5c] leading-tight">
               {band}
             </p>
+            {bttsBand ? (
+              <p className="mt-1 inline-flex max-w-[9.5rem] items-center gap-1 rounded-md bg-teal-700/15 px-1.5 py-0.5 text-[11px] font-semibold text-teal-900 leading-tight">
+                <span>{bttsBand}</span>
+                {finished && bttsWon != null ? (
+                  <span
+                    className={`rounded-full px-1 py-px text-[9px] font-black tracking-wide ${
+                      bttsWon ? 'bg-amber-300 text-black' : 'bg-black/25 text-white'
+                    }`}
+                  >
+                    {bttsWon ? 'WIN' : 'FT'}
+                  </span>
+                ) : null}
+              </p>
+            ) : null}
             <p className="mt-1.5 text-[10px] font-semibold text-[#0b3d5c]/70">
               {open ? 'Hide detail ▴' : 'Detail ▾'}
             </p>
@@ -136,6 +163,24 @@ export function StatStrikeFixtureRow({ row, compact = false, starred = false, on
               <>
                 <dt className="font-semibold text-black/80">Result</dt>
                 <dd>{won === true ? 'WIN' : won === false ? 'FT' : fixture.status}</dd>
+              </>
+            ) : null}
+            {bttsBand ? (
+              <>
+                <dt className="font-semibold text-black/80">BTTS</dt>
+                <dd>
+                  {bttsBand}
+                  {finished && bttsWon != null ? (bttsWon ? ' · WIN' : ' · FT') : ''}
+                </dd>
+              </>
+            ) : null}
+            {bttsConfidencePct != null ? (
+              <>
+                <dt className="font-semibold text-black/80">BTTS conf.</dt>
+                <dd className="tabular-nums">
+                  {bttsPrediction!.matchedCriteria}/{bttsPrediction!.totalCriteria} ({bttsConfidencePct}
+                  %)
+                </dd>
               </>
             ) : null}
             {prediction?.recommendedLevel && prediction.recommendedLevel !== prediction.level ? (

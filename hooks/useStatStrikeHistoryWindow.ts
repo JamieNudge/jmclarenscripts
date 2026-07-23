@@ -3,12 +3,15 @@
 import { useCallback, useEffect, useState } from 'react';
 import { get, ref } from 'firebase/database';
 import { getFirebaseRealtimeDb, isFirebaseClientConfigured } from '@/lib/firebase-client';
+import { parseBTTSSelectionsPayload } from '@/lib/statstrike/btts-selections';
 import { parseDailySelection } from '@/lib/statstrike/parse-selection';
 import {
+  recordsFromBTTSSelections,
   recordsFromSelection,
   type StatStrikeTrackRecord,
 } from '@/lib/statstrike/track-record';
 import {
+  bttsSelectionsPathForDateKey,
   selectionsPathForDateKey,
   ukSelectionDateKeyOffset,
 } from '@/lib/statstrike/uk-date';
@@ -24,7 +27,7 @@ export type HistoryWindowState = {
 };
 
 /**
- * One-shot fetch of `/selections/{ukToday-(n-1)}` … `/selections/{ukToday}` for app-level digests.
+ * One-shot fetch of `/selections` + `/bttsSelections` for UK today-(n-1)…today digests.
  * Set `enabled` false to skip fetch until the Best Performing tab opens.
  */
 export function useStatStrikeHistoryWindow(
@@ -74,10 +77,19 @@ export function useStatStrikeHistoryWindow(
     try {
       const results = await Promise.all(
         dateKeys.map(async (dateKey) => {
-          const snap = await get(ref(db, selectionsPathForDateKey(dateKey)));
-          const sel = parseDailySelection(snap.val());
-          if (!sel) return [] as StatStrikeTrackRecord[];
-          return recordsFromSelection(sel, dateKey);
+          const [selSnap, bttsSnap] = await Promise.all([
+            get(ref(db, selectionsPathForDateKey(dateKey))),
+            get(ref(db, bttsSelectionsPathForDateKey(dateKey))),
+          ]);
+          const sel = parseDailySelection(selSnap.val());
+          const btts = parseBTTSSelectionsPayload(bttsSnap.val());
+          const fromSel = sel ? recordsFromSelection(sel, dateKey) : [];
+          const fromBtts = recordsFromBTTSSelections(
+            btts?.picksByFixtureId ?? new Map(),
+            sel,
+            dateKey,
+          );
+          return [...fromSel, ...fromBtts];
         }),
       );
       const records = results.flat();

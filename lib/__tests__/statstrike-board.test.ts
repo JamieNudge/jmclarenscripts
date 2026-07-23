@@ -320,10 +320,18 @@ describe('mergeBoardRows', () => {
 
 describe('winning forecast', () => {
   it('matches iOS band rules', () => {
-    expect(isWinningForecast('Over 2.5 Goals', 3)).toBe(true);
-    expect(isWinningForecast('Over 2.5 Goals', 2)).toBe(false);
-    expect(isWinningForecast('Under 2.5 Goals', 2)).toBe(true);
-    expect(isWinningForecast('Under 2.5 Goals', 3)).toBe(false);
+    expect(isWinningForecast('Over 2.5 Goals', 2, 1)).toBe(true);
+    expect(isWinningForecast('Over 2.5 Goals', 1, 1)).toBe(false);
+    expect(isWinningForecast('Under 2.5 Goals', 1, 1)).toBe(true);
+    expect(isWinningForecast('Under 2.5 Goals', 2, 1)).toBe(false);
+  });
+
+  it('settles BTTS Yes/No from both-teams-scored', () => {
+    expect(isWinningForecast('BTTS Yes', 1, 1)).toBe(true);
+    expect(isWinningForecast('BTTS Yes', 2, 0)).toBe(false);
+    expect(isWinningForecast('BTTS No', 0, 0)).toBe(true);
+    expect(isWinningForecast('BTTS No', 1, 0)).toBe(true);
+    expect(isWinningForecast('BTTS No', 2, 1)).toBe(false);
   });
 
   it('returns win for finished fixture with matching band', () => {
