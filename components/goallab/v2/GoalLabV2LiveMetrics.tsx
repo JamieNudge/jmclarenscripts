@@ -366,23 +366,23 @@ export function GoalLabV2LiveMetrics({ layout = 'row' }: { layout?: 'row' | 'sta
                   <h3 className="text-sm font-semibold text-[var(--gl-text)]">Hot streaks</h3>
                   <MetricInfo text={data.successDefinition} />
                 </div>
-                <p className="mt-1 text-[11px] font-medium uppercase tracking-wide text-[var(--gl-text-muted)]">
+                <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-[var(--gl-text-soft)]">
                   Fixture tips · all competitions
                 </p>
                 <dl className="mt-3 grid w-full grid-cols-2 gap-1.5 sm:grid-cols-4 sm:gap-2 text-center">
                   <div className="flex min-w-0 flex-col items-center justify-center rounded-lg border border-[var(--gl-border)] bg-[var(--gl-elevated)] px-1.5 py-2 sm:px-2 sm:py-2.5">
-                    <dt className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wide text-[var(--gl-text-muted)] leading-tight">
+                    <dt className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wide text-[var(--gl-text-soft)] leading-tight">
                       Hottest 30d
                     </dt>
                     <dd className="mt-0.5 text-lg sm:text-xl font-semibold tabular-nums text-[var(--gl-text)]">
                       {hottest?.count ?? 0}
                     </dd>
-                    <p className="mt-0.5 text-[9px] sm:text-[10px] text-[var(--gl-text-muted)] leading-tight">
+                    <p className="mt-0.5 text-[10px] sm:text-[11px] font-medium text-[var(--gl-text-soft)] leading-tight">
                       game streak
                     </p>
                   </div>
                   <div className="flex min-w-0 flex-col items-center justify-center rounded-lg border border-[var(--gl-border)] bg-[var(--gl-elevated)] px-1.5 py-2 sm:px-2 sm:py-2.5">
-                    <dt className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wide text-[var(--gl-text-muted)] leading-tight">
+                    <dt className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wide text-[var(--gl-text-soft)] leading-tight">
                       Today&apos;s wins
                     </dt>
                     <dd className="mt-0.5 text-lg sm:text-xl font-semibold tabular-nums text-[var(--gl-text)]">
@@ -390,29 +390,29 @@ export function GoalLabV2LiveMetrics({ layout = 'row' }: { layout?: 'row' | 'sta
                     </dd>
                   </div>
                   <div className="flex min-w-0 flex-col items-center justify-center rounded-lg border border-[var(--gl-border)] bg-[var(--gl-elevated)] px-1.5 py-2 sm:px-2 sm:py-2.5">
-                    <dt className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wide text-[var(--gl-text-muted)] leading-tight">
+                    <dt className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wide text-[var(--gl-text-soft)] leading-tight">
                       7d avg
                     </dt>
                     <dd className="mt-0.5 text-lg sm:text-xl font-semibold tabular-nums text-[var(--gl-text)]">
                       {avgLabel ?? '—'}
                     </dd>
-                    <p className="mt-0.5 text-[9px] sm:text-[10px] text-[var(--gl-text-muted)] leading-tight">
+                    <p className="mt-0.5 text-[10px] sm:text-[11px] font-medium text-[var(--gl-text-soft)] leading-tight">
                       run length
                     </p>
                   </div>
                   <div className="flex min-w-0 flex-col items-center justify-center rounded-lg border border-[var(--gl-border)] bg-[var(--gl-elevated)] px-1.5 py-2 sm:px-2 sm:py-2.5">
-                    <dt className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wide text-[var(--gl-text-muted)] leading-tight">
+                    <dt className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wide text-[var(--gl-text-soft)] leading-tight">
                       Today&apos;s best
                     </dt>
                     <dd className="mt-0.5 text-lg sm:text-xl font-semibold tabular-nums text-[var(--gl-text)]">
                       {todayStreak?.count ?? 0}
                     </dd>
-                    <p className="mt-0.5 text-[9px] sm:text-[10px] text-[var(--gl-text-muted)] leading-tight">
+                    <p className="mt-0.5 text-[10px] sm:text-[11px] font-medium text-[var(--gl-text-soft)] leading-tight">
                       game win streak
                     </p>
                   </div>
                 </dl>
-                <p className="mt-2 text-[11px] text-[var(--gl-text-muted)] leading-snug">
+                <p className="mt-2 text-xs font-medium text-[var(--gl-text-soft)] leading-snug">
                   Today&apos;s best updates when a longer consecutive run settles
                   {data.hotStreak.runCount7d > 0
                     ? ` · ${data.hotStreak.runCount7d} run${data.hotStreak.runCount7d === 1 ? '' : 's'} in 7d`
@@ -421,25 +421,25 @@ export function GoalLabV2LiveMetrics({ layout = 'row' }: { layout?: 'row' | 'sta
                 {hottest && hottest.count > 0 && hottest.latest ? (
                   <>
                     {streakPeriod ? (
-                      <p className="mt-3 text-sm tabular-nums text-[var(--gl-text-soft)]">
+                      <p className="mt-3 text-sm tabular-nums text-[var(--gl-text)]">
                         Hottest streak (30 days): {streakPeriod}
-                        <span className="text-[var(--gl-text-muted)]"> · UK</span>
+                        <span className="text-[var(--gl-text-soft)]"> · UK</span>
                       </p>
                     ) : (
-                      <p className="mt-3 text-sm text-[var(--gl-text-soft)]">
+                      <p className="mt-3 text-sm text-[var(--gl-text)]">
                         Hottest streak last {data.hotStreak.hottestWindowDays} days
                       </p>
                     )}
                     <p className="mt-2 text-sm font-medium text-[var(--gl-text)]">
                       {hottest.latest.homeTeam} vs {hottest.latest.awayTeam}
                     </p>
-                    <p className="mt-1 text-sm text-[var(--gl-text-soft)]">
+                    <p className="mt-1 text-sm text-[var(--gl-text)]">
                       Forecast: {hottest.latest.forecast}
                     </p>
-                    <p className="mt-0.5 text-sm text-[var(--gl-text-soft)]">
+                    <p className="mt-0.5 text-sm text-[var(--gl-text)]">
                       FT: {hottest.latest.homeScore}–{hottest.latest.awayScore}
                     </p>
-                    <p className="mt-2 text-xs text-[var(--gl-text-muted)]">
+                    <p className="mt-2 text-xs font-medium text-[var(--gl-text-soft)]">
                       {hottest.latest.country
                         ? `${hottest.latest.country} · ${hottest.latest.competition}`
                         : hottest.latest.competition}
