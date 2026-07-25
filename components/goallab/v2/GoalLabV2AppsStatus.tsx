@@ -2,7 +2,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { apps } from '@/lib/apps-data';
 import { bestPicksPopgoalsComingSoonMeta } from '@/lib/best-picks-popgoals-coming-soon-meta';
-import { statstrikeAndroidBetaMeta } from '@/lib/statstrike-android-beta-meta';
 
 const goalLab = apps.find((a) => a.id === 'goallab');
 const statStrike = apps.find((a) => a.id === 'stat-strike');
@@ -45,15 +44,6 @@ const items: StatusItem[] = [
         } satisfies StatusItem,
       ]
     : []),
-  {
-    name: statstrikeAndroidBetaMeta.displayName,
-    iconSrc: statstrikeAndroidBetaMeta.iconSrc,
-    status: 'Android closed test',
-    body: 'Join the tester group, opt in on Play, then install with the same Google account.',
-    href: statstrikeAndroidBetaMeta.playStoreJoinUrl,
-    hrefLabel: statstrikeAndroidBetaMeta.playStoreJoinLabel,
-    external: true,
-  },
   {
     name: bestPicksPopgoalsComingSoonMeta.displayName,
     iconSrc: bestPicksPopgoalsComingSoonMeta.iconSrc,

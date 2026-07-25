@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { onValue, ref } from 'firebase/database';
+import { GoalLabV2AndroidTesterCard } from '@/components/goallab/v2/GoalLabV2AndroidTesterCard';
 import { GoalLabV2AppsStatus } from '@/components/goallab/v2/GoalLabV2AppsStatus';
 import { GoalLabV2FixtureCard } from '@/components/goallab/v2/GoalLabV2FixtureCard';
 import { GoalLabV2LiveMetrics } from '@/components/goallab/v2/GoalLabV2LiveMetrics';
@@ -144,6 +145,7 @@ export function GoalLabV2Home() {
               Learn how it works
             </HubFootballLink>
           </div>
+          <GoalLabV2AndroidTesterCard className="mt-5 max-w-xl" />
           <p className="mt-4 text-xs tabular-nums text-[var(--gl-text-muted)]">London date · {dateKey}</p>
         </div>
 
