@@ -377,10 +377,13 @@ export function GoalLabV2LiveMetrics({ layout = 'row' }: { layout?: 'row' | 'sta
                     <dd className="mt-0.5 text-lg sm:text-xl font-semibold tabular-nums text-[var(--gl-text)]">
                       {hottest?.count ?? 0}
                     </dd>
+                    <p className="mt-0.5 text-[9px] sm:text-[10px] text-[var(--gl-text-muted)] leading-tight">
+                      game streak
+                    </p>
                   </div>
                   <div className="flex min-w-0 flex-col items-center justify-center rounded-lg border border-[var(--gl-border)] bg-[var(--gl-elevated)] px-1.5 py-2 sm:px-2 sm:py-2.5">
                     <dt className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wide text-[var(--gl-text-muted)] leading-tight">
-                      Today
+                      Today&apos;s wins
                     </dt>
                     <dd className="mt-0.5 text-lg sm:text-xl font-semibold tabular-nums text-[var(--gl-text)]">
                       {todayStreak?.successfulCount ?? 0}/{todayStreak?.settledCount ?? 0}
@@ -393,6 +396,9 @@ export function GoalLabV2LiveMetrics({ layout = 'row' }: { layout?: 'row' | 'sta
                     <dd className="mt-0.5 text-lg sm:text-xl font-semibold tabular-nums text-[var(--gl-text)]">
                       {avgLabel ?? '—'}
                     </dd>
+                    <p className="mt-0.5 text-[9px] sm:text-[10px] text-[var(--gl-text-muted)] leading-tight">
+                      run length
+                    </p>
                   </div>
                   <div className="flex min-w-0 flex-col items-center justify-center rounded-lg border border-[var(--gl-border)] bg-[var(--gl-elevated)] px-1.5 py-2 sm:px-2 sm:py-2.5">
                     <dt className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wide text-[var(--gl-text-muted)] leading-tight">
@@ -401,8 +407,8 @@ export function GoalLabV2LiveMetrics({ layout = 'row' }: { layout?: 'row' | 'sta
                     <dd className="mt-0.5 text-lg sm:text-xl font-semibold tabular-nums text-[var(--gl-text)]">
                       {todayStreak?.count ?? 0}
                     </dd>
-                    <p className="mt-0.5 text-[9px] sm:text-[10px] text-[var(--gl-text-muted)] leading-none">
-                      {(todayStreak?.count ?? 0) === 1 ? 'game' : 'games'}
+                    <p className="mt-0.5 text-[9px] sm:text-[10px] text-[var(--gl-text-muted)] leading-tight">
+                      game win streak
                     </p>
                   </div>
                 </dl>
