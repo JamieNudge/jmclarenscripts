@@ -369,35 +369,45 @@ export function GoalLabV2LiveMetrics({ layout = 'row' }: { layout?: 'row' | 'sta
                 <p className="mt-1 text-[11px] font-medium uppercase tracking-wide text-[var(--gl-text-muted)]">
                   Fixture tips · all competitions
                 </p>
-                <dl className="mt-3 grid w-full grid-cols-3 gap-2 sm:gap-3 text-center">
-                  <div className="flex min-w-0 flex-col items-center justify-center rounded-lg border border-[var(--gl-border)] bg-[var(--gl-elevated)] px-2 py-2.5">
-                    <dt className="text-[10px] font-semibold uppercase tracking-wide text-[var(--gl-text-muted)]">
+                <dl className="mt-3 grid w-full grid-cols-2 gap-1.5 sm:grid-cols-4 sm:gap-2 text-center">
+                  <div className="flex min-w-0 flex-col items-center justify-center rounded-lg border border-[var(--gl-border)] bg-[var(--gl-elevated)] px-1.5 py-2 sm:px-2 sm:py-2.5">
+                    <dt className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wide text-[var(--gl-text-muted)] leading-tight">
                       Hottest 30d
                     </dt>
-                    <dd className="mt-0.5 text-xl font-semibold tabular-nums text-[var(--gl-text)]">
+                    <dd className="mt-0.5 text-lg sm:text-xl font-semibold tabular-nums text-[var(--gl-text)]">
                       {hottest?.count ?? 0}
                     </dd>
                   </div>
-                  <div className="flex min-w-0 flex-col items-center justify-center rounded-lg border border-[var(--gl-border)] bg-[var(--gl-elevated)] px-2 py-2.5">
-                    <dt className="text-[10px] font-semibold uppercase tracking-wide text-[var(--gl-text-muted)]">
+                  <div className="flex min-w-0 flex-col items-center justify-center rounded-lg border border-[var(--gl-border)] bg-[var(--gl-elevated)] px-1.5 py-2 sm:px-2 sm:py-2.5">
+                    <dt className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wide text-[var(--gl-text-muted)] leading-tight">
                       Today
                     </dt>
-                    <dd className="mt-0.5 text-xl font-semibold tabular-nums text-[var(--gl-text)]">
-                      {todayStreak?.count ?? 0}
+                    <dd className="mt-0.5 text-lg sm:text-xl font-semibold tabular-nums text-[var(--gl-text)]">
+                      {todayStreak?.successfulCount ?? 0}/{todayStreak?.settledCount ?? 0}
                     </dd>
                   </div>
-                  <div className="flex min-w-0 flex-col items-center justify-center rounded-lg border border-[var(--gl-border)] bg-[var(--gl-elevated)] px-2 py-2.5">
-                    <dt className="text-[10px] font-semibold uppercase tracking-wide text-[var(--gl-text-muted)]">
+                  <div className="flex min-w-0 flex-col items-center justify-center rounded-lg border border-[var(--gl-border)] bg-[var(--gl-elevated)] px-1.5 py-2 sm:px-2 sm:py-2.5">
+                    <dt className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wide text-[var(--gl-text-muted)] leading-tight">
                       7d avg
                     </dt>
-                    <dd className="mt-0.5 text-xl font-semibold tabular-nums text-[var(--gl-text)]">
+                    <dd className="mt-0.5 text-lg sm:text-xl font-semibold tabular-nums text-[var(--gl-text)]">
                       {avgLabel ?? '—'}
                     </dd>
                   </div>
+                  <div className="flex min-w-0 flex-col items-center justify-center rounded-lg border border-[var(--gl-border)] bg-[var(--gl-elevated)] px-1.5 py-2 sm:px-2 sm:py-2.5">
+                    <dt className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wide text-[var(--gl-text-muted)] leading-tight">
+                      Today&apos;s best
+                    </dt>
+                    <dd className="mt-0.5 text-lg sm:text-xl font-semibold tabular-nums text-[var(--gl-text)]">
+                      {todayStreak?.count ?? 0}
+                    </dd>
+                    <p className="mt-0.5 text-[9px] sm:text-[10px] text-[var(--gl-text-muted)] leading-none">
+                      {(todayStreak?.count ?? 0) === 1 ? 'game' : 'games'}
+                    </p>
+                  </div>
                 </dl>
                 <p className="mt-2 text-[11px] text-[var(--gl-text-muted)] leading-snug">
-                  Today: {todayStreak?.successfulCount ?? 0}/{todayStreak?.settledCount ?? 0}{' '}
-                  successful
+                  Today&apos;s best updates when a longer consecutive run settles
                   {data.hotStreak.runCount7d > 0
                     ? ` · ${data.hotStreak.runCount7d} run${data.hotStreak.runCount7d === 1 ? '' : 's'} in 7d`
                     : ''}
