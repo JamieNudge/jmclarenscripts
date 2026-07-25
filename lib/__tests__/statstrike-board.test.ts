@@ -443,6 +443,23 @@ describe('board filters', () => {
       rowPassesBoardFilters(rows[1], { ...DEFAULT_BOARD_FILTERS, league: 'goalBandCascade' }),
     ).toBe(false);
 
+    const bttsRow = {
+      ...rows[0],
+      bttsPrediction: {
+        level: 'BTTS Yes' as const,
+        recommendedLevel: 'BTTS Yes' as const,
+        matchedCriteria: 7,
+        totalCriteria: 11,
+        significantStats: ['BTTS'],
+      },
+    };
+    expect(
+      rowPassesBoardFilters(bttsRow, { ...DEFAULT_BOARD_FILTERS, league: 'btts' }),
+    ).toBe(true);
+    expect(
+      rowPassesBoardFilters(rows[1], { ...DEFAULT_BOARD_FILTERS, league: 'btts' }),
+    ).toBe(false);
+
     const { boardChipCounts } = await import('@/lib/statstrike/board-filters');
     const counts = boardChipCounts(
       [

@@ -28,21 +28,31 @@ const TIME_CHIPS: { id: TimeFilterId; label: string }[] = [
   { id: 'custom', label: 'Custom' },
 ];
 
-const LEAGUE_CHIPS: { id: LeagueFilterId; label: string; locked?: boolean; indigo?: boolean }[] = [
+const LEAGUE_CHIPS: {
+  id: LeagueFilterId;
+  label: string;
+  locked?: boolean;
+  indigo?: boolean;
+  lime?: boolean;
+}[] = [
   { id: 'all', label: 'All' },
   { id: 'bestPerforming', label: 'Best Leagues' },
   { id: 'goalBandCascade', label: 'GBC', indigo: true },
+  { id: 'btts', label: 'BTTS', lime: true },
   { id: 'major', label: 'Upper' },
   { id: 'minor', label: 'Minor' },
   { id: 'yourSelections', label: 'Your Picks!', locked: true },
 ];
 
-function chipClass(active: boolean, locked?: boolean, indigo?: boolean) {
+function chipClass(active: boolean, locked?: boolean, indigo?: boolean, lime?: boolean) {
   if (locked) {
     return 'rounded-full border border-black/15 bg-black/5 px-2.5 py-1 text-[11px] font-semibold text-black/55';
   }
   if (active && indigo) {
-    return 'rounded-full bg-indigo-600 px-2.5 py-1 text-[11px] font-semibold text-white';
+    return 'rounded-full bg-violet-500 px-2.5 py-1 text-[11px] font-semibold text-white';
+  }
+  if (active && lime) {
+    return 'rounded-full bg-lime-400 px-2.5 py-1 text-[11px] font-black text-black';
   }
   return active
     ? 'rounded-full bg-[#0b3d5c] px-2.5 py-1 text-[11px] font-semibold text-white'
@@ -130,8 +140,14 @@ export function StatStrikeBoardFilters({
             <button
               key={chip.id}
               type="button"
-              aria-label={chip.id === 'goalBandCascade' ? 'Goal Band Cascade' : undefined}
-              className={`relative ${chipClass(active, locked, chip.indigo)}`}
+              aria-label={
+                chip.id === 'goalBandCascade'
+                  ? 'Goal Band Cascade'
+                  : chip.id === 'btts'
+                    ? 'BTTS tips'
+                    : undefined
+              }
+              className={`relative ${chipClass(active, locked, chip.indigo, chip.lime)}`}
               onClick={() => {
                 if (locked) {
                   onYourPicksLockedClick?.();

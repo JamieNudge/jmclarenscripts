@@ -56,3 +56,44 @@ export function bttsPredictionResultForFixture(
 ): boolean | null {
   return predictionResultForFixture(fixture, bttsPrediction ?? null);
 }
+
+/** Compact market label for result badges: O2.5, U2.5, BTTS, … */
+export function shortMarketLabel(
+  level: StatStrikePredictionLevel | string | null | undefined,
+  opts?: { bttsMarket?: boolean },
+): string {
+  if (opts?.bttsMarket) return 'BTTS';
+  switch (level) {
+    case 'Over 2.5 Goals':
+    case 'Over 2.5':
+      return 'O2.5';
+    case 'Over 3.5 Goals':
+    case 'Over 3.5':
+      return 'O3.5';
+    case 'Over 4.5 Goals':
+    case 'Over 4.5':
+      return 'O4.5';
+    case 'Over 5.5+ Goals':
+    case 'Over 5.5 Goals':
+    case 'Over 5.5':
+      return 'O5.5+';
+    case 'Under 2.5 Goals':
+    case 'Under 2.5':
+      return 'U2.5';
+    case BTTS_YES:
+    case BTTS_NO:
+      return 'BTTS';
+    default:
+      return 'Tip';
+  }
+}
+
+/** e.g. "O2.5 WIN", "BTTS FT" — iOS trailing badge parity. */
+export function marketResultBadgeLabel(
+  level: StatStrikePredictionLevel | string | null | undefined,
+  won: boolean | null | undefined,
+  opts?: { bttsMarket?: boolean },
+): string {
+  const outcome = won === true ? 'WIN' : 'FT';
+  return `${shortMarketLabel(level, opts)} ${outcome}`;
+}

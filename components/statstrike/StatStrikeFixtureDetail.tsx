@@ -8,6 +8,7 @@ import { formatKickoffLocal, scoreLabel } from '@/lib/statstrike/board-merge';
 import {
   bttsPredictionResultForFixture,
   isResultFinishedStatus,
+  marketResultBadgeLabel,
   predictionResultForFixture,
 } from '@/lib/statstrike/correctness';
 import { displayBandRows } from '@/lib/statstrike/goal-band-cascade';
@@ -158,11 +159,6 @@ export function StatStrikeFixtureDetail({ fixtureId, dateKey }: Props) {
           {leagueLabel || 'League'}
           {bestPerformingLeague ? ' · Best performing' : ''}
         </p>
-        {cascade ? (
-          <span className="mt-1.5 inline-flex rounded-full bg-indigo-600 px-1.5 py-0.5 text-[10px] font-bold text-white">
-            Goal Band Cascade
-          </span>
-        ) : null}
         <h1 className="mt-2 text-xl font-bold text-black/90 leading-snug">
           {fixture.homeTeam.name}{' '}
           <span className="font-normal text-black/70">v</span> {fixture.awayTeam.name}
@@ -181,27 +177,43 @@ export function StatStrikeFixtureDetail({ fixtureId, dateKey }: Props) {
                 won === true ? 'bg-amber-300 text-black' : 'bg-black/25 text-white'
               }`}
             >
-              {won === true ? 'WIN' : 'FT'}
+              {marketResultBadgeLabel(band, won)}
+            </span>
+          ) : null}
+          {finished && bttsBand ? (
+            <span
+              className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-black ${
+                bttsWon === true ? 'bg-amber-300 text-black' : 'bg-black/25 text-white'
+              }`}
+            >
+              {marketResultBadgeLabel(bttsBand, bttsWon, { bttsMarket: true })}
             </span>
           ) : null}
         </div>
-        <p className="mt-3 inline-flex rounded-md bg-[#0b3d5c]/10 px-2 py-1 text-sm font-semibold text-[#0b3d5c]">
-          {band}
-        </p>
-        {bttsBand ? (
-          <p className="mt-2 inline-flex items-center gap-2 rounded-md bg-teal-700/15 px-2 py-1 text-sm font-semibold text-teal-900">
-            <span>{bttsBand}</span>
-            {finished && bttsWon != null ? (
-              <span
-                className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-black ${
-                  bttsWon ? 'bg-amber-300 text-black' : 'bg-black/25 text-white'
-                }`}
-              >
-                {bttsWon ? 'WIN' : 'FT'}
-              </span>
-            ) : null}
-          </p>
-        ) : null}
+        <div className="mt-3 flex flex-col items-start gap-1.5">
+          {cascade ? (
+            <span className="inline-flex rounded-full bg-violet-500 px-2.5 py-1 text-[11px] font-black tracking-wide text-white shadow-sm">
+              Goal Band Cascade
+            </span>
+          ) : null}
+          <span className="inline-flex rounded-full bg-sky-400 px-2.5 py-1 text-sm font-black tracking-wide text-black shadow-sm">
+            {band}
+          </span>
+          {bttsBand ? (
+            <span className="inline-flex items-center gap-2 rounded-full bg-lime-400 px-2.5 py-1 text-sm font-black tracking-wide text-black shadow-sm">
+              <span>{bttsBand}</span>
+              {finished && bttsWon != null ? (
+                <span
+                  className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-black ${
+                    bttsWon ? 'bg-white text-black' : 'bg-black/25 text-white'
+                  }`}
+                >
+                  {bttsWon ? 'BTTS WIN' : 'BTTS FT'}
+                </span>
+              ) : null}
+            </span>
+          ) : null}
+        </div>
       </header>
 
       <section className="rounded-2xl border border-black/10 bg-white p-4 shadow-sm">
@@ -214,7 +226,9 @@ export function StatStrikeFixtureDetail({ fixtureId, dateKey }: Props) {
               <dt className="font-semibold text-black/80">BTTS</dt>
               <dd>
                 {bttsBand}
-                {finished && bttsWon != null ? (bttsWon ? ' · WIN' : ' · FT') : ''}
+                {finished && bttsWon != null
+                  ? ` · ${marketResultBadgeLabel(bttsBand, bttsWon, { bttsMarket: true })}`
+                  : ''}
               </dd>
             </>
           ) : null}

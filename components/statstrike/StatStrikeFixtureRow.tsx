@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useId, useState } from 'react';
 import type { StatStrikeBoardRow } from '@/lib/statstrike/models';
 import { formatKickoffLocal, scoreLabel } from '@/lib/statstrike/board-merge';
-import { isResultFinishedStatus, predictionResultForFixture, bttsPredictionResultForFixture } from '@/lib/statstrike/correctness';
+import { isResultFinishedStatus, predictionResultForFixture, bttsPredictionResultForFixture, marketResultBadgeLabel } from '@/lib/statstrike/correctness';
 import { displayBandRows } from '@/lib/statstrike/goal-band-cascade';
 import { isLiveStatus } from '@/lib/statstrike/parse-selection';
 
@@ -73,63 +73,74 @@ export function StatStrikeFixtureRow({ row, compact = false, starred = false, on
               {bestPerformingLeague ? ' · Best performing' : ''}
               {fromYesterday ? ' · Carry-over' : ''}
             </p>
-            {cascade ? (
-              <span
-                className="mt-1 inline-flex max-w-full items-center rounded-full bg-indigo-600 px-1.5 py-0.5 text-[10px] font-bold leading-none text-white"
-                aria-label="Goal band cascade"
-              >
-                Goal Band Cascade
-              </span>
-            ) : null}
             <p className={`mt-0.5 font-semibold text-black/90 leading-snug ${compact ? 'text-sm' : 'text-base'}`}>
               {fixture.homeTeam.name}{' '}
               <span className="font-normal text-black/80">v</span> {fixture.awayTeam.name}
             </p>
             <p className="mt-1 text-xs tabular-nums text-black/70">
               {formatKickoffLocal(fixture.kickoffMs)}
-              {live ? (
-                <span
-                  className="ml-2 inline-flex items-center rounded-full bg-[#0d9488] px-1.5 py-0.5 text-[10px] font-bold leading-none tracking-wide text-white align-middle"
-                  aria-label={
-                    fixture.elapsed != null ? `Live ${fixture.elapsed} minutes` : 'Live'
-                  }
-                >
-                  LIVE{fixture.elapsed != null ? ` ${fixture.elapsed}'` : ''}
-                </span>
-              ) : fixture.status && fixture.status !== 'NS' && !finished ? (
-                <span className="ml-2 text-black/80">{fixture.status}</span>
-              ) : null}
             </p>
+            <div className="mt-1.5 flex flex-col items-start gap-1">
+              {cascade ? (
+                <span
+                  className="inline-flex max-w-full items-center rounded-full bg-violet-500 px-2 py-0.5 text-[10px] font-black leading-none tracking-wide text-white shadow-sm"
+                  aria-label="Goal band cascade"
+                >
+                  Goal Band Cascade
+                </span>
+              ) : null}
+              <span className="inline-flex max-w-full items-center rounded-full bg-sky-400 px-2 py-0.5 text-[10px] font-black leading-tight tracking-wide text-black shadow-sm">
+                {band}
+              </span>
+              {bttsBand ? (
+                <span className="inline-flex max-w-full items-center gap-1 rounded-full bg-lime-400 px-2 py-0.5 text-[10px] font-black leading-tight tracking-wide text-black shadow-sm">
+                  <span>{bttsBand}</span>
+                  {finished && bttsWon != null ? (
+                    <span
+                      className={`rounded-full px-1 py-px text-[9px] font-black tracking-wide ${
+                        bttsWon ? 'bg-white text-black' : 'bg-black/25 text-white'
+                      }`}
+                    >
+                      {bttsWon ? 'BTTS WIN' : 'BTTS FT'}
+                    </span>
+                  ) : null}
+                </span>
+              ) : null}
+            </div>
           </div>
-          <div className="shrink-0 text-right">
+          <div className="shrink-0 flex flex-col items-end text-right gap-1">
             {score ? (
               <p className="text-sm font-bold tabular-nums text-black/90">{score}</p>
             ) : null}
-            {finished ? (
+            {finished && prediction ? (
               <p
-                className={`mt-1 inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-black tracking-wide ${
+                className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-black tracking-wide ${
                   won === true ? 'bg-amber-300 text-black' : 'bg-black/25 text-white'
                 }`}
               >
-                {won === true ? 'WIN' : 'FT'}
+                {marketResultBadgeLabel(band, won)}
               </p>
             ) : null}
-            <p className="mt-1 inline-flex max-w-[9.5rem] rounded-md bg-[#0b3d5c]/10 px-1.5 py-0.5 text-[11px] font-semibold text-[#0b3d5c] leading-tight">
-              {band}
-            </p>
-            {bttsBand ? (
-              <p className="mt-1 inline-flex max-w-[9.5rem] items-center gap-1 rounded-md bg-teal-700/15 px-1.5 py-0.5 text-[11px] font-semibold text-teal-900 leading-tight">
-                <span>{bttsBand}</span>
-                {finished && bttsWon != null ? (
-                  <span
-                    className={`rounded-full px-1 py-px text-[9px] font-black tracking-wide ${
-                      bttsWon ? 'bg-amber-300 text-black' : 'bg-black/25 text-white'
-                    }`}
-                  >
-                    {bttsWon ? 'WIN' : 'FT'}
-                  </span>
-                ) : null}
+            {finished && bttsBand ? (
+              <p
+                className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-black tracking-wide ${
+                  bttsWon === true ? 'bg-amber-300 text-black' : 'bg-black/25 text-white'
+                }`}
+              >
+                {marketResultBadgeLabel(bttsBand, bttsWon, { bttsMarket: true })}
               </p>
+            ) : null}
+            {live ? (
+              <span
+                className="mt-1 inline-flex items-center rounded-full bg-[#0d9488] px-1.5 py-0.5 text-[10px] font-bold leading-none tracking-wide text-white"
+                aria-label={
+                  fixture.elapsed != null ? `Live ${fixture.elapsed} minutes` : 'Live'
+                }
+              >
+                LIVE{fixture.elapsed != null ? ` ${fixture.elapsed}'` : ''}
+              </span>
+            ) : fixture.status && fixture.status !== 'NS' && !finished ? (
+              <span className="mt-1 text-[10px] font-semibold text-black/80">{fixture.status}</span>
             ) : null}
             <p className="mt-1.5 text-[10px] font-semibold text-[#0b3d5c]/70">
               {open ? 'Hide detail ▴' : 'Detail ▾'}
@@ -162,7 +173,7 @@ export function StatStrikeFixtureRow({ row, compact = false, starred = false, on
             {finished ? (
               <>
                 <dt className="font-semibold text-black/80">Result</dt>
-                <dd>{won === true ? 'WIN' : won === false ? 'FT' : fixture.status}</dd>
+                <dd>{won == null ? fixture.status : marketResultBadgeLabel(band, won)}</dd>
               </>
             ) : null}
             {bttsBand ? (
@@ -170,7 +181,9 @@ export function StatStrikeFixtureRow({ row, compact = false, starred = false, on
                 <dt className="font-semibold text-black/80">BTTS</dt>
                 <dd>
                   {bttsBand}
-                  {finished && bttsWon != null ? (bttsWon ? ' · WIN' : ' · FT') : ''}
+                  {finished && bttsWon != null
+                    ? ` · ${marketResultBadgeLabel(bttsBand, bttsWon, { bttsMarket: true })}`
+                    : ''}
                 </dd>
               </>
             ) : null}

@@ -17,11 +17,20 @@ import {
 } from '@/lib/statstrike/uk-date';
 
 export const runtime = 'nodejs';
-export const revalidate = 120;
+export const dynamic = 'force-dynamic';
 
+/**
+ * Browser/CDN must not serve a stale snapshot: freshness is bounded by the
+ * short in-memory server cache below, so a reload always reaches this handler.
+ */
 const CACHE_HEADERS = {
-  'Cache-Control': 'public, s-maxage=120, stale-while-revalidate=300',
+  'Cache-Control': 'no-store',
 };
+
+/** In-memory guard so bursts/reloads don't hammer RTDB while staying fresh. */
+const SNAPSHOT_TTL_MS = 30_000;
+let cachedSnapshot: (HomepageMetricsSnapshot & { error?: string }) | null = null;
+let cachedAtMs = 0;
 
 function emptyStreakRun() {
   return {
@@ -72,6 +81,10 @@ export async function GET() {
       });
     }
 
+    if (cachedSnapshot && Date.now() - cachedAtMs < SNAPSHOT_TTL_MS) {
+      return NextResponse.json(cachedSnapshot, { headers: CACHE_HEADERS });
+    }
+
     const app = getFirebaseAdminApp();
     const db = getDatabase(app);
     const todayKey = ukSelectionDateKey();
@@ -103,6 +116,9 @@ export async function GET() {
       todayDateKey: todayKey,
       recentDateKeys: streakDateKeys,
     });
+
+    cachedSnapshot = snapshot;
+    cachedAtMs = Date.now();
 
     return NextResponse.json(snapshot, { headers: CACHE_HEADERS });
   } catch (e) {

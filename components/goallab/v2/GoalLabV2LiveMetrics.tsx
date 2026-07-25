@@ -264,11 +264,13 @@ export function GoalLabV2LiveMetrics({ layout = 'row' }: { layout?: 'row' | 'sta
       ? 'mt-1.5 text-sm text-[var(--gl-text-soft)] leading-relaxed'
       : 'mt-2 max-w-2xl text-base text-[var(--gl-text-soft)] leading-relaxed';
 
-  const load = useCallback(async () => {
-    setLoading(true);
+  const load = useCallback(async ({ silent = false }: { silent?: boolean } = {}) => {
+    if (!silent) setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/statstrike/homepage-metrics', { cache: 'no-store' });
+      const res = await fetch(`/api/statstrike/homepage-metrics?t=${Date.now()}`, {
+        cache: 'no-store',
+      });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json = (await res.json()) as HomepageMetricsSnapshot & { error?: string };
       setData(json);
@@ -276,16 +278,25 @@ export function GoalLabV2LiveMetrics({ layout = 'row' }: { layout?: 'row' | 'sta
         setError(json.error === 'admin-unconfigured' ? 'Metrics temporarily unavailable.' : json.error);
       }
     } catch (e) {
-      setData(null);
-      setError(e instanceof Error ? e.message : 'Failed to load metrics');
+      // Keep the last good snapshot on a background refresh blip; only surface
+      // the error state on an explicit (non-silent) load.
+      if (!silent) {
+        setData(null);
+        setError(e instanceof Error ? e.message : 'Failed to load metrics');
+      }
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
       setNowMs(Date.now());
     }
   }, []);
 
   useEffect(() => {
     void load();
+    const interval = setInterval(() => {
+      if (typeof document !== 'undefined' && document.hidden) return;
+      void load({ silent: true });
+    }, 60_000);
+    return () => clearInterval(interval);
   }, [load]);
 
   const closeDrawer = useCallback(() => setDrawerOpen(false), []);
