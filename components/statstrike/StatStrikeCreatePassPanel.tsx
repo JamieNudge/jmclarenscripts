@@ -305,7 +305,7 @@ export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full
 
           <button
             type="button"
-            disabled={busy || configured === false || salesEnabled === false}
+            disabled={busy || configured === false}
             onClick={() => void startCheckout()}
             className="w-full rounded-xl bg-[var(--gl-accent)] px-4 py-3 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
           >
