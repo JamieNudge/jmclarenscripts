@@ -84,6 +84,23 @@ export function GoalLabV2FixturesList() {
     [gateActive, fixtures],
   );
   const freeCount = gateActive ? Math.min(freeIds.size, totalCount) : totalCount;
+  const hasLockedFixtures = gateActive && totalCount > freeCount;
+  const freeFixtures = useMemo(() => {
+    if (!hasLockedFixtures) return [];
+    const byId = new Map(fixtures.map((fixture) => [String(fixture.fixtureId), fixture]));
+    return Array.from(freeIds)
+      .map((id) => byId.get(id))
+      .filter((fixture): fixture is (typeof fixtures)[number] => fixture != null);
+  }, [fixtures, freeIds, hasLockedFixtures]);
+  const visibleGroups = useMemo(
+    () =>
+      hasLockedFixtures
+        ? groupFixturesByLeague(
+            fixtures.filter((fixture) => !freeIds.has(String(fixture.fixtureId))),
+          )
+        : groups,
+    [fixtures, freeIds, groups, hasLockedFixtures],
+  );
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 md:px-6 md:py-14 space-y-8">
@@ -110,21 +127,41 @@ export function GoalLabV2FixturesList() {
         ) : null}
       </header>
 
-      {gateActive && totalCount > freeCount ? (
-        <div className="flex flex-col gap-3 rounded-2xl border border-[var(--gl-border-strong)] bg-[var(--gl-elevated)] px-5 py-4 shadow-[var(--gl-shadow)] sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-base text-[var(--gl-text)] leading-relaxed">
-            Showing{' '}
-            <span className="font-semibold tabular-nums">{freeCount}</span> of{' '}
-            <span className="font-semibold tabular-nums">{totalCount}</span> forecasts. Unlock the
-            full day for 24 hours — from £1.
-          </p>
-          <Link
-            href={passCreatePath()}
-            className="inline-flex shrink-0 items-center justify-center rounded-xl bg-[var(--gl-accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90"
-          >
-            Get 24h access
-          </Link>
-        </div>
+      {hasLockedFixtures ? (
+        <section className="space-y-4" aria-labelledby="free-forecast-preview">
+          <div className="flex flex-col gap-3 rounded-2xl border border-[var(--gl-border-strong)] bg-[var(--gl-elevated)] px-5 py-4 shadow-[var(--gl-shadow)] sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2
+                id="free-forecast-preview"
+                className="text-lg font-semibold text-[var(--gl-text)]"
+              >
+                Free forecast preview
+              </h2>
+              <p className="mt-1 text-sm text-[var(--gl-text-soft)] leading-relaxed">
+                Showing <span className="font-semibold tabular-nums">{freeCount}</span> of{' '}
+                <span className="font-semibold tabular-nums">{totalCount}</span> forecasts. Unlock
+                the full day for 24 hours — from £1.
+              </p>
+            </div>
+            <Link
+              href={passCreatePath()}
+              className="inline-flex shrink-0 items-center justify-center rounded-xl bg-[var(--gl-accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90"
+            >
+              Unlock all forecasts
+            </Link>
+          </div>
+          <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 list-none m-0 p-0">
+            {freeFixtures.map((fixture) => (
+              <li key={String(fixture.fixtureId)}>
+                <GoalLabV2FixtureCard
+                  fixture={fixture}
+                  dateKey={dateKey}
+                  interactive={false}
+                />
+              </li>
+            ))}
+          </ul>
+        </section>
       ) : null}
 
       {!configured ? (
@@ -145,7 +182,17 @@ export function GoalLabV2FixturesList() {
       {configured && !loading && !error && totalCount > 0 ? (
         <div className="space-y-8">
           <div className="space-y-10">
-            {groups.map((group) => (
+            {hasLockedFixtures ? (
+              <div className="border-t border-[var(--gl-border)] pt-8">
+                <h2 className="text-xl font-semibold tracking-tight text-[var(--gl-text)]">
+                  More fixtures today
+                </h2>
+                <p className="mt-1 text-sm text-[var(--gl-text-soft)]">
+                  Unlock the forecast bands below with a 24-hour pass.
+                </p>
+              </div>
+            ) : null}
+            {visibleGroups.map((group) => (
               <section key={group.leagueKey} className="space-y-4">
                 <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--gl-text-muted)]">
                   {group.leagueKey}
@@ -157,7 +204,7 @@ export function GoalLabV2FixturesList() {
                         fixture={fixture}
                         dateKey={dateKey}
                         interactive={false}
-                        locked={gateActive && !freeIds.has(String(fixture.fixtureId))}
+                        locked={hasLockedFixtures}
                       />
                     </li>
                   ))}
