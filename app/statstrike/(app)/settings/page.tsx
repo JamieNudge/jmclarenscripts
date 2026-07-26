@@ -1,12 +1,17 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { StatStrikeAppStoreCta } from '@/components/statstrike/StatStrikeAppStoreCta';
+import { useStatStrikeWebBlur } from '@/hooks/useStatStrikeWebBlur';
 import { apps } from '@/lib/apps-data';
 import { passCreatePath } from '@/lib/statstrike/pass-constants';
 
 const appStoreUrl = apps.find((a) => a.id === 'stat-strike')?.appStoreUrl;
 
 export default function StatStrikeSettingsPage() {
+  const { supporterPassSalesEnabled } = useStatStrikeWebBlur();
+
   return (
     <div className="min-h-screen bg-[#eef2f6] text-black">
       <header className="border-b border-black/10 bg-white">
@@ -39,16 +44,25 @@ export default function StatStrikeSettingsPage() {
 
         <section className="rounded-2xl border border-black/10 bg-white p-5 space-y-3">
           <h2 className="font-semibold text-black">24h web pass</h2>
-          <p className="text-black/80">
-            Create a pass (£1 / £3 / £5 / £10 — same entitlement) on the support page. Your Picks and
-            My Record stay on this device (IndexedDB) while the pass is active.
-          </p>
-          <Link
-            href={passCreatePath()}
-            className="inline-flex items-center justify-center rounded-xl bg-amber-300 px-4 py-2.5 text-sm font-bold text-black hover:bg-amber-200"
-          >
-            Get 24h access
-          </Link>
+          {supporterPassSalesEnabled ? (
+            <>
+              <p className="text-black/80">
+                Create a pass (£1 / £3 / £5 / £10 — same entitlement) on the support page. Your Picks
+                and My Record stay on this device (IndexedDB) while the pass is active.
+              </p>
+              <Link
+                href={passCreatePath()}
+                className="inline-flex items-center justify-center rounded-xl bg-amber-300 px-4 py-2.5 text-sm font-bold text-black hover:bg-amber-200"
+              >
+                Get 24h access
+              </Link>
+            </>
+          ) : (
+            <p className="text-black/80">
+              24-hour web pass purchases are temporarily unavailable. Support for the apps (and
+              existing passes) is still available on the support page.
+            </p>
+          )}
           {appStoreUrl ? (
             <StatStrikeAppStoreCta
               href={appStoreUrl}
@@ -89,7 +103,7 @@ export default function StatStrikeSettingsPage() {
             </li>
             <li>
               <Link href={passCreatePath()} className="text-[#0b3d5c] underline-offset-2 hover:underline">
-                Support &amp; Create Pass
+                Support
               </Link>
             </li>
           </ul>

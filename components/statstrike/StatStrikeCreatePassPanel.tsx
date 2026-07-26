@@ -23,6 +23,7 @@ export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full
   const [marketingConsent, setMarketingConsent] = useState(false);
   const [surveyConsent, setSurveyConsent] = useState(false);
   const [configured, setConfigured] = useState<boolean | null>(null);
+  const [salesEnabled, setSalesEnabled] = useState<boolean | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [claimStatus, setClaimStatus] = useState<string | null>(null);
@@ -32,10 +33,16 @@ export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full
     void (async () => {
       try {
         const res = await fetch('/api/statstrike/pass/checkout', { cache: 'no-store' });
-        const json = (await res.json()) as { configured?: boolean };
-        if (!cancelled) setConfigured(Boolean(json.configured));
+        const json = (await res.json()) as { configured?: boolean; salesEnabled?: boolean };
+        if (!cancelled) {
+          setConfigured(Boolean(json.configured));
+          setSalesEnabled(json.salesEnabled === true);
+        }
       } catch {
-        if (!cancelled) setConfigured(false);
+        if (!cancelled) {
+          setConfigured(false);
+          setSalesEnabled(false);
+        }
       }
     })();
     return () => {
@@ -90,10 +97,16 @@ export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full
           consentTextVersion: STATSTRIKE_PASS_CONSENT_TEXT_VERSION,
         }),
       });
-      const json = (await res.json()) as { url?: string; error?: string; configured?: boolean };
+      const json = (await res.json()) as {
+        url?: string;
+        error?: string;
+        configured?: boolean;
+        salesEnabled?: boolean;
+      };
       if (!res.ok || !json.url) {
         setError(json.error || 'Checkout unavailable');
         setConfigured(json.configured ?? configured);
+        if (typeof json.salesEnabled === 'boolean') setSalesEnabled(json.salesEnabled);
         return;
       }
       window.location.href = json.url;
@@ -191,101 +204,115 @@ export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full
         </p>
       ) : null}
 
-      <div>
-        <p className="text-xs font-semibold uppercase tracking-wide text-[var(--gl-text-muted)] mb-2">
-          Amount
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {STATSTRIKE_PASS_AMOUNTS_GBP.map((n) => (
-            <button
-              key={n}
-              type="button"
-              onClick={() => setAmount(n)}
-              className={`rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors ${
-                amount === n
-                  ? 'bg-[var(--gl-accent)] text-white shadow-sm'
-                  : 'border border-[var(--gl-border)] bg-[var(--gl-elevated)] text-[var(--gl-text)] hover:border-[var(--gl-border-strong)]'
-              }`}
-            >
-              £{n}
-            </button>
-          ))}
+      {salesEnabled !== true ? (
+        <div
+          className="rounded-xl border border-[var(--gl-border)] bg-[var(--gl-elevated)] px-4 py-3 text-sm text-[var(--gl-text-soft)]"
+          role="status"
+        >
+          {salesEnabled === null
+            ? 'Checking whether 24-hour Supporter Pass purchases are available…'
+            : '24-hour Supporter Pass purchases are temporarily unavailable. App support below still works — email us if you need help with an existing pass.'}
         </div>
-        <p className="mt-2 text-xs text-[var(--gl-text-muted)]">
-          Every amount grants the same 24-hour access. Access begins when payment is confirmed.
-        </p>
-      </div>
+      ) : (
+        <>
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--gl-text-muted)] mb-2">
+              Amount
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {STATSTRIKE_PASS_AMOUNTS_GBP.map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  onClick={() => setAmount(n)}
+                  className={`rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors ${
+                    amount === n
+                      ? 'bg-[var(--gl-accent)] text-white shadow-sm'
+                      : 'border border-[var(--gl-border)] bg-[var(--gl-elevated)] text-[var(--gl-text)] hover:border-[var(--gl-border-strong)]'
+                  }`}
+                >
+                  £{n}
+                </button>
+              ))}
+            </div>
+            <p className="mt-2 text-xs text-[var(--gl-text-muted)]">
+              Every amount grants the same 24-hour access. Access begins when payment is confirmed.
+            </p>
+          </div>
 
-      <label className="block space-y-1.5">
-        <span className="text-xs font-semibold uppercase tracking-wide text-[var(--gl-text-muted)]">
-          Email (optional at checkout; needed for welcome / survey)
-        </span>
-        <input
-          type="email"
-          autoComplete="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="you@example.com"
-          className="w-full rounded-xl border border-[var(--gl-border)] bg-[var(--gl-page)] px-3 py-2.5 text-sm text-[var(--gl-text)] placeholder:text-[var(--gl-text-muted)] outline-none focus:border-[var(--gl-accent)]"
-        />
-      </label>
+          <label className="block space-y-1.5">
+            <span className="text-xs font-semibold uppercase tracking-wide text-[var(--gl-text-muted)]">
+              Email (optional at checkout; needed for welcome / survey)
+            </span>
+            <input
+              type="email"
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              className="w-full rounded-xl border border-[var(--gl-border)] bg-[var(--gl-page)] px-3 py-2.5 text-sm text-[var(--gl-text)] placeholder:text-[var(--gl-text-muted)] outline-none focus:border-[var(--gl-accent)]"
+            />
+          </label>
 
-      <div className="space-y-3 text-sm text-[var(--gl-text-soft)]">
-        <label className="flex gap-3 items-start cursor-pointer">
-          <input
-            type="checkbox"
-            className="mt-1 h-4 w-4 rounded border-[var(--gl-border-strong)]"
-            checked={marketingConsent}
-            onChange={(e) => setMarketingConsent(e.target.checked)}
-          />
-          <span>
-            Email me occasional GoalLab product updates, research findings and future membership
-            offers. I can unsubscribe at any time.
-          </span>
-        </label>
-        <label className="flex gap-3 items-start cursor-pointer">
-          <input
-            type="checkbox"
-            className="mt-1 h-4 w-4 rounded border-[var(--gl-border-strong)]"
-            checked={surveyConsent}
-            onChange={(e) => setSurveyConsent(e.target.checked)}
-          />
-          <span>Email me a short feedback survey when my 24h access ends.</span>
-        </label>
-        <p className="text-xs text-[var(--gl-text-muted)]">
-          Both optional and unchecked by default. Forecasts are analytical outputs, not guarantees.{' '}
-          <Link
-            href="/privacy/statstrike"
-            className="font-medium text-[var(--gl-accent)] underline-offset-2 hover:underline"
+          <div className="space-y-3 text-sm text-[var(--gl-text-soft)]">
+            <label className="flex gap-3 items-start cursor-pointer">
+              <input
+                type="checkbox"
+                className="mt-1 h-4 w-4 rounded border-[var(--gl-border-strong)]"
+                checked={marketingConsent}
+                onChange={(e) => setMarketingConsent(e.target.checked)}
+              />
+              <span>
+                Email me occasional GoalLab product updates, research findings and future membership
+                offers. I can unsubscribe at any time.
+              </span>
+            </label>
+            <label className="flex gap-3 items-start cursor-pointer">
+              <input
+                type="checkbox"
+                className="mt-1 h-4 w-4 rounded border-[var(--gl-border-strong)]"
+                checked={surveyConsent}
+                onChange={(e) => setSurveyConsent(e.target.checked)}
+              />
+              <span>Email me a short feedback survey when my 24h access ends.</span>
+            </label>
+            <p className="text-xs text-[var(--gl-text-muted)]">
+              Both optional and unchecked by default. Forecasts are analytical outputs, not
+              guarantees.{' '}
+              <Link
+                href="/privacy/statstrike"
+                className="font-medium text-[var(--gl-accent)] underline-offset-2 hover:underline"
+              >
+                Privacy
+              </Link>{' '}
+              ·{' '}
+              <Link
+                href="/terms/statstrike"
+                className="font-medium text-[var(--gl-accent)] underline-offset-2 hover:underline"
+              >
+                Terms
+              </Link>
+            </p>
+          </div>
+
+          {configured === false ? (
+            <p className="text-sm text-[var(--gl-warn)]">
+              Checkout is almost ready — Stripe keys are still being connected on this environment.
+            </p>
+          ) : null}
+
+          {error ? <p className="text-sm text-[var(--gl-danger)]">{error}</p> : null}
+
+          <button
+            type="button"
+            disabled={busy || configured === false || salesEnabled === false}
+            onClick={() => void startCheckout()}
+            className="w-full rounded-xl bg-[var(--gl-accent)] px-4 py-3 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Privacy
-          </Link>{' '}
-          ·{' '}
-          <Link
-            href="/terms/statstrike"
-            className="font-medium text-[var(--gl-accent)] underline-offset-2 hover:underline"
-          >
-            Terms
-          </Link>
-        </p>
-      </div>
-
-      {configured === false ? (
-        <p className="text-sm text-[var(--gl-warn)]">
-          Checkout is almost ready — Stripe keys are still being connected on this environment.
-        </p>
-      ) : null}
-
-      {error ? <p className="text-sm text-[var(--gl-danger)]">{error}</p> : null}
-
-      <button
-        type="button"
-        disabled={busy || configured === false}
-        onClick={() => void startCheckout()}
-        className="w-full rounded-xl bg-[var(--gl-accent)] px-4 py-3 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        {busy ? 'Starting checkout…' : `Get 24-Hour Access — £${amount}`}
-      </button>
+            {busy ? 'Starting checkout…' : `Get 24-Hour Access — £${amount}`}
+          </button>
+        </>
+      )}
     </section>
   );
 }

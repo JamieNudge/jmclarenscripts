@@ -26,7 +26,7 @@ type TabId = 'fixtures' | 'best' | 'record';
 
 export function StatStrikeAppShell() {
   const board = useStatStrikeBoard();
-  const { blur: adminBlur } = useStatStrikeWebBlur();
+  const { blur: adminBlur, supporterPassSalesEnabled } = useStatStrikeWebBlur();
   const pass = useStatStrikePassSession();
   const personal = useStatStrikePersonalPicks();
   const [filters, setFilters] = useState<BoardFilterState>(DEFAULT_BOARD_FILTERS);
@@ -173,7 +173,7 @@ export function StatStrikeAppShell() {
             </p>
           </div>
           <nav className="flex items-center gap-3 text-xs font-semibold">
-            {!pass.unlocked ? (
+            {!pass.unlocked && supporterPassSalesEnabled ? (
               <Link
                 href={passCreatePath()}
                 className="rounded-full bg-amber-300 px-2.5 py-1 text-[11px] font-black text-black"
@@ -225,8 +225,8 @@ export function StatStrikeAppShell() {
         {blur ? (
           <ComingSoonBlur
             badge="Coming Soon!"
-            ctaHref={passCreatePath()}
-            ctaLabel="Get 24h access"
+            ctaHref={supporterPassSalesEnabled ? passCreatePath() : undefined}
+            ctaLabel={supporterPassSalesEnabled ? 'Get 24h access' : undefined}
             ctaInternal
             ctaPlacement="bottom"
             minHeightClassName="min-h-[22rem]"

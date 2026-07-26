@@ -11,6 +11,8 @@ function ToggleRow({
   on,
   loading,
   canUse,
+  onLabel,
+  offLabel,
   onTurnOff,
   onTurnOn,
 }: {
@@ -19,6 +21,8 @@ function ToggleRow({
   on: boolean;
   loading: boolean;
   canUse: boolean;
+  onLabel: string;
+  offLabel: string;
   onTurnOff: () => void;
   onTurnOn: () => void;
 }) {
@@ -39,7 +43,7 @@ function ToggleRow({
             onClick={onTurnOff}
             className="rounded-lg bg-emerald-600/90 hover:bg-emerald-600 px-4 py-2 text-xs font-semibold disabled:opacity-50"
           >
-            Turn blur OFF
+            {offLabel}
           </button>
           <button
             type="button"
@@ -47,7 +51,7 @@ function ToggleRow({
             onClick={onTurnOn}
             className="rounded-lg bg-amber-600/90 hover:bg-amber-600 px-4 py-2 text-xs font-semibold disabled:opacity-50"
           >
-            Turn blur ON
+            {onLabel}
           </button>
         </div>
       </div>
@@ -57,6 +61,7 @@ function ToggleRow({
 
 export function AdminStatStrikeWebSection({ adminKey }: Props) {
   const [blur, setBlur] = useState(true);
+  const [salesEnabled, setSalesEnabled] = useState(false);
   const [updatedAt, setUpdatedAt] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -65,6 +70,7 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
 
   const apply = useCallback((config: StatStrikeWebConfig) => {
     setBlur(config.blur);
+    setSalesEnabled(config.supporterPassSalesEnabled);
     setUpdatedAt(config.updatedAt);
   }, []);
 
@@ -89,14 +95,14 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
         setStatus(json.error || res.statusText);
         return;
       }
-      apply(json.config ?? { blur: true, forecastsBlur: true, updatedAt: null });
+      apply(json.config ?? { blur: true, forecastsBlur: true, supporterPassSalesEnabled: false, updatedAt: null });
       const c = json.config;
       setStatus(
         c
-          ? `Loaded config${json.path ? ` (${json.path})` : ''}. StatStrike blur ${
+          ? `Loaded config${json.path ? ` (${json.path})` : ''}. Blur ${
               c.blur ? 'ON' : 'OFF'
-            }.`
-          : 'No config yet — StatStrike blur defaults ON.',
+            }; pass sales ${c.supporterPassSalesEnabled ? 'ON' : 'OFF'}.`
+          : 'No config yet — StatStrike blur defaults ON; pass sales default OFF.',
       );
     } catch (e) {
       setStatus(e instanceof Error ? e.message : 'Load failed');
@@ -109,7 +115,7 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
     if (canUse) void load();
   }, [canUse, load]);
 
-  const save = async (patch: { blur?: boolean }) => {
+  const save = async (patch: { blur?: boolean; supporterPassSalesEnabled?: boolean }) => {
     if (!canUse) {
       setStatus('Admin key required.');
       return;
@@ -137,14 +143,26 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
       const c = json.config ?? {
         blur: patch.blur ?? blur,
         forecastsBlur: true,
+        supporterPassSalesEnabled: patch.supporterPassSalesEnabled ?? salesEnabled,
         updatedAt: new Date().toISOString(),
       };
       apply(c);
-      setStatus(
-        patch.blur
-          ? `StatStrike Coming Soon blur ON (hero + /statstrike).${json.path ? ` (${json.path})` : ''}`
-          : `StatStrike Coming Soon blur OFF (interactive board).${json.path ? ` (${json.path})` : ''}`,
-      );
+      const pathNote = json.path ? ` (${json.path})` : '';
+      if (patch.supporterPassSalesEnabled !== undefined) {
+        setStatus(
+          patch.supporterPassSalesEnabled
+            ? `24h Supporter Pass sales ON — Stripe checkout available.${pathNote}`
+            : `24h Supporter Pass sales OFF — new checkouts blocked (existing passes still work).${pathNote}`,
+        );
+      } else if (patch.blur !== undefined) {
+        setStatus(
+          patch.blur
+            ? `StatStrike Coming Soon blur ON (hero + /statstrike).${pathNote}`
+            : `StatStrike Coming Soon blur OFF (interactive board).${pathNote}`,
+        );
+      } else {
+        setStatus(`Config saved.${pathNote}`);
+      }
     } catch (e) {
       setStatus(e instanceof Error ? e.message : 'Save failed');
     } finally {
@@ -154,11 +172,12 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
 
   return (
     <section className="rounded-2xl border border-white/15 bg-white/5 p-6 space-y-4">
-      <h2 className="text-lg font-semibold">GoalLab / StatStrike blur</h2>
+      <h2 className="text-lg font-semibold">GoalLab / StatStrike blur &amp; pass sales</h2>
       <p className="text-xs text-white/50 leading-relaxed">
-        Runtime kill-switch stored at <code className="text-white/70">statstrikeWebConfig</code>.
+        Runtime kill-switches stored at <code className="text-white/70">statstrikeWebConfig</code>.
         Public site reads via <code className="text-white/70">/api/statstrike/web-config</code>. Missing
-        StatStrike blur defaults to <strong className="text-white/65">ON</strong>.
+        StatStrike blur defaults to <strong className="text-white/65">ON</strong>; pass sales default to{' '}
+        <strong className="text-white/65">OFF</strong>.
       </p>
       <p className="text-xs text-white/55 leading-relaxed">
         Product on/off for StatStrike web is still{' '}
@@ -168,7 +187,7 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
       {updatedAt ? (
         <p className="text-[11px] text-white/45 tabular-nums">Last updated {updatedAt}</p>
       ) : (
-        <p className="text-[11px] text-white/45">Not saved yet (default ON)</p>
+        <p className="text-[11px] text-white/45">Not saved yet (blur default ON · sales default OFF)</p>
       )}
 
       <ToggleRow
@@ -177,8 +196,22 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
         on={blur}
         loading={loading}
         canUse={canUse}
+        offLabel="Turn blur OFF"
+        onLabel="Turn blur ON"
         onTurnOff={() => void save({ blur: false })}
         onTurnOn={() => void save({ blur: true })}
+      />
+
+      <ToggleRow
+        label="24h Supporter Pass sales"
+        description="When OFF, Stripe checkout is blocked and purchase CTAs are hidden. Existing active passes still unlock."
+        on={salesEnabled}
+        loading={loading}
+        canUse={canUse}
+        offLabel="Turn sales OFF"
+        onLabel="Turn sales ON"
+        onTurnOff={() => void save({ supporterPassSalesEnabled: false })}
+        onTurnOn={() => void save({ supporterPassSalesEnabled: true })}
       />
 
       <p className="text-xs text-white/50 leading-relaxed rounded-xl border border-white/15 bg-white/[0.03] px-4 py-3">

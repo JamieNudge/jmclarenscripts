@@ -23,6 +23,8 @@ async function fetchConfigViaApi(): Promise<StatStrikeWebConfig> {
 export function useStatStrikeWebBlur(): {
   blur: boolean;
   forecastsBlur: boolean;
+  /** When false, hide purchase CTAs and block new Stripe checkouts. */
+  supporterPassSalesEnabled: boolean;
   loading: boolean;
 } {
   const [config, setConfig] = useState<StatStrikeWebConfig>(DEFAULT_STATSTRIKE_WEB_CONFIG);
@@ -81,5 +83,10 @@ export function useStatStrikeWebBlur(): {
     };
   }, [apply]);
 
-  return { blur: config.blur, forecastsBlur: config.forecastsBlur, loading };
+  return {
+    blur: config.blur,
+    forecastsBlur: config.forecastsBlur,
+    supporterPassSalesEnabled: config.supporterPassSalesEnabled,
+    loading,
+  };
 }

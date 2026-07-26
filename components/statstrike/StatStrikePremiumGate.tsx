@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { StatStrikeAppStoreCta } from '@/components/statstrike/StatStrikeAppStoreCta';
+import { useStatStrikeWebBlur } from '@/hooks/useStatStrikeWebBlur';
 import { apps } from '@/lib/apps-data';
 import { passCreatePath } from '@/lib/statstrike/pass-constants';
 
@@ -22,7 +23,13 @@ export function StatStrikePremiumGate({
   body = 'Unlock the full StatStrike web board (Coming Soon blur off) plus Your Picks and My Record on this browser for 24 hours.',
   onClose,
 }: Props) {
+  const { supporterPassSalesEnabled } = useStatStrikeWebBlur();
   if (!open) return null;
+
+  const salesTitle = supporterPassSalesEnabled ? title : 'StatStrike on web';
+  const salesBody = supporterPassSalesEnabled
+    ? body
+    : '24-hour web pass purchases are temporarily unavailable. You can still get StatStrike on the App Store, or check back here soon.';
 
   return (
     <div
@@ -45,22 +52,28 @@ export function StatStrikePremiumGate({
             className="h-10 w-10 rounded-lg object-cover"
           />
           <h2 id="ss-premium-title" className="text-base font-bold text-[#0b3d5c]">
-            {title}
+            {salesTitle}
           </h2>
         </div>
-        <p className="mt-3 text-sm leading-relaxed text-black/80">{body}</p>
+        <p className="mt-3 text-sm leading-relaxed text-black/80">{salesBody}</p>
         <div className="mt-4 flex flex-col gap-2">
-          <Link
-            href={passCreatePath()}
-            className="inline-flex items-center justify-center rounded-xl bg-amber-300 px-4 py-2.5 text-sm font-bold text-black hover:bg-amber-200"
-            onClick={onClose}
-          >
-            Get 24h access
-          </Link>
+          {supporterPassSalesEnabled ? (
+            <Link
+              href={passCreatePath()}
+              className="inline-flex items-center justify-center rounded-xl bg-amber-300 px-4 py-2.5 text-sm font-bold text-black hover:bg-amber-200"
+              onClick={onClose}
+            >
+              Get 24h access
+            </Link>
+          ) : null}
           {appStoreUrl ? (
             <StatStrikeAppStoreCta
               href={appStoreUrl}
-              label="Or get StatStrike on the App Store"
+              label={
+                supporterPassSalesEnabled
+                  ? 'Or get StatStrike on the App Store'
+                  : 'Get StatStrike on the App Store'
+              }
               size="md"
             />
           ) : null}

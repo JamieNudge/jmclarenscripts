@@ -1,12 +1,13 @@
 /**
  * GoalLab / StatStrike runtime config in RTDB (public read via Admin API, admin write).
- * Same pattern as hubVideo — flip Coming Soon blurs without redeploy.
+ * Same pattern as hubVideo — flip Coming Soon blurs / pass sales without redeploy.
  *
  * Path: `statstrikeWebConfig`
  * ```json
  * {
  *   "blur": true,
  *   "forecastsBlur": true,
+ *   "supporterPassSalesEnabled": false,
  *   "updatedAt": "…"
  * }
  * ```
@@ -27,13 +28,16 @@ export type StatStrikeWebConfig = {
   blur: boolean;
   /** When true, blur overflow fixtures on GoalLab /fixtures (Forecasts). */
   forecastsBlur: boolean;
+  /** When true, Stripe 24h Supporter Pass checkout is offered. Missing → false. */
+  supporterPassSalesEnabled: boolean;
   updatedAt: string | null;
 };
 
-/** Missing RTDB node → both blurs ON (safe teaser defaults). */
+/** Missing RTDB node → blurs ON, pass sales OFF (safe defaults). */
 export const DEFAULT_STATSTRIKE_WEB_CONFIG: StatStrikeWebConfig = {
   blur: true,
   forecastsBlur: true,
+  supporterPassSalesEnabled: false,
   updatedAt: null,
 };
 
@@ -58,20 +62,26 @@ export function parseStatStrikeWebConfig(raw: unknown): StatStrikeWebConfig {
   return {
     blur: parseBool(o.blur, DEFAULT_STATSTRIKE_WEB_CONFIG.blur),
     forecastsBlur: parseBool(o.forecastsBlur, DEFAULT_STATSTRIKE_WEB_CONFIG.forecastsBlur),
+    supporterPassSalesEnabled: parseBool(
+      o.supporterPassSalesEnabled,
+      DEFAULT_STATSTRIKE_WEB_CONFIG.supporterPassSalesEnabled,
+    ),
     updatedAt,
   };
 }
 
+type WebConfigBoolKey = 'blur' | 'forecastsBlur' | 'supporterPassSalesEnabled';
+
 /**
- * Partial update: send `blur` and/or `forecastsBlur`.
+ * Partial update: send any of blur / forecastsBlur / supporterPassSalesEnabled.
  * Caller merges onto existing RTDB record before write.
  */
 export function normalizeStatStrikeWebConfigPatch(
   body: Record<string, unknown>,
 ):
-  | { ok: true; patch: Partial<Pick<StatStrikeWebConfig, 'blur' | 'forecastsBlur'>> }
+  | { ok: true; patch: Partial<Pick<StatStrikeWebConfig, WebConfigBoolKey>> }
   | { ok: false; error: string } {
-  const patch: Partial<Pick<StatStrikeWebConfig, 'blur' | 'forecastsBlur'>> = {};
+  const patch: Partial<Pick<StatStrikeWebConfig, WebConfigBoolKey>> = {};
 
   if (Object.prototype.hasOwnProperty.call(body, 'blur')) {
     if (typeof body.blur !== 'boolean') {
@@ -85,9 +95,22 @@ export function normalizeStatStrikeWebConfigPatch(
     }
     patch.forecastsBlur = body.forecastsBlur;
   }
+  if (Object.prototype.hasOwnProperty.call(body, 'supporterPassSalesEnabled')) {
+    if (typeof body.supporterPassSalesEnabled !== 'boolean') {
+      return { ok: false, error: 'supporterPassSalesEnabled must be a boolean.' };
+    }
+    patch.supporterPassSalesEnabled = body.supporterPassSalesEnabled;
+  }
 
-  if (patch.blur === undefined && patch.forecastsBlur === undefined) {
-    return { ok: false, error: 'Provide blur and/or forecastsBlur (boolean).' };
+  if (
+    patch.blur === undefined &&
+    patch.forecastsBlur === undefined &&
+    patch.supporterPassSalesEnabled === undefined
+  ) {
+    return {
+      ok: false,
+      error: 'Provide blur, forecastsBlur, and/or supporterPassSalesEnabled (boolean).',
+    };
   }
 
   return { ok: true, patch };

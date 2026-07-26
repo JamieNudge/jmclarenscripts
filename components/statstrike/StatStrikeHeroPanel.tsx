@@ -16,7 +16,7 @@ import { passCreatePath } from '@/lib/statstrike/pass-constants';
  */
 export function StatStrikeHeroPanel() {
   const board = useStatStrikeBoard();
-  const { blur: adminBlur } = useStatStrikeWebBlur();
+  const { blur: adminBlur, supporterPassSalesEnabled } = useStatStrikeWebBlur();
   const pass = useStatStrikePassSession();
   const blur = adminBlur && !pass.unlocked;
 
@@ -58,7 +58,7 @@ export function StatStrikeHeroPanel() {
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-2">
-          {!pass.unlocked ? (
+          {!pass.unlocked && supporterPassSalesEnabled ? (
             <Link
               href={passCreatePath()}
               className="rounded-full bg-amber-300 px-2.5 py-1 text-[10px] font-black text-black shadow-sm hover:bg-amber-200"
@@ -79,8 +79,8 @@ export function StatStrikeHeroPanel() {
         {blur ? (
           <ComingSoonBlur
             badge="Coming Soon!"
-            ctaHref={passCreatePath()}
-            ctaLabel="Get 24h access"
+            ctaHref={supporterPassSalesEnabled ? passCreatePath() : undefined}
+            ctaLabel={supporterPassSalesEnabled ? 'Get 24h access' : undefined}
             ctaInternal
             ctaPlacement="bottom"
             minHeightClassName="h-full"
