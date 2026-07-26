@@ -10,6 +10,10 @@ type Props = {
   showBackToHub?: boolean;
   /** Wider content for long privacy / blog pages. */
   wide?: boolean;
+  /** Optional overrides for denser / darker page chrome. */
+  titleClassName?: string;
+  descriptionClassName?: string;
+  contentClassName?: string;
 };
 
 /**
@@ -21,6 +25,9 @@ export function GoalLabV2SubpageShell({
   children,
   showBackToHub = true,
   wide = false,
+  titleClassName,
+  descriptionClassName,
+  contentClassName,
 }: Props) {
   return (
     <GoalLabV2Shell>
@@ -41,13 +48,32 @@ export function GoalLabV2SubpageShell({
         ) : null}
 
         <header className="space-y-2">
-          <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-[var(--gl-text)]">{title}</h1>
+          <h1
+            className={
+              titleClassName ??
+              'text-3xl md:text-4xl font-semibold tracking-tight text-[var(--gl-text)]'
+            }
+          >
+            {title}
+          </h1>
           {description ? (
-            <div className="text-base text-[var(--gl-text-soft)] leading-relaxed">{description}</div>
+            <div
+              className={
+                descriptionClassName ??
+                'text-base text-[var(--gl-text-soft)] leading-relaxed'
+              }
+            >
+              {description}
+            </div>
           ) : null}
         </header>
 
-        <div className="gl-v2-hub-bridge space-y-6 text-sm md:text-base leading-relaxed text-[var(--hub-text-soft)]">
+        <div
+          className={
+            contentClassName ??
+            'gl-v2-hub-bridge space-y-6 text-sm md:text-base leading-relaxed text-[var(--hub-text-soft)]'
+          }
+        >
           {children}
         </div>
       </div>

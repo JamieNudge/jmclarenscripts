@@ -119,7 +119,7 @@ export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full
 
   if (variant === 'status') {
     return (
-      <div className="space-y-4 text-sm text-[var(--gl-text-soft)]">
+      <div className="space-y-4 text-base text-[var(--gl-text)]">
         {claimStatus ? (
           <p className="text-[var(--gl-text)]" role="status">
             {claimStatus}
@@ -128,7 +128,7 @@ export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full
         {session.unlocked ? (
           <div className="rounded-2xl border border-[color-mix(in_srgb,var(--gl-success)_35%,var(--gl-border))] bg-[color-mix(in_srgb,var(--gl-success)_10%,transparent)] px-5 py-4">
             <p className="font-semibold text-[var(--gl-text)]">Thank you for supporting GoalLab</p>
-            <p className="mt-1 text-[var(--gl-text-soft)]">
+            <p className="mt-1 text-[var(--gl-text)]">
               Your StatStrike Supporter Pass is active
               {session.expiresAt ? (
                 <>
@@ -143,7 +143,7 @@ export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full
             </p>
             <Link
               href="/statstrike"
-              className="mt-4 inline-flex rounded-xl bg-[var(--gl-accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90"
+              className="mt-4 inline-flex rounded-xl bg-[var(--gl-accent)] px-4 py-2.5 text-base font-semibold text-white shadow-sm transition-opacity hover:opacity-90"
             >
               Open StatStrike
             </Link>
@@ -160,16 +160,16 @@ export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full
   return (
     <section className="rounded-2xl border border-[var(--gl-border)] bg-[var(--gl-surface)] p-5 md:p-6 space-y-5 shadow-[var(--gl-shadow)]">
       <div>
-        <h2 className="text-xl font-semibold tracking-tight text-[var(--gl-text)]">
+        <h2 className="text-2xl font-semibold tracking-tight text-[var(--gl-text)]">
           Support GoalLab
         </h2>
-        <p className="mt-2 text-sm text-[var(--gl-text-soft)] leading-relaxed">
+        <p className="mt-2 text-base text-[var(--gl-text)] leading-relaxed">
           GoalLab is an independent football analytics project. Choose an amount to support its
           continued development and receive full StatStrike access for 24 hours.
         </p>
       </div>
 
-      <ul className="text-sm text-[var(--gl-text-soft)] space-y-1.5 list-disc list-inside">
+      <ul className="text-base text-[var(--gl-text)] space-y-1.5 list-disc list-inside">
         <li>Every available forecast</li>
         <li>Search, filtering, and full browser board</li>
         <li>Your Picks / My Record on this browser</li>
@@ -206,7 +206,7 @@ export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full
 
       {salesEnabled !== true ? (
         <div
-          className="rounded-xl border border-[var(--gl-border)] bg-[var(--gl-elevated)] px-4 py-3 text-sm text-[var(--gl-text-soft)]"
+          className="rounded-xl border border-[var(--gl-border)] bg-[var(--gl-elevated)] px-4 py-3 text-base text-[var(--gl-text)]"
           role="status"
         >
           {salesEnabled === null
@@ -216,7 +216,7 @@ export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full
       ) : (
         <>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--gl-text-muted)] mb-2">
+            <p className="text-sm font-semibold uppercase tracking-wide text-[var(--gl-text-soft)] mb-2">
               Amount
             </p>
             <div className="flex flex-wrap gap-2">
@@ -225,7 +225,7 @@ export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full
                   key={n}
                   type="button"
                   onClick={() => setAmount(n)}
-                  className={`rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors ${
+                  className={`rounded-xl px-4 py-2.5 text-base font-semibold transition-colors ${
                     amount === n
                       ? 'bg-[var(--gl-accent)] text-white shadow-sm'
                       : 'border border-[var(--gl-border)] bg-[var(--gl-elevated)] text-[var(--gl-text)] hover:border-[var(--gl-border-strong)]'
@@ -235,13 +235,13 @@ export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full
                 </button>
               ))}
             </div>
-            <p className="mt-2 text-xs text-[var(--gl-text-muted)]">
+            <p className="mt-2 text-sm text-[var(--gl-text-soft)]">
               Every amount grants the same 24-hour access. Access begins when payment is confirmed.
             </p>
           </div>
 
           <label className="block space-y-1.5">
-            <span className="text-xs font-semibold uppercase tracking-wide text-[var(--gl-text-muted)]">
+            <span className="text-sm font-semibold uppercase tracking-wide text-[var(--gl-text-soft)]">
               Email (optional at checkout; needed for welcome / survey)
             </span>
             <input
@@ -250,11 +250,11 @@ export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="w-full rounded-xl border border-[var(--gl-border)] bg-[var(--gl-page)] px-3 py-2.5 text-sm text-[var(--gl-text)] placeholder:text-[var(--gl-text-muted)] outline-none focus:border-[var(--gl-accent)]"
+              className="w-full rounded-xl border border-[var(--gl-border)] bg-[var(--gl-page)] px-3 py-2.5 text-base text-[var(--gl-text)] placeholder:text-[var(--gl-text-muted)] outline-none focus:border-[var(--gl-accent)]"
             />
           </label>
 
-          <div className="space-y-3 text-sm text-[var(--gl-text-soft)]">
+          <div className="space-y-3 text-base text-[var(--gl-text)]">
             <label className="flex gap-3 items-start cursor-pointer">
               <input
                 type="checkbox"
@@ -276,7 +276,7 @@ export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full
               />
               <span>Email me a short feedback survey when my 24h access ends.</span>
             </label>
-            <p className="text-xs text-[var(--gl-text-muted)]">
+            <p className="text-sm text-[var(--gl-text-soft)]">
               Both optional and unchecked by default. Forecasts are analytical outputs, not
               guarantees.{' '}
               <Link
@@ -307,7 +307,7 @@ export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full
             type="button"
             disabled={busy || configured === false}
             onClick={() => void startCheckout()}
-            className="w-full rounded-xl bg-[var(--gl-accent)] px-4 py-3 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full rounded-xl bg-[var(--gl-accent)] px-4 py-3.5 text-base font-semibold text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {busy ? 'Starting checkout…' : `Get 24-Hour Access — £${amount}`}
           </button>
