@@ -23,9 +23,21 @@ type AdminPassEntry = {
 type SurveyEntry = {
   id: string;
   passId: string;
-  message: string;
   createdAt: string;
+  rating?: number;
+  wouldBuyAgain?: 'yes' | 'maybe' | 'no';
+  worked?: string;
+  improve?: string;
+  /** Legacy free-text responses. */
+  message?: string;
 };
+
+function wouldBuyLabel(value?: string): string {
+  if (value === 'yes') return 'Yes';
+  if (value === 'maybe') return 'Maybe';
+  if (value === 'no') return 'No';
+  return '—';
+}
 
 function formatDate(value?: string | null): string {
   if (!value) return '—';
@@ -253,20 +265,65 @@ export function AdminStatStrikePassesSection({ adminKey }: { adminKey: string })
           <p className="text-xs text-white/45">No survey responses yet.</p>
         ) : (
           <div className="space-y-3">
-            {surveys.map((entry) => (
-              <article
-                key={entry.id}
-                className="rounded-xl border border-white/15 bg-white/[0.03] p-4"
-              >
-                <div className="flex flex-wrap justify-between gap-2 text-[11px] text-white/45">
-                  <code>{entry.passId}</code>
-                  <time>{formatDate(entry.createdAt)}</time>
-                </div>
-                <p className="mt-2 whitespace-pre-wrap break-words text-sm text-white/85">
-                  {entry.message}
-                </p>
-              </article>
-            ))}
+            {surveys.map((entry) => {
+              const hasStructured =
+                typeof entry.rating === 'number' ||
+                Boolean(entry.wouldBuyAgain) ||
+                Boolean(entry.worked) ||
+                Boolean(entry.improve);
+              return (
+                <article
+                  key={entry.id}
+                  className="rounded-xl border border-white/15 bg-white/[0.03] p-4 space-y-2"
+                >
+                  <div className="flex flex-wrap justify-between gap-2 text-[11px] text-white/45">
+                    <code>{entry.passId}</code>
+                    <time>{formatDate(entry.createdAt)}</time>
+                  </div>
+                  {hasStructured ? (
+                    <>
+                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-white/85">
+                        <span>
+                          Rating:{' '}
+                          <strong>
+                            {typeof entry.rating === 'number' ? `${entry.rating}/5` : '—'}
+                          </strong>
+                        </span>
+                        <span>
+                          Would buy again: <strong>{wouldBuyLabel(entry.wouldBuyAgain)}</strong>
+                        </span>
+                      </div>
+                      {entry.worked ? (
+                        <div>
+                          <div className="text-[11px] font-semibold uppercase tracking-wide text-white/45">
+                            What worked well
+                          </div>
+                          <p className="mt-1 whitespace-pre-wrap break-words text-sm text-white/85">
+                            {entry.worked}
+                          </p>
+                        </div>
+                      ) : null}
+                      {entry.improve ? (
+                        <div>
+                          <div className="text-[11px] font-semibold uppercase tracking-wide text-white/45">
+                            What would you improve
+                          </div>
+                          <p className="mt-1 whitespace-pre-wrap break-words text-sm text-white/85">
+                            {entry.improve}
+                          </p>
+                        </div>
+                      ) : null}
+                    </>
+                  ) : entry.message ? (
+                    <p className="whitespace-pre-wrap break-words text-sm text-white/85">
+                      {entry.message}
+                    </p>
+                  ) : (
+                    <p className="text-xs text-white/45">No feedback text.</p>
+                  )}
+                </article>
+              );
+            })}
           </div>
         )}
       </div>

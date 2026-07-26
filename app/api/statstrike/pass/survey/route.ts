@@ -3,6 +3,7 @@ import { clientIpFromRequest } from '@/lib/statstrike/checkout-rate-limit';
 import {
   createSurveyResponse,
   getPassById,
+  type StatStrikeWouldBuyAgain,
 } from '@/lib/statstrike/pass-store';
 import { jsonNoStore } from '@/lib/statstrike/pass-session';
 import { allowSurveyPost } from '@/lib/statstrike/survey-rate-limit';
@@ -10,8 +11,17 @@ import { allowSurveyPost } from '@/lib/statstrike/survey-rate-limit';
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
+const WOULD_BUY_AGAIN = new Set<StatStrikeWouldBuyAgain>(['yes', 'maybe', 'no']);
+
 function validPassId(value: string): boolean {
   return /^pass_[A-Za-z0-9_-]{8,80}$/.test(value);
+}
+
+function parseOptionalText(value: unknown): string | undefined {
+  if (typeof value !== 'string') return undefined;
+  const trimmed = value.trim();
+  if (!trimmed) return undefined;
+  return trimmed;
 }
 
 export async function POST(req: NextRequest) {
@@ -33,13 +43,36 @@ export async function POST(req: NextRequest) {
   }
   const data = body as Record<string, unknown>;
   const passId = typeof data.passId === 'string' ? data.passId.trim() : '';
-  const message = typeof data.message === 'string' ? data.message.trim() : '';
   if (!validPassId(passId)) {
     return jsonNoStore({ error: 'Invalid pass' }, { status: 400 });
   }
-  if (message.length < 3 || message.length > 2_000) {
+
+  const ratingRaw = data.rating;
+  const rating =
+    typeof ratingRaw === 'number'
+      ? ratingRaw
+      : typeof ratingRaw === 'string'
+        ? Number(ratingRaw)
+        : NaN;
+  if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+    return jsonNoStore({ error: 'Rating must be an integer from 1 to 5.' }, { status: 400 });
+  }
+
+  const wouldBuyAgainRaw =
+    typeof data.wouldBuyAgain === 'string' ? data.wouldBuyAgain.trim().toLowerCase() : '';
+  if (!WOULD_BUY_AGAIN.has(wouldBuyAgainRaw as StatStrikeWouldBuyAgain)) {
     return jsonNoStore(
-      { error: 'Feedback must be between 3 and 2,000 characters.' },
+      { error: 'Please choose whether you would buy another pass.' },
+      { status: 400 },
+    );
+  }
+  const wouldBuyAgain = wouldBuyAgainRaw as StatStrikeWouldBuyAgain;
+
+  const worked = parseOptionalText(data.worked);
+  const improve = parseOptionalText(data.improve);
+  if ((worked && worked.length > 2_000) || (improve && improve.length > 2_000)) {
+    return jsonNoStore(
+      { error: 'Each feedback field must be at most 2,000 characters.' },
       { status: 400 },
     );
   }
@@ -50,7 +83,13 @@ export async function POST(req: NextRequest) {
     if (!pass.surveyConsent || pass.piiRedactedAt) {
       return jsonNoStore({ error: 'Survey access is not available for this pass.' }, { status: 403 });
     }
-    await createSurveyResponse({ passId, message });
+    await createSurveyResponse({
+      passId,
+      rating,
+      wouldBuyAgain,
+      worked,
+      improve,
+    });
     return jsonNoStore({ ok: true });
   } catch (e) {
     return jsonNoStore(

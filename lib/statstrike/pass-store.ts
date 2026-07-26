@@ -5,11 +5,19 @@ import type { StatStrikePassRecord } from '@/lib/statstrike/pass';
 const DEFAULT_ROOT = 'statstrikePasses';
 const DEFAULT_SURVEYS_ROOT = 'statstrikePassSurveys';
 
+export type StatStrikeWouldBuyAgain = 'yes' | 'maybe' | 'no';
+
 export type StatStrikePassSurveyResponse = {
   id: string;
   passId: string;
-  message: string;
   createdAt: string;
+  /** Overall rating 1–5. Present on structured surveys. */
+  rating?: number;
+  wouldBuyAgain?: StatStrikeWouldBuyAgain;
+  worked?: string;
+  improve?: string;
+  /** Legacy free-text responses only. */
+  message?: string;
 };
 
 export function statStrikePassesRoot(): string {
@@ -189,16 +197,23 @@ export async function redactPassPii(passId: string): Promise<boolean> {
 
 export async function createSurveyResponse(input: {
   passId: string;
-  message: string;
+  rating: number;
+  wouldBuyAgain: StatStrikeWouldBuyAgain;
+  worked?: string;
+  improve?: string;
 }): Promise<StatStrikePassSurveyResponse> {
   const ref = db().ref(statStrikePassSurveysRoot()).push();
   if (!ref.key) throw new Error('Could not allocate survey response id');
   const response: StatStrikePassSurveyResponse = {
     id: ref.key,
     passId: input.passId,
-    message: input.message,
     createdAt: new Date().toISOString(),
+    rating: input.rating,
+    wouldBuyAgain: input.wouldBuyAgain,
   };
+  if (input.worked) response.worked = input.worked;
+  if (input.improve) response.improve = input.improve;
+  // RTDB rejects undefined — only write defined keys.
   await ref.set(response);
   return response;
 }
