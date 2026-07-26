@@ -57,14 +57,22 @@ export function StatStrikeHeroPanel() {
             ) : null}
           </p>
         </div>
-        {!blur ? (
+        <div className="flex shrink-0 items-center gap-2">
+          {!pass.unlocked ? (
+            <Link
+              href={passCreatePath()}
+              className="rounded-full bg-amber-300 px-2.5 py-1 text-[10px] font-black text-black shadow-sm hover:bg-amber-200"
+            >
+              Get 24h access
+            </Link>
+          ) : null}
           <Link
             href="/statstrike"
-            className="shrink-0 text-[10px] font-semibold text-[#0b3d5c] underline-offset-2 hover:underline"
+            className="text-[10px] font-semibold text-[#0b3d5c] underline-offset-2 hover:underline"
           >
             Open
           </Link>
-        ) : null}
+        </div>
       </header>
 
       <div className="min-h-0 flex-1 overflow-hidden">
