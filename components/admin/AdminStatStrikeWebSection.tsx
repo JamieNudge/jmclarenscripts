@@ -61,6 +61,7 @@ function ToggleRow({
 
 export function AdminStatStrikeWebSection({ adminKey }: Props) {
   const [blur, setBlur] = useState(true);
+  const [forecastsBlur, setForecastsBlur] = useState(true);
   const [salesEnabled, setSalesEnabled] = useState(false);
   const [updatedAt, setUpdatedAt] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
@@ -70,6 +71,7 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
 
   const apply = useCallback((config: StatStrikeWebConfig) => {
     setBlur(config.blur);
+    setForecastsBlur(config.forecastsBlur);
     setSalesEnabled(config.supporterPassSalesEnabled);
     setUpdatedAt(config.updatedAt);
   }, []);
@@ -115,7 +117,11 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
     if (canUse) void load();
   }, [canUse, load]);
 
-  const save = async (patch: { blur?: boolean; supporterPassSalesEnabled?: boolean }) => {
+  const save = async (patch: {
+    blur?: boolean;
+    forecastsBlur?: boolean;
+    supporterPassSalesEnabled?: boolean;
+  }) => {
     if (!canUse) {
       setStatus('Admin key required.');
       return;
@@ -142,7 +148,7 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
       }
       const c = json.config ?? {
         blur: patch.blur ?? blur,
-        forecastsBlur: true,
+        forecastsBlur: patch.forecastsBlur ?? forecastsBlur,
         supporterPassSalesEnabled: patch.supporterPassSalesEnabled ?? salesEnabled,
         updatedAt: new Date().toISOString(),
       };
@@ -153,6 +159,12 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
           patch.supporterPassSalesEnabled
             ? `24h Supporter Pass sales ON — Stripe checkout available.${pathNote}`
             : `24h Supporter Pass sales OFF — new checkouts blocked (existing passes still work).${pathNote}`,
+        );
+      } else if (patch.forecastsBlur !== undefined) {
+        setStatus(
+          patch.forecastsBlur
+            ? `Forecasts pass gate ON — overflow forecasts redacted behind the 24h pass.${pathNote}`
+            : `Forecasts pass gate OFF — full day visible to everyone.${pathNote}`,
         );
       } else if (patch.blur !== undefined) {
         setStatus(
@@ -214,11 +226,22 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
         onTurnOn={() => void save({ supporterPassSalesEnabled: true })}
       />
 
+      <ToggleRow
+        label="Forecasts (/fixtures) pass gate"
+        description="When ON (and sales are ON), only the first few fixtures show forecasts; the rest of the day is redacted behind the 24h pass. Pass holders see everything."
+        on={forecastsBlur}
+        loading={loading}
+        canUse={canUse}
+        offLabel="Turn gate OFF"
+        onLabel="Turn gate ON"
+        onTurnOff={() => void save({ forecastsBlur: false })}
+        onTurnOn={() => void save({ forecastsBlur: true })}
+      />
+
       <p className="text-xs text-white/50 leading-relaxed rounded-xl border border-white/15 bg-white/[0.03] px-4 py-3">
-        <strong className="text-white/70">Forecasts (/fixtures)</strong> is a full-day compact board
-        (fixture + goal band) with no overflow blur. The{' '}
-        <code className="text-white/70">forecastsBlur</code> field remains in RTDB for later reuse but
-        is not applied on the list.
+        The Forecasts gate only takes effect while pass sales are ON. With sales OFF there is nothing
+        to buy, so <strong className="text-white/70">/fixtures</strong> stays fully open regardless of
+        this toggle.
       </p>
 
       {!canUse ? (

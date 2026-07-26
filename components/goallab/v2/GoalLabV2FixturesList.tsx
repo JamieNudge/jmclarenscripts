@@ -2,11 +2,14 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { onValue, ref } from 'firebase/database';
+import Link from 'next/link';
 import { GoalLabV2FixtureCard } from '@/components/goallab/v2/GoalLabV2FixtureCard';
 import { GOAL_LAB_V2_HOME_PATH } from '@/components/goallab/v2/paths';
 import { HubFootballLink } from '@/components/hub/HubFootballLink';
 import { StatStrikeAppStoreCta } from '@/components/statstrike/StatStrikeAppStoreCta';
 import { useBestPicksLondonDateKey } from '@/hooks/useBestPicksLondonDateKey';
+import { useStatStrikePassSession } from '@/hooks/useStatStrikePassSession';
+import { useStatStrikeWebBlur } from '@/hooks/useStatStrikeWebBlur';
 import { apps } from '@/lib/apps-data';
 import {
   groupFixturesByLeague,
@@ -15,6 +18,8 @@ import {
 } from '@/lib/fixtures-browser';
 import { statStrikeRtdbPathsFromEnv } from '@/lib/best-picks-firebase';
 import { getFirebaseRealtimeDb, isFirebaseClientConfigured } from '@/lib/firebase-client';
+import { freeForecastFixtureIds } from '@/lib/statstrike/forecasts-teaser';
+import { passCreatePath } from '@/lib/statstrike/pass-constants';
 
 const statStrikeAppStoreUrl = apps.find((a) => a.id === 'stat-strike')?.appStoreUrl;
 
@@ -63,12 +68,22 @@ export function GoalLabV2FixturesList() {
     return () => unsub();
   }, [configured, unanimousPath]);
 
+  const { forecastsBlur, supporterPassSalesEnabled } = useStatStrikeWebBlur();
+  const pass = useStatStrikePassSession();
+
   const fixtures = useMemo(
     () => sortFixturesByKickoff(parseFixturesFromUnanimousExport(exportVal)),
     [exportVal],
   );
   const groups = useMemo(() => groupFixturesByLeague(fixtures), [fixtures]);
   const totalCount = fixtures.length;
+
+  const gateActive = forecastsBlur && supporterPassSalesEnabled && !pass.unlocked;
+  const freeIds = useMemo(
+    () => (gateActive ? freeForecastFixtureIds(fixtures) : new Set<string>()),
+    [gateActive, fixtures],
+  );
+  const freeCount = gateActive ? Math.min(freeIds.size, totalCount) : totalCount;
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 md:px-6 md:py-14 space-y-8">
@@ -94,6 +109,23 @@ export function GoalLabV2FixturesList() {
           </p>
         ) : null}
       </header>
+
+      {gateActive && totalCount > freeCount ? (
+        <div className="flex flex-col gap-3 rounded-2xl border border-[var(--gl-border-strong)] bg-[var(--gl-elevated)] px-5 py-4 shadow-[var(--gl-shadow)] sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-base text-[var(--gl-text)] leading-relaxed">
+            Showing{' '}
+            <span className="font-semibold tabular-nums">{freeCount}</span> of{' '}
+            <span className="font-semibold tabular-nums">{totalCount}</span> forecasts. Unlock the
+            full day for 24 hours — from £1.
+          </p>
+          <Link
+            href={passCreatePath()}
+            className="inline-flex shrink-0 items-center justify-center rounded-xl bg-[var(--gl-accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90"
+          >
+            Get 24h access
+          </Link>
+        </div>
+      ) : null}
 
       {!configured ? (
         <p className="text-sm text-[var(--gl-text-soft)]">
@@ -121,7 +153,12 @@ export function GoalLabV2FixturesList() {
                 <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 list-none m-0 p-0">
                   {group.fixtures.map((fixture) => (
                     <li key={String(fixture.fixtureId)}>
-                      <GoalLabV2FixtureCard fixture={fixture} dateKey={dateKey} interactive={false} />
+                      <GoalLabV2FixtureCard
+                        fixture={fixture}
+                        dateKey={dateKey}
+                        interactive={false}
+                        locked={gateActive && !freeIds.has(String(fixture.fixtureId))}
+                      />
                     </li>
                   ))}
                 </ul>

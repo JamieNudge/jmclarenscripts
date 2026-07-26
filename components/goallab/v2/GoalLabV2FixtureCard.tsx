@@ -36,6 +36,11 @@ type Props = {
   interactive?: boolean;
   /** Override detail href (e.g. StatStrike fixture page for board-backed previews). */
   href?: string;
+  /**
+   * When true, hide the forecast band behind a 24h pass lock chip and never
+   * link to detail. Fixture, league and kickoff stay visible.
+   */
+  locked?: boolean;
 };
 
 export function GoalLabV2FixtureCard({
@@ -44,6 +49,7 @@ export function GoalLabV2FixtureCard({
   featured = false,
   interactive = true,
   href: hrefOverride,
+  locked = false,
 }: Props) {
   const visitorTz = useVisitorTimeZone();
   const kickoffShort = formatKickoffShortLocalAndUtc(fixture.kickoffMs, visitorTz);
@@ -56,11 +62,12 @@ export function GoalLabV2FixtureCard({
   const finished = isResultFinishedStatus(status);
   const elapsed = pickElapsed(fixture);
   const href = hrefOverride ?? fixtureDetailHrefV2(fixture.fixtureId, dateKey);
+  const effectiveInteractive = interactive && !locked;
 
   const shellClass = `flex flex-col rounded-2xl border border-[var(--gl-border-strong)] bg-[var(--gl-elevated)] shadow-[var(--gl-shadow)] ${
     featured ? 'p-5 md:p-6' : 'p-4'
   } ${
-    interactive
+    effectiveInteractive
       ? 'group transition-colors outline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--gl-accent)] hover:border-[var(--gl-accent)]/40'
       : ''
   }`;
@@ -115,11 +122,15 @@ export function GoalLabV2FixtureCard({
         ) : null}
       </div>
 
-      {forecast.primary ? (
+      {locked ? (
+        <p className="mt-4 inline-flex w-fit items-center gap-1.5 rounded-lg border border-[var(--gl-border)] bg-[var(--gl-surface)] px-2.5 py-1 text-xs font-semibold text-[var(--gl-text-muted)]">
+          <span aria-hidden>🔒</span> Forecast in 24h pass
+        </p>
+      ) : forecast.primary ? (
         <p className="mt-4 text-sm font-semibold text-[var(--gl-accent)]">{forecast.primary}</p>
       ) : null}
 
-      {interactive ? (
+      {effectiveInteractive ? (
         <p className="mt-3 text-sm font-medium text-[var(--gl-accent)] group-hover:text-[var(--gl-accent-hover)]">
           View forecast
           <span className="ml-1 inline-block transition-transform group-hover:translate-x-0.5" aria-hidden>
@@ -130,7 +141,7 @@ export function GoalLabV2FixtureCard({
     </>
   );
 
-  if (!interactive) {
+  if (!effectiveInteractive) {
     return <article className={shellClass}>{body}</article>;
   }
 
