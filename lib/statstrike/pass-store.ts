@@ -3,9 +3,21 @@ import { getFirebaseAdminApp } from '@/lib/firebase-admin';
 import type { StatStrikePassRecord } from '@/lib/statstrike/pass';
 
 const DEFAULT_ROOT = 'statstrikePasses';
+const DEFAULT_SURVEYS_ROOT = 'statstrikePassSurveys';
+
+export type StatStrikePassSurveyResponse = {
+  id: string;
+  passId: string;
+  message: string;
+  createdAt: string;
+};
 
 export function statStrikePassesRoot(): string {
   return process.env.FIREBASE_STATSTRIKE_PASSES_ROOT?.trim() || DEFAULT_ROOT;
+}
+
+export function statStrikePassSurveysRoot(): string {
+  return process.env.FIREBASE_STATSTRIKE_PASS_SURVEYS_ROOT?.trim() || DEFAULT_SURVEYS_ROOT;
 }
 
 export function passByIdPath(passId: string): string {
@@ -131,4 +143,77 @@ export async function listPassesForSurveySweep(limit = 200): Promise<StatStrikeP
   const val = snap.val();
   if (!val || typeof val !== 'object') return [];
   return Object.values(val as Record<string, StatStrikePassRecord>);
+}
+
+/** Recent pass records for owner tooling. */
+export async function listPassesForAdmin(limit = 300): Promise<StatStrikePassRecord[]> {
+  const safeLimit = Math.max(1, Math.min(500, Math.trunc(limit)));
+  const snap = await db()
+    .ref(`${statStrikePassesRoot()}/byId`)
+    .limitToLast(safeLimit)
+    .once('value');
+  const val = snap.val();
+  if (!val || typeof val !== 'object') return [];
+  return Object.values(val as Record<string, StatStrikePassRecord>).sort(
+    (a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt),
+  );
+}
+
+export async function withdrawPassMarketingConsent(passId: string): Promise<boolean> {
+  const ref = db().ref(passByIdPath(passId));
+  const snap = await ref.once('value');
+  if (!snap.exists()) return false;
+  await ref.update({
+    marketingConsent: false,
+    marketingConsentWithdrawnAt: new Date().toISOString(),
+  });
+  return true;
+}
+
+/**
+ * Remove direct contact data while retaining entitlement and Stripe idempotency records.
+ * This deliberately does not delete tokenHash or checkout indexes.
+ */
+export async function redactPassPii(passId: string): Promise<boolean> {
+  const ref = db().ref(passByIdPath(passId));
+  const snap = await ref.once('value');
+  if (!snap.exists()) return false;
+  await ref.update({
+    email: null,
+    marketingConsent: false,
+    surveyConsent: false,
+    piiRedactedAt: new Date().toISOString(),
+  });
+  return true;
+}
+
+export async function createSurveyResponse(input: {
+  passId: string;
+  message: string;
+}): Promise<StatStrikePassSurveyResponse> {
+  const ref = db().ref(statStrikePassSurveysRoot()).push();
+  if (!ref.key) throw new Error('Could not allocate survey response id');
+  const response: StatStrikePassSurveyResponse = {
+    id: ref.key,
+    passId: input.passId,
+    message: input.message,
+    createdAt: new Date().toISOString(),
+  };
+  await ref.set(response);
+  return response;
+}
+
+export async function listSurveyResponses(
+  limit = 300,
+): Promise<StatStrikePassSurveyResponse[]> {
+  const safeLimit = Math.max(1, Math.min(500, Math.trunc(limit)));
+  const snap = await db()
+    .ref(statStrikePassSurveysRoot())
+    .limitToLast(safeLimit)
+    .once('value');
+  const val = snap.val();
+  if (!val || typeof val !== 'object') return [];
+  return Object.entries(val as Record<string, Omit<StatStrikePassSurveyResponse, 'id'>>)
+    .map(([id, row]) => ({ ...row, id }))
+    .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
 }

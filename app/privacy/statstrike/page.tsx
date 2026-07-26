@@ -170,7 +170,9 @@ export default function StatStrikePrivacySupportPage() {
             </li>
             <li>
               <span className="font-semibold">End-of-pass survey:</span> only if you tick the survey
-              checkbox (unchecked by default); sent around when access ends.
+              checkbox (unchecked by default); sent around when access ends. If you reply through
+              the linked form, your response is stored with the related pass identifier so we can
+              improve StatStrike.
             </li>
             <li>
               <span className="font-semibold">Your Picks / My Record on web:</span> stored locally in
@@ -182,7 +184,8 @@ export default function StatStrikePrivacySupportPage() {
             <a href="mailto:jmclarenscripts@gmail.com" className="underline hover:text-blue-300">
               jmclarenscripts@gmail.com
             </a>{' '}
-            to withdraw marketing consent or ask about pass-related data.
+            to withdraw marketing consent, request deletion of pass contact data, or ask about
+            pass-related data.
           </p>
 
           <h3 className="text-xl font-semibold mt-6">5. Data Storage &amp; Retention</h3>

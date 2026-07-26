@@ -36,6 +36,9 @@ export type StatStrikePassRecord = {
   welcomeEmailSentAt?: string | null;
   surveyEmailSentAt?: string | null;
   claimedAt?: string | null;
+  marketingConsentWithdrawnAt?: string | null;
+  /** PII was removed while entitlement/idempotency fields were retained. */
+  piiRedactedAt?: string | null;
 };
 
 export function mintPassAccessToken(): string {
