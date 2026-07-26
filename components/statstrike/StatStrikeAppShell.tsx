@@ -12,6 +12,7 @@ import { StatStrikePremiumGate } from '@/components/statstrike/StatStrikePremium
 import { useStatStrikeBoard } from '@/hooks/useStatStrikeBoard';
 import { useStatStrikeHistoryWindow } from '@/hooks/useStatStrikeHistoryWindow';
 import { useStatStrikePersonalPicks } from '@/hooks/useStatStrikePersonalPicks';
+import { useStatStrikePassSession } from '@/hooks/useStatStrikePassSession';
 import { useStatStrikeWebBlur } from '@/hooks/useStatStrikeWebBlur';
 import {
   DEFAULT_BOARD_FILTERS,
@@ -19,20 +20,22 @@ import {
   presentBoardRows,
   type BoardFilterState,
 } from '@/lib/statstrike/board-filters';
-import { apps } from '@/lib/apps-data';
-
-const statStrikeAppStoreUrl = apps.find((a) => a.id === 'stat-strike')?.appStoreUrl;
+import { passCreatePath } from '@/lib/statstrike/pass-constants';
 
 type TabId = 'fixtures' | 'best' | 'record';
 
 export function StatStrikeAppShell() {
   const board = useStatStrikeBoard();
-  const { blur } = useStatStrikeWebBlur();
+  const { blur: adminBlur } = useStatStrikeWebBlur();
+  const pass = useStatStrikePassSession();
   const personal = useStatStrikePersonalPicks();
   const [filters, setFilters] = useState<BoardFilterState>(DEFAULT_BOARD_FILTERS);
   const [tab, setTab] = useState<TabId>('fixtures');
   const [premiumOpen, setPremiumOpen] = useState(false);
   const history = useStatStrikeHistoryWindow(7, { enabled: tab === 'best' });
+
+  /** Pass holders bypass Coming Soon blur for this browser. */
+  const blur = adminBlur && !pass.unlocked;
 
   const dayGroups = useMemo(
     () =>
@@ -136,7 +139,9 @@ export function StatStrikeAppShell() {
         }
         emptyHint={
           board.rows.length > 0
-            ? 'No fixtures match these filters.'
+            ? filters.league === 'yourSelections' && personal.enabled
+              ? 'No starred picks yet. Tap the star on a fixture to save it here.'
+              : 'No fixtures match these filters.'
             : undefined
         }
       />
@@ -160,18 +165,21 @@ export function StatStrikeAppShell() {
               StatStrike (Web Version)
             </h1>
             <p className="text-xs text-black/70">
-              Browser preview{blur ? ' · coming soon' : ' · interactive'}
+              {pass.unlocked
+                ? '24h pass active'
+                : blur
+                  ? 'Browser preview · coming soon'
+                  : 'Browser preview · interactive'}
             </p>
           </div>
           <nav className="flex items-center gap-3 text-xs font-semibold">
-            {statStrikeAppStoreUrl ? (
-              <button
-                type="button"
-                onClick={() => setPremiumOpen(true)}
+            {!pass.unlocked ? (
+              <Link
+                href={passCreatePath()}
                 className="rounded-full bg-amber-300 px-2.5 py-1 text-[11px] font-black text-black"
               >
-                Upgrade
-              </button>
+                Get 24h access
+              </Link>
             ) : null}
             <Link href="/statstrike/settings" className="text-black/75 hover:text-[#0b3d5c]">
               Settings
@@ -217,9 +225,9 @@ export function StatStrikeAppShell() {
         {blur ? (
           <ComingSoonBlur
             badge="Coming Soon!"
-            ctaHref={statStrikeAppStoreUrl}
-            ctaLabel="Get StatStrike on the App Store"
-            ctaStatStrike
+            ctaHref={passCreatePath()}
+            ctaLabel="Get 24h access"
+            ctaInternal
             ctaPlacement="bottom"
             minHeightClassName="min-h-[22rem]"
             centerBadge

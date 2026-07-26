@@ -5,18 +5,20 @@ import Link from 'next/link';
 import { ComingSoonBlur } from '@/components/hub/ComingSoonBlur';
 import { StatStrikeBoard } from '@/components/statstrike/StatStrikeBoard';
 import { useStatStrikeBoard } from '@/hooks/useStatStrikeBoard';
+import { useStatStrikePassSession } from '@/hooks/useStatStrikePassSession';
 import { useStatStrikeWebBlur } from '@/hooks/useStatStrikeWebBlur';
-import { apps } from '@/lib/apps-data';
-
-const statStrikeAppStoreUrl = apps.find((a) => a.id === 'stat-strike')?.appStoreUrl;
+import { passCreatePath } from '@/lib/statstrike/pass-constants';
 
 /**
  * GoalLab hero right cell — branded StatStrike live board.
  * Coming Soon blur is controlled live from admin (RTDB), not a hardcode.
+ * Active 24h pass sessions bypass blur on this browser.
  */
 export function StatStrikeHeroPanel() {
   const board = useStatStrikeBoard();
-  const { blur } = useStatStrikeWebBlur();
+  const { blur: adminBlur } = useStatStrikeWebBlur();
+  const pass = useStatStrikePassSession();
+  const blur = adminBlur && !pass.unlocked;
 
   const boardEl = (
     <StatStrikeBoard
@@ -49,7 +51,7 @@ export function StatStrikeHeroPanel() {
             StatStrike (Web Version)
           </p>
           <p className="text-[10px] font-medium text-black/80">
-            {blur ? 'Browser preview' : 'Live board'}
+            {pass.unlocked ? '24h pass' : blur ? 'Browser preview' : 'Live board'}
             {!board.loading ? (
               <span className="tabular-nums"> · {board.todayKey}</span>
             ) : null}
@@ -69,9 +71,9 @@ export function StatStrikeHeroPanel() {
         {blur ? (
           <ComingSoonBlur
             badge="Coming Soon!"
-            ctaHref={statStrikeAppStoreUrl}
-            ctaLabel="Get StatStrike on the App Store"
-            ctaStatStrike
+            ctaHref={passCreatePath()}
+            ctaLabel="Get 24h access"
+            ctaInternal
             ctaPlacement="bottom"
             minHeightClassName="h-full"
             centerBadge

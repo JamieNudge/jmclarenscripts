@@ -143,13 +143,46 @@ export default function StatStrikePrivacySupportPage() {
           <h3 className="text-xl font-semibold mt-6">4. Network and Cloud Services</h3>
           <p>
             StatStrike fetches football data from third-party APIs over the internet. This data is
-            cached locally on your device. The app does not upload your prediction selections,
+            cached locally on your device. The native app does not upload your prediction selections,
             track record, or personal information to any remote server controlled by the developer.
           </p>
           <p>
             Your iOS device and installed apps may communicate with Apple or other services in the
             normal course of operation (for example, App Store updates or iCloud backups), but
             StatStrike does not add any additional tracking or analytics to those services.
+          </p>
+
+          <h3 className="text-xl font-semibold mt-6">4a. StatStrike Web — 24h Supporter Pass (Stripe)</h3>
+          <p>
+            The browser version at thegoallab.net may offer a one-time 24-hour Supporter Pass
+            processed by <span className="font-semibold">Stripe</span>. When you create a pass we may
+            store: Checkout Session identifiers, amount, pass expiry, an access token hash (not the
+            raw token), optional email, and consent choices you make on the Create Pass page.
+          </p>
+          <ul className="list-disc list-inside space-y-1 ml-4">
+            <li>
+              <span className="font-semibold">Welcome email:</span> transactional confirmation of
+              your pass (sent when an email is available).
+            </li>
+            <li>
+              <span className="font-semibold">Marketing updates:</span> only if you tick the
+              marketing checkbox (unchecked by default).
+            </li>
+            <li>
+              <span className="font-semibold">End-of-pass survey:</span> only if you tick the survey
+              checkbox (unchecked by default); sent around when access ends.
+            </li>
+            <li>
+              <span className="font-semibold">Your Picks / My Record on web:</span> stored locally in
+              your browser (IndexedDB), not uploaded as a cloud account.
+            </li>
+          </ul>
+          <p>
+            You can contact{' '}
+            <a href="mailto:jmclarenscripts@gmail.com" className="underline hover:text-blue-300">
+              jmclarenscripts@gmail.com
+            </a>{' '}
+            to withdraw marketing consent or ask about pass-related data.
           </p>
 
           <h3 className="text-xl font-semibold mt-6">5. Data Storage &amp; Retention</h3>

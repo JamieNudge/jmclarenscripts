@@ -134,7 +134,12 @@ export async function importPersonalPicksJson(raw: string): Promise<number> {
   return count;
 }
 
-/** Debug unlock: `NEXT_PUBLIC_STATSTRIKE_PERSONAL_ENABLED=1` (default off / App Store gated). */
-export function isStatStrikePersonalEnabled(): boolean {
+/** Debug unlock: `NEXT_PUBLIC_STATSTRIKE_PERSONAL_ENABLED=1` (default off). */
+export function isStatStrikePersonalEnvEnabled(): boolean {
   return process.env.NEXT_PUBLIC_STATSTRIKE_PERSONAL_ENABLED === '1';
+}
+
+/** @deprecated Prefer isStatStrikePersonalEnvEnabled + pass session. */
+export function isStatStrikePersonalEnabled(): boolean {
+  return isStatStrikePersonalEnvEnabled();
 }

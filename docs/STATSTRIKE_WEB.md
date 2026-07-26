@@ -34,7 +34,8 @@ Stored in RTDB at `statstrikeWebConfig`:
 | GoalLab `/` hero right | Live StatStrike panel when enabled |
 | `/statstrike` | Full board (filters, day nav, tabs) |
 | `/statstrike/fixture/[id]?date=` | Fixture detail (tip, GBC, signals) |
-| `/statstrike/settings` | Legal + premium stubs |
+| `/statstrike/settings` | Legal + 24h pass link |
+| `/support/statstrike` | Create Pass + app support |
 | `/admin/picks` | Blur kill-switch (+ other owner tools) |
 | `/api/statstrike/homepage-metrics` | Public live metrics snapshot (hot streak, best competition, model status) |
 | `/statstrike/content-rating` | App Store rating page (always on) |
@@ -81,17 +82,44 @@ Same cohort rules as iOS `BestPerformingDigest` / `goalBandCascadeSuccessRate`.
 
 ### Personal track (gated)
 
-IndexedDB store `statstrike-web` / `personalPicks` is implemented (`lib/statstrike/personal-store.ts`) for future Stripe/Patreon accounts. **Production UX stays App Store–gated** (star, Your Picks, My Record). Local QA unlock:
+IndexedDB store `statstrike-web` / `personalPicks` (`lib/statstrike/personal-store.ts`).
 
-```bash
-NEXT_PUBLIC_STATSTRIKE_PERSONAL_ENABLED=1
-```
+**Unlocked when:**
 
+- Valid **24h Stripe Supporter Pass** session (httpOnly cookie), or
+- Local QA: `NEXT_PUBLIC_STATSTRIKE_PERSONAL_ENABLED=1`
+
+Pass holders also **bypass Coming Soon blur** on that browser; anonymous visitors still respect admin blur.
+
+## 24h Stripe Supporter Pass
+
+| Path | Role |
+|------|------|
+| `/support/statstrike` | Create Pass UI (amounts, consents) + app support |
+| `/support/statstrike/success` | Post-checkout claim / confirm access |
+| `/support/statstrike/cancelled` | Checkout cancelled |
+| `POST /api/statstrike/pass/checkout` | Create Stripe Checkout Session |
+| `POST /api/statstrike/pass/webhook` | Signed Stripe events → pass record + claim token |
+| `GET/POST /api/statstrike/pass/session` | Session status / claim cookie (stacks +24h if already active) |
+| `GET /api/statstrike/pass/survey-cron` | Hourly survey sweep (opt-in only) |
+| `POST /api/statstrike/pass/test-mint` | Preview QA mint (requires `STATSTRIKE_PASS_TEST_SECRET`) |
+
+**Product:** £1 / £3 / £5 / £10 → same entitlement (board + personal for 24h from payment fulfilment).
+
+**Identity (v1):** anonymous browser unlock via httpOnly cookie (no GoalLab login yet). Repeat purchase in the same browser stacks remaining time + 24h.
+
+**Consents (Create Pass page only, unchecked by default):** marketing list; survey email at expiry. Welcome email is transactional.
+
+**Env:** `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` (required). Optional `STRIPE_PRICE_ID_1/3/5/10` — otherwise Checkout uses `price_data`. Optional `STATSTRIKE_PASS_TEST_SECRET` for preview mint.
+
+**Deploy:** build on `feature/statstrike-24h-pass`; Vercel **preview** until webhook + unlock + emails work E2E. Point Stripe webhooks at the preview URL first. Rollback tag: `pre-statstrike-24h-pass`.
+
+**Note:** Lemon Squeezy was the original provider choice; GoalLab switched to Stripe after Lemon’s acquisition path.
 ## Not wired yet
 
-- Stripe / Patreon / login (personal UI gated until then)
 - FCM web push
 - Public CSV export/import UI (helpers exist in personal-store)
+- Site-wide consent popup (deferred)
 - Dashboard modules (Today’s Matches, My Teams, Alerts, Watchlist, …) — deferred
 
 ## Local
@@ -99,3 +127,4 @@ NEXT_PUBLIC_STATSTRIKE_PERSONAL_ENABLED=1
 1. Copy Firebase vars from `.env.example`.
 2. Set `NEXT_PUBLIC_STATSTRIKE_WEB_ENABLED=1`.
 3. `npm run dev` → `/statstrike` and `/admin/picks` (turn blur OFF to work interactively).
+4. Optional: `NEXT_PUBLIC_STATSTRIKE_PERSONAL_ENABLED=1` or mint a test pass via `/api/statstrike/pass/test-mint`.

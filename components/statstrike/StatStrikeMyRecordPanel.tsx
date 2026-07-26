@@ -9,7 +9,7 @@ type Props = {
   error?: string | null;
 };
 
-/** Debug / future My Record list (only when personal flag unlocked). */
+/** My Record list (24h pass or local QA unlock). */
 export function StatStrikeMyRecordPanel({ picks, loading, error }: Props) {
   if (loading) {
     return <p className="text-sm text-black/70">Loading your picks…</p>;
@@ -23,11 +23,13 @@ export function StatStrikeMyRecordPanel({ picks, loading, error }: Props) {
       <div>
         <h2 className="text-lg font-bold text-[#0b3d5c]">My Record</h2>
         <p className="mt-1 text-sm text-black/75">
-          Local Your Picks on this device (debug unlock). Settling and sync arrive with web accounts.
+          Your Picks saved on this device while your 24h pass (or local QA unlock) is active.
         </p>
       </div>
       {picks.length === 0 ? (
-        <p className="text-sm text-black/70">No saved picks yet. Star a fixture on the board.</p>
+        <p className="text-sm text-black/70">
+          No saved picks yet. Star a fixture on the board to build your record.
+        </p>
       ) : (
         <ul className="space-y-2">
           {picks.map((p) => (

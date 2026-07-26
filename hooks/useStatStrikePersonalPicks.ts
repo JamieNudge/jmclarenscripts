@@ -3,13 +3,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { StatStrikeBoardRow } from '@/lib/statstrike/models';
 import {
-  isStatStrikePersonalEnabled,
+  isStatStrikePersonalEnvEnabled,
   listPersonalPicks,
   personalPickKey,
   removePersonalPick,
   upsertPersonalPick,
   type PersonalPickRecord,
 } from '@/lib/statstrike/personal-store';
+import { useStatStrikePassSession } from '@/hooks/useStatStrikePassSession';
 
 function rowToPersonalPick(row: StatStrikeBoardRow): Omit<PersonalPickRecord, 'id' | 'savedAt'> {
   const tipBand = row.prediction?.recommendedLevel || row.prediction?.level || 'Over 2.5 Goals';
@@ -32,13 +33,14 @@ function rowToPersonalPick(row: StatStrikeBoardRow): Omit<PersonalPickRecord, 'i
 }
 
 /**
- * Personal picks IndexedDB hook. Active only when `NEXT_PUBLIC_STATSTRIKE_PERSONAL_ENABLED=1`.
- * Production UX stays behind PremiumGate until accounts/Stripe.
+ * Personal picks IndexedDB hook.
+ * Active when env QA flag is on OR a valid 24h pass session is unlocked.
  */
 export function useStatStrikePersonalPicks() {
-  const enabled = isStatStrikePersonalEnabled();
+  const pass = useStatStrikePassSession();
+  const enabled = isStatStrikePersonalEnvEnabled() || pass.unlocked;
   const [picks, setPicks] = useState<PersonalPickRecord[]>([]);
-  const [loading, setLoading] = useState(enabled);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
@@ -60,8 +62,9 @@ export function useStatStrikePersonalPicks() {
   }, [enabled]);
 
   useEffect(() => {
+    if (pass.loading) return;
     void refresh();
-  }, [refresh]);
+  }, [refresh, pass.loading]);
 
   const isSaved = useCallback(
     (selectionDateKey: string, fixtureId: number) =>
@@ -89,11 +92,13 @@ export function useStatStrikePersonalPicks() {
   return {
     enabled,
     picks,
-    loading,
+    loading: loading || pass.loading,
     error,
     refresh,
     isSaved,
     toggleFromBoardRow,
     savedFixtureIds,
+    passUnlocked: pass.unlocked,
+    passExpiresAt: pass.expiresAt,
   };
 }
