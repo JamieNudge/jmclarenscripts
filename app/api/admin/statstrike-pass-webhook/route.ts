@@ -17,10 +17,17 @@ function misconfigured() {
  * POST { "url"?: "https://thegoallab.net/api/statstrike/pass/webhook" }
  */
 export async function POST(req: NextRequest) {
-  if (!process.env.ADMIN_MANUAL_PICKS_KEY?.trim() || !process.env.STRIPE_SECRET_KEY?.trim()) {
+  if (!process.env.STRIPE_SECRET_KEY?.trim()) {
     return misconfigured();
   }
-  if (!isManualPicksAdminAuthorized(req)) {
+  const adminKey = process.env.ADMIN_MANUAL_PICKS_KEY?.trim();
+  const testSecret = process.env.STATSTRIKE_PASS_TEST_SECRET?.trim();
+  const auth = req.headers.get('authorization');
+  const bearer = auth?.startsWith('Bearer ') ? auth.slice(7).trim() : '';
+  const ok =
+    (adminKey && isManualPicksAdminAuthorized(req)) ||
+    (Boolean(testSecret) && bearer === testSecret);
+  if (!ok) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
