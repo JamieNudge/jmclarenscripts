@@ -135,3 +135,39 @@ export function parseCheckoutSessionMetadata(session: Stripe.Checkout.Session): 
     purchaseType: typeof m.purchase_type === 'string' ? m.purchase_type : null,
   };
 }
+
+const PASS_WEBHOOK_PATH = '/api/statstrike/pass/webhook';
+const PASS_WEBHOOK_EVENTS: Stripe.WebhookEndpointCreateParams.EnabledEvent[] = [
+  'checkout.session.completed',
+];
+
+/** Ensure a Stripe webhook endpoint targets this deployment's pass route. */
+export async function ensureStatStrikePassWebhookEndpoint(targetUrl: string): Promise<{
+  id: string;
+  url: string;
+  action: 'created' | 'updated' | 'unchanged';
+  /** Present only when Stripe creates a new endpoint (rotate STRIPE_WEBHOOK_SECRET). */
+  signingSecret: string | null;
+}> {
+  const stripe = getStripeClient();
+  const existing = await stripe.webhookEndpoints.list({ limit: 100 });
+  const match = existing.data.find((e) => e.url.includes(PASS_WEBHOOK_PATH));
+  if (match) {
+    if (match.url === targetUrl) {
+      return { id: match.id, url: match.url, action: 'unchanged', signingSecret: null };
+    }
+    const updated = await stripe.webhookEndpoints.update(match.id, { url: targetUrl });
+    return { id: updated.id, url: updated.url, action: 'updated', signingSecret: null };
+  }
+  const created = await stripe.webhookEndpoints.create({
+    url: targetUrl,
+    enabled_events: PASS_WEBHOOK_EVENTS,
+    description: 'StatStrike 24h supporter pass',
+  });
+  return {
+    id: created.id,
+    url: created.url,
+    action: 'created',
+    signingSecret: created.secret ?? null,
+  };
+}
