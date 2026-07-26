@@ -47,7 +47,7 @@ export function allowCheckoutPost(ip: string, now = Date.now()): boolean {
 
   // Occasional global prune to avoid unbounded Map growth.
   if (buckets.size > 5_000) {
-    for (const [k, b] of buckets) {
+    for (const [k, b] of Array.from(buckets.entries())) {
       prune(b, now);
       if (b.timestamps.length === 0) buckets.delete(k);
     }
