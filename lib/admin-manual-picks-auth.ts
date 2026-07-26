@@ -1,4 +1,9 @@
+import { createHash, timingSafeEqual } from 'node:crypto';
 import type { NextRequest } from 'next/server';
+
+function sha256Buffer(value: string): Buffer {
+  return createHash('sha256').update(value, 'utf8').digest();
+}
 
 /** Same Bearer as POST /api/admin/manual-picks. */
 export function isManualPicksAdminAuthorized(req: NextRequest): boolean {
@@ -6,5 +11,12 @@ export function isManualPicksAdminAuthorized(req: NextRequest): boolean {
   if (!key) return false;
   const h = req.headers.get('authorization');
   if (!h?.startsWith('Bearer ')) return false;
-  return h.slice(7).trim() === key;
+  const presented = h.slice(7).trim();
+  if (!presented) return false;
+  // Hash both sides so timingSafeEqual always compares equal-length digests.
+  try {
+    return timingSafeEqual(sha256Buffer(presented), sha256Buffer(key));
+  } catch {
+    return false;
+  }
 }

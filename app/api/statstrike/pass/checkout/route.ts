@@ -8,6 +8,10 @@ import {
 } from '@/lib/statstrike/pass';
 import { createStripePassCheckout, isStripePassConfigured } from '@/lib/statstrike/stripe';
 import { jsonNoStore } from '@/lib/statstrike/pass-session';
+import {
+  allowCheckoutPost,
+  clientIpFromRequest,
+} from '@/lib/statstrike/checkout-rate-limit';
 import { getFirebaseAdminApp } from '@/lib/firebase-admin';
 import {
   DEFAULT_STATSTRIKE_WEB_CONFIG,
@@ -34,6 +38,18 @@ async function readSupporterPassSalesEnabled(): Promise<boolean> {
 
 /** POST: create Stripe Checkout Session for a 24h StatStrike Supporter Pass. */
 export async function POST(req: NextRequest) {
+  const salesEnabled = await readSupporterPassSalesEnabled();
+
+  if (!allowCheckoutPost(clientIpFromRequest(req))) {
+    return jsonNoStore(
+      {
+        error: 'Too many checkout attempts. Please wait a few minutes and try again.',
+        salesEnabled,
+      },
+      { status: 429 },
+    );
+  }
+
   if (!isStripePassConfigured()) {
     return jsonNoStore(
       {
@@ -46,7 +62,6 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const salesEnabled = await readSupporterPassSalesEnabled();
   if (!salesEnabled) {
     return jsonNoStore(
       {
