@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { Suspense } from 'react';
+import { GoalLabV2SubpageShell } from '@/components/goallab/v2/GoalLabV2SubpageShell';
 import { StatStrikePassSuccessSection } from '@/components/statstrike/StatStrikeSupportPassSection';
 
 export const metadata: Metadata = {
@@ -10,20 +10,19 @@ export const metadata: Metadata = {
 
 export default function StatStrikePassSuccessPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-[#111827] to-[#1f2937] text-white">
-      <div className="max-w-xl mx-auto px-4 py-12 md:py-16 space-y-6">
-        <Link href="/" className="text-sm text-white/70 hover:text-white">
-          ← GoalLab
-        </Link>
-        <h1 className="text-3xl font-bold">Thank you for supporting GoalLab</h1>
-        <p className="text-sm text-white/70">
-          Your payment was received. We’re confirming your StatStrike Supporter Pass — this normally
-          happens automatically.
-        </p>
-        <Suspense fallback={<p className="text-sm text-white/60">Confirming your access…</p>}>
-          <StatStrikePassSuccessSection />
-        </Suspense>
-      </div>
-    </main>
+    <GoalLabV2SubpageShell
+      title="Thank you for supporting GoalLab"
+      description="Your payment was received. We’re confirming your StatStrike Supporter Pass — this normally happens automatically."
+    >
+      <Suspense
+        fallback={
+          <p className="text-sm text-[var(--gl-text-soft)]" role="status">
+            Confirming your access…
+          </p>
+        }
+      >
+        <StatStrikePassSuccessSection />
+      </Suspense>
+    </GoalLabV2SubpageShell>
   );
 }

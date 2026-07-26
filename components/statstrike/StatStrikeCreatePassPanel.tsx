@@ -106,18 +106,22 @@ export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full
 
   if (variant === 'status') {
     return (
-      <div className="space-y-3 text-sm text-white/90">
-        {claimStatus ? <p role="status">{claimStatus}</p> : null}
+      <div className="space-y-4 text-sm text-[var(--gl-text-soft)]">
+        {claimStatus ? (
+          <p className="text-[var(--gl-text)]" role="status">
+            {claimStatus}
+          </p>
+        ) : null}
         {session.unlocked ? (
-          <div className="rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-3">
-            <p className="font-semibold text-emerald-100">Thank you for supporting GoalLab</p>
-            <p className="mt-1 text-emerald-100/90">
+          <div className="rounded-2xl border border-[color-mix(in_srgb,var(--gl-success)_35%,var(--gl-border))] bg-[color-mix(in_srgb,var(--gl-success)_10%,transparent)] px-5 py-4">
+            <p className="font-semibold text-[var(--gl-text)]">Thank you for supporting GoalLab</p>
+            <p className="mt-1 text-[var(--gl-text-soft)]">
               Your StatStrike Supporter Pass is active
               {session.expiresAt ? (
                 <>
                   {' '}
                   until{' '}
-                  <span className="tabular-nums font-medium">
+                  <span className="tabular-nums font-medium text-[var(--gl-text)]">
                     {new Date(session.expiresAt).toLocaleString()}
                   </span>
                 </>
@@ -126,13 +130,13 @@ export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full
             </p>
             <Link
               href="/statstrike"
-              className="mt-3 inline-flex rounded-xl bg-amber-300 px-4 py-2.5 text-sm font-bold text-black hover:bg-amber-200"
+              className="mt-4 inline-flex rounded-xl bg-[var(--gl-accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90"
             >
               Open StatStrike
             </Link>
           </div>
         ) : (
-          <p className="text-white/70">
+          <p>
             If this takes longer than a minute, refresh this page or email support with your receipt.
           </p>
         )}
@@ -141,16 +145,18 @@ export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full
   }
 
   return (
-    <section className="rounded-2xl border border-white/15 bg-white/5 p-5 md:p-6 space-y-5">
+    <section className="rounded-2xl border border-[var(--gl-border)] bg-[var(--gl-surface)] p-5 md:p-6 space-y-5 shadow-[var(--gl-shadow)]">
       <div>
-        <h2 className="text-xl font-semibold text-white">Support GoalLab</h2>
-        <p className="mt-2 text-sm text-white/75 leading-relaxed">
+        <h2 className="text-xl font-semibold tracking-tight text-[var(--gl-text)]">
+          Support GoalLab
+        </h2>
+        <p className="mt-2 text-sm text-[var(--gl-text-soft)] leading-relaxed">
           GoalLab is an independent football analytics project. Choose an amount to support its
           continued development and receive full StatStrike access for 24 hours.
         </p>
       </div>
 
-      <ul className="text-sm text-white/80 space-y-1.5 list-disc list-inside">
+      <ul className="text-sm text-[var(--gl-text-soft)] space-y-1.5 list-disc list-inside">
         <li>Every available forecast</li>
         <li>Search, filtering, and full browser board</li>
         <li>Your Picks / My Record on this browser</li>
@@ -158,29 +164,37 @@ export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full
       </ul>
 
       {session.unlocked ? (
-        <div className="rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100">
+        <div className="rounded-xl border border-[color-mix(in_srgb,var(--gl-success)_35%,var(--gl-border))] bg-[color-mix(in_srgb,var(--gl-success)_10%,transparent)] px-4 py-3 text-sm text-[var(--gl-text)]">
           Supporter Pass active
           {session.expiresAt ? (
             <>
               {' '}
-              until <span className="tabular-nums">{new Date(session.expiresAt).toLocaleString()}</span>
+              until{' '}
+              <span className="tabular-nums font-medium">
+                {new Date(session.expiresAt).toLocaleString()}
+              </span>
             </>
           ) : null}
           .{' '}
-          <Link href="/statstrike" className="underline hover:text-white">
+          <Link
+            href="/statstrike"
+            className="font-semibold text-[var(--gl-accent)] underline-offset-2 hover:underline"
+          >
             Open board
           </Link>
         </div>
       ) : null}
 
       {claimStatus ? (
-        <p className="text-sm text-amber-200/90" role="status">
+        <p className="text-sm text-[var(--gl-warn)]" role="status">
           {claimStatus}
         </p>
       ) : null}
 
       <div>
-        <p className="text-xs font-semibold uppercase tracking-wide text-white/55 mb-2">Amount</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-[var(--gl-text-muted)] mb-2">
+          Amount
+        </p>
         <div className="flex flex-wrap gap-2">
           {STATSTRIKE_PASS_AMOUNTS_GBP.map((n) => (
             <button
@@ -189,21 +203,21 @@ export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full
               onClick={() => setAmount(n)}
               className={`rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors ${
                 amount === n
-                  ? 'bg-amber-300 text-black'
-                  : 'bg-white/10 text-white hover:bg-white/15'
+                  ? 'bg-[var(--gl-accent)] text-white shadow-sm'
+                  : 'border border-[var(--gl-border)] bg-[var(--gl-elevated)] text-[var(--gl-text)] hover:border-[var(--gl-border-strong)]'
               }`}
             >
               £{n}
             </button>
           ))}
         </div>
-        <p className="mt-2 text-xs text-white/50">
+        <p className="mt-2 text-xs text-[var(--gl-text-muted)]">
           Every amount grants the same 24-hour access. Access begins when payment is confirmed.
         </p>
       </div>
 
       <label className="block space-y-1.5">
-        <span className="text-xs font-semibold uppercase tracking-wide text-white/55">
+        <span className="text-xs font-semibold uppercase tracking-wide text-[var(--gl-text-muted)]">
           Email (optional at checkout; needed for welcome / survey)
         </span>
         <input
@@ -212,15 +226,15 @@ export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@example.com"
-          className="w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2.5 text-sm text-white placeholder:text-white/35 outline-none focus:border-amber-300/60"
+          className="w-full rounded-xl border border-[var(--gl-border)] bg-[var(--gl-page)] px-3 py-2.5 text-sm text-[var(--gl-text)] placeholder:text-[var(--gl-text-muted)] outline-none focus:border-[var(--gl-accent)]"
         />
       </label>
 
-      <div className="space-y-3 text-sm text-white/85">
+      <div className="space-y-3 text-sm text-[var(--gl-text-soft)]">
         <label className="flex gap-3 items-start cursor-pointer">
           <input
             type="checkbox"
-            className="mt-1 h-4 w-4 rounded border-white/30"
+            className="mt-1 h-4 w-4 rounded border-[var(--gl-border-strong)]"
             checked={marketingConsent}
             onChange={(e) => setMarketingConsent(e.target.checked)}
           />
@@ -232,37 +246,43 @@ export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full
         <label className="flex gap-3 items-start cursor-pointer">
           <input
             type="checkbox"
-            className="mt-1 h-4 w-4 rounded border-white/30"
+            className="mt-1 h-4 w-4 rounded border-[var(--gl-border-strong)]"
             checked={surveyConsent}
             onChange={(e) => setSurveyConsent(e.target.checked)}
           />
           <span>Email me a short feedback survey when my 24h access ends.</span>
         </label>
-        <p className="text-xs text-white/50">
+        <p className="text-xs text-[var(--gl-text-muted)]">
           Both optional and unchecked by default. Forecasts are analytical outputs, not guarantees.{' '}
-          <Link href="/privacy/statstrike" className="underline hover:text-white">
+          <Link
+            href="/privacy/statstrike"
+            className="font-medium text-[var(--gl-accent)] underline-offset-2 hover:underline"
+          >
             Privacy
           </Link>{' '}
           ·{' '}
-          <Link href="/terms/statstrike" className="underline hover:text-white">
+          <Link
+            href="/terms/statstrike"
+            className="font-medium text-[var(--gl-accent)] underline-offset-2 hover:underline"
+          >
             Terms
           </Link>
         </p>
       </div>
 
       {configured === false ? (
-        <p className="text-sm text-amber-200/90">
+        <p className="text-sm text-[var(--gl-warn)]">
           Checkout is almost ready — Stripe keys are still being connected on this environment.
         </p>
       ) : null}
 
-      {error ? <p className="text-sm text-red-300">{error}</p> : null}
+      {error ? <p className="text-sm text-[var(--gl-danger)]">{error}</p> : null}
 
       <button
         type="button"
         disabled={busy || configured === false}
         onClick={() => void startCheckout()}
-        className="w-full rounded-xl bg-amber-300 px-4 py-3 text-sm font-bold text-black hover:bg-amber-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full rounded-xl bg-[var(--gl-accent)] px-4 py-3 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {busy ? 'Starting checkout…' : `Get 24-Hour Access — £${amount}`}
       </button>

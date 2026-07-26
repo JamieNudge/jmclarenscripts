@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
+import { GoalLabV2SubpageShell } from '@/components/goallab/v2/GoalLabV2SubpageShell';
+import { HubFootballLink } from '@/components/hub/HubFootballLink';
 import { passCreatePath } from '@/lib/statstrike/pass-constants';
 
 export const metadata: Metadata = {
@@ -9,27 +10,24 @@ export const metadata: Metadata = {
 
 export default function StatStrikePassCancelledPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-[#111827] to-[#1f2937] text-white">
-      <div className="max-w-xl mx-auto px-4 py-12 md:py-16 space-y-6">
-        <h1 className="text-3xl font-bold">Checkout cancelled</h1>
-        <p className="text-sm text-white/80 leading-relaxed">
-          You have not been charged and no access changes were made.
-        </p>
-        <div className="flex flex-wrap gap-3">
-          <Link
-            href={passCreatePath()}
-            className="inline-flex rounded-xl bg-amber-300 px-4 py-2.5 text-sm font-bold text-black hover:bg-amber-200"
-          >
-            Return to Create Pass
-          </Link>
-          <Link
-            href="/"
-            className="inline-flex rounded-xl border border-white/20 px-4 py-2.5 text-sm font-semibold text-white hover:bg-white/5"
-          >
-            Return to GoalLab
-          </Link>
-        </div>
+    <GoalLabV2SubpageShell
+      title="Checkout cancelled"
+      description="You have not been charged and no access changes were made."
+    >
+      <div className="flex flex-wrap gap-3">
+        <HubFootballLink
+          href={passCreatePath()}
+          className="inline-flex items-center justify-center rounded-xl bg-[var(--gl-accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90"
+        >
+          Return to Create Pass
+        </HubFootballLink>
+        <HubFootballLink
+          href="/"
+          className="inline-flex items-center justify-center rounded-xl border border-[var(--gl-border-strong)] bg-[var(--gl-surface)] px-4 py-2.5 text-sm font-semibold text-[var(--gl-text)] transition-colors hover:bg-[var(--gl-elevated)]"
+        >
+          Return to GoalLab
+        </HubFootballLink>
       </div>
-    </main>
+    </GoalLabV2SubpageShell>
   );
 }
