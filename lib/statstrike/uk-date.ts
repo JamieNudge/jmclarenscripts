@@ -51,3 +51,23 @@ export function resolveFixtureDetailDateKey(searchDate: string | null | undefine
   if (searchDate && /^\d{4}-\d{2}-\d{2}$/.test(searchDate)) return searchDate;
   return ukSelectionDateKey();
 }
+
+/** Calendar-day difference between two `yyyy-MM-dd` keys (target − today). */
+export function ukSelectionDayOffsetBetween(targetKey: string, todayKey: string): number | null {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(targetKey) || !/^\d{4}-\d{2}-\d{2}$/.test(todayKey)) {
+    return null;
+  }
+  const [ty, tm, td] = targetKey.split('-').map(Number);
+  const [oy, om, od] = todayKey.split('-').map(Number);
+  const target = Date.UTC(ty, tm - 1, td, 12, 0, 0);
+  const origin = Date.UTC(oy, om - 1, od, 12, 0, 0);
+  return Math.round((target - origin) / 86_400_000);
+}
+
+/** StatStrike board day-nav window: 7 days back, 2 days forward. */
+export const STATSTRIKE_DAY_NAV_MIN_OFFSET = -7;
+export const STATSTRIKE_DAY_NAV_MAX_OFFSET = 2;
+
+export function clampStatStrikeDayOffset(offset: number): number {
+  return Math.max(STATSTRIKE_DAY_NAV_MIN_OFFSET, Math.min(STATSTRIKE_DAY_NAV_MAX_OFFSET, offset));
+}

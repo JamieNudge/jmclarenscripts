@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { onValue, ref } from 'firebase/database';
 import Link from 'next/link';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { GoalLabV2FixtureCard } from '@/components/goallab/v2/GoalLabV2FixtureCard';
 import { GOAL_LAB_V2_HOME_PATH } from '@/components/goallab/v2/paths';
 import { HubFootballLink } from '@/components/hub/HubFootballLink';
@@ -20,15 +21,62 @@ import { statStrikeRtdbPathsFromEnv } from '@/lib/best-picks-firebase';
 import { getFirebaseRealtimeDb, isFirebaseClientConfigured } from '@/lib/firebase-client';
 import { freeForecastFixtureIds } from '@/lib/statstrike/forecasts-teaser';
 import { passCreatePath } from '@/lib/statstrike/pass-constants';
+import {
+  STATSTRIKE_DAY_NAV_MAX_OFFSET,
+  STATSTRIKE_DAY_NAV_MIN_OFFSET,
+  clampStatStrikeDayOffset,
+  ukSelectionDateKeyOffset,
+  ukSelectionDayOffsetBetween,
+} from '@/lib/statstrike/uk-date';
 
 const statStrikeAppStoreUrl = apps.find((a) => a.id === 'stat-strike')?.appStoreUrl;
 
+function dayLabel(dayOffset: number, dateKey: string): string {
+  if (dayOffset === 0) return 'Today';
+  if (dayOffset === -1) return 'Yesterday';
+  if (dayOffset === 1) return 'Tomorrow';
+  return dateKey;
+}
+
 /**
  * GoalLab Forecasts board — full day of compact fixture + goal-band cells.
- * No detail-route navigation; deeper tools live in StatStrike.
+ * Day nav mirrors StatStrike (−7 … +2). No detail-route navigation; deeper tools live in StatStrike.
  */
-export function GoalLabV2FixturesList() {
-  const dateKey = useBestPicksLondonDateKey();
+function GoalLabV2FixturesListInner() {
+  const todayKey = useBestPicksLondonDateKey();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const [dayOffset, setDayOffset] = useState(0);
+
+  useEffect(() => {
+    const raw = searchParams.get('date')?.trim() || '';
+    if (!raw) {
+      setDayOffset(0);
+      return;
+    }
+    const offset = ukSelectionDayOffsetBetween(raw, todayKey);
+    if (offset == null) return;
+    setDayOffset(clampStatStrikeDayOffset(offset));
+  }, [searchParams, todayKey]);
+
+  const dateKey = useMemo(() => ukSelectionDateKeyOffset(dayOffset), [dayOffset]);
+
+  const goToOffset = useCallback(
+    (next: number) => {
+      const clamped = clampStatStrikeDayOffset(next);
+      setDayOffset(clamped);
+      const key = ukSelectionDateKeyOffset(clamped);
+      if (clamped === 0) {
+        router.replace(pathname, { scroll: false });
+      } else {
+        router.replace(`${pathname}?date=${encodeURIComponent(key)}`, { scroll: false });
+      }
+    },
+    [pathname, router],
+  );
+
   const [exportVal, setExportVal] = useState<unknown>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -78,7 +126,9 @@ export function GoalLabV2FixturesList() {
   const groups = useMemo(() => groupFixturesByLeague(fixtures), [fixtures]);
   const totalCount = fixtures.length;
 
-  const gateActive = forecastsBlur && supporterPassSalesEnabled && !pass.unlocked;
+  /** Today stays behind the pass teaser; prior/future days are open so visitors can judge the track record. */
+  const gateActive =
+    dayOffset === 0 && forecastsBlur && supporterPassSalesEnabled && !pass.unlocked;
   const freeIds = useMemo(
     () => (gateActive ? freeForecastFixtureIds(fixtures) : new Set<string>()),
     [gateActive, fixtures],
@@ -102,6 +152,8 @@ export function GoalLabV2FixturesList() {
     [fixtures, freeIds, groups, hasLockedFixtures],
   );
 
+  const selectionLabel = dayLabel(dayOffset, dateKey);
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 md:px-6 md:py-14 space-y-8">
       <div>
@@ -116,7 +168,9 @@ export function GoalLabV2FixturesList() {
       <header className="space-y-2 max-w-2xl">
         <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-[var(--gl-text)]">Forecasts</h1>
         <p className="text-base text-[var(--gl-text-soft)] leading-relaxed">
-          Day <span className="tabular-nums text-[var(--gl-accent)]">{dateKey}</span> — fixture and
+          <span className="font-medium text-[var(--gl-text)]">{selectionLabel}</span>
+          {' · '}
+          <span className="tabular-nums text-[var(--gl-accent)]">{dateKey}</span> — fixture and
           goal-band forecasts for the day. Deeper boards and track record live in StatStrike.
         </p>
         {statStrikeAppStoreUrl ? (
@@ -126,6 +180,40 @@ export function GoalLabV2FixturesList() {
           </p>
         ) : null}
       </header>
+
+      <div className="flex items-center justify-between gap-2 max-w-xl">
+        <button
+          type="button"
+          className="rounded-xl border border-[var(--gl-border-strong)] bg-[var(--gl-elevated)] px-3 py-2 text-xs font-semibold text-[var(--gl-text-soft)] transition-colors hover:text-[var(--gl-text)] disabled:opacity-40"
+          disabled={dayOffset <= STATSTRIKE_DAY_NAV_MIN_OFFSET}
+          onClick={() => goToOffset(dayOffset - 1)}
+        >
+          ← Prev
+        </button>
+        <div className="text-center min-w-0">
+          <p className="text-sm font-semibold text-[var(--gl-text)]">{selectionLabel}</p>
+          <p className="text-[11px] tabular-nums text-[var(--gl-text-muted)]">{dateKey}</p>
+        </div>
+        <div className="flex gap-1.5 shrink-0">
+          {dayOffset !== 0 ? (
+            <button
+              type="button"
+              className="rounded-xl border border-[var(--gl-border-strong)] bg-[var(--gl-elevated)] px-2.5 py-2 text-xs font-semibold text-[var(--gl-accent)]"
+              onClick={() => goToOffset(0)}
+            >
+              Today
+            </button>
+          ) : null}
+          <button
+            type="button"
+            className="rounded-xl border border-[var(--gl-border-strong)] bg-[var(--gl-elevated)] px-3 py-2 text-xs font-semibold text-[var(--gl-text-soft)] transition-colors hover:text-[var(--gl-text)] disabled:opacity-40"
+            disabled={dayOffset >= STATSTRIKE_DAY_NAV_MAX_OFFSET}
+            onClick={() => goToOffset(dayOffset + 1)}
+          >
+            Next →
+          </button>
+        </div>
+      </div>
 
       {hasLockedFixtures ? (
         <section className="space-y-4" aria-labelledby="free-forecast-preview">
@@ -185,7 +273,7 @@ export function GoalLabV2FixturesList() {
             {hasLockedFixtures ? (
               <div className="border-t border-[var(--gl-border)] pt-8">
                 <h2 className="text-xl font-semibold tracking-tight text-[var(--gl-text)]">
-                  More fixtures today
+                  More fixtures this day
                 </h2>
                 <p className="mt-1 text-sm text-[var(--gl-text-soft)]">
                   Unlock the forecast bands below with a supporter pass.
@@ -221,5 +309,19 @@ export function GoalLabV2FixturesList() {
         </div>
       ) : null}
     </div>
+  );
+}
+
+export function GoalLabV2FixturesList() {
+  return (
+    <Suspense
+      fallback={
+        <div className="mx-auto max-w-6xl px-4 py-10 md:px-6 md:py-14">
+          <p className="text-sm text-[var(--gl-text-muted)]">Loading fixtures…</p>
+        </div>
+      }
+    >
+      <GoalLabV2FixturesListInner />
+    </Suspense>
   );
 }
