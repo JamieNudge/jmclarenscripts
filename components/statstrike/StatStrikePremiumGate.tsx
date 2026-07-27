@@ -19,8 +19,8 @@ type Props = {
 /** Points visitors at the 24h Create Pass page (App Store still available as secondary). */
 export function StatStrikePremiumGate({
   open,
-  title = 'Get 24h access',
-  body = 'Unlock the full StatStrike web board plus Your Picks and My Record on this browser for 24 hours.',
+  title = 'Get access',
+  body = 'Unlock the full StatStrike web board plus Your Picks and My Record on this browser for 24 hours or 7 days.',
   onClose,
 }: Props) {
   const { supporterPassSalesEnabled } = useStatStrikeWebBlur();
@@ -29,7 +29,7 @@ export function StatStrikePremiumGate({
   const salesTitle = supporterPassSalesEnabled ? title : 'StatStrike on web';
   const salesBody = supporterPassSalesEnabled
     ? body
-    : '24-hour web pass purchases are temporarily unavailable. You can still get StatStrike on the App Store, or check back here soon.';
+    : 'Supporter Pass purchases are temporarily unavailable. You can still get StatStrike on the App Store, or check back here soon.';
 
   return (
     <div
@@ -63,7 +63,7 @@ export function StatStrikePremiumGate({
               className="inline-flex items-center justify-center rounded-xl bg-amber-300 px-4 py-2.5 text-sm font-bold text-black hover:bg-amber-200"
               onClick={onClose}
             >
-              Get 24h access
+              Get access
             </Link>
           ) : null}
           {appStoreUrl ? (

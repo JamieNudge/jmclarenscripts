@@ -1,5 +1,11 @@
 import nodemailer from 'nodemailer';
-import { passCreatePath, statStrikePublicOrigin } from '@/lib/statstrike/pass';
+import {
+  durationFromPurchaseType,
+  passCreatePath,
+  passDurationLabel,
+  statStrikePublicOrigin,
+  type StatStrikePassPurchaseType,
+} from '@/lib/statstrike/pass';
 
 function smtpCreds(): { user: string; pass: string; from: string } | null {
   const user = process.env.GMAIL_SMTP_USER?.trim();
@@ -30,11 +36,15 @@ export async function sendStatStrikePassWelcomeEmail(input: {
   amountGbp: number;
   expiresAt: string;
   marketingConsent: boolean;
+  purchaseType?: StatStrikePassPurchaseType | string | null;
+  durationHours?: number | null;
 }): Promise<boolean> {
   const origin = statStrikePublicOrigin();
   const board = `${origin}/statstrike`;
   const support = `${origin}${passCreatePath()}`;
   const expiresLocal = new Date(input.expiresAt).toUTCString();
+  const duration = durationFromPurchaseType(input.purchaseType);
+  const label = passDurationLabel(duration);
 
   const marketingLine = input.marketingConsent
     ? 'You’re also on the GoalLab / StatStrike updates list (you can unsubscribe anytime by emailing us).'
@@ -43,13 +53,13 @@ export async function sendStatStrikePassWelcomeEmail(input: {
   const text = [
     'Thanks for supporting GoalLab.',
     '',
-    `Your StatStrike 24-hour web pass (£${input.amountGbp}) is ready.`,
+    `Your StatStrike ${label} web pass (£${input.amountGbp}) is ready.`,
     `Access expires: ${expiresLocal}`,
     '',
     `Open the board: ${board}`,
     `If the board is still locked in this browser, open ${support}/success after checkout or contact support.`,
     '',
-    'Included: full board + Your Picks / My Record on this device for 24 hours.',
+    `Included: full board + Your Picks / My Record on this device for the ${label} period.`,
     '',
     marketingLine,
     '',
@@ -59,7 +69,7 @@ export async function sendStatStrikePassWelcomeEmail(input: {
 
   return sendMail({
     to: input.to,
-    subject: 'Your StatStrike 24h pass',
+    subject: duration === '7d' ? 'Your StatStrike 7-day pass' : 'Your StatStrike 24h pass',
     text,
   });
 }
@@ -72,7 +82,7 @@ export async function sendStatStrikePassSurveyEmail(input: {
   const feedback = `${origin}/support/statstrike?survey=1&pass=${encodeURIComponent(input.passId)}`;
 
   const text = [
-    'Your StatStrike 24-hour web pass has ended.',
+    'Your StatStrike supporter pass has ended.',
     '',
     'If you have a minute, we’d love a short note on what worked and what didn’t:',
     feedback,

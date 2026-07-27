@@ -4,10 +4,13 @@ import type Stripe from 'stripe';
 import {
   STATSTRIKE_PASS_CONSENT_TEXT_VERSION,
   amountGbpToMinor,
+  durationFromPurchaseType,
   hashPassAccessToken,
-  isStatStrikePassAmountGbp,
+  isValidPassPurchase,
   mintPassAccessToken,
   passExpiresAtFrom,
+  passHoursFor,
+  purchaseTypeForDuration,
   type StatStrikePassRecord,
 } from '@/lib/statstrike/pass';
 import {
@@ -32,7 +35,12 @@ async function fulfilCheckoutSession(
 ): Promise<{ created: boolean; passId: string | null; ignored?: string }> {
   const meta = parseCheckoutSessionMetadata(session);
 
-  if (meta.purchaseType && meta.purchaseType !== 'supporter_pass_24h') {
+  const purchaseType = meta.purchaseType;
+  if (
+    purchaseType &&
+    purchaseType !== 'supporter_pass_24h' &&
+    purchaseType !== 'supporter_pass_7d'
+  ) {
     return { created: false, passId: null, ignored: 'other_purchase_type' };
   }
   if (session.currency && session.currency.toLowerCase() !== 'gbp') {
@@ -42,14 +50,24 @@ async function fulfilCheckoutSession(
     return { created: false, passId: null, ignored: 'not_paid' };
   }
 
-  const amountGbp = isStatStrikePassAmountGbp(meta.amountGbp ?? -1)
-    ? (meta.amountGbp as number)
-    : session.amount_total != null
-      ? session.amount_total / 100
-      : 1;
-  if (!isStatStrikePassAmountGbp(amountGbp)) {
+  const duration =
+    meta.duration ??
+    (purchaseType ? durationFromPurchaseType(purchaseType) : '24h');
+  const amountGbp =
+    meta.amountGbp != null && Number.isFinite(meta.amountGbp)
+      ? meta.amountGbp
+      : session.amount_total != null
+        ? session.amount_total / 100
+        : NaN;
+  if (!isValidPassPurchase(duration, amountGbp)) {
     return { created: false, passId: null, ignored: 'invalid_amount' };
   }
+
+  const durationHours =
+    meta.durationHours && Number.isFinite(meta.durationHours)
+      ? meta.durationHours
+      : passHoursFor(duration);
+  const resolvedPurchaseType = purchaseTypeForDuration(duration);
 
   const createdAt = new Date().toISOString();
   const rawToken = mintPassAccessToken();
@@ -70,9 +88,10 @@ async function fulfilCheckoutSession(
     amountGbp,
     amountMinor: amountGbpToMinor(amountGbp),
     currency: 'gbp',
-    purchaseType: 'supporter_pass_24h',
+    purchaseType: resolvedPurchaseType,
+    durationHours,
     createdAt,
-    expiresAt: passExpiresAtFrom(createdAt),
+    expiresAt: passExpiresAtFrom(createdAt, durationHours),
     email: session.customer_details?.email || session.customer_email || null,
     marketingConsent: meta.marketingConsent,
     surveyConsent: meta.surveyConsent,
@@ -96,6 +115,8 @@ async function fulfilCheckoutSession(
         amountGbp: pass.amountGbp,
         expiresAt: pass.expiresAt,
         marketingConsent: pass.marketingConsent,
+        purchaseType: pass.purchaseType,
+        durationHours: pass.durationHours,
       });
       if (sent) await markWelcomeEmailSent(pass.passId, new Date().toISOString());
     } catch (e) {
@@ -106,7 +127,7 @@ async function fulfilCheckoutSession(
   return { created: result.created, passId: result.pass.passId };
 }
 
-/** Stripe signed webhook — checkout.session.completed mints a 24h pass. */
+/** Stripe signed webhook — checkout.session.completed mints a 24h or 7d pass. */
 export async function POST(req: NextRequest) {
   const rawBody = await req.text();
   const signature = req.headers.get('stripe-signature');

@@ -152,11 +152,11 @@ export default function StatStrikePrivacySupportPage() {
             StatStrike does not add any additional tracking or analytics to those services.
           </p>
 
-          <h3 className="text-xl font-semibold mt-6">4a. StatStrike Web — 24h Supporter Pass (Stripe)</h3>
+          <h3 className="text-xl font-semibold mt-6">4a. StatStrike Web — Supporter Pass (Stripe)</h3>
           <p>
-            The browser version at thegoallab.net may offer a one-time 24-hour Supporter Pass
-            processed by <span className="font-semibold">Stripe</span>. When you create a pass we may
-            store: Checkout Session identifiers, amount, pass expiry, an access token hash (not the
+            The browser version at thegoallab.net may offer a one-time Supporter Pass (24 hours or 7
+            days) processed by <span className="font-semibold">Stripe</span>. When you create a pass we may
+            store: Checkout Session identifiers, amount, duration, pass expiry, an access token hash (not the
             raw token), optional email, and consent choices you make on the Create Pass page.
           </p>
           <ul className="list-disc list-inside space-y-1 ml-4">

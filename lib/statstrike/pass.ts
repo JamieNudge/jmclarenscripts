@@ -5,11 +5,23 @@ export {
   STATSTRIKE_PASS_COOKIE,
   STATSTRIKE_PASS_CONSENT_TEXT_VERSION,
   STATSTRIKE_PASS_AMOUNTS_GBP,
+  STATSTRIKE_PASS_AMOUNTS_BY_DURATION,
   STATSTRIKE_PASS_HOURS,
+  STATSTRIKE_PASS_HOURS_BY_DURATION,
+  STATSTRIKE_PASS_DURATIONS,
   isStatStrikePassAmountGbp,
+  isStatStrikePassDuration,
+  isValidPassPurchase,
+  passHoursFor,
+  passAmountsFor,
+  purchaseTypeForDuration,
+  durationFromPurchaseType,
+  passDurationLabel,
   parseConsentFlag,
   passCreatePath,
   type StatStrikePassAmountGbp,
+  type StatStrikePassDuration,
+  type StatStrikePassPurchaseType,
 } from '@/lib/statstrike/pass-constants';
 
 export type StatStrikePassRecord = {
@@ -23,7 +35,9 @@ export type StatStrikePassRecord = {
   amountGbp: number;
   amountMinor: number;
   currency: 'gbp';
-  purchaseType: 'supporter_pass_24h';
+  purchaseType: 'supporter_pass_24h' | 'supporter_pass_7d';
+  /** Hours of entitlement granted by this purchase (24 or 168). */
+  durationHours?: number;
   createdAt: string;
   expiresAt: string;
   email?: string | null;
@@ -56,24 +70,26 @@ export function passTokenMatches(token: string, tokenHash: string): boolean {
   return timingSafeEqual(a, b);
 }
 
-export function passExpiresAtFrom(createdAtIso: string, hours = STATSTRIKE_PASS_HOURS): string {
+export function passExpiresAtFrom(createdAtIso: string, hours: number = STATSTRIKE_PASS_HOURS): string {
   const ms = Date.parse(createdAtIso);
   const base = Number.isFinite(ms) ? ms : Date.now();
-  return new Date(base + hours * 60 * 60 * 1000).toISOString();
+  const safeHours = Number.isFinite(hours) && hours > 0 ? hours : STATSTRIKE_PASS_HOURS;
+  return new Date(base + safeHours * 60 * 60 * 1000).toISOString();
 }
 
 /**
  * Repeat purchase stacking:
- * new_start = max(now, latest active expiry); new_expiry = new_start + 24h
+ * new_start = max(now, latest active expiry); new_expiry = new_start + purchased hours
  */
 export function stackedPassExpiresAt(
   existingExpiresAt: string | null | undefined,
   nowMs = Date.now(),
-  hours = STATSTRIKE_PASS_HOURS,
+  hours: number = STATSTRIKE_PASS_HOURS,
 ): string {
   const existingMs = existingExpiresAt ? Date.parse(existingExpiresAt) : NaN;
   const start = Number.isFinite(existingMs) && existingMs > nowMs ? existingMs : nowMs;
-  return new Date(start + hours * 60 * 60 * 1000).toISOString();
+  const safeHours = Number.isFinite(hours) && hours > 0 ? hours : STATSTRIKE_PASS_HOURS;
+  return new Date(start + safeHours * 60 * 60 * 1000).toISOString();
 }
 
 export function isPassActive(pass: Pick<StatStrikePassRecord, 'expiresAt'>, now = Date.now()): boolean {

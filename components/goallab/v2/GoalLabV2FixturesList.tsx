@@ -140,7 +140,7 @@ export function GoalLabV2FixturesList() {
               <p className="mt-1 text-sm text-[var(--gl-text-soft)] leading-relaxed">
                 Showing <span className="font-semibold tabular-nums">{freeCount}</span> of{' '}
                 <span className="font-semibold tabular-nums">{totalCount}</span> forecasts. Unlock
-                the full day for 24 hours — from £1.
+                the full day with a supporter pass — from £1.
               </p>
             </div>
             <Link
@@ -188,7 +188,7 @@ export function GoalLabV2FixturesList() {
                   More fixtures today
                 </h2>
                 <p className="mt-1 text-sm text-[var(--gl-text-soft)]">
-                  Unlock the forecast bands below with a 24-hour pass.
+                  Unlock the forecast bands below with a supporter pass.
                 </p>
               </div>
             ) : null}

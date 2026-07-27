@@ -124,7 +124,7 @@ export function GoalLabV2FixtureCard({
 
       {locked ? (
         <p className="mt-4 inline-flex w-fit items-center gap-1.5 rounded-lg border border-[var(--gl-border)] bg-[var(--gl-surface)] px-2.5 py-1 text-xs font-semibold text-[var(--gl-text-muted)]">
-          <span aria-hidden>🔒</span> Forecast in 24h pass
+          <span aria-hidden>🔒</span> Forecast in pass
         </p>
       ) : forecast.primary ? (
         <p className="mt-4 text-sm font-semibold text-[var(--gl-accent)]">{forecast.primary}</p>

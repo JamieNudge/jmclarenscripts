@@ -4,13 +4,16 @@ import {
   STATSTRIKE_PASS_CONSENT_TEXT_VERSION,
   amountGbpToMinor,
   hashPassAccessToken,
-  isStatStrikePassAmountGbp,
+  isValidPassPurchase,
   mintPassAccessToken,
   passExpiresAtFrom,
+  passHoursFor,
+  purchaseTypeForDuration,
+  type StatStrikePassDuration,
   type StatStrikePassRecord,
 } from '@/lib/statstrike/pass';
 import { createPassRecord } from '@/lib/statstrike/pass-store';
-import { parseConsentFlag } from '@/lib/statstrike/pass-constants';
+import { isStatStrikePassDuration, parseConsentFlag } from '@/lib/statstrike/pass-constants';
 import { jsonNoStore } from '@/lib/statstrike/pass-session';
 
 export const dynamic = 'force-dynamic';
@@ -43,8 +46,17 @@ export async function POST(req: NextRequest) {
     unknown
   >;
 
+  const durationRaw = typeof o.duration === 'string' ? o.duration.trim() : '24h';
+  const duration: StatStrikePassDuration = isStatStrikePassDuration(durationRaw)
+    ? durationRaw
+    : '24h';
   const amountRaw = typeof o.amountGbp === 'number' ? o.amountGbp : Number(o.amountGbp ?? 1);
-  const amountGbp = isStatStrikePassAmountGbp(amountRaw) ? amountRaw : 1;
+  const amountGbp = isValidPassPurchase(duration, amountRaw)
+    ? amountRaw
+    : duration === '7d'
+      ? 5
+      : 1;
+  const durationHours = passHoursFor(duration);
   const createdAt = new Date().toISOString();
   const rawToken = mintPassAccessToken();
   const passId = `pass_test_${randomBytes(8).toString('hex')}`;
@@ -60,9 +72,10 @@ export async function POST(req: NextRequest) {
     amountGbp,
     amountMinor: amountGbpToMinor(amountGbp),
     currency: 'gbp',
-    purchaseType: 'supporter_pass_24h',
+    purchaseType: purchaseTypeForDuration(duration),
+    durationHours,
     createdAt,
-    expiresAt: passExpiresAtFrom(createdAt),
+    expiresAt: passExpiresAtFrom(createdAt, durationHours),
     email: typeof o.email === 'string' ? o.email.trim() : null,
     marketingConsent: parseConsentFlag(o.marketingConsent),
     surveyConsent: parseConsentFlag(o.surveyConsent),
@@ -81,6 +94,7 @@ export async function POST(req: NextRequest) {
     passId,
     claimKey,
     expiresAt: pass.expiresAt,
+    duration,
     claimUrl: `/support/statstrike/success?claim=${encodeURIComponent(claimKey)}`,
   });
 }

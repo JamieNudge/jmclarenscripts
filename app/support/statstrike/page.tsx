@@ -4,9 +4,9 @@ import { GoalLabV2SubpageShell } from '@/components/goallab/v2/GoalLabV2SubpageS
 import { StatStrikeSupportPassSection } from '@/components/statstrike/StatStrikeSupportPassSection';
 
 export const metadata: Metadata = {
-  title: 'StatStrike — Support & 24h Pass',
+  title: 'StatStrike — Support & Supporter Pass',
   description:
-    'Create a StatStrike 24-hour web pass (£1–£10), or get help with the StatStrike iOS and Android apps.',
+    'Create a StatStrike supporter pass (24 hours or 7 days), or get help with the StatStrike iOS and Android apps.',
 };
 
 export default function StatStrikeSupportPage() {
@@ -16,7 +16,7 @@ export default function StatStrikeSupportPage() {
       titleClassName="text-4xl md:text-5xl font-semibold tracking-tight text-[var(--gl-text)]"
       description={
         <>
-          StatStrike web · 24-hour pass · {new Date().getFullYear()}
+          StatStrike web · Supporter pass · {new Date().getFullYear()}
         </>
       }
       descriptionClassName="text-lg md:text-xl leading-relaxed text-[var(--gl-text)]"

@@ -35,7 +35,7 @@ export function StatStrikeHeroPanel() {
   return (
     <aside
       className="flex h-[min(18.5rem,52vh)] flex-col overflow-hidden rounded-2xl border border-black/10 bg-[#f7f9fb] shadow-[0_12px_40px_-20px_rgba(11,61,92,0.45)]"
-      aria-label={blur ? 'StatStrike web — unlock with a 24h pass' : 'StatStrike web board'}
+      aria-label={blur ? 'StatStrike web — unlock with a supporter pass' : 'StatStrike web board'}
     >
       <header className="flex shrink-0 items-center gap-2.5 border-b border-black/8 bg-white/90 px-3 py-2">
         <Image
@@ -51,7 +51,7 @@ export function StatStrikeHeroPanel() {
             StatStrike (Web Version)
           </p>
           <p className="text-[10px] font-medium text-black/80">
-            {pass.unlocked ? '24h pass' : blur ? 'Pass required' : 'Live board'}
+            {pass.unlocked ? 'Pass active' : blur ? 'Pass required' : 'Live board'}
             {!board.loading ? (
               <span className="tabular-nums"> · {board.todayKey}</span>
             ) : null}
@@ -63,7 +63,7 @@ export function StatStrikeHeroPanel() {
               href={passCreatePath()}
               className="rounded-full bg-amber-300 px-2.5 py-1 text-[10px] font-black text-black shadow-sm hover:bg-amber-200"
             >
-              Get 24h access
+              Get access
             </Link>
           ) : null}
           <Link
@@ -80,7 +80,7 @@ export function StatStrikeHeroPanel() {
           <ComingSoonBlur
             badge={null}
             ctaHref={supporterPassSalesEnabled ? passCreatePath() : undefined}
-            ctaLabel={supporterPassSalesEnabled ? 'Get 24h access' : undefined}
+            ctaLabel={supporterPassSalesEnabled ? 'Get access' : undefined}
             ctaInternal
             ctaPlacement="bottom"
             minHeightClassName="h-full"

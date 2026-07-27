@@ -37,29 +37,30 @@ export default function StatStrikeSettingsPage() {
           <h2 className="font-semibold text-black">About</h2>
           <p>
             Browser version of StatStrike. The pass gate is controlled from the GoalLab admin
-            page. A one-time 24h web pass unlocks the board and Your Picks / My Record on this
-            browser.
+            page. A one-time supporter pass (24 hours or 7 days) unlocks the board and Your Picks /
+            My Record on this browser.
           </p>
         </section>
 
         <section className="rounded-2xl border border-black/10 bg-white p-5 space-y-3">
-          <h2 className="font-semibold text-black">24h web pass</h2>
+          <h2 className="font-semibold text-black">Supporter pass</h2>
           {supporterPassSalesEnabled ? (
             <>
               <p className="text-black/80">
-                Create a pass (£1 / £3 / £5 / £10 — same entitlement) on the support page. Your Picks
-                and My Record stay on this device (IndexedDB) while the pass is active.
+                Create a pass on the support page: 24 hours (£1–£10) or 7 days (£5–£25). Same full
+                access; amounts are contribution tiers. Your Picks and My Record stay on this device
+                (IndexedDB) while the pass is active.
               </p>
               <Link
                 href={passCreatePath()}
                 className="inline-flex items-center justify-center rounded-xl bg-amber-300 px-4 py-2.5 text-sm font-bold text-black hover:bg-amber-200"
               >
-                Get 24h access
+                Get access
               </Link>
             </>
           ) : (
             <p className="text-black/80">
-              24-hour web pass purchases are temporarily unavailable. Support for the apps (and
+              Supporter Pass purchases are temporarily unavailable. Support for the apps (and
               existing passes) is still available on the support page.
             </p>
           )}

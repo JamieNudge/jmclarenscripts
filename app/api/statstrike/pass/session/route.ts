@@ -2,13 +2,17 @@ import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
 import {
   STATSTRIKE_PASS_COOKIE,
+  STATSTRIKE_PASS_HOURS,
+  durationFromPurchaseType,
   hashPassAccessToken,
   isPassActive,
+  passHoursFor,
   stackedPassExpiresAt,
 } from '@/lib/statstrike/pass';
 import {
   clearClaimToken,
   getClaimToken,
+  getPassById,
   getPassByTokenHash,
   markPassClaimed,
   updatePassExpiresAt,
@@ -26,7 +30,7 @@ export async function GET() {
 
 /**
  * POST: claim access after Stripe success redirect (`claim` key from Checkout metadata).
- * If this browser already has an active pass, stack +24h onto the remaining time.
+ * If this browser already has an active pass, stack the new purchase duration onto remaining time.
  */
 export async function POST(req: NextRequest) {
   let body: unknown;
@@ -55,6 +59,17 @@ export async function POST(req: NextRequest) {
     return jsonNoStore({ error: 'Pass not ready yet', retry: true }, { status: 409 });
   }
 
+  let claimedPass = null as Awaited<ReturnType<typeof getPassById>>;
+  try {
+    claimedPass = await getPassById(claim.passId);
+  } catch {
+    claimedPass = null;
+  }
+  const stackHours =
+    claimedPass?.durationHours && Number.isFinite(claimedPass.durationHours)
+      ? claimedPass.durationHours
+      : passHoursFor(durationFromPurchaseType(claimedPass?.purchaseType));
+
   const jar = cookies();
   const existingToken = jar.get(STATSTRIKE_PASS_COOKIE)?.value;
   let existingPass = null as Awaited<ReturnType<typeof getPassByTokenHash>>;
@@ -68,7 +83,7 @@ export async function POST(req: NextRequest) {
 
   // Stack onto an already-active browser pass.
   if (existingPass && existingToken && isPassActive(existingPass)) {
-    const extendedExpiresAt = stackedPassExpiresAt(existingPass.expiresAt);
+    const extendedExpiresAt = stackedPassExpiresAt(existingPass.expiresAt, Date.now(), stackHours);
     try {
       await updatePassExpiresAt(existingPass.passId, extendedExpiresAt);
       await markPassClaimed(claim.passId, new Date().toISOString());
@@ -92,7 +107,7 @@ export async function POST(req: NextRequest) {
 
   const expires = claim.expiresAt
     ? new Date(claim.expiresAt)
-    : new Date(Date.now() + 24 * 60 * 60 * 1000);
+    : new Date(Date.now() + (stackHours || STATSTRIKE_PASS_HOURS) * 60 * 60 * 1000);
   jar.set(STATSTRIKE_PASS_COOKIE, claim.token, passCookieOptions(expires));
 
   try {

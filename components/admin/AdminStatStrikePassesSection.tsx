@@ -9,6 +9,8 @@ type AdminPassEntry = {
   amountGbp: number;
   createdAt: string;
   expiresAt: string;
+  purchaseType?: string | null;
+  durationHours?: number | null;
   email?: string | null;
   marketingConsent: boolean;
   surveyConsent: boolean;
@@ -31,6 +33,12 @@ type SurveyEntry = {
   /** Legacy free-text responses. */
   message?: string;
 };
+
+function passDurationBadge(pass: AdminPassEntry): string {
+  if (pass.purchaseType === 'supporter_pass_7d' || pass.durationHours === 168) return '7d';
+  if (pass.durationHours === 24 || pass.purchaseType === 'supporter_pass_24h') return '24h';
+  return pass.durationHours ? `${pass.durationHours}h` : '24h';
+}
 
 function wouldBuyLabel(value?: string): string {
   if (value === 'yes') return 'Yes';
@@ -194,7 +202,7 @@ export function AdminStatStrikePassesSection({ adminKey }: { adminKey: string })
           <thead className="text-white/50">
             <tr className="border-b border-white/15">
               <th className="px-2 py-2">Created / pass</th>
-              <th className="px-2 py-2">Amount</th>
+              <th className="px-2 py-2">Amount / duration</th>
               <th className="px-2 py-2">Email</th>
               <th className="px-2 py-2">Consents</th>
               <th className="px-2 py-2">Expires</th>
@@ -209,7 +217,12 @@ export function AdminStatStrikePassesSection({ adminKey }: { adminKey: string })
                   <div>{formatDate(pass.createdAt)}</div>
                   <code className="text-[10px] text-white/45">{pass.passId}</code>
                 </td>
-                <td className="px-2 py-3">£{pass.amountGbp}</td>
+                <td className="px-2 py-3">
+                  <div>£{pass.amountGbp}</div>
+                  <div className="text-[10px] uppercase tracking-wide text-white/45">
+                    {passDurationBadge(pass)}
+                  </div>
+                </td>
                 <td className="max-w-[15rem] break-all px-2 py-3">
                   {pass.email || (pass.piiRedactedAt ? 'Redacted' : '—')}
                 </td>

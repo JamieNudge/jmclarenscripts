@@ -157,13 +157,13 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
       if (patch.supporterPassSalesEnabled !== undefined) {
         setStatus(
           patch.supporterPassSalesEnabled
-            ? `24h Supporter Pass sales ON — Stripe checkout available.${pathNote}`
-            : `24h Supporter Pass sales OFF — new checkouts blocked (existing passes still work).${pathNote}`,
+            ? `Supporter Pass sales ON — Stripe checkout available (24h + 7d).${pathNote}`
+            : `Supporter Pass sales OFF — new checkouts blocked (existing passes still work).${pathNote}`,
         );
       } else if (patch.forecastsBlur !== undefined) {
         setStatus(
           patch.forecastsBlur
-            ? `Forecasts pass gate ON — overflow forecasts redacted behind the 24h pass.${pathNote}`
+            ? `Forecasts pass gate ON — overflow forecasts redacted behind the supporter pass.${pathNote}`
             : `Forecasts pass gate OFF — full day visible to everyone.${pathNote}`,
         );
       } else if (patch.blur !== undefined) {
@@ -204,7 +204,7 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
 
       <ToggleRow
         label="StatStrike Web pass gate"
-        description="Hero panel + /statstrike blur overlay. Pass holders unlock; visitors see Get 24h access."
+        description="Hero panel + /statstrike blur overlay. Pass holders unlock; visitors see Get access."
         on={blur}
         loading={loading}
         canUse={canUse}
@@ -215,8 +215,8 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
       />
 
       <ToggleRow
-        label="24h Supporter Pass sales"
-        description="When OFF, Stripe checkout is blocked and purchase CTAs are hidden. Existing active passes still unlock."
+        label="Supporter Pass sales"
+        description="When OFF, Stripe checkout is blocked and purchase CTAs are hidden (24h and 7-day). Existing active passes still unlock."
         on={salesEnabled}
         loading={loading}
         canUse={canUse}
@@ -228,7 +228,7 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
 
       <ToggleRow
         label="Forecasts (/fixtures) pass gate"
-        description="When ON (and sales are ON), only the first few fixtures show forecasts; the rest of the day is redacted behind the 24h pass. Pass holders see everything."
+        description="When ON (and sales are ON), only the first few fixtures show forecasts; the rest of the day is redacted behind the supporter pass. Pass holders see everything."
         on={forecastsBlur}
         loading={loading}
         canUse={canUse}

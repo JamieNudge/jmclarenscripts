@@ -3,8 +3,10 @@ import { NextRequest } from 'next/server';
 import { getDatabase } from 'firebase-admin/database';
 import {
   STATSTRIKE_PASS_CONSENT_TEXT_VERSION,
-  isStatStrikePassAmountGbp,
+  isStatStrikePassDuration,
+  isValidPassPurchase,
   parseConsentFlag,
+  passAmountsFor,
 } from '@/lib/statstrike/pass';
 import { createStripePassCheckout, isStripePassConfigured } from '@/lib/statstrike/stripe';
 import { jsonNoStore } from '@/lib/statstrike/pass-session';
@@ -36,7 +38,7 @@ async function readSupporterPassSalesEnabled(): Promise<boolean> {
   }
 }
 
-/** POST: create Stripe Checkout Session for a 24h StatStrike Supporter Pass. */
+/** POST: create Stripe Checkout Session for a StatStrike Supporter Pass (24h or 7d). */
 export async function POST(req: NextRequest) {
   const salesEnabled = await readSupporterPassSalesEnabled();
 
@@ -65,7 +67,7 @@ export async function POST(req: NextRequest) {
   if (!salesEnabled) {
     return jsonNoStore(
       {
-        error: '24-hour Supporter Pass sales are temporarily unavailable.',
+        error: 'Supporter Pass sales are temporarily unavailable.',
         configured: true,
         salesEnabled: false,
       },
@@ -84,9 +86,20 @@ export async function POST(req: NextRequest) {
   }
   const o = body as Record<string, unknown>;
 
+  const durationRaw = typeof o.duration === 'string' ? o.duration.trim() : '24h';
+  const duration = isStatStrikePassDuration(durationRaw) ? durationRaw : null;
   const amountRaw = typeof o.amountGbp === 'number' ? o.amountGbp : Number(o.amountGbp);
-  if (!isStatStrikePassAmountGbp(amountRaw)) {
-    return jsonNoStore({ error: 'Choose £1, £3, £5, or £10.', salesEnabled: true }, { status: 400 });
+  if (!duration || !isValidPassPurchase(duration, amountRaw)) {
+    return jsonNoStore(
+      {
+        error:
+          duration === '7d'
+            ? 'Choose £5, £10, £15, or £25 for a 7-day pass.'
+            : 'Choose £1, £3, £5, or £10 for a 24-hour pass.',
+        salesEnabled: true,
+      },
+      { status: 400 },
+    );
   }
 
   const email =
@@ -105,6 +118,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const { url, checkoutSessionId } = await createStripePassCheckout({
+      duration,
       amountGbp: amountRaw,
       email,
       marketingConsent,
@@ -124,7 +138,11 @@ export async function GET() {
   return jsonNoStore({
     configured: isStripePassConfigured(),
     salesEnabled,
-    amountsGbp: [1, 3, 5, 10],
+    amountsGbp: passAmountsFor('24h'),
+    amountsByDuration: {
+      '24h': passAmountsFor('24h'),
+      '7d': passAmountsFor('7d'),
+    },
     consentTextVersion: STATSTRIKE_PASS_CONSENT_TEXT_VERSION,
     provider: 'stripe',
   });

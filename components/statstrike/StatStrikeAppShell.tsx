@@ -166,9 +166,9 @@ export function StatStrikeAppShell() {
             </h1>
             <p className="text-xs text-black/70">
               {pass.unlocked
-                ? '24h pass active'
+                ? 'Pass active'
                 : blur
-                  ? 'Unlock the full board with a 24h pass'
+                  ? 'Unlock the full board with a supporter pass'
                   : 'Browser preview · interactive'}
             </p>
           </div>
@@ -178,7 +178,7 @@ export function StatStrikeAppShell() {
                 href={passCreatePath()}
                 className="rounded-full bg-amber-300 px-2.5 py-1 text-[11px] font-black text-black"
               >
-                Get 24h access
+                Get access
               </Link>
             ) : null}
             <Link href="/statstrike/settings" className="text-black/75 hover:text-[#0b3d5c]">
@@ -226,7 +226,7 @@ export function StatStrikeAppShell() {
           <ComingSoonBlur
             badge={null}
             ctaHref={supporterPassSalesEnabled ? passCreatePath() : undefined}
-            ctaLabel={supporterPassSalesEnabled ? 'Get 24h access' : undefined}
+            ctaLabel={supporterPassSalesEnabled ? 'Get access' : undefined}
             ctaInternal
             ctaPlacement="bottom"
             minHeightClassName="min-h-[22rem]"

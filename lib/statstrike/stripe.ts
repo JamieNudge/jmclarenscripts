@@ -1,13 +1,17 @@
 import Stripe from 'stripe';
-import type { StatStrikePassAmountGbp } from '@/lib/statstrike/pass-constants';
+import type { StatStrikePassDuration } from '@/lib/statstrike/pass-constants';
 import {
   amountGbpToMinor,
-  isStatStrikePassAmountGbp,
+  isValidPassPurchase,
+  passDurationLabel,
+  passHoursFor,
+  purchaseTypeForDuration,
   statStrikePublicOrigin,
 } from '@/lib/statstrike/pass';
 
 export type StripePassCheckoutInput = {
-  amountGbp: StatStrikePassAmountGbp;
+  duration: StatStrikePassDuration;
+  amountGbp: number;
   email?: string;
   marketingConsent: boolean;
   surveyConsent: boolean;
@@ -23,9 +27,13 @@ function stripeWebhookSecret(): string | null {
   return process.env.STRIPE_WEBHOOK_SECRET?.trim() || null;
 }
 
-/** Optional pre-created Price IDs; otherwise Checkout uses price_data. */
-export function stripePriceIdForAmount(amountGbp: StatStrikePassAmountGbp): string | null {
-  const map: Record<StatStrikePassAmountGbp, string | undefined> = {
+/** Optional pre-created Price IDs for 24h tiers only; otherwise Checkout uses price_data. */
+export function stripePriceIdForAmount(
+  amountGbp: number,
+  duration: StatStrikePassDuration,
+): string | null {
+  if (duration !== '24h') return null;
+  const map: Record<number, string | undefined> = {
     1: process.env.STRIPE_PRICE_ID_1?.trim(),
     3: process.env.STRIPE_PRICE_ID_3?.trim(),
     5: process.env.STRIPE_PRICE_ID_5?.trim(),
@@ -57,28 +65,37 @@ export function constructStripeWebhookEvent(rawBody: string, signature: string |
 export async function createStripePassCheckout(
   input: StripePassCheckoutInput,
 ): Promise<{ url: string; checkoutSessionId: string }> {
-  if (!isStatStrikePassAmountGbp(input.amountGbp)) {
-    throw new Error('Invalid pass amount.');
+  if (!isValidPassPurchase(input.duration, input.amountGbp)) {
+    throw new Error('Invalid pass amount or duration.');
   }
 
   const stripe = getStripeClient();
   const origin = statStrikePublicOrigin();
   const successUrl = `${origin}/support/statstrike/success?claim=${encodeURIComponent(input.claimKey)}`;
   const cancelUrl = `${origin}/support/statstrike/cancelled`;
+  const durationHours = passHoursFor(input.duration);
+  const purchaseType = purchaseTypeForDuration(input.duration);
+  const durationLabel = passDurationLabel(input.duration);
+  const productLabel =
+    input.duration === '7d'
+      ? 'StatStrike Supporter Pass (7 days)'
+      : 'StatStrike Supporter Pass (24 hours)';
 
   const metadata: Record<string, string> = {
     claimKey: input.claimKey,
     amountGbp: String(input.amountGbp),
     amountMinor: String(amountGbpToMinor(input.amountGbp)),
+    duration: input.duration,
+    durationHours: String(durationHours),
     marketingConsent: input.marketingConsent ? '1' : '0',
     surveyConsent: input.surveyConsent ? '1' : '0',
     consentTextVersion: input.consentTextVersion,
-    purchase_type: 'supporter_pass_24h',
+    purchase_type: purchaseType,
     entitlement_type: 'statstrike_full_access',
-    product: 'statstrike_24h_pass',
+    product: input.duration === '7d' ? 'statstrike_7d_pass' : 'statstrike_24h_pass',
   };
 
-  const priceId = stripePriceIdForAmount(input.amountGbp);
+  const priceId = stripePriceIdForAmount(input.amountGbp, input.duration);
   const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = priceId
     ? [{ price: priceId, quantity: 1 }]
     : [
@@ -88,9 +105,8 @@ export async function createStripePassCheckout(
             currency: 'gbp',
             unit_amount: amountGbpToMinor(input.amountGbp),
             product_data: {
-              name: 'StatStrike Supporter Pass (24 hours)',
-              description:
-                'Full StatStrike web access for 24 hours. Every contribution amount unlocks the same access.',
+              name: productLabel,
+              description: `Full StatStrike web access for ${durationLabel.replace('-', ' ')}. Every contribution amount unlocks the same access.`,
             },
           },
         },
@@ -106,7 +122,6 @@ export async function createStripePassCheckout(
     payment_intent_data: {
       metadata,
     },
-    // Hosted Checkout; no browser Stripe.js required for redirect.
   });
 
   if (!session.url) {
@@ -119,6 +134,8 @@ export async function createStripePassCheckout(
 export function parseCheckoutSessionMetadata(session: Stripe.Checkout.Session): {
   claimKey: string | null;
   amountGbp: number | null;
+  duration: StatStrikePassDuration | null;
+  durationHours: number | null;
   marketingConsent: boolean;
   surveyConsent: boolean;
   consentTextVersion: string | null;
@@ -126,9 +143,20 @@ export function parseCheckoutSessionMetadata(session: Stripe.Checkout.Session): 
 } {
   const m = session.metadata ?? {};
   const amountRaw = m.amountGbp != null ? Number(m.amountGbp) : null;
+  const hoursRaw = m.durationHours != null ? Number(m.durationHours) : null;
+  const duration =
+    m.duration === '7d' || m.duration === '24h'
+      ? m.duration
+      : m.purchase_type === 'supporter_pass_7d'
+        ? '7d'
+        : m.purchase_type === 'supporter_pass_24h'
+          ? '24h'
+          : null;
   return {
     claimKey: typeof m.claimKey === 'string' && m.claimKey ? m.claimKey : null,
     amountGbp: amountRaw != null && Number.isFinite(amountRaw) ? amountRaw : null,
+    duration,
+    durationHours: hoursRaw != null && Number.isFinite(hoursRaw) ? hoursRaw : null,
     marketingConsent: m.marketingConsent === '1' || m.marketingConsent === 'true',
     surveyConsent: m.surveyConsent === '1' || m.surveyConsent === 'true',
     consentTextVersion: typeof m.consentTextVersion === 'string' ? m.consentTextVersion : null,
@@ -162,7 +190,7 @@ export async function ensureStatStrikePassWebhookEndpoint(targetUrl: string): Pr
   const created = await stripe.webhookEndpoints.create({
     url: targetUrl,
     enabled_events: PASS_WEBHOOK_EVENTS,
-    description: 'StatStrike 24h supporter pass',
+    description: 'StatStrike supporter pass (24h / 7d)',
   });
   return {
     id: created.id,

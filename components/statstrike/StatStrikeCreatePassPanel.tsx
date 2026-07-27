@@ -1,11 +1,12 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import {
-  STATSTRIKE_PASS_AMOUNTS_GBP,
   STATSTRIKE_PASS_CONSENT_TEXT_VERSION,
-  type StatStrikePassAmountGbp,
+  passAmountsFor,
+  passDurationLabel,
+  type StatStrikePassDuration,
 } from '@/lib/statstrike/pass-constants';
 import { useStatStrikePassSession } from '@/hooks/useStatStrikePassSession';
 
@@ -18,7 +19,9 @@ type Props = {
 
 export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full' }: Props) {
   const session = useStatStrikePassSession();
-  const [amount, setAmount] = useState<StatStrikePassAmountGbp>(3);
+  const [duration, setDuration] = useState<StatStrikePassDuration>('24h');
+  const amounts = useMemo(() => passAmountsFor(duration), [duration]);
+  const [amount, setAmount] = useState<number>(amounts[0] ?? 1);
   const [email, setEmail] = useState('');
   const [marketingConsent, setMarketingConsent] = useState(false);
   const [surveyConsent, setSurveyConsent] = useState(false);
@@ -27,6 +30,11 @@ export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [claimStatus, setClaimStatus] = useState<string | null>(null);
+
+  useEffect(() => {
+    const next = passAmountsFor(duration);
+    setAmount((prev) => (next.includes(prev as never) ? prev : next[0] ?? 1));
+  }, [duration]);
 
   useEffect(() => {
     let cancelled = false;
@@ -60,7 +68,7 @@ export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full
       const result = await session.claim(autoClaimKey);
       if (cancelled) return;
       if (result.ok) {
-        setClaimStatus('Supporter Pass active — full StatStrike access for 24 hours.');
+        setClaimStatus('Supporter Pass active — full StatStrike access unlocked.');
         await session.refresh();
         return;
       }
@@ -90,6 +98,7 @@ export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          duration,
           amountGbp: amount,
           email: email.trim() || undefined,
           marketingConsent,
@@ -115,7 +124,13 @@ export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full
     } finally {
       setBusy(false);
     }
-  }, [amount, email, marketingConsent, surveyConsent, configured]);
+  }, [duration, amount, email, marketingConsent, surveyConsent, configured]);
+
+  const durationLabel = passDurationLabel(duration);
+  const ctaLabel =
+    duration === '7d'
+      ? `Get 7-Day Access — £${amount}`
+      : `Get 24-Hour Access — £${amount}`;
 
   if (variant === 'status') {
     return (
@@ -164,8 +179,8 @@ export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full
           Support GoalLab
         </h2>
         <p className="mt-2 text-base text-[var(--gl-text)] leading-relaxed">
-          GoalLab is an independent football analytics project. Choose an amount to support its
-          continued development and receive full StatStrike access for 24 hours.
+          GoalLab is an independent football analytics project. Choose a duration and amount to
+          support its continued development and unlock full StatStrike access.
         </p>
       </div>
 
@@ -173,7 +188,7 @@ export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full
         <li>Every available forecast</li>
         <li>Search, filtering, and full browser board</li>
         <li>Your Picks / My Record on this browser</li>
-        <li>From £1 · One-time payment · No subscription</li>
+        <li>One-time payment · No subscription</li>
       </ul>
 
       {session.unlocked ? (
@@ -210,17 +225,47 @@ export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full
           role="status"
         >
           {salesEnabled === null
-            ? 'Checking whether 24-hour Supporter Pass purchases are available…'
-            : '24-hour Supporter Pass purchases are temporarily unavailable. App support below still works — email us if you need help with an existing pass.'}
+            ? 'Checking whether Supporter Pass purchases are available…'
+            : 'Supporter Pass purchases are temporarily unavailable. App support below still works — email us if you need help with an existing pass.'}
         </div>
       ) : (
         <>
           <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-[var(--gl-text-soft)] mb-2">
+              Duration
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {(
+                [
+                  { id: '24h' as const, label: '24 hours' },
+                  { id: '7d' as const, label: '7 days' },
+                ] as const
+              ).map((opt) => {
+                const selected = duration === opt.id;
+                return (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => setDuration(opt.id)}
+                    className={`rounded-xl px-4 py-2.5 text-base font-semibold transition-colors ${
+                      selected
+                        ? 'bg-[var(--gl-accent)] text-white shadow-sm'
+                        : 'border border-[var(--gl-border)] bg-[var(--gl-elevated)] text-[var(--gl-text)] hover:border-[var(--gl-border-strong)]'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-wide text-[var(--gl-text-soft)] mb-2">
               Amount
             </p>
             <div className="flex flex-wrap gap-2">
-              {STATSTRIKE_PASS_AMOUNTS_GBP.map((n) => (
+              {amounts.map((n) => (
                 <button
                   key={n}
                   type="button"
@@ -236,7 +281,8 @@ export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full
               ))}
             </div>
             <p className="mt-2 text-sm text-[var(--gl-text-soft)]">
-              Every amount grants the same 24-hour access. Access begins when payment is confirmed.
+              Every amount grants the same {durationLabel} access. Higher amounts are contribution
+              tiers. Access begins when payment is confirmed.
             </p>
           </div>
 
@@ -274,7 +320,7 @@ export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full
                 checked={surveyConsent}
                 onChange={(e) => setSurveyConsent(e.target.checked)}
               />
-              <span>Email me a short feedback survey when my 24h access ends.</span>
+              <span>Email me a short feedback survey when my pass ends.</span>
             </label>
             <p className="text-sm text-[var(--gl-text-soft)]">
               Both optional and unchecked by default. Forecasts are analytical outputs, not
@@ -309,7 +355,7 @@ export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full
             onClick={() => void startCheckout()}
             className="w-full rounded-xl bg-[var(--gl-accent)] px-4 py-3.5 text-base font-semibold text-white shadow-sm transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {busy ? 'Starting checkout…' : `Get 24-Hour Access — £${amount}`}
+            {busy ? 'Starting checkout…' : ctaLabel}
           </button>
         </>
       )}
