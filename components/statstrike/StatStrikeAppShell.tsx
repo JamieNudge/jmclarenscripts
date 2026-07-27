@@ -34,7 +34,7 @@ export function StatStrikeAppShell() {
   const [premiumOpen, setPremiumOpen] = useState(false);
   const history = useStatStrikeHistoryWindow(7, { enabled: tab === 'best' });
 
-  /** Pass holders bypass Coming Soon blur for this browser. */
+  /** Pass holders bypass the board gate on this browser. */
   const blur = adminBlur && !pass.unlocked;
 
   const dayGroups = useMemo(
@@ -168,7 +168,7 @@ export function StatStrikeAppShell() {
               {pass.unlocked
                 ? '24h pass active'
                 : blur
-                  ? 'Browser preview · coming soon'
+                  ? 'Unlock the full board with a 24h pass'
                   : 'Browser preview · interactive'}
             </p>
           </div>
@@ -224,7 +224,7 @@ export function StatStrikeAppShell() {
       <main className="mx-auto max-w-3xl px-4 py-6">
         {blur ? (
           <ComingSoonBlur
-            badge="Coming Soon!"
+            badge={null}
             ctaHref={supporterPassSalesEnabled ? passCreatePath() : undefined}
             ctaLabel={supporterPassSalesEnabled ? 'Get 24h access' : undefined}
             ctaInternal

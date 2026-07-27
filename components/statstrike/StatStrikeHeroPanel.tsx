@@ -11,8 +11,8 @@ import { passCreatePath } from '@/lib/statstrike/pass-constants';
 
 /**
  * GoalLab hero right cell — branded StatStrike live board.
- * Coming Soon blur is controlled live from admin (RTDB), not a hardcode.
- * Active 24h pass sessions bypass blur on this browser.
+ * Pass gate blur is controlled live from admin (RTDB).
+ * Active 24h pass sessions bypass the gate on this browser.
  */
 export function StatStrikeHeroPanel() {
   const board = useStatStrikeBoard();
@@ -35,7 +35,7 @@ export function StatStrikeHeroPanel() {
   return (
     <aside
       className="flex h-[min(18.5rem,52vh)] flex-col overflow-hidden rounded-2xl border border-black/10 bg-[#f7f9fb] shadow-[0_12px_40px_-20px_rgba(11,61,92,0.45)]"
-      aria-label={blur ? 'StatStrike web version coming soon' : 'StatStrike web board'}
+      aria-label={blur ? 'StatStrike web — unlock with a 24h pass' : 'StatStrike web board'}
     >
       <header className="flex shrink-0 items-center gap-2.5 border-b border-black/8 bg-white/90 px-3 py-2">
         <Image
@@ -51,7 +51,7 @@ export function StatStrikeHeroPanel() {
             StatStrike (Web Version)
           </p>
           <p className="text-[10px] font-medium text-black/80">
-            {pass.unlocked ? '24h pass' : blur ? 'Browser preview' : 'Live board'}
+            {pass.unlocked ? '24h pass' : blur ? 'Pass required' : 'Live board'}
             {!board.loading ? (
               <span className="tabular-nums"> · {board.todayKey}</span>
             ) : null}
@@ -78,7 +78,7 @@ export function StatStrikeHeroPanel() {
       <div className="min-h-0 flex-1 overflow-hidden">
         {blur ? (
           <ComingSoonBlur
-            badge="Coming Soon!"
+            badge={null}
             ctaHref={supporterPassSalesEnabled ? passCreatePath() : undefined}
             ctaLabel={supporterPassSalesEnabled ? 'Get 24h access' : undefined}
             ctaInternal

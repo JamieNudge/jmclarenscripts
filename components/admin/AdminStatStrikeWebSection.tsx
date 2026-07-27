@@ -169,8 +169,8 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
       } else if (patch.blur !== undefined) {
         setStatus(
           patch.blur
-            ? `StatStrike Coming Soon blur ON (hero + /statstrike).${pathNote}`
-            : `StatStrike Coming Soon blur OFF (interactive board).${pathNote}`,
+            ? `StatStrike pass gate ON (hero + /statstrike).${pathNote}`
+            : `StatStrike pass gate OFF (interactive board for everyone).${pathNote}`,
         );
       } else {
         setStatus(`Config saved.${pathNote}`);
@@ -203,13 +203,13 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
       )}
 
       <ToggleRow
-        label="StatStrike Web blur"
-        description="Hero panel + /statstrike Coming Soon overlay."
+        label="StatStrike Web pass gate"
+        description="Hero panel + /statstrike blur overlay. Pass holders unlock; visitors see Get 24h access."
         on={blur}
         loading={loading}
         canUse={canUse}
-        offLabel="Turn blur OFF"
-        onLabel="Turn blur ON"
+        offLabel="Turn gate OFF"
+        onLabel="Turn gate ON"
         onTurnOff={() => void save({ blur: false })}
         onTurnOn={() => void save({ blur: true })}
       />

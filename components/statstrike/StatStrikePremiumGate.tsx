@@ -20,7 +20,7 @@ type Props = {
 export function StatStrikePremiumGate({
   open,
   title = 'Get 24h access',
-  body = 'Unlock the full StatStrike web board (Coming Soon blur off) plus Your Picks and My Record on this browser for 24 hours.',
+  body = 'Unlock the full StatStrike web board plus Your Picks and My Record on this browser for 24 hours.',
   onClose,
 }: Props) {
   const { supporterPassSalesEnabled } = useStatStrikeWebBlur();

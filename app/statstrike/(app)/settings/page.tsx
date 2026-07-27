@@ -36,7 +36,7 @@ export default function StatStrikeSettingsPage() {
         <section className="rounded-2xl border border-black/10 bg-white p-5 space-y-2">
           <h2 className="font-semibold text-black">About</h2>
           <p>
-            Browser version of StatStrike. Coming Soon blur is controlled from the GoalLab admin
+            Browser version of StatStrike. The pass gate is controlled from the GoalLab admin
             page. A one-time 24h web pass unlocks the board and Your Picks / My Record on this
             browser.
           </p>

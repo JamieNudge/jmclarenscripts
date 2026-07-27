@@ -41,7 +41,7 @@ export async function sendStatStrikePassWelcomeEmail(input: {
     : 'You did not opt in to marketing updates — this email is only about your pass.';
 
   const text = [
-    'Thanks for supporting The Goal Lab.',
+    'Thanks for supporting GoalLab.',
     '',
     `Your StatStrike 24-hour web pass (£${input.amountGbp}) is ready.`,
     `Access expires: ${expiresLocal}`,
@@ -49,12 +49,12 @@ export async function sendStatStrikePassWelcomeEmail(input: {
     `Open the board: ${board}`,
     `If the board is still locked in this browser, open ${support}/success after checkout or contact support.`,
     '',
-    'Included: full board (Coming Soon blur off) + Your Picks / My Record on this device for 24 hours.',
+    'Included: full board + Your Picks / My Record on this device for 24 hours.',
     '',
     marketingLine,
     '',
     'Forecasts are informational, not gambling advice.',
-    '— The Goal Lab',
+    '— GoalLab',
   ].join('\n');
 
   return sendMail({
@@ -79,8 +79,8 @@ export async function sendStatStrikePassSurveyEmail(input: {
     '',
     'Or reply to this email — we read every message.',
     '',
-    'Thanks for supporting The Goal Lab.',
-    '— The Goal Lab',
+    'Thanks for supporting GoalLab.',
+    '— GoalLab',
   ].join('\n');
 
   return sendMail({
