@@ -66,8 +66,63 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
   const [updatedAt, setUpdatedAt] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [unlocking, setUnlocking] = useState(false);
 
   const canUse = adminKey.trim().length > 0;
+
+  const unlockThisBrowser = async () => {
+    if (!canUse) {
+      setStatus('Admin key required.');
+      return;
+    }
+    setUnlocking(true);
+    setStatus(null);
+    try {
+      const mintRes = await fetch('/api/admin/statstrike-pass-staff-mint', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${adminKey.trim()}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      const mintJson = (await mintRes.json()) as {
+        error?: string;
+        claimKey?: string;
+        expiresAt?: string;
+        passId?: string;
+      };
+      if (!mintRes.ok || !mintJson.claimKey) {
+        setStatus(mintJson.error || 'Staff mint failed');
+        return;
+      }
+
+      const claimRes = await fetch('/api/statstrike/pass/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ claimKey: mintJson.claimKey }),
+      });
+      const claimJson = (await claimRes.json()) as {
+        error?: string;
+        unlocked?: boolean;
+        expiresAt?: string;
+      };
+      if (!claimRes.ok || !claimJson.unlocked) {
+        setStatus(
+          claimJson.error ||
+            `Minted ${mintJson.passId} but claim failed — open /support/statstrike/success?claim=…`,
+        );
+        return;
+      }
+      const until = claimJson.expiresAt || mintJson.expiresAt || '7 days';
+      setStatus(
+        `This browser unlocked until ${until}. Visitors still see the paywall. Open /statstrike or Forecasts to verify.`,
+      );
+    } catch (e) {
+      setStatus(e instanceof Error ? e.message : 'Unlock failed');
+    } finally {
+      setUnlocking(false);
+    }
+  };
 
   const apply = useCallback((config: StatStrikeWebConfig) => {
     setBlur(config.blur);
@@ -244,13 +299,34 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
         this toggle.
       </p>
 
+      <div className="rounded-xl border border-white/20 bg-white/[0.03] p-4 space-y-3">
+        <div>
+          <p className="text-sm font-semibold text-white">Owner unlock (this browser)</p>
+          <p className="text-[11px] text-white/50 leading-relaxed mt-0.5">
+            Mints a free 7-day staff pass and claims it into this browser&apos;s cookie. Paywall stays
+            on for everyone else — use this for Mac QA instead of buying passes.
+          </p>
+        </div>
+        <button
+          type="button"
+          disabled={loading || unlocking || !canUse}
+          onClick={() => void unlockThisBrowser()}
+          className="rounded-lg bg-sky-600/90 hover:bg-sky-600 px-4 py-2 text-xs font-semibold disabled:opacity-50"
+        >
+          {unlocking ? 'Unlocking…' : 'Unlock this browser (7 days)'}
+        </button>
+      </div>
+
       {!canUse ? (
         <p className="text-xs text-amber-100/90">Paste your admin key in section 1 to manage this.</p>
       ) : null}
       {status ? (
         <p
           className={`text-sm rounded-lg px-4 py-3 border ${
-            status.includes('OFF') || status.includes('ON') || status.includes('Loaded')
+            status.includes('OFF') ||
+            status.includes('ON') ||
+            status.includes('Loaded') ||
+            status.includes('unlocked')
               ? 'bg-emerald-500/10 border-emerald-400/30 text-emerald-100'
               : 'bg-amber-500/10 border-amber-400/30 text-amber-100'
           }`}
@@ -261,7 +337,7 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
       ) : null}
       <button
         type="button"
-        disabled={loading || !canUse}
+        disabled={loading || unlocking || !canUse}
         onClick={() => void load()}
         className="rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 px-3 py-1.5 text-xs font-medium disabled:opacity-50"
       >
