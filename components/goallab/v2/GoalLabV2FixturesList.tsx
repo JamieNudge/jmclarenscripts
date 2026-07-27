@@ -40,7 +40,7 @@ function dayLabel(dayOffset: number, dateKey: string): string {
 
 /**
  * GoalLab Forecasts board — full day of compact fixture + goal-band cells.
- * Day nav mirrors StatStrike (−7 … +2). No detail-route navigation; deeper tools live in StatStrike.
+ * Day nav: look back up to 7 days for everyone; look-ahead (+2) for pass holders only when gated.
  */
 function GoalLabV2FixturesListInner() {
   const todayKey = useBestPicksLondonDateKey();
@@ -50,6 +50,15 @@ function GoalLabV2FixturesListInner() {
 
   const [dayOffset, setDayOffset] = useState(0);
 
+  const { forecastsBlur, supporterPassSalesEnabled } = useStatStrikeWebBlur();
+  const pass = useStatStrikePassSession();
+
+  /** Free visitors may look back for track record; look-ahead is pass-only so tomorrow’s tips aren’t free inventory. */
+  const maxDayOffset =
+    pass.unlocked || !supporterPassSalesEnabled || !forecastsBlur
+      ? STATSTRIKE_DAY_NAV_MAX_OFFSET
+      : 0;
+
   useEffect(() => {
     const raw = searchParams.get('date')?.trim() || '';
     if (!raw) {
@@ -58,14 +67,24 @@ function GoalLabV2FixturesListInner() {
     }
     const offset = ukSelectionDayOffsetBetween(raw, todayKey);
     if (offset == null) return;
-    setDayOffset(clampStatStrikeDayOffset(offset));
-  }, [searchParams, todayKey]);
+    const clamped = clampStatStrikeDayOffset(Math.min(offset, maxDayOffset));
+    setDayOffset(clamped);
+    // Drop future ?date= for free visitors (and tidy ?date= when landing on today).
+    if (clamped !== offset || (clamped === 0 && Boolean(raw))) {
+      if (clamped === 0) {
+        router.replace(pathname, { scroll: false });
+      } else if (clamped !== offset) {
+        const key = ukSelectionDateKeyOffset(clamped);
+        router.replace(`${pathname}?date=${encodeURIComponent(key)}`, { scroll: false });
+      }
+    }
+  }, [searchParams, todayKey, maxDayOffset, pathname, router]);
 
   const dateKey = useMemo(() => ukSelectionDateKeyOffset(dayOffset), [dayOffset]);
 
   const goToOffset = useCallback(
     (next: number) => {
-      const clamped = clampStatStrikeDayOffset(next);
+      const clamped = clampStatStrikeDayOffset(Math.min(next, maxDayOffset));
       setDayOffset(clamped);
       const key = ukSelectionDateKeyOffset(clamped);
       if (clamped === 0) {
@@ -74,7 +93,7 @@ function GoalLabV2FixturesListInner() {
         router.replace(`${pathname}?date=${encodeURIComponent(key)}`, { scroll: false });
       }
     },
-    [pathname, router],
+    [maxDayOffset, pathname, router],
   );
 
   const [exportVal, setExportVal] = useState<unknown>(null);
@@ -116,9 +135,6 @@ function GoalLabV2FixturesListInner() {
     return () => unsub();
   }, [configured, unanimousPath]);
 
-  const { forecastsBlur, supporterPassSalesEnabled } = useStatStrikeWebBlur();
-  const pass = useStatStrikePassSession();
-
   const fixtures = useMemo(
     () => sortFixturesByKickoff(parseFixturesFromUnanimousExport(exportVal)),
     [exportVal],
@@ -126,7 +142,7 @@ function GoalLabV2FixturesListInner() {
   const groups = useMemo(() => groupFixturesByLeague(fixtures), [fixtures]);
   const totalCount = fixtures.length;
 
-  /** Today stays behind the pass teaser; prior/future days are open so visitors can judge the track record. */
+  /** Today stays behind the pass teaser; prior days are open so visitors can judge the track record. */
   const gateActive =
     dayOffset === 0 && forecastsBlur && supporterPassSalesEnabled && !pass.unlocked;
   const freeIds = useMemo(
@@ -207,7 +223,7 @@ function GoalLabV2FixturesListInner() {
           <button
             type="button"
             className="rounded-xl border border-[var(--gl-border-strong)] bg-[var(--gl-elevated)] px-3 py-2 text-xs font-semibold text-[var(--gl-text-soft)] transition-colors hover:text-[var(--gl-text)] disabled:opacity-40"
-            disabled={dayOffset >= STATSTRIKE_DAY_NAV_MAX_OFFSET}
+            disabled={dayOffset >= maxDayOffset}
             onClick={() => goToOffset(dayOffset + 1)}
           >
             Next →
