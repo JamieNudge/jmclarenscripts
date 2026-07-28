@@ -102,11 +102,9 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
         return;
       }
 
-      // Claim on the public hub (thegoallab.net), not vercel.app — cookie must match browsing host.
-      const claimUrl =
-        mintJson.claimUrl ||
-        `https://thegoallab.net/support/statstrike/success?claim=${encodeURIComponent(mintJson.claimKey)}`;
-      setStatus('Pass minted — opening GoalLab to confirm access…');
+      // Always claim on the public hub — admin often runs on *.vercel.app.
+      const claimUrl = `https://thegoallab.net/support/statstrike/success?claim=${encodeURIComponent(mintJson.claimKey)}`;
+      setStatus('Pass minted — opening thegoallab.net to confirm access…');
       window.location.assign(claimUrl);
     } catch (e) {
       setStatus(e instanceof Error ? e.message : 'Unlock failed');
