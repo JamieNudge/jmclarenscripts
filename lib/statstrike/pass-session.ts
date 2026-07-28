@@ -57,6 +57,17 @@ export function jsonNoStoreWithPassCookie(
   init?: { status?: number },
 ) {
   const res = jsonNoStore(data, init);
-  res.cookies.set(STATSTRIKE_PASS_COOKIE, token, passCookieOptions(expiresAt));
+  const opts = passCookieOptions(expiresAt);
+  res.cookies.set(STATSTRIKE_PASS_COOKIE, token, opts);
+  // Belt-and-braces: some runtimes only honour an explicit Set-Cookie header.
+  const parts = [
+    `${STATSTRIKE_PASS_COOKIE}=${token}`,
+    'Path=/',
+    `Max-Age=${opts.maxAge}`,
+    'HttpOnly',
+    'SameSite=Lax',
+  ];
+  if (opts.secure) parts.push('Secure');
+  res.headers.append('Set-Cookie', parts.join('; '));
   return res;
 }

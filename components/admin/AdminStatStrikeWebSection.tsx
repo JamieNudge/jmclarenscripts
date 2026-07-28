@@ -101,55 +101,13 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
         return;
       }
 
-      setStatus('Claiming pass into this browser…');
-      let claimJson: {
-        error?: string;
-        unlocked?: boolean;
-        expiresAt?: string;
-        retry?: boolean;
-      } = {};
-      let claimRes: Response | null = null;
-      for (let attempt = 0; attempt < 8; attempt++) {
-        claimRes = await fetch('/api/statstrike/pass/session', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ claimKey: mintJson.claimKey }),
-          credentials: 'same-origin',
-        });
-        claimJson = (await claimRes.json()) as typeof claimJson;
-        if (claimRes.ok && claimJson.unlocked) break;
-        if (!(claimRes.status === 409 || claimJson.retry) || attempt === 7) break;
-        setStatus(`Pass minted — confirming access (try ${attempt + 2}/8)…`);
-        await new Promise((r) => setTimeout(r, 800));
-      }
-
-      if (!claimRes?.ok || !claimJson.unlocked) {
-        const claimUrl = `/support/statstrike/success?claim=${encodeURIComponent(mintJson.claimKey)}`;
-        setStatus(
-          claimJson.error ||
-            `Minted ${mintJson.passId} but claim failed (${claimRes?.status ?? '?'}). Open ${claimUrl}`,
-        );
-        return;
-      }
-
-      const verify = await fetch('/api/statstrike/pass/session', {
-        cache: 'no-store',
-        credentials: 'same-origin',
-      });
-      const verifyJson = (await verify.json()) as { unlocked?: boolean; expiresAt?: string | null };
-      const until = verifyJson.expiresAt || claimJson.expiresAt || mintJson.expiresAt || '7 days';
-      if (!verifyJson.unlocked) {
-        setStatus(
-          `Claim API said OK but this browser is still locked. Try ${`/support/statstrike/success?claim=${encodeURIComponent(mintJson.claimKey)}`} or hard-refresh.`,
-        );
-        return;
-      }
-      setStatus(
-        `This browser unlocked until ${until}. Visitors still see the paywall. Open /statstrike or Forecasts to verify.`,
+      // Same path as Stripe success: full navigation claim (more reliable than admin fetch Set-Cookie).
+      setStatus('Pass minted — confirming access…');
+      window.location.assign(
+        `/support/statstrike/success?claim=${encodeURIComponent(mintJson.claimKey)}`,
       );
     } catch (e) {
       setStatus(e instanceof Error ? e.message : 'Unlock failed');
-    } finally {
       setUnlocking(false);
     }
   };
