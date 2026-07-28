@@ -76,7 +76,7 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
       return;
     }
     setUnlocking(true);
-    setStatus(null);
+    setStatus('Minting staff pass…');
     try {
       const mintRes = await fetch('/api/admin/statstrike-pass-staff-mint', {
         method: 'POST',
@@ -84,6 +84,7 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
           Authorization: `Bearer ${adminKey.trim()}`,
           'Content-Type': 'application/json',
         },
+        credentials: 'same-origin',
       });
       const mintJson = (await mintRes.json()) as {
         error?: string;
@@ -92,28 +93,57 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
         passId?: string;
       };
       if (!mintRes.ok || !mintJson.claimKey) {
-        setStatus(mintJson.error || 'Staff mint failed');
-        return;
-      }
-
-      const claimRes = await fetch('/api/statstrike/pass/session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ claimKey: mintJson.claimKey }),
-      });
-      const claimJson = (await claimRes.json()) as {
-        error?: string;
-        unlocked?: boolean;
-        expiresAt?: string;
-      };
-      if (!claimRes.ok || !claimJson.unlocked) {
         setStatus(
-          claimJson.error ||
-            `Minted ${mintJson.passId} but claim failed — open /support/statstrike/success?claim=…`,
+          mintJson.error
+            ? `Staff mint failed (${mintRes.status}): ${mintJson.error}`
+            : `Staff mint failed (${mintRes.status})`,
         );
         return;
       }
-      const until = claimJson.expiresAt || mintJson.expiresAt || '7 days';
+
+      setStatus('Claiming pass into this browser…');
+      let claimJson: {
+        error?: string;
+        unlocked?: boolean;
+        expiresAt?: string;
+        retry?: boolean;
+      } = {};
+      let claimRes: Response | null = null;
+      for (let attempt = 0; attempt < 8; attempt++) {
+        claimRes = await fetch('/api/statstrike/pass/session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ claimKey: mintJson.claimKey }),
+          credentials: 'same-origin',
+        });
+        claimJson = (await claimRes.json()) as typeof claimJson;
+        if (claimRes.ok && claimJson.unlocked) break;
+        if (!(claimRes.status === 409 || claimJson.retry) || attempt === 7) break;
+        setStatus(`Pass minted — confirming access (try ${attempt + 2}/8)…`);
+        await new Promise((r) => setTimeout(r, 800));
+      }
+
+      if (!claimRes?.ok || !claimJson.unlocked) {
+        const claimUrl = `/support/statstrike/success?claim=${encodeURIComponent(mintJson.claimKey)}`;
+        setStatus(
+          claimJson.error ||
+            `Minted ${mintJson.passId} but claim failed (${claimRes?.status ?? '?'}). Open ${claimUrl}`,
+        );
+        return;
+      }
+
+      const verify = await fetch('/api/statstrike/pass/session', {
+        cache: 'no-store',
+        credentials: 'same-origin',
+      });
+      const verifyJson = (await verify.json()) as { unlocked?: boolean; expiresAt?: string | null };
+      const until = verifyJson.expiresAt || claimJson.expiresAt || mintJson.expiresAt || '7 days';
+      if (!verifyJson.unlocked) {
+        setStatus(
+          `Claim API said OK but this browser is still locked. Try ${`/support/statstrike/success?claim=${encodeURIComponent(mintJson.claimKey)}`} or hard-refresh.`,
+        );
+        return;
+      }
       setStatus(
         `This browser unlocked until ${until}. Visitors still see the paywall. Open /statstrike or Forecasts to verify.`,
       );
@@ -137,7 +167,6 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
       return;
     }
     setLoading(true);
-    setStatus(null);
     try {
       const res = await fetch('/api/admin/statstrike-web-config', {
         headers: { Authorization: `Bearer ${adminKey.trim()}` },
@@ -152,14 +181,24 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
         setStatus(json.error || res.statusText);
         return;
       }
-      apply(json.config ?? { blur: true, forecastsBlur: true, supporterPassSalesEnabled: false, updatedAt: null });
+      apply(
+        json.config ?? {
+          blur: true,
+          forecastsBlur: true,
+          supporterPassSalesEnabled: false,
+          researchTagsUiEnabled: false,
+          updatedAt: null,
+        },
+      );
       const c = json.config;
-      setStatus(
-        c
-          ? `Loaded config${json.path ? ` (${json.path})` : ''}. Blur ${
-              c.blur ? 'ON' : 'OFF'
-            }; pass sales ${c.supporterPassSalesEnabled ? 'ON' : 'OFF'}.`
-          : 'No config yet — StatStrike blur defaults ON; pass sales default OFF.',
+      setStatus((prev) =>
+        prev?.includes('unlocked')
+          ? prev
+          : c
+            ? `Loaded config${json.path ? ` (${json.path})` : ''}. Blur ${
+                c.blur ? 'ON' : 'OFF'
+              }; pass sales ${c.supporterPassSalesEnabled ? 'ON' : 'OFF'}.`
+            : 'No config yet — StatStrike blur defaults ON; pass sales default OFF.',
       );
     } catch (e) {
       setStatus(e instanceof Error ? e.message : 'Load failed');
@@ -309,7 +348,7 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
         </div>
         <button
           type="button"
-          disabled={loading || unlocking || !canUse}
+          disabled={unlocking || !canUse}
           onClick={() => void unlockThisBrowser()}
           className="rounded-lg bg-sky-600/90 hover:bg-sky-600 px-4 py-2 text-xs font-semibold disabled:opacity-50"
         >
