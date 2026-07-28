@@ -14,12 +14,14 @@ export type PassSessionPayload = {
 };
 
 export function passCookieOptions(expiresAt: Date) {
+  const ms = expiresAt.getTime() - Date.now();
+  const maxAge = Number.isFinite(ms) ? Math.max(0, Math.floor(ms / 1000)) : 60 * 60 * 24;
   return {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax' as const,
     path: '/',
-    expires: expiresAt,
+    maxAge,
   };
 }
 

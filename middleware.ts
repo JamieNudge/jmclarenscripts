@@ -151,6 +151,11 @@ export function middleware(request: NextRequest) {
     return NextResponse.next(forward);
   }
 
+  // Keep owner tools on the hub host so pass cookies match thegoallab.net (not vercel.app).
+  if (pathname === '/admin' || pathname.startsWith('/admin/')) {
+    return NextResponse.next(forward);
+  }
+
   if (isStaticAssetPath(pathname)) {
     return NextResponse.next(forward);
   }
