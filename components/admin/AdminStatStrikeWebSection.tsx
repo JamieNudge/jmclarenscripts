@@ -186,7 +186,6 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
           blur: true,
           forecastsBlur: true,
           supporterPassSalesEnabled: false,
-          researchTagsUiEnabled: false,
           updatedAt: null,
         },
       );
