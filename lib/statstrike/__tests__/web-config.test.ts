@@ -23,13 +23,26 @@ describe('statstrike web-config', () => {
     ).toBe(false);
   });
 
-  it('accepts supporterPassSalesEnabled patches', () => {
-    const ok = normalizeStatStrikeWebConfigPatch({ supporterPassSalesEnabled: true });
+  it('defaults researchTagsUiEnabled to OFF', () => {
+    expect(DEFAULT_STATSTRIKE_WEB_CONFIG.researchTagsUiEnabled).toBe(false);
+    expect(parseStatStrikeWebConfig(null).researchTagsUiEnabled).toBe(false);
+    expect(parseStatStrikeWebConfig({}).researchTagsUiEnabled).toBe(false);
+  });
+
+  it('parses researchTagsUiEnabled', () => {
+    expect(parseStatStrikeWebConfig({ researchTagsUiEnabled: true }).researchTagsUiEnabled).toBe(
+      true,
+    );
+    expect(parseStatStrikeWebConfig({ researchTagsUiEnabled: '0' }).researchTagsUiEnabled).toBe(
+      false,
+    );
+  });
+
+  it('accepts researchTagsUiEnabled patches', () => {
+    const ok = normalizeStatStrikeWebConfigPatch({ researchTagsUiEnabled: true });
     expect(ok.ok).toBe(true);
     if (ok.ok) {
-      expect(ok.patch).toEqual({ supporterPassSalesEnabled: true });
+      expect(ok.patch).toEqual({ researchTagsUiEnabled: true });
     }
-    const bad = normalizeStatStrikeWebConfigPatch({ supporterPassSalesEnabled: 'yes' });
-    expect(bad.ok).toBe(false);
   });
 });

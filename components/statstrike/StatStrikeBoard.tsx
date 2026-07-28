@@ -19,6 +19,8 @@ type Props = {
   emptyHint?: string;
   onStarClick?: (row: StatStrikeBoardRow) => void;
   isStarred?: (row: StatStrikeBoardRow) => boolean;
+  /** When true, show High firepower badge on tagged rows. */
+  researchTagsUiEnabled?: boolean;
 };
 
 /** Presentational board — parent owns `useStatStrikeBoard` (one listener set). */
@@ -36,6 +38,7 @@ export function StatStrikeBoard({
   emptyHint,
   onStarClick,
   isStarred,
+  researchTagsUiEnabled = false,
 }: Props) {
   const compact = variant === 'hero';
   const useGroups = dayGroups != null && !compact;
@@ -140,6 +143,7 @@ export function StatStrikeBoard({
                             row={row}
                             starred={isStarred?.(row)}
                             onStarClick={onStarClick ? () => onStarClick(row) : undefined}
+                            researchTagsUiEnabled={researchTagsUiEnabled}
                           />
                         ))}
                       </ul>
@@ -159,6 +163,7 @@ export function StatStrikeBoard({
               compact={compact}
               starred={isStarred?.(row)}
               onStarClick={onStarClick ? () => onStarClick(row) : undefined}
+              researchTagsUiEnabled={researchTagsUiEnabled}
             />
           ))}
         </ul>

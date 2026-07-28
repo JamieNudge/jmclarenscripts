@@ -63,6 +63,7 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
   const [blur, setBlur] = useState(true);
   const [forecastsBlur, setForecastsBlur] = useState(true);
   const [salesEnabled, setSalesEnabled] = useState(false);
+  const [researchTagsUiEnabled, setResearchTagsUiEnabled] = useState(false);
   const [updatedAt, setUpdatedAt] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -128,6 +129,7 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
     setBlur(config.blur);
     setForecastsBlur(config.forecastsBlur);
     setSalesEnabled(config.supporterPassSalesEnabled);
+    setResearchTagsUiEnabled(config.researchTagsUiEnabled);
     setUpdatedAt(config.updatedAt);
   }, []);
 
@@ -176,6 +178,7 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
     blur?: boolean;
     forecastsBlur?: boolean;
     supporterPassSalesEnabled?: boolean;
+    researchTagsUiEnabled?: boolean;
   }) => {
     if (!canUse) {
       setStatus('Admin key required.');
@@ -205,6 +208,7 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
         blur: patch.blur ?? blur,
         forecastsBlur: patch.forecastsBlur ?? forecastsBlur,
         supporterPassSalesEnabled: patch.supporterPassSalesEnabled ?? salesEnabled,
+        researchTagsUiEnabled: patch.researchTagsUiEnabled ?? researchTagsUiEnabled,
         updatedAt: new Date().toISOString(),
       };
       apply(c);
@@ -214,6 +218,12 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
           patch.supporterPassSalesEnabled
             ? `Supporter Pass sales ON — Stripe checkout available (24h + 7d).${pathNote}`
             : `Supporter Pass sales OFF — new checkouts blocked (existing passes still work).${pathNote}`,
+        );
+      } else if (patch.researchTagsUiEnabled !== undefined) {
+        setStatus(
+          patch.researchTagsUiEnabled
+            ? `Research tags UI ON — High firepower chip/badge visible.${pathNote}`
+            : `Research tags UI OFF — High firepower chip/badge hidden.${pathNote}`,
         );
       } else if (patch.forecastsBlur !== undefined) {
         setStatus(
@@ -279,6 +289,18 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
         onLabel="Turn sales ON"
         onTurnOff={() => void save({ supporterPassSalesEnabled: false })}
         onTurnOn={() => void save({ supporterPassSalesEnabled: true })}
+      />
+
+      <ToggleRow
+        label="Research tags UI (High firepower)"
+        description="Dev forward-test chip + row badge for bh_high_firepower_o25. Default OFF on public board."
+        on={researchTagsUiEnabled}
+        loading={loading}
+        canUse={canUse}
+        offLabel="Hide research UI"
+        onLabel="Show research UI"
+        onTurnOff={() => void save({ researchTagsUiEnabled: false })}
+        onTurnOn={() => void save({ researchTagsUiEnabled: true })}
       />
 
       <ToggleRow

@@ -149,6 +149,9 @@ function parsePredictionPayload(raw: unknown): StatStrikePrediction | null {
     ? o.significantStats.filter((s): s is string => typeof s === 'string')
     : [];
   const goalBandCascade = parseGoalBandCascade(o.goalBandCascade);
+  const researchTags = Array.isArray(o.researchTags)
+    ? o.researchTags.filter((s): s is string => typeof s === 'string')
+    : undefined;
   return {
     level,
     recommendedLevel: asString(o.recommendedLevel),
@@ -158,6 +161,7 @@ function parsePredictionPayload(raw: unknown): StatStrikePrediction | null {
     bookmakerOdds: asNumber(o.bookmakerOdds),
     sourceLabel: asString(o.sourceLabel),
     goalBandCascade,
+    researchTags: researchTags && researchTags.length > 0 ? researchTags : undefined,
   };
 }
 

@@ -25,6 +25,8 @@ export function useStatStrikeWebBlur(): {
   forecastsBlur: boolean;
   /** When false, hide purchase CTAs and block new Stripe checkouts. */
   supporterPassSalesEnabled: boolean;
+  /** When true, show High firepower research chip/badge. */
+  researchTagsUiEnabled: boolean;
   loading: boolean;
 } {
   const [config, setConfig] = useState<StatStrikeWebConfig>(DEFAULT_STATSTRIKE_WEB_CONFIG);
@@ -87,6 +89,7 @@ export function useStatStrikeWebBlur(): {
     blur: config.blur,
     forecastsBlur: config.forecastsBlur,
     supporterPassSalesEnabled: config.supporterPassSalesEnabled,
+    researchTagsUiEnabled: config.researchTagsUiEnabled,
     loading,
   };
 }

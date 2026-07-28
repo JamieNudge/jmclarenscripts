@@ -26,7 +26,7 @@ type TabId = 'fixtures' | 'best' | 'record';
 
 export function StatStrikeAppShell() {
   const board = useStatStrikeBoard();
-  const { blur: adminBlur, supporterPassSalesEnabled } = useStatStrikeWebBlur();
+  const { blur: adminBlur, supporterPassSalesEnabled, researchTagsUiEnabled } = useStatStrikeWebBlur();
   const pass = useStatStrikePassSession();
   const personal = useStatStrikePersonalPicks();
   const [filters, setFilters] = useState<BoardFilterState>(DEFAULT_BOARD_FILTERS);
@@ -121,6 +121,7 @@ export function StatStrikeAppShell() {
         yourPicksLocked={!personal.enabled}
         onYourPicksLockedClick={() => setPremiumOpen(true)}
         chipCounts={chipCounts}
+        researchTagsUiEnabled={researchTagsUiEnabled}
       />
 
       <StatStrikeBoard
@@ -137,6 +138,7 @@ export function StatStrikeAppShell() {
         isStarred={(row) =>
           personal.enabled && personal.isSaved(row.selectionDateKey, row.fixture.id)
         }
+        researchTagsUiEnabled={researchTagsUiEnabled}
         emptyHint={
           board.rows.length > 0
             ? filters.league === 'yourSelections' && personal.enabled

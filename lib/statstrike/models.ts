@@ -69,6 +69,8 @@ export type StatStrikePrediction = {
   sourceLabel?: string | null;
   /** Optional GBC ladder; consumer tip remains level / recommendedLevel. */
   goalBandCascade?: StatStrikeGoalBandCascade | null;
+  /** Forward-test research tags (e.g. bh_high_firepower_o25). */
+  researchTags?: string[] | null;
 };
 
 export type StatStrikeBoardRow = {

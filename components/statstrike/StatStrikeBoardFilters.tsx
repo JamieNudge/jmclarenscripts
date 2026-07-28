@@ -17,6 +17,8 @@ type Props = {
   /** Fixture counts for the selected calendar day (time + league chips). */
   chipCounts?: BoardChipCounts | null;
   compact?: boolean;
+  /** When true, show High firepower research chip (default off via web-config). */
+  researchTagsUiEnabled?: boolean;
 };
 
 const TIME_CHIPS: { id: TimeFilterId; label: string }[] = [
@@ -34,10 +36,12 @@ const LEAGUE_CHIPS: {
   locked?: boolean;
   indigo?: boolean;
   lime?: boolean;
+  researchOnly?: boolean;
 }[] = [
   { id: 'all', label: 'All' },
   { id: 'bestPerforming', label: 'Best Leagues' },
   { id: 'goalBandCascade', label: 'GBC', indigo: true },
+  { id: 'highFirepower', label: 'Firepower', researchOnly: true },
   { id: 'btts', label: 'BTTS', lime: true },
   { id: 'major', label: 'Upper' },
   { id: 'minor', label: 'Minor' },
@@ -75,6 +79,7 @@ export function StatStrikeBoardFilters({
   onYourPicksLockedClick,
   chipCounts = null,
   compact = false,
+  researchTagsUiEnabled = false,
 }: Props) {
   return (
     <div className={`space-y-2 ${compact ? 'px-1' : ''}`}>
@@ -133,7 +138,7 @@ export function StatStrikeBoardFilters({
       ) : null}
 
       <div className="flex flex-wrap gap-1.5">
-        {LEAGUE_CHIPS.map((chip) => {
+        {LEAGUE_CHIPS.filter((chip) => researchTagsUiEnabled || !chip.researchOnly).map((chip) => {
           const locked = chip.locked && yourPicksLocked;
           const active = filters.league === chip.id;
           return (
@@ -143,9 +148,11 @@ export function StatStrikeBoardFilters({
               aria-label={
                 chip.id === 'goalBandCascade'
                   ? 'Goal Band Cascade'
-                  : chip.id === 'btts'
-                    ? 'BTTS tips'
-                    : undefined
+                  : chip.id === 'highFirepower'
+                    ? 'High firepower'
+                    : chip.id === 'btts'
+                      ? 'BTTS tips'
+                      : undefined
               }
               className={`relative ${chipClass(active, locked, chip.indigo, chip.lime)}`}
               onClick={() => {

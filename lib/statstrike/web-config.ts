@@ -30,6 +30,8 @@ export type StatStrikeWebConfig = {
   forecastsBlur: boolean;
   /** When true, Stripe 24h Supporter Pass checkout is offered. Missing → false. */
   supporterPassSalesEnabled: boolean;
+  /** When true, show High firepower research chip/badge. Missing → false. */
+  researchTagsUiEnabled: boolean;
   updatedAt: string | null;
 };
 
@@ -38,6 +40,7 @@ export const DEFAULT_STATSTRIKE_WEB_CONFIG: StatStrikeWebConfig = {
   blur: true,
   forecastsBlur: true,
   supporterPassSalesEnabled: false,
+  researchTagsUiEnabled: false,
   updatedAt: null,
 };
 
@@ -66,14 +69,22 @@ export function parseStatStrikeWebConfig(raw: unknown): StatStrikeWebConfig {
       o.supporterPassSalesEnabled,
       DEFAULT_STATSTRIKE_WEB_CONFIG.supporterPassSalesEnabled,
     ),
+    researchTagsUiEnabled: parseBool(
+      o.researchTagsUiEnabled,
+      DEFAULT_STATSTRIKE_WEB_CONFIG.researchTagsUiEnabled,
+    ),
     updatedAt,
   };
 }
 
-type WebConfigBoolKey = 'blur' | 'forecastsBlur' | 'supporterPassSalesEnabled';
+type WebConfigBoolKey =
+  | 'blur'
+  | 'forecastsBlur'
+  | 'supporterPassSalesEnabled'
+  | 'researchTagsUiEnabled';
 
 /**
- * Partial update: send any of blur / forecastsBlur / supporterPassSalesEnabled.
+ * Partial update: send any of blur / forecastsBlur / supporterPassSalesEnabled / researchTagsUiEnabled.
  * Caller merges onto existing RTDB record before write.
  */
 export function normalizeStatStrikeWebConfigPatch(
@@ -101,15 +112,23 @@ export function normalizeStatStrikeWebConfigPatch(
     }
     patch.supporterPassSalesEnabled = body.supporterPassSalesEnabled;
   }
+  if (Object.prototype.hasOwnProperty.call(body, 'researchTagsUiEnabled')) {
+    if (typeof body.researchTagsUiEnabled !== 'boolean') {
+      return { ok: false, error: 'researchTagsUiEnabled must be a boolean.' };
+    }
+    patch.researchTagsUiEnabled = body.researchTagsUiEnabled;
+  }
 
   if (
     patch.blur === undefined &&
     patch.forecastsBlur === undefined &&
-    patch.supporterPassSalesEnabled === undefined
+    patch.supporterPassSalesEnabled === undefined &&
+    patch.researchTagsUiEnabled === undefined
   ) {
     return {
       ok: false,
-      error: 'Provide blur, forecastsBlur, and/or supporterPassSalesEnabled (boolean).',
+      error:
+        'Provide blur, forecastsBlur, supporterPassSalesEnabled, and/or researchTagsUiEnabled (boolean).',
     };
   }
 

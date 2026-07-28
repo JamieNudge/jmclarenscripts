@@ -14,9 +14,17 @@ type Props = {
   starred?: boolean;
   /** Premium stub — star opens Create Pass gate until unlocked (or toggles when personal unlocked). */
   onStarClick?: () => void;
+  /** When true, show High firepower badge if tagged. */
+  researchTagsUiEnabled?: boolean;
 };
 
-export function StatStrikeFixtureRow({ row, compact = false, starred = false, onStarClick }: Props) {
+export function StatStrikeFixtureRow({
+  row,
+  compact = false,
+  starred = false,
+  onStarClick,
+  researchTagsUiEnabled = false,
+}: Props) {
   const {
     fixture,
     prediction,
@@ -37,6 +45,8 @@ export function StatStrikeFixtureRow({ row, compact = false, starred = false, on
   const bttsBand = bttsPrediction?.recommendedLevel || bttsPrediction?.level || null;
   const cascade = prediction?.goalBandCascade ?? null;
   const cascadeRows = cascade ? displayBandRows(cascade) : [];
+  const highFirepower =
+    researchTagsUiEnabled && prediction?.researchTags?.includes('bh_high_firepower_o25') === true;
   const leagueLabel = [fixture.league.country, fixture.league.name].filter(Boolean).join(' · ');
   const confidencePct =
     prediction && prediction.totalCriteria > 0
@@ -71,6 +81,7 @@ export function StatStrikeFixtureRow({ row, compact = false, starred = false, on
             <p className="text-[10px] font-semibold uppercase tracking-wide text-black/80 truncate">
               {leagueLabel || 'League'}
               {bestPerformingLeague ? ' · Best performing' : ''}
+              {highFirepower ? ' · High firepower' : ''}
               {fromYesterday ? ' · Carry-over' : ''}
             </p>
             <p className={`mt-0.5 font-semibold text-black/90 leading-snug ${compact ? 'text-sm' : 'text-base'}`}>
