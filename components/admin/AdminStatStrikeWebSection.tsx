@@ -102,9 +102,10 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
         return;
       }
 
-      // Always claim on the public hub — admin often runs on *.vercel.app.
-      const claimUrl = `https://thegoallab.net/support/statstrike/success?claim=${encodeURIComponent(mintJson.claimKey)}`;
-      setStatus('Pass minted — opening thegoallab.net to confirm access…');
+      // Claim on thegoallab.net so the cookie matches GoalLab browsing, then bounce back to admin.
+      const returnTo = encodeURIComponent(window.location.href);
+      const claimUrl = `https://thegoallab.net/support/statstrike/success?claim=${encodeURIComponent(mintJson.claimKey)}&returnTo=${returnTo}`;
+      setStatus('Pass minted — confirming on thegoallab.net, then returning here…');
       window.location.assign(claimUrl);
     } catch (e) {
       setStatus(e instanceof Error ? e.message : 'Unlock failed');
@@ -299,9 +300,9 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
         <div>
           <p className="text-sm font-semibold text-white">Owner unlock (this browser)</p>
           <p className="text-[11px] text-white/50 leading-relaxed mt-0.5">
-            Mints a free 7-day staff pass, then opens{' '}
-            <strong className="text-white/70">thegoallab.net</strong> to claim the cookie there (so it
-            matches GoalLab browsing). Safe to run from the Vercel admin URL.
+            Mints a free 7-day staff pass, claims the cookie on{' '}
+            <strong className="text-white/70">thegoallab.net</strong>, then returns you here. Paywall
+            stays on for everyone else.
           </p>
         </div>
         <button

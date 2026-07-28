@@ -18,7 +18,14 @@ export function StatStrikeSupportPassSection() {
 export function StatStrikePassSuccessSection() {
   const params = useSearchParams();
   const claim = params.get('claim');
-  return <StatStrikeCreatePassPanel autoClaimKey={claim} variant="status" />;
+  const returnTo = params.get('returnTo');
+  return (
+    <StatStrikeCreatePassPanel
+      autoClaimKey={claim}
+      returnToAfterClaim={returnTo}
+      variant="status"
+    />
+  );
 }
 
 const WOULD_BUY_OPTIONS: { value: StatStrikeWouldBuyAgain; label: string }[] = [

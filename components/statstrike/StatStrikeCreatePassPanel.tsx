@@ -13,11 +13,39 @@ import { useStatStrikePassSession } from '@/hooks/useStatStrikePassSession';
 type Props = {
   /** Auto-claim after Stripe success redirect. */
   autoClaimKey?: string | null;
+  /** After a successful claim, navigate here (owner unlock return to admin). */
+  returnToAfterClaim?: string | null;
   /** Compact mode for success page. */
   variant?: 'full' | 'status';
 };
 
-export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full' }: Props) {
+/** Only allow bounce-back to known admin hosts (no open redirect). */
+function safeAdminReturnTo(raw: string | null | undefined): string | null {
+  if (!raw?.trim()) return null;
+  try {
+    const u = new URL(raw.trim());
+    if (u.protocol !== 'https:' && u.protocol !== 'http:') return null;
+    const host = u.hostname.toLowerCase();
+    const hostOk =
+      host === 'thegoallab.net' ||
+      host === 'www.thegoallab.net' ||
+      host === 'localhost' ||
+      host === '127.0.0.1' ||
+      host === 'jmclarenscripts.vercel.app' ||
+      host.endsWith('.vercel.app');
+    if (!hostOk) return null;
+    if (!u.pathname.startsWith('/admin')) return null;
+    return u.toString();
+  } catch {
+    return null;
+  }
+}
+
+export function StatStrikeCreatePassPanel({
+  autoClaimKey = null,
+  returnToAfterClaim = null,
+  variant = 'full',
+}: Props) {
   const session = useStatStrikePassSession();
   const [duration, setDuration] = useState<StatStrikePassDuration>('24h');
   const amounts = useMemo(() => passAmountsFor(duration), [duration]);
@@ -70,6 +98,13 @@ export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full
       if (result.ok) {
         setClaimStatus('Supporter Pass active — full StatStrike access unlocked.');
         await session.refresh();
+        const back = safeAdminReturnTo(returnToAfterClaim);
+        if (back) {
+          setClaimStatus('Pass active — returning to admin…');
+          window.setTimeout(() => {
+            window.location.assign(back);
+          }, 600);
+        }
         return;
       }
       if (result.retry && attempts < 10) {
@@ -88,7 +123,7 @@ export function StatStrikeCreatePassPanel({ autoClaimKey = null, variant = 'full
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoClaimKey]);
+  }, [autoClaimKey, returnToAfterClaim]);
 
   const startCheckout = useCallback(async () => {
     setBusy(true);
