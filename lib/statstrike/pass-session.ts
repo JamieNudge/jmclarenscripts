@@ -46,3 +46,15 @@ export function jsonNoStore(data: unknown, init?: { status?: number }) {
     headers: { 'Cache-Control': 'no-store' },
   });
 }
+
+/** JSON response that also sets the pass cookie (reliable in App Router route handlers). */
+export function jsonNoStoreWithPassCookie(
+  data: unknown,
+  token: string,
+  expiresAt: Date,
+  init?: { status?: number },
+) {
+  const res = jsonNoStore(data, init);
+  res.cookies.set(STATSTRIKE_PASS_COOKIE, token, passCookieOptions(expiresAt));
+  return res;
+}

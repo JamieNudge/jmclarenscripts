@@ -17,7 +17,12 @@ import {
   markPassClaimed,
   updatePassExpiresAt,
 } from '@/lib/statstrike/pass-store';
-import { jsonNoStore, passCookieOptions, readPassSessionFromCookies } from '@/lib/statstrike/pass-session';
+import {
+  jsonNoStore,
+  jsonNoStoreWithPassCookie,
+  passCookieOptions,
+  readPassSessionFromCookies,
+} from '@/lib/statstrike/pass-session';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -91,13 +96,16 @@ export async function POST(req: NextRequest) {
     } catch {
       // best-effort
     }
-    jar.set(STATSTRIKE_PASS_COOKIE, existingToken, passCookieOptions(new Date(extendedExpiresAt)));
-    return jsonNoStore({
-      unlocked: true,
-      expiresAt: extendedExpiresAt,
-      passId: existingPass.passId,
-      extended: true,
-    });
+    return jsonNoStoreWithPassCookie(
+      {
+        unlocked: true,
+        expiresAt: extendedExpiresAt,
+        passId: existingPass.passId,
+        extended: true,
+      },
+      existingToken,
+      new Date(extendedExpiresAt),
+    );
   }
 
   if (claim.expiresAt && !isPassActive({ expiresAt: claim.expiresAt })) {
@@ -108,26 +116,29 @@ export async function POST(req: NextRequest) {
   const expires = claim.expiresAt
     ? new Date(claim.expiresAt)
     : new Date(Date.now() + (stackHours || STATSTRIKE_PASS_HOURS) * 60 * 60 * 1000);
-  jar.set(STATSTRIKE_PASS_COOKIE, claim.token, passCookieOptions(expires));
 
   try {
     await markPassClaimed(claim.passId, new Date().toISOString());
     await clearClaimToken(claimKey);
   } catch {
-    // Cookie already set; indexes are best-effort.
+    // Cookie still set below; indexes are best-effort.
   }
 
-  return jsonNoStore({
-    unlocked: true,
-    expiresAt: claim.expiresAt || expires.toISOString(),
-    passId: claim.passId,
-    extended: false,
-  });
+  return jsonNoStoreWithPassCookie(
+    {
+      unlocked: true,
+      expiresAt: claim.expiresAt || expires.toISOString(),
+      passId: claim.passId,
+      extended: false,
+    },
+    claim.token,
+    expires,
+  );
 }
 
 /** DELETE: clear pass cookie (does not refund). */
 export async function DELETE() {
-  const jar = cookies();
-  jar.set(STATSTRIKE_PASS_COOKIE, '', { ...passCookieOptions(new Date(0)), maxAge: 0 });
-  return jsonNoStore({ unlocked: false });
+  const res = jsonNoStore({ unlocked: false });
+  res.cookies.set(STATSTRIKE_PASS_COOKIE, '', { ...passCookieOptions(new Date(0)), maxAge: 0 });
+  return res;
 }
