@@ -91,6 +91,7 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
         claimKey?: string;
         expiresAt?: string;
         passId?: string;
+        claimUrl?: string;
       };
       if (!mintRes.ok || !mintJson.claimKey) {
         setStatus(
@@ -101,11 +102,12 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
         return;
       }
 
-      // Same path as Stripe success: full navigation claim (more reliable than admin fetch Set-Cookie).
-      setStatus('Pass minted — confirming access…');
-      window.location.assign(
-        `/support/statstrike/success?claim=${encodeURIComponent(mintJson.claimKey)}`,
-      );
+      // Claim on the public hub (thegoallab.net), not vercel.app — cookie must match browsing host.
+      const claimUrl =
+        mintJson.claimUrl ||
+        `https://thegoallab.net/support/statstrike/success?claim=${encodeURIComponent(mintJson.claimKey)}`;
+      setStatus('Pass minted — opening GoalLab to confirm access…');
+      window.location.assign(claimUrl);
     } catch (e) {
       setStatus(e instanceof Error ? e.message : 'Unlock failed');
       setUnlocking(false);
@@ -299,8 +301,9 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
         <div>
           <p className="text-sm font-semibold text-white">Owner unlock (this browser)</p>
           <p className="text-[11px] text-white/50 leading-relaxed mt-0.5">
-            Mints a free 7-day staff pass and claims it into this browser&apos;s cookie. Paywall stays
-            on for everyone else — use this for Mac QA instead of buying passes.
+            Mints a free 7-day staff pass, then opens{' '}
+            <strong className="text-white/70">thegoallab.net</strong> to claim the cookie there (so it
+            matches GoalLab browsing). Safe to run from the Vercel admin URL.
           </p>
         </div>
         <button

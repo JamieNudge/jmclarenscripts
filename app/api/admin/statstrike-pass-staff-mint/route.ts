@@ -13,6 +13,7 @@ import {
 } from '@/lib/statstrike/pass';
 import { createPassRecord } from '@/lib/statstrike/pass-store';
 import { jsonNoStore } from '@/lib/statstrike/pass-session';
+import { statStrikePublicOrigin } from '@/lib/statstrike/pass';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -76,5 +77,7 @@ export async function POST(req: NextRequest) {
     expiresAt: pass.expiresAt,
     duration,
     durationHours,
+    /** Always claim on the public hub so the cookie matches thegoallab.net browsing. */
+    claimUrl: `${statStrikePublicOrigin()}/support/statstrike/success?claim=${encodeURIComponent(claimKey)}`,
   });
 }
