@@ -13,6 +13,7 @@ import {
   resolvedDisplayKeySignals,
   trackRecordDisplayForFixture,
 } from '@/lib/statstrike/display-signals';
+import { parseResearchTags } from '@/lib/statstrike/research-tags';
 
 function asRecord(v: unknown): Record<string, unknown> | null {
   return v != null && typeof v === 'object' && !Array.isArray(v) ? (v as Record<string, unknown>) : null;
@@ -149,6 +150,7 @@ function parsePredictionPayload(raw: unknown): StatStrikePrediction | null {
     ? o.significantStats.filter((s): s is string => typeof s === 'string')
     : [];
   const goalBandCascade = parseGoalBandCascade(o.goalBandCascade);
+  const researchTags = parseResearchTags(o.researchTags);
   return {
     level,
     recommendedLevel: asString(o.recommendedLevel),
@@ -158,6 +160,7 @@ function parsePredictionPayload(raw: unknown): StatStrikePrediction | null {
     bookmakerOdds: asNumber(o.bookmakerOdds),
     sourceLabel: asString(o.sourceLabel),
     goalBandCascade,
+    researchTags,
   };
 }
 

@@ -15,6 +15,7 @@ import { displayBandRows } from '@/lib/statstrike/goal-band-cascade';
 import type { StatStrikeFixture, StatStrikePrediction } from '@/lib/statstrike/models';
 import { parseBTTSSelectionsPayload, predictionFromBTTSPick } from '@/lib/statstrike/btts-selections';
 import { isBestPerformingLeague, enrichBoardRowDisplay, isLiveStatus, parseDailySelection } from '@/lib/statstrike/parse-selection';
+import { hasHighFirepower } from '@/lib/statstrike/research-tags';
 import { bttsSelectionsPathForDateKey, selectionsPathForDateKey } from '@/lib/statstrike/uk-date';
 
 type Props = {
@@ -32,6 +33,7 @@ type DetailState =
       prediction: StatStrikePrediction | null;
       bttsPrediction: StatStrikePrediction | null;
       bestPerformingLeague: boolean;
+      highFirepower: boolean;
       selectionDateKey: string;
       trackRecordDisplay: {
         title: string;
@@ -86,6 +88,7 @@ export function StatStrikeFixtureDetail({ fixtureId, dateKey }: Props) {
             prediction,
             bttsPrediction,
             bestPerformingLeague: isBestPerformingLeague(fixture, sel.leaguePerformance),
+            highFirepower: hasHighFirepower(prediction?.researchTags),
             selectionDateKey: dateKey,
             trackRecordDisplay: display.trackRecordDisplay,
             keySignalLines: display.keySignalLines,
@@ -124,7 +127,7 @@ export function StatStrikeFixtureDetail({ fixtureId, dateKey }: Props) {
     );
   }
 
-  const { fixture, prediction, bttsPrediction, bestPerformingLeague, trackRecordDisplay, keySignalLines } =
+  const { fixture, prediction, bttsPrediction, bestPerformingLeague, highFirepower, trackRecordDisplay, keySignalLines } =
     state;
   const live = isLiveStatus(fixture.status);
   const finished = isResultFinishedStatus(fixture.status);
@@ -194,6 +197,11 @@ export function StatStrikeFixtureDetail({ fixtureId, dateKey }: Props) {
           {cascade ? (
             <span className="inline-flex rounded-full bg-violet-500 px-2.5 py-1 text-[11px] font-black tracking-wide text-white shadow-sm">
               Goal Band Cascade
+            </span>
+          ) : null}
+          {highFirepower ? (
+            <span className="inline-flex rounded-full bg-orange-500 px-2.5 py-1 text-[11px] font-black tracking-wide text-white shadow-sm">
+              High firepower
             </span>
           ) : null}
           <span className="inline-flex rounded-full bg-sky-400 px-2.5 py-1 text-sm font-black tracking-wide text-black shadow-sm">

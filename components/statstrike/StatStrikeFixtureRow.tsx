@@ -22,6 +22,7 @@ export function StatStrikeFixtureRow({ row, compact = false, starred = false, on
     prediction,
     bttsPrediction,
     bestPerformingLeague,
+    highFirepower,
     fromYesterday,
     trackRecordDisplay,
     keySignalLines,
@@ -87,6 +88,14 @@ export function StatStrikeFixtureRow({ row, compact = false, starred = false, on
                   aria-label="Goal band cascade"
                 >
                   Goal Band Cascade
+                </span>
+              ) : null}
+              {highFirepower ? (
+                <span
+                  className="inline-flex max-w-full items-center rounded-full bg-orange-500 px-2 py-0.5 text-[10px] font-black leading-none tracking-wide text-white shadow-sm"
+                  aria-label="High firepower"
+                >
+                  High firepower
                 </span>
               ) : null}
               <span className="inline-flex max-w-full items-center rounded-full bg-sky-400 px-2 py-0.5 text-[10px] font-black leading-tight tracking-wide text-black shadow-sm">

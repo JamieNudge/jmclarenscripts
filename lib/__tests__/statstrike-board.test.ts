@@ -109,6 +109,37 @@ describe('parseDailySelection', () => {
     ]);
   });
 
+  it('parses optional researchTags including High Firepower', () => {
+    const sel = parseDailySelection({
+      date: '2026-07-16',
+      fixtures: [
+        {
+          id: 99,
+          date: '2026-07-16T15:00:00.000Z',
+          homeTeam: { id: 1, name: 'Alpha' },
+          awayTeam: { id: 2, name: 'Beta' },
+          league: { id: 3, name: 'Liga', country: 'Test' },
+          status: 'NS',
+        },
+      ],
+      predictions: [
+        {
+          fixtureId: 99,
+          prediction: {
+            level: 'Over 2.5 Goals',
+            matchedCriteria: 7,
+            totalCriteria: 11,
+            significantStats: [],
+            researchTags: ['bh_high_firepower_o25'],
+          },
+        },
+      ],
+      leaguePerformance: {},
+    });
+    const pred = sel!.predictionsByFixtureId.get(99);
+    expect(pred?.researchTags).toEqual(['bh_high_firepower_o25']);
+  });
+
   it('omits empty goalBandCascade', () => {
     const sel = parseDailySelection({
       date: '2026-07-16',
@@ -386,6 +417,7 @@ describe('board filters', () => {
           significantStats: [],
         },
         bestPerformingLeague: true,
+        highFirepower: false,
         fromYesterday: false,
         selectionDateKey: '2026-07-16',
       },
@@ -404,6 +436,7 @@ describe('board filters', () => {
           significantStats: [],
         },
         bestPerformingLeague: false,
+        highFirepower: false,
         fromYesterday: false,
         selectionDateKey: '2026-07-16',
       },
@@ -460,6 +493,36 @@ describe('board filters', () => {
       rowPassesBoardFilters(rows[1], { ...DEFAULT_BOARD_FILTERS, league: 'btts' }),
     ).toBe(false);
 
+    const hfRow = {
+      ...rows[0],
+      highFirepower: true,
+      prediction: {
+        ...rows[0].prediction!,
+        researchTags: ['bh_high_firepower_o25'],
+      },
+    };
+    const hfFinished = {
+      ...hfRow,
+      fixture: fixture({
+        ...hfRow.fixture,
+        status: 'FT',
+        homeScore: 2,
+        awayScore: 2,
+      }),
+    };
+    expect(
+      rowPassesBoardFilters(hfRow, { ...DEFAULT_BOARD_FILTERS, league: 'highFirepower' }),
+    ).toBe(true);
+    expect(
+      rowPassesBoardFilters(rows[1], { ...DEFAULT_BOARD_FILTERS, league: 'highFirepower' }),
+    ).toBe(false);
+    expect(
+      rowPassesBoardFilters(hfFinished, { ...DEFAULT_BOARD_FILTERS, league: 'highFirepower' }),
+    ).toBe(true);
+    expect(
+      rowPassesBoardFilters(hfFinished, { ...DEFAULT_BOARD_FILTERS, league: 'major' }),
+    ).toBe(false);
+
     const { boardChipCounts } = await import('@/lib/statstrike/board-filters');
     const counts = boardChipCounts(
       [
@@ -475,6 +538,7 @@ describe('board filters', () => {
             },
           },
         },
+        hfRow,
       ],
       DEFAULT_BOARD_FILTERS,
       { timeZone: 'UTC' },
@@ -483,6 +547,7 @@ describe('board filters', () => {
     expect(counts.time.live).toBeGreaterThan(0);
     expect(counts.league.bestPerforming).toBeGreaterThan(0);
     expect(counts.league.goalBandCascade).toBe(1);
+    expect(counts.league.highFirepower).toBe(1);
 
     const groups = presentBoardRows(rows, DEFAULT_BOARD_FILTERS, { timeZone: 'UTC' });
     expect(groups.length).toBeGreaterThan(0);
