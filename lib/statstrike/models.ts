@@ -69,6 +69,8 @@ export type StatStrikePrediction = {
   sourceLabel?: string | null;
   /** Optional GBC ladder; consumer tip remains level / recommendedLevel. */
   goalBandCascade?: StatStrikeGoalBandCascade | null;
+  /** Forward-test tags from selections (e.g. bh_high_firepower_o25). */
+  researchTags?: string[] | null;
 };
 
 export type StatStrikeBoardRow = {
@@ -78,6 +80,8 @@ export type StatStrikeBoardRow = {
   bttsPrediction?: StatStrikePrediction | null;
   /** From selections.leaguePerformance ("Country - League" >= 70). */
   bestPerformingLeague: boolean;
+  /** True when O/U prediction carries High Firepower research tag. */
+  highFirepower: boolean;
   /** Carried from yesterday UK selection (live only). */
   fromYesterday: boolean;
   selectionDateKey: string;

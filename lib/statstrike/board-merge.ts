@@ -11,6 +11,7 @@ import {
   isFinishedStatus,
   isLiveStatus,
 } from '@/lib/statstrike/parse-selection';
+import { hasHighFirepower } from '@/lib/statstrike/research-tags';
 
 function shouldCarryOverFromYesterday(fixture: StatStrikeFixture, nowMs: number): boolean {
   // iOS: only live statuses from the previous selection day when viewing calendar today.
@@ -104,6 +105,7 @@ export function mergeBoardRows(args: {
         prediction,
         bttsPrediction: bttsPick ? predictionFromBTTSPick(bttsPick) : null,
         bestPerformingLeague: isBestPerformingLeague(fixture, { ...lpYest, ...lpToday }),
+        highFirepower: hasHighFirepower(prediction.researchTags),
         fromYesterday: true,
         selectionDateKey: args.yesterdayKey,
         trackRecordDisplay: display.trackRecordDisplay,
@@ -129,6 +131,7 @@ export function mergeBoardRows(args: {
         prediction,
         bttsPrediction: bttsPick ? predictionFromBTTSPick(bttsPick) : null,
         bestPerformingLeague: isBestPerformingLeague(fixture, lpToday),
+        highFirepower: hasHighFirepower(prediction.researchTags),
         fromYesterday: false,
         selectionDateKey: args.todayKey,
         trackRecordDisplay: display.trackRecordDisplay,

@@ -12,6 +12,7 @@ export type LeagueFilterId =
   | 'minor'
   | 'goalBandCascade'
   | 'btts'
+  | 'highFirepower'
   | 'yourSelections';
 
 export type BoardFilterState = {
@@ -109,13 +110,14 @@ export function rowPassesBoardFilters(
   const { fixture, prediction } = row;
   if (!prediction) return false;
 
-  // Settled visibility: hide FT except All / Your Picks / Best Performing / GBC / BTTS (iOS + BTTS).
+  // Settled visibility: hide FT except All / Your Picks / Best Performing / GBC / BTTS / High Firepower.
   if (
     filters.league !== 'all' &&
     filters.league !== 'yourSelections' &&
     filters.league !== 'bestPerforming' &&
     filters.league !== 'goalBandCascade' &&
     filters.league !== 'btts' &&
+    filters.league !== 'highFirepower' &&
     isResultFinishedStatus(fixture.status)
   ) {
     return false;
@@ -162,6 +164,9 @@ export function rowPassesBoardFilters(
       break;
     case 'btts':
       if (row.bttsPrediction == null) return false;
+      break;
+    case 'highFirepower':
+      if (!row.highFirepower) return false;
       break;
     case 'major':
       if (!isUpperDivision(fixture.league.country, fixture.league.name)) return false;
@@ -285,6 +290,7 @@ const LEAGUE_FILTER_IDS: LeagueFilterId[] = [
   'bestPerforming',
   'goalBandCascade',
   'btts',
+  'highFirepower',
   'major',
   'minor',
   'yourSelections',

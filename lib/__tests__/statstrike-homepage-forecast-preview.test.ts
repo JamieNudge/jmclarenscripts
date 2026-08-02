@@ -4,6 +4,7 @@ import {
   boardRowToFixtureListItem,
   pickHomepageForecastPreview,
 } from '@/lib/statstrike/homepage-forecast-preview';
+import { hasHighFirepower } from '@/lib/statstrike/research-tags';
 
 function fixture(partial: Partial<StatStrikeFixture> & { id: number }): StatStrikeFixture {
   return {
@@ -39,6 +40,7 @@ function row(
     fixture: fixture(partial),
     prediction: pred,
     bestPerformingLeague: false,
+    highFirepower: hasHighFirepower(pred?.researchTags),
     fromYesterday: false,
     selectionDateKey: '2026-07-19',
   };

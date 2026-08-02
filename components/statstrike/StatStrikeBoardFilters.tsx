@@ -34,17 +34,25 @@ const LEAGUE_CHIPS: {
   locked?: boolean;
   indigo?: boolean;
   lime?: boolean;
+  orange?: boolean;
 }[] = [
   { id: 'all', label: 'All' },
   { id: 'bestPerforming', label: 'Best Leagues' },
   { id: 'goalBandCascade', label: 'GBC', indigo: true },
   { id: 'btts', label: 'BTTS', lime: true },
+  { id: 'highFirepower', label: 'Firepower', orange: true },
   { id: 'major', label: 'Upper' },
   { id: 'minor', label: 'Minor' },
   { id: 'yourSelections', label: 'Your Picks!', locked: true },
 ];
 
-function chipClass(active: boolean, locked?: boolean, indigo?: boolean, lime?: boolean) {
+function chipClass(
+  active: boolean,
+  locked?: boolean,
+  indigo?: boolean,
+  lime?: boolean,
+  orange?: boolean,
+) {
   if (locked) {
     return 'rounded-full border border-black/15 bg-black/5 px-2.5 py-1 text-[11px] font-semibold text-black/55';
   }
@@ -53,6 +61,9 @@ function chipClass(active: boolean, locked?: boolean, indigo?: boolean, lime?: b
   }
   if (active && lime) {
     return 'rounded-full bg-lime-400 px-2.5 py-1 text-[11px] font-black text-black';
+  }
+  if (active && orange) {
+    return 'rounded-full bg-orange-500 px-2.5 py-1 text-[11px] font-black text-white';
   }
   return active
     ? 'rounded-full bg-[#0b3d5c] px-2.5 py-1 text-[11px] font-semibold text-white'
@@ -136,6 +147,10 @@ export function StatStrikeBoardFilters({
         {LEAGUE_CHIPS.map((chip) => {
           const locked = chip.locked && yourPicksLocked;
           const active = filters.league === chip.id;
+          const count = chipCounts?.league[chip.id];
+          if (chip.id === 'highFirepower' && (count == null || count <= 0) && !active) {
+            return null;
+          }
           return (
             <button
               key={chip.id}
@@ -145,9 +160,11 @@ export function StatStrikeBoardFilters({
                   ? 'Goal Band Cascade'
                   : chip.id === 'btts'
                     ? 'BTTS tips'
-                    : undefined
+                    : chip.id === 'highFirepower'
+                      ? 'High firepower'
+                      : undefined
               }
-              className={`relative ${chipClass(active, locked, chip.indigo, chip.lime)}`}
+              className={`relative ${chipClass(active, locked, chip.indigo, chip.lime, chip.orange)}`}
               onClick={() => {
                 if (locked) {
                   onYourPicksLockedClick?.();
@@ -162,7 +179,7 @@ export function StatStrikeBoardFilters({
             >
               {chip.label}
               {locked ? ' · lock' : ''}
-              <ChipCountBadge count={chipCounts?.league[chip.id]} />
+              <ChipCountBadge count={count} />
             </button>
           );
         })}
