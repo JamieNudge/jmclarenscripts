@@ -21,7 +21,7 @@ type Props = {
   isStarred?: (row: StatStrikeBoardRow) => boolean;
 };
 
-/** Presentational board — parent owns `useStatStrikeBoard` (one listener set). */
+/** Presentational board — parent owns `useStatStrikeBoard` (one fetch/poll owner). */
 export function StatStrikeBoard({
   variant = 'full',
   maxRows,
