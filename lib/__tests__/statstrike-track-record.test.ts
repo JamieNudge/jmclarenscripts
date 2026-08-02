@@ -3,6 +3,7 @@ import { parseDailySelection } from '@/lib/statstrike/parse-selection';
 import {
   bestPerformingDigestChipTitle,
   bestPerformingSevenDayDigest,
+  decimalOddsForTrackRecord,
   goalBandCascadeOverGoalsRates,
   goalBandCascadeSuccessRate,
   recordsFromSelection,
@@ -48,6 +49,45 @@ describe('track-record', () => {
     expect(records[0].isCorrect).toBe(true);
     expect(records[0].bestPerformingLeague).toBe(true);
     expect(records[0].hasGoalBandCascade).toBe(true);
+    expect(records[0].decimalOdds).toBe(1.9);
+  });
+
+  it('derives track-record odds from impliedProbability when bookmakerOdds missing', () => {
+    expect(decimalOddsForTrackRecord({ bookmakerOdds: 1.85, impliedProbability: 60 })).toBe(1.85);
+    expect(decimalOddsForTrackRecord({ bookmakerOdds: null, impliedProbability: 50 })).toBeCloseTo(2, 5);
+    expect(decimalOddsForTrackRecord({ bookmakerOdds: null, impliedProbability: 0.5 })).toBeCloseTo(2, 5);
+    expect(decimalOddsForTrackRecord({ bookmakerOdds: null, impliedProbability: null })).toBeNull();
+
+    const sel = parseDailySelection({
+      date: '2026-07-16',
+      fixtures: [
+        {
+          id: 2,
+          date: '2026-07-16T15:00:00.000Z',
+          homeTeam: { id: 1, name: 'A' },
+          awayTeam: { id: 2, name: 'B' },
+          league: { id: 3, name: 'Premier League', country: 'England' },
+          status: 'FT',
+          homeScore: 1,
+          awayScore: 0,
+        },
+      ],
+      predictions: [
+        {
+          fixtureId: 2,
+          prediction: {
+            level: 'Over 2.5 Goals',
+            matchedCriteria: 7,
+            totalCriteria: 11,
+            significantStats: [],
+            impliedProbability: 55,
+          },
+        },
+      ],
+      leaguePerformance: { 'England - Premier League': 75 },
+    });
+    const records = recordsFromSelection(sel!, '2026-07-16');
+    expect(records[0].decimalOdds).toBeCloseTo(100 / 55, 5);
   });
 
   it('computes 7-day BP digest and GBC rates', () => {
@@ -109,6 +149,9 @@ describe('track-record', () => {
     expect(digest!.completedCount).toBe(3);
     expect(digest!.correctCount).toBe(2);
     expect(digest!.hitRatePercent).toBeCloseTo(66.666, 1);
+    expect(digest!.oddsPickCount).toBe(2);
+    // (1.8-1) + (-1) = -0.2 over 2 odds rows → -10%
+    expect(digest!.flatStakeROIPercent).toBeCloseTo(-10, 5);
     expect(bestPerformingDigestChipTitle(digest!)).toContain('67%');
 
     const gbc = goalBandCascadeSuccessRate(records);

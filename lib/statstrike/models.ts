@@ -66,6 +66,8 @@ export type StatStrikePrediction = {
   totalCriteria: number;
   significantStats: string[];
   bookmakerOdds?: number | null;
+  /** Percent (e.g. 55) or fraction (0.55); used for track-record odds when bookmakerOdds missing. */
+  impliedProbability?: number | null;
   sourceLabel?: string | null;
   /** Optional GBC ladder; consumer tip remains level / recommendedLevel. */
   goalBandCascade?: StatStrikeGoalBandCascade | null;

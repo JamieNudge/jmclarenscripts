@@ -158,6 +158,7 @@ function parsePredictionPayload(raw: unknown): StatStrikePrediction | null {
     totalCriteria: total,
     significantStats: sig,
     bookmakerOdds: asNumber(o.bookmakerOdds),
+    impliedProbability: asNumber(o.impliedProbability),
     sourceLabel: asString(o.sourceLabel),
     goalBandCascade,
     researchTags,

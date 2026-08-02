@@ -1,10 +1,38 @@
 import { isWinningForecast, predictionResultForFixture } from '@/lib/statstrike/correctness';
-import type { StatStrikeDailySelection, StatStrikePredictionLevel } from '@/lib/statstrike/models';
+import type {
+  StatStrikeDailySelection,
+  StatStrikePrediction,
+  StatStrikePredictionLevel,
+} from '@/lib/statstrike/models';
 import {
   predictionFromBTTSPick,
   type BTTSSelectionPick,
 } from '@/lib/statstrike/btts-selections';
 import { isBestPerformingLeague } from '@/lib/statstrike/parse-selection';
+
+/**
+ * Decimal odds for flat-stake ROI / personal save — iOS `Prediction.decimalOddsForTrackRecord`.
+ * Prefers bookmakerOdds; else derives from impliedProbability (percent or fraction). No invented prices.
+ */
+export function decimalOddsForTrackRecord(
+  prediction: Pick<StatStrikePrediction, 'bookmakerOdds' | 'impliedProbability'> | null | undefined,
+): number | null {
+  if (!prediction) return null;
+  const odds = prediction.bookmakerOdds;
+  if (odds != null && odds >= 1.01 && odds <= 100) return odds;
+
+  const imp = prediction.impliedProbability;
+  if (imp == null) return null;
+  if (imp > 10 && imp < 90) {
+    const d = 100 / imp;
+    if (d >= 1.01 && d <= 100) return d;
+  }
+  if (imp > 0.01 && imp < 1) {
+    const d = 1 / imp;
+    if (d >= 1.01 && d <= 100) return d;
+  }
+  return null;
+}
 
 /** Settled or pending app-level track row derived from a selections day. */
 export type StatStrikeTrackRecord = {
@@ -86,7 +114,7 @@ export function recordsFromSelection(
       isCorrect,
       bestPerformingLeague: isBestPerformingLeague(fixture, lp),
       hasGoalBandCascade: prediction.goalBandCascade != null,
-      decimalOdds: prediction.bookmakerOdds ?? null,
+      decimalOdds: decimalOddsForTrackRecord(prediction),
       selectionDateKey: dateKey,
     });
   }

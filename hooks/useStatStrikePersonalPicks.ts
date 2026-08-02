@@ -10,6 +10,7 @@ import {
   upsertPersonalPick,
   type PersonalPickRecord,
 } from '@/lib/statstrike/personal-store';
+import { decimalOddsForTrackRecord } from '@/lib/statstrike/track-record';
 import { useStatStrikePassSession } from '@/hooks/useStatStrikePassSession';
 
 function rowToPersonalPick(row: StatStrikeBoardRow): Omit<PersonalPickRecord, 'id' | 'savedAt'> {
@@ -27,7 +28,7 @@ function rowToPersonalPick(row: StatStrikeBoardRow): Omit<PersonalPickRecord, 'i
     isCorrect: null,
     bestPerformingLeague: row.bestPerformingLeague,
     hasGoalBandCascade: row.prediction?.goalBandCascade != null,
-    decimalOdds: row.prediction?.bookmakerOdds ?? null,
+    decimalOdds: decimalOddsForTrackRecord(row.prediction),
     selectionDateKey: row.selectionDateKey,
   };
 }
