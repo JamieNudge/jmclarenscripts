@@ -191,8 +191,15 @@ export function StatStrikeBestPerformingPanel({
                   <MetricCard
                     label="Flat-stake ROI"
                     value={`${sevenDay.flatStakeROIPercent >= 0 ? '+' : ''}${sevenDay.flatStakeROIPercent.toFixed(1)}%`}
+                    sub={`From ${sevenDay.oddsPickCount} picks with saved odds`}
                   />
-                ) : null}
+                ) : (
+                  <MetricCard
+                    label="Flat-stake ROI"
+                    value="—"
+                    sub="Not enough picks with saved odds yet"
+                  />
+                )}
                 {sevenDay.bestLeagueTitle ? (
                   <MetricCard
                     label="Best league"
@@ -271,7 +278,7 @@ function MetricCard({
     <div className="rounded-xl bg-[#0b3d5c]/5 px-2.5 py-2.5 text-center">
       <p className="text-lg font-bold tabular-nums text-[#0b3d5c] leading-tight">{value}</p>
       <p className="text-[10px] font-semibold uppercase tracking-wide text-black/75">{label}</p>
-      {sub ? <p className="mt-0.5 truncate text-[10px] text-black/60">{sub}</p> : null}
+      {sub ? <p className="mt-0.5 text-[10px] leading-snug text-black/60">{sub}</p> : null}
     </div>
   );
 }
