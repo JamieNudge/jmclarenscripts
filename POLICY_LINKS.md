@@ -40,7 +40,8 @@ Canonical app legal URLs may live on different hosts. Use the full URLs below in
 
 ---
 
-## Icon Resizer (macOS)
+## AssetForge (macOS; formerly Icon Resizer)
+URL paths keep `/icon-resizer` for stable App Store / in-app links.
 - Privacy: https://jmclarenscripts.vercel.app/privacy/icon-resizer
 - Support: https://jmclarenscripts.vercel.app/support/icon-resizer
 - Accessibility: https://jmclarenscripts.vercel.app/accessibility/icon-resizer

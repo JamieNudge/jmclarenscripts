@@ -112,7 +112,7 @@ export default function WebsitePrivacyPage() {
           <ul className="list-disc list-inside space-y-1 ml-4">
             <li>
               <Link href="/privacy/icon-resizer" className="underline hover:text-blue-300">
-                Icon Resizer — privacy policy
+                AssetForge — privacy policy
               </Link>
             </li>
             <li>

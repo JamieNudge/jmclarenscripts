@@ -2,12 +2,12 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Icon Resizer — Accessibility',
+  title: 'AssetForge — Accessibility',
   description:
-    'Accessibility information for Icon Resizer, a macOS SwiftUI app using standard controls, VoiceOver labels, and system typography.',
+    'Accessibility information for AssetForge, a macOS SwiftUI Developer Image Toolkit using standard controls, VoiceOver labels, and system typography.',
 };
 
-export default function IconResizerAccessibilityPage() {
+export default function AssetForgeAccessibilityPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#111827] to-[#1f2937] text-white">
       <div className="max-w-3xl mx-auto px-4 py-12 md:py-16">
@@ -21,12 +21,12 @@ export default function IconResizerAccessibilityPage() {
           Back to portfolio
         </Link>
 
-        <h1 className="text-3xl md:text-4xl font-bold mb-4">Icon Resizer — Accessibility</h1>
+        <h1 className="text-3xl md:text-4xl font-bold mb-4">AssetForge — Accessibility</h1>
         <p className="text-sm text-white/60 mb-8">Last updated: {new Date().getFullYear()}</p>
 
         <section className="space-y-6 text-sm md:text-base leading-relaxed text-white/90">
           <p>
-            Icon Resizer is built with <span className="font-semibold">SwiftUI</span> and standard macOS
+            AssetForge is built with <span className="font-semibold">SwiftUI</span> and standard macOS
             controls so it follows system behaviour for Dynamic Type where applicable, keyboard navigation,
             and VoiceOver.
           </p>
@@ -36,6 +36,9 @@ export default function IconResizerAccessibilityPage() {
             <li>Primary actions use labelled buttons, toggles, and pickers.</li>
             <li>Drag-and-drop targets are exposed as interactive regions with descriptive labels.</li>
             <li>You can move through the window with Tab and activate controls with Space or Return.</li>
+            <li>
+              Settings (⌘,) includes clearly labelled links to Privacy Policy, Support, and Accessibility.
+            </li>
           </ul>
 
           <h2 className="text-xl font-semibold mt-6">Visual design</h2>
@@ -55,12 +58,21 @@ export default function IconResizerAccessibilityPage() {
           <p>
             If you use assistive technologies and hit a barrier, please email{' '}
             <a
-              href="mailto:jmclarenscripts@gmail.com?subject=Icon%20Resizer%20Accessibility"
+              href="mailto:jmclarenscripts@gmail.com?subject=AssetForge%20Accessibility"
               className="underline hover:text-blue-300"
             >
               jmclarenscripts@gmail.com
             </a>{' '}
             with steps to reproduce so future updates can improve the experience.
+          </p>
+          <p>
+            <Link href="/privacy/icon-resizer" className="underline hover:text-blue-300">
+              Privacy policy
+            </Link>
+            {' · '}
+            <Link href="/support/icon-resizer" className="underline hover:text-blue-300">
+              Support
+            </Link>
           </p>
         </section>
       </div>

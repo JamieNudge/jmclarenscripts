@@ -2,12 +2,12 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Icon Resizer — Support',
+  title: 'AssetForge — Support',
   description:
-    'Support information for the Icon Resizer macOS app, including TestFlight, exports, sandbox folder access, and how to contact the developer.',
+    'Support information for AssetForge (Developer Image Toolkit), including TestFlight, exports, sandbox folder access, and how to contact the developer.',
 };
 
-export default function IconResizerSupportPage() {
+export default function AssetForgeSupportPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#111827] to-[#1f2937] text-white">
       <div className="max-w-3xl mx-auto px-4 py-12 md:py-16">
@@ -21,20 +21,24 @@ export default function IconResizerSupportPage() {
           Back to portfolio
         </Link>
 
-        <h1 className="text-3xl md:text-4xl font-bold mb-4">Icon Resizer — Support</h1>
+        <h1 className="text-3xl md:text-4xl font-bold mb-4">AssetForge — Support</h1>
         <p className="text-sm text-white/60 mb-8">Last updated: {new Date().getFullYear()}</p>
 
         <section className="space-y-6 text-sm md:text-base leading-relaxed text-white/90">
           <p>
-            Thanks for trying Icon Resizer. This page covers common questions, especially for beta testers
-            on <span className="font-semibold">TestFlight</span> or the Mac App Store build.
+            Thanks for trying AssetForge (Developer Image Toolkit). This page covers common questions,
+            especially for beta testers on <span className="font-semibold">TestFlight</span> or the Mac App
+            Store build. (Earlier builds may have shown the name Icon Resizer.)
           </p>
 
           <h2 className="text-xl font-semibold mt-6">Getting help</h2>
           <p>If something goes wrong, include when you can:</p>
           <ul className="list-disc list-inside space-y-1 ml-4">
             <li>macOS version and whether you installed from TestFlight or the App Store.</li>
-            <li>Which mode you used (App Icons, Screenshots, Web headers, Image lab).</li>
+            <li>
+              Which tool you used (Apple Icons, Apple Screenshots, Google Play Icons / Screenshots, Web
+              &amp; Social, Brand Assets, YouTube Channel, or Image Lab).
+            </li>
             <li>What you expected vs what happened (for example, export count, error text).</li>
           </ul>
 
@@ -44,6 +48,12 @@ export default function IconResizerSupportPage() {
             use the <span className="font-semibold">folder picker</span> when the app offers it and select a
             destination (for example a folder on your Desktop or in Documents). After you grant access,
             exports should complete normally.
+          </p>
+
+          <h2 className="text-xl font-semibold mt-6">In-app links</h2>
+          <p>
+            Open <span className="font-semibold">AssetForge → Settings…</span> (⌘,) for Privacy Policy,
+            Support, and Accessibility links that open these pages in your browser.
           </p>
 
           <h2 className="text-xl font-semibold mt-6">Source code</h2>
@@ -64,15 +74,24 @@ export default function IconResizerSupportPage() {
           <p>
             <span className="font-semibold">Email:</span>{' '}
             <a
-              href="mailto:jmclarenscripts@gmail.com?subject=Icon%20Resizer%20Support"
+              href="mailto:jmclarenscripts@gmail.com?subject=AssetForge%20Support"
               className="underline hover:text-blue-300"
             >
               jmclarenscripts@gmail.com
             </a>
           </p>
           <p>
-            Icon Resizer is an indie app; response times may vary, but legitimate bug reports and
-            usability feedback are welcome.
+            AssetForge is an indie app; response times may vary, but legitimate bug reports and usability
+            feedback are welcome.
+          </p>
+          <p>
+            <Link href="/privacy/icon-resizer" className="underline hover:text-blue-300">
+              Privacy policy
+            </Link>
+            {' · '}
+            <Link href="/accessibility/icon-resizer" className="underline hover:text-blue-300">
+              Accessibility
+            </Link>
           </p>
         </section>
       </div>
