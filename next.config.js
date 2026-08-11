@@ -7,6 +7,10 @@ const nextConfig = {
     return [
       { source: '/best-picks', destination: '/football-predictions', permanent: true },
       { source: '/best-picks/:path*', destination: '/football-predictions/:path*', permanent: true },
+      // AssetForge (formerly Icon Resizer) — keep old App Store / bookmark URLs working
+      { source: '/privacy/icon-resizer', destination: '/privacy/assetforge', permanent: true },
+      { source: '/support/icon-resizer', destination: '/support/assetforge', permanent: true },
+      { source: '/accessibility/icon-resizer', destination: '/accessibility/assetforge', permanent: true },
       // GoalLab V2 preview paths → canonical (cutover)
       { source: '/football-predictions/v2', destination: '/football-predictions', permanent: true },
       {

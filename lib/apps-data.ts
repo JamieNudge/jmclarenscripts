@@ -252,9 +252,9 @@ export const apps: App[] = [
     platform: 'macOS',
     status: 'beta',
     websiteUrl: 'https://github.com/JamieNudge/IconResizerAppleApps',
-    privacyUrl: '/privacy/icon-resizer',
-    supportUrl: '/support/icon-resizer',
-    accessibilityUrl: '/accessibility/icon-resizer',
+    privacyUrl: '/privacy/assetforge',
+    supportUrl: '/support/assetforge',
+    accessibilityUrl: '/accessibility/assetforge',
   },
   {
     id: 'aikido-vocabulary-app',

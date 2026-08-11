@@ -66,11 +66,11 @@ export default function AssetForgeAccessibilityPage() {
             with steps to reproduce so future updates can improve the experience.
           </p>
           <p>
-            <Link href="/privacy/icon-resizer" className="underline hover:text-blue-300">
+            <Link href="/privacy/assetforge" className="underline hover:text-blue-300">
               Privacy policy
             </Link>
             {' · '}
-            <Link href="/support/icon-resizer" className="underline hover:text-blue-300">
+            <Link href="/support/assetforge" className="underline hover:text-blue-300">
               Support
             </Link>
           </p>

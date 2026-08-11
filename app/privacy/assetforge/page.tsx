@@ -22,11 +22,8 @@ export default function AssetForgePrivacyPage() {
         </Link>
 
         <h1 className="text-3xl md:text-4xl font-bold mb-4">AssetForge — Privacy Policy</h1>
-        <p className="text-sm text-white/60 mb-2">
+        <p className="text-sm text-white/60 mb-8">
           Last updated: {new Date().getFullYear()}
-        </p>
-        <p className="text-sm text-white/50 mb-8">
-          Formerly published as Icon Resizer. This URL stays stable for App Store and in-app links.
         </p>
 
         <section className="space-y-6 text-sm md:text-base leading-relaxed text-white/90">
@@ -101,11 +98,11 @@ export default function AssetForgePrivacyPage() {
           </p>
           <p>
             Related pages:{' '}
-            <Link href="/support/icon-resizer" className="underline hover:text-blue-300">
+            <Link href="/support/assetforge" className="underline hover:text-blue-300">
               Support
             </Link>
             {' · '}
-            <Link href="/accessibility/icon-resizer" className="underline hover:text-blue-300">
+            <Link href="/accessibility/assetforge" className="underline hover:text-blue-300">
               Accessibility
             </Link>
             .

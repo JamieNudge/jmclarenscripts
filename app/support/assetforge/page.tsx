@@ -28,7 +28,7 @@ export default function AssetForgeSupportPage() {
           <p>
             Thanks for trying AssetForge (Developer Image Toolkit). This page covers common questions,
             especially for beta testers on <span className="font-semibold">TestFlight</span> or the Mac App
-            Store build. (Earlier builds may have shown the name Icon Resizer.)
+            Store build.
           </p>
 
           <h2 className="text-xl font-semibold mt-6">Getting help</h2>
@@ -85,11 +85,11 @@ export default function AssetForgeSupportPage() {
             feedback are welcome.
           </p>
           <p>
-            <Link href="/privacy/icon-resizer" className="underline hover:text-blue-300">
+            <Link href="/privacy/assetforge" className="underline hover:text-blue-300">
               Privacy policy
             </Link>
             {' · '}
-            <Link href="/accessibility/icon-resizer" className="underline hover:text-blue-300">
+            <Link href="/accessibility/assetforge" className="underline hover:text-blue-300">
               Accessibility
             </Link>
           </p>

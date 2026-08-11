@@ -111,7 +111,7 @@ export default function WebsitePrivacyPage() {
           <p>Examples of per-app pages on this domain (including tools and cross-promoted apps) include:</p>
           <ul className="list-disc list-inside space-y-1 ml-4">
             <li>
-              <Link href="/privacy/icon-resizer" className="underline hover:text-blue-300">
+              <Link href="/privacy/assetforge" className="underline hover:text-blue-300">
                 AssetForge — privacy policy
               </Link>
             </li>
