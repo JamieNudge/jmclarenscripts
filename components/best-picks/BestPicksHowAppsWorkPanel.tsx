@@ -8,6 +8,7 @@ import { bestPicksGridTileClassName } from '@/lib/best-picks-panel-shell';
 
 const statStrike = apps.find((a) => a.id === 'stat-strike');
 const goalLab = apps.find((a) => a.id === 'goallab');
+const popGoals = apps.find((a) => a.id === 'popgoals');
 
 /** Floated in copy so the first line sits beside the icon; later lines can run full width under it. */
 const iconFloatClass =
@@ -144,30 +145,25 @@ export function BestPicksHowAppsWorkPanel() {
                   in a rich and growing archive.
                 </>,
               )}
+              {storeAppLink(
+                popGoals?.appStoreUrl,
+                'PopGoals',
+                popGoals?.icon,
+                <div className="space-y-1">
+                  <p>
+                    A calm bubble-lake app for live hot-zone targets, alerts, and settled win/loss tracking.
+                  </p>
+                  {popGoals?.appStoreTrialNote ? (
+                    <p className="font-medium text-[var(--hub-heading-accent)]">{popGoals.appStoreTrialNote}</p>
+                  ) : null}
+                </div>,
+              )}
             </ul>
           </div>
 
           <div>
             <h3 className="text-sm font-semibold text-[var(--hub-accent-link)] mb-2">Coming soon</h3>
             <ul className="space-y-4 list-none pl-0">
-              <li className="list-none pl-0 [&:after]:content-[''] [&:after]:block [&:after]:clear-both">
-                <div className={iconFloatClass} aria-hidden>
-                  <Image
-                    src="/images/popgoals-icon.png"
-                    alt="PopGoals app icon"
-                    width={144}
-                    height={144}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="min-w-0 space-y-1">
-                  <p className="font-semibold text-[var(--hub-accent-link)] text-sm sm:text-base">PopGoals</p>
-                  <p className="text-xs sm:text-sm text-[var(--hub-text-soft)] leading-relaxed">
-                    A calm bubble-lake app for live hot-zone targets, alerts, and settled win/loss tracking. Not on
-                    the App Store yet.
-                  </p>
-                </div>
-              </li>
               <li className="space-y-1.5 text-xs sm:text-sm text-[var(--hub-text-soft)]">
                 <p>
                   <span className="font-semibold text-[var(--hub-accent-link)]">ProphIt </span>

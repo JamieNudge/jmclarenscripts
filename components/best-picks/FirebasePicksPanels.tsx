@@ -9,7 +9,7 @@ import { BestPicksHowAppsWorkPanel } from '@/components/best-picks/BestPicksHowA
 import { StatStrikeBetaFeedbackForm } from '@/components/best-picks/StatStrikeBetaFeedbackForm';
 import { BestPicksVideo } from '@/components/best-picks/BestPicksVideo';
 import { bestPicksGridTileClassName } from '@/lib/best-picks-panel-shell';
-import { bestPicksPopgoalsComingSoonMeta } from '@/lib/best-picks-popgoals-coming-soon-meta';
+import { apps } from '@/lib/apps-data';
 import {
   statstrikeAndroidBetaHref,
   statstrikeAndroidBetaMeta,
@@ -18,6 +18,8 @@ import {
 import type { AnotherThingPost } from '@/lib/and-another-thing';
 import { isFirebaseClientConfigured } from '@/lib/firebase-client';
 
+const popGoals = apps.find((a) => a.id === 'popgoals');
+
 /** Floated icon — title beside icon; body copy wraps full width underneath (matches How apps work). */
 const comingSoonIconFloatClass =
   'shrink-0 float-left mt-0.5 mr-3 mb-1.5 rounded-2xl overflow-hidden border border-amber-200/30 bg-[var(--hub-elevated)] w-14 h-14 md:w-16 md:h-16';
@@ -25,10 +27,9 @@ const comingSoonIconFloatClass =
 const comingSoonScrollArea =
   'min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-1 -mr-0.5 [scrollbar-gutter:stable] scroll-smooth overscroll-y-contain touch-pan-y';
 
-/** Right column: StatStrike Android beta + PopGoals teaser + ProphIt in one tile (md: spans both rows). */
+/** Right column: StatStrike Android beta + PopGoals live + ProphIt in one tile (md: spans both rows). */
 function BestPicksComingSoonAndProphitPanel() {
   const ss = statstrikeAndroidBetaMeta;
-  const m = bestPicksPopgoalsComingSoonMeta;
   return (
     <div className={`${bestPicksGridTileClassName} min-h-0 h-full gap-0`}>
       <h2 className="text-lg md:text-xl font-semibold text-[var(--hub-text)] tracking-tight shrink-0 mb-3">
@@ -118,26 +119,41 @@ function BestPicksComingSoonAndProphitPanel() {
       <section className="space-y-3 pb-4 border-b border-[var(--hub-border-soft)]">
         <div className="min-w-0 [&:after]:content-[''] [&:after]:block [&:after]:clear-both">
           <div className={comingSoonIconFloatClass} aria-hidden>
-            <Image
-              src={m.iconSrc}
-              alt=""
-              width={144}
-              height={144}
-              className="w-full h-full object-cover"
-            />
+            {popGoals?.icon ? (
+              <Image
+                src={popGoals.icon}
+                alt=""
+                width={144}
+                height={144}
+                className="w-full h-full object-cover"
+              />
+            ) : null}
           </div>
           <div className="min-w-0 space-y-2">
             <div className="flex flex-wrap items-center gap-2 gap-y-1">
               <h3 className="text-base md:text-lg font-semibold text-[var(--hub-text)] tracking-tight min-w-0">
-                {m.displayName}
+                {popGoals?.name ?? 'PopGoals'}
               </h3>
-              <span className="shrink-0 rounded-full border border-[var(--hub-warn-border)] bg-[var(--hub-warn-bg)] px-2.5 py-1 text-[11px] font-bold tracking-wide text-[var(--hub-accent-link)]">
-                Coming soon
+              <span className="shrink-0 rounded-full border border-[var(--hub-success-border)] bg-[var(--hub-success-bg)] px-2.5 py-1 text-[11px] font-bold tracking-wide text-[var(--hub-success)]">
+                Live · iOS
               </span>
             </div>
             <p className="text-sm text-[var(--hub-text-soft)] leading-relaxed">
-              iOS app in development. App Store listing and preview copy will follow.
+              Live match intelligence with hot-zone targets and fixture lifecycle states.
+              {popGoals?.appStoreTrialNote ? ` ${popGoals.appStoreTrialNote}.` : ''}
             </p>
+            {popGoals?.appStoreUrl ? (
+              <p>
+                <a
+                  href={popGoals.appStoreUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-semibold text-[var(--hub-accent-link)] underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)]"
+                >
+                  App Store →
+                </a>
+              </p>
+            ) : null}
           </div>
         </div>
       </section>
@@ -174,9 +190,9 @@ export function FirebasePicksPanels({
         </div>
       )}
       {/*
-        md: 3×2 — left: App / Video; centre: How apps (row-span 2); right: coming-soon+ProphIt (row-span 2).
+        md: 3×2 — left: App / Video; centre: How apps (row-span 2); right: Android beta+PopGoals+ProphIt (row-span 2).
         md to <2xl: And Another Thing… compact strip under the grid (full width); 2xl: microblog+blog in right rail only.
-        max-md: BPL → How apps → blog → AAT… → Coming soon → Video (order-*); blog hidden md+ (md rail / 2xl right column).
+        max-md: BPL → How apps → blog → AAT… → Coming soon tile → Video (order-*); blog hidden md+ (md rail / 2xl right column).
       */}
       <div className="grid grid-cols-1 gap-4 max-md:[grid-template-rows:repeat(6,minmax(0,26rem))] md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.3fr)_minmax(0,1.3fr)] md:gap-5 md:max-2xl:[grid-template-rows:minmax(0,26rem)_minmax(0,26rem)_minmax(0,14rem)] 2xl:[grid-template-rows:minmax(0,26rem)_minmax(0,26rem)] [&>*]:min-h-0 [&>*]:min-w-0">
         <div className="min-h-0 h-full flex flex-col max-md:order-1 md:order-none md:col-start-1 md:row-start-1">

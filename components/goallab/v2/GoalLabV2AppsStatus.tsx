@@ -1,7 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { apps } from '@/lib/apps-data';
-import { bestPicksPopgoalsComingSoonMeta } from '@/lib/best-picks-popgoals-coming-soon-meta';
 
 const goalLab = apps.find((a) => a.id === 'goallab');
 const statStrike = apps.find((a) => a.id === 'stat-strike');
@@ -15,6 +14,7 @@ type StatusItem = {
   href?: string;
   hrefLabel?: string;
   external?: boolean;
+  trialNote?: string;
 };
 
 const items: StatusItem[] = [
@@ -28,6 +28,7 @@ const items: StatusItem[] = [
           href: goalLab.appStoreUrl,
           hrefLabel: 'App Store',
           external: true,
+          trialNote: goalLab.appStoreTrialNote,
         } satisfies StatusItem,
       ]
     : []),
@@ -41,18 +42,24 @@ const items: StatusItem[] = [
           href: statStrike.appStoreUrl,
           hrefLabel: 'App Store',
           external: true,
+          trialNote: statStrike.appStoreTrialNote,
         } satisfies StatusItem,
       ]
     : []),
-  {
-    name: bestPicksPopgoalsComingSoonMeta.displayName,
-    iconSrc: bestPicksPopgoalsComingSoonMeta.iconSrc,
-    status: 'Coming soon',
-    body: 'Live match intelligence with hot-zone targets and fixture lifecycle states.',
-    href: popGoals?.supportUrl ?? '/support/popgoals',
-    hrefLabel: 'Support & info',
-    external: false,
-  },
+  ...(popGoals?.appStoreUrl
+    ? [
+        {
+          name: 'PopGoals',
+          iconSrc: popGoals.icon,
+          status: 'Live · iOS',
+          body: 'Live match intelligence with hot-zone targets and fixture lifecycle states.',
+          href: popGoals.appStoreUrl,
+          hrefLabel: 'App Store',
+          external: true,
+          trialNote: popGoals.appStoreTrialNote,
+        } satisfies StatusItem,
+      ]
+    : []),
   {
     name: 'ProphIt',
     status: 'Coming soon',
@@ -112,20 +119,27 @@ export function GoalLabV2AppsStatus() {
                 </div>
                 <p className="text-sm text-[var(--gl-text-soft)] leading-relaxed">{item.body}</p>
                 {item.href && item.hrefLabel ? (
-                  item.external ? (
-                    <a
-                      href={item.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={linkClass}
-                    >
-                      {item.hrefLabel} →
-                    </a>
-                  ) : (
-                    <Link href={item.href} className={linkClass}>
-                      {item.hrefLabel} →
-                    </Link>
-                  )
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                    {item.external ? (
+                      <a
+                        href={item.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={linkClass}
+                      >
+                        {item.hrefLabel} →
+                      </a>
+                    ) : (
+                      <Link href={item.href} className={linkClass}>
+                        {item.hrefLabel} →
+                      </Link>
+                    )}
+                    {item.trialNote ? (
+                      <span className="text-[11px] font-medium text-[var(--gl-text-muted)]">
+                        {item.trialNote}
+                      </span>
+                    ) : null}
+                  </div>
                 ) : null}
               </div>
             </li>
