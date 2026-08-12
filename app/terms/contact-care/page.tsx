@@ -41,8 +41,6 @@ export default function ContactCareTermsPage() {
           <p>
             <a
               href={APPLE_STANDARD_EULA_URL}
-              target="_blank"
-              rel="noopener noreferrer"
               className="underline hover:text-teal-300"
             >
               Apple Standard EULA (Licensed Application End User License Agreement)
