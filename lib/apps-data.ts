@@ -145,6 +145,7 @@ export const apps: App[] = [
     status: 'beta',
     privacyUrl: '/privacy/contact-care',
     supportUrl: '/support/contact-care',
+    termsUrl: '/terms/contact-care',
   },
   {
     id: 'draw-with-friends',

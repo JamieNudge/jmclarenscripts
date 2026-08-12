@@ -37,6 +37,8 @@ Canonical app legal URLs may live on different hosts. Use the full URLs below in
 ## Contact Care
 - Privacy: https://jmclarenscripts.vercel.app/privacy/contact-care
 - Support: https://jmclarenscripts.vercel.app/support/contact-care
+- Terms: https://jmclarenscripts.vercel.app/terms/contact-care
+- Apple Standard EULA: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
 
 ---
 
