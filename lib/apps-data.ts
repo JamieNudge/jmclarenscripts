@@ -123,15 +123,23 @@ export const apps: App[] = [
   {
     id: 'contact-care',
     name: 'Contact Care',
-    tagline: 'Cross-platform contact management',
+    tagline: 'Stay in touch with the people who matter',
     description:
-      'Contact Care is a cross-platform app for managing and caring for your contacts. Placeholder — full description and features to be added.',
+      'Contact Care helps you maintain real relationships with gentle reminders for the people who matter. Configure weekly, monthly, spaced, and special schedules per contact, see who’s due today as floating reminder bubbles, personalise themes and languages, and unlock Premium to remove ads — built with Flutter for iOS and Android.',
     color: '#14B8A6',
     icon: '/images/contact-care-icon.png',
-    screenshots: [],
+    screenshots: [
+      '/images/contact-care-1.png',
+      '/images/contact-care-2.png',
+      '/images/contact-care-3.png',
+    ],
     features: [
-      'Cross-platform (iOS & Android)',
-      'Placeholder — features to be added',
+      'Pending reminder dashboard with contact bubbles',
+      'Per-contact weekly, monthly, spaced, and special schedules',
+      'Device notifications when it’s time to reach out',
+      'Theme colour and language personalisation',
+      'Premium removes all advertisements',
+      'Cross-platform Flutter app for iOS and Android',
     ],
     platform: 'Cross-platform',
     status: 'beta',
