@@ -10,11 +10,7 @@ import { StatStrikeBetaFeedbackForm } from '@/components/best-picks/StatStrikeBe
 import { BestPicksVideo } from '@/components/best-picks/BestPicksVideo';
 import { bestPicksGridTileClassName } from '@/lib/best-picks-panel-shell';
 import { apps } from '@/lib/apps-data';
-import {
-  statstrikeAndroidBetaHref,
-  statstrikeAndroidBetaMeta,
-  type StatStrikeAndroidBetaHrefKey,
-} from '@/lib/statstrike-android-beta-meta';
+import { statstrikeAndroidMeta } from '@/lib/statstrike-android-beta-meta';
 import type { AnotherThingPost } from '@/lib/and-another-thing';
 import { isFirebaseClientConfigured } from '@/lib/firebase-client';
 
@@ -27,9 +23,9 @@ const comingSoonIconFloatClass =
 const comingSoonScrollArea =
   'min-h-0 flex-1 overflow-y-auto overflow-x-hidden pr-1 -mr-0.5 [scrollbar-gutter:stable] scroll-smooth overscroll-y-contain touch-pan-y';
 
-/** Right column: StatStrike Android beta + PopGoals live + ProphIt in one tile (md: spans both rows). */
+/** Right column: StatStrike Android + PopGoals live + ProphIt in one tile (md: spans both rows). */
 function BestPicksComingSoonAndProphitPanel() {
-  const ss = statstrikeAndroidBetaMeta;
+  const ss = statstrikeAndroidMeta;
   return (
     <div className={`${bestPicksGridTileClassName} min-h-0 h-full gap-0`}>
       <h2 className="text-lg md:text-xl font-semibold text-[var(--hub-text)] tracking-tight shrink-0 mb-3">
@@ -58,43 +54,22 @@ function BestPicksComingSoonAndProphitPanel() {
                 </span>
               ) : null}
               <span className="shrink-0 rounded-full border border-[var(--hub-success-border)] bg-[var(--hub-success-bg)] px-2.5 py-1 text-[11px] font-bold tracking-wide text-[var(--hub-success)]">
-                Android closed test
+                Live on Google Play
               </span>
             </div>
             <p className="text-sm text-[var(--hub-text-soft)] leading-relaxed">
-              StatStrike for Android is in closed testing. Follow these steps in order — joining the group alone
-              does not install the app.
+              StatStrike is now live on Google Play. Install the Android app for daily forecasts, BTTS
+              picks, confidence gauges, and the public track record.
             </p>
-            <ol className="space-y-2.5 text-sm text-[var(--hub-text-soft)] leading-relaxed list-none pl-0">
-              {ss.installSteps.map((step, index) => (
-                <li key={step.title} className="flex gap-2.5">
-                  <span
-                    className="shrink-0 flex h-6 w-6 items-center justify-center rounded-full border border-[var(--hub-success-border)] bg-[var(--hub-success-bg)] text-[11px] font-bold text-[var(--hub-success)]"
-                    aria-hidden
-                  >
-                    {index + 1}
-                  </span>
-                  <div className="min-w-0 space-y-0.5">
-                    <p className="font-semibold text-[var(--hub-text)]">{step.title}</p>
-                    <p className="text-[var(--hub-text-soft)]">{step.body}</p>
-                    {'hrefKey' in step && step.hrefKey ? (
-                      <p>
-                        <a
-                          href={statstrikeAndroidBetaHref(step.hrefKey as StatStrikeAndroidBetaHrefKey)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="font-semibold text-[var(--hub-accent-link)] underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)]"
-                        >
-                          {step.linkLabel}
-                        </a>
-                      </p>
-                    ) : null}
-                  </div>
-                </li>
-              ))}
-            </ol>
-            <p className="rounded-lg border border-[var(--hub-warn-border)] bg-[var(--hub-warn-bg)] px-3 py-2 text-xs text-[var(--hub-on-tint)] leading-relaxed">
-              {ss.accountNote}
+            <p>
+              <a
+                href={ss.playStoreInstallUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-[var(--hub-accent-link)] underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)]"
+              >
+                {ss.playStoreInstallLabel} →
+              </a>
             </p>
           </div>
         </div>
@@ -190,7 +165,7 @@ export function FirebasePicksPanels({
         </div>
       )}
       {/*
-        md: 3×2 — left: App / Video; centre: How apps (row-span 2); right: Android beta+PopGoals+ProphIt (row-span 2).
+        md: 3×2 — left: App / Video; centre: How apps (row-span 2); right: Android app+PopGoals+ProphIt (row-span 2).
         md to <2xl: And Another Thing… compact strip under the grid (full width); 2xl: microblog+blog in right rail only.
         max-md: BPL → How apps → blog → AAT… → Coming soon tile → Video (order-*); blog hidden md+ (md rail / 2xl right column).
       */}

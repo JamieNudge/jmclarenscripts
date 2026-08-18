@@ -69,7 +69,7 @@ export function StatStrikeBetaFeedbackForm({ collapsibleTrigger = false }: StatS
       )}
       {collapsibleTrigger && (
         <p className="text-[var(--hub-text-soft)] -mt-1">
-          Ask a question, share feedback, or report a bug from the Android closed test.
+          Ask a question, share feedback, or report a bug from the Android app.
         </p>
       )}
 

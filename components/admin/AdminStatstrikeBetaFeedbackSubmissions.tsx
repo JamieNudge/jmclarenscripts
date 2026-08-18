@@ -233,9 +233,9 @@ export function AdminStatstrikeBetaFeedbackSubmissions({
     <section className="rounded-2xl border border-emerald-400/25 bg-emerald-950/20 p-5 space-y-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="text-lg font-semibold text-white">StatStrike Android beta feedback</h2>
+          <h2 className="text-lg font-semibold text-white">StatStrike Android feedback</h2>
           <p className="text-xs text-white/45 mt-1 leading-relaxed">
-            From the GoalLab home page closed-test form. Data loads from{' '}
+            From the GoalLab home page Android app form. Data loads from{' '}
             <code className="text-emerald-200/80">statstrikeBetaFeedbackSubmissions</code> (server only). Mark read,
             delete, or block the submitter&apos;s email (shared blocklist with prediction ideas).
           </p>

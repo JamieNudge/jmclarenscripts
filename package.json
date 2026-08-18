@@ -9,7 +9,8 @@
     "lint": "next lint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "verify:statstrike-beta": "node scripts/verify-statstrike-closed-test.mjs"
+    "verify:statstrike-android": "node scripts/verify-statstrike-closed-test.mjs",
+    "verify:statstrike-beta": "npm run verify:statstrike-android"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",

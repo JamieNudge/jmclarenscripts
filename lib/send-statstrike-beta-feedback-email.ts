@@ -26,7 +26,7 @@ export function formatStatstrikeBetaFeedbackEmailBody(payload: StatstrikeBetaFee
     line('Message', payload.message),
     line('User agent', payload.userAgent),
   ].filter(Boolean);
-  return `New StatStrike Android beta feedback\n\n${parts.join('\n')}`;
+  return `New StatStrike Android feedback\n\n${parts.join('\n')}`;
 }
 
 /**
@@ -55,7 +55,7 @@ export async function sendStatstrikeBetaFeedbackNotifyEmail(
   await transporter.sendMail({
     from: user,
     to,
-    subject: `[Football Predictions] StatStrike Android beta — ${subjectName}`,
+    subject: `[Football Predictions] StatStrike Android — ${subjectName}`,
     text: formatStatstrikeBetaFeedbackEmailBody(payload),
   });
 }

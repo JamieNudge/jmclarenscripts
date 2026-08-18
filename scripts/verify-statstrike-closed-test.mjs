@@ -1,33 +1,22 @@
 const meta = {
   applicationId: 'com.jamienudge.statstrike',
-  playStoreJoinUrl: 'https://play.google.com/apps/testing/com.jamienudge.statstrike',
-  googleGroupUrl: 'https://groups.google.com/g/statstriketestgroup',
   playStoreInstallUrl:
-    'https://play.google.com/store/apps/details?id=com.jamienudge.statstrike',
-  googleGroupEmail: 'statstriketestgroup@googlegroups.com',
+    'https://play.google.com/store/apps/details?id=com.jamienudge.statstrike&pcampaignid=web_share',
 };
 
 /** @typedef {{ id: string; label: string; status: 'pass' | 'fail' | 'manual'; detail: string }} Check */
 
 /** @returns {Promise<{ checks: Check[]; manualPlayConsoleSteps: string[]; manualDeviceTestSteps: string[] }>} */
-async function verifyStatStrikeClosedTestLinks() {
+async function verifyStatStrikeAndroidLinks() {
   /** @type {Check[]} */
   const checks = [];
 
-  const optInResponse = await fetch(meta.playStoreJoinUrl, { method: 'HEAD', redirect: 'manual' });
+  const playStoreResponse = await fetch(meta.playStoreInstallUrl, { method: 'HEAD', redirect: 'manual' });
   checks.push({
-    id: 'opt-in-url',
-    label: 'Play opt-in URL responds',
-    status: optInResponse.status === 302 || optInResponse.status === 200 ? 'pass' : 'fail',
-    detail: `GET ${meta.playStoreJoinUrl} → HTTP ${optInResponse.status}`,
-  });
-
-  const groupResponse = await fetch(meta.googleGroupUrl, { method: 'HEAD' });
-  checks.push({
-    id: 'google-group-url',
-    label: 'Google Group URL responds',
-    status: groupResponse.ok ? 'pass' : 'fail',
-    detail: `GET ${meta.googleGroupUrl} → HTTP ${groupResponse.status}`,
+    id: 'play-store-url',
+    label: 'Play Store listing URL responds',
+    status: playStoreResponse.status === 302 || playStoreResponse.status === 200 ? 'pass' : 'fail',
+    detail: `GET ${meta.playStoreInstallUrl} → HTTP ${playStoreResponse.status}`,
   });
 
   const installUrl = new URL(meta.playStoreInstallUrl);
@@ -39,34 +28,33 @@ async function verifyStatStrikeClosedTestLinks() {
   });
 
   checks.push({
-    id: 'play-console-group-link',
-    label: 'Google Group linked in Play Console',
+    id: 'play-console-production-availability',
+    label: 'Google Play production listing is available',
     status: 'manual',
-    detail: `In Play Console → Testing → Closed testing → Testers, confirm ${meta.googleGroupEmail} is listed under Google Groups.`,
+    detail:
+      'In Play Console → StatStrike → Dashboard / Production, confirm the current release is active and the store listing changes are published.',
   });
 
   checks.push({
-    id: 'play-console-release',
-    label: 'Closed test release available to testers',
+    id: 'play-console-country-availability',
+    label: 'Google Play availability matches intended regions',
     status: 'manual',
     detail:
-      'In Play Console → Testing → Closed testing → Releases, confirm the latest release status is “Available to testers” and countries/regions include your testers.',
+      'In Play Console → Reach and devices, confirm the production listing is available in the intended countries and on supported devices.',
   });
 
   return {
     checks,
     manualPlayConsoleSteps: [
-      'Open Google Play Console → StatStrike → Testing → Closed testing → Testers.',
-      `Under Google Groups, confirm ${meta.googleGroupEmail} is listed and saved.`,
-      'Open Closed testing → Releases and confirm status is “Available to testers”.',
-      'Review country/region availability matches where your testers are located.',
+      'Open Google Play Console → StatStrike.',
+      'Confirm Production shows the latest approved release as active.',
+      'Open Store listing and confirm the Android CTA changes are published.',
+      'Review Reach and devices to confirm country/device availability matches your intended audience.',
     ],
     manualDeviceTestSteps: [
-      'On an Android phone, sign in with a Google account that is not your developer account.',
-      `Join ${meta.googleGroupUrl} with that account.`,
-      'Wait at least 15 minutes for membership to sync.',
-      `Open ${meta.playStoreJoinUrl} on the phone (same account).`,
-      'Tap Become a tester, then install from Google Play.',
+      'On an Android phone, open the public Google Play listing.',
+      `Visit ${meta.playStoreInstallUrl}.`,
+      'Confirm the listing loads, the app can be installed, and the Play badges/copy look correct.',
     ],
   };
 }
@@ -80,7 +68,7 @@ function formatReport(report) {
   return lines.join('\n');
 }
 
-const report = await verifyStatStrikeClosedTestLinks();
+const report = await verifyStatStrikeAndroidLinks();
 console.log(formatReport(report));
 
 const failed = report.checks.filter((check) => check.status === 'fail');
