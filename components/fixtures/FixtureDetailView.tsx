@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
-import { onValue, ref } from 'firebase/database';
+import { get, ref } from 'firebase/database';
 import { HubFootballLink } from '@/components/hub/HubFootballLink';
 import { BestPicksHubWithSideAdLayout } from '@/components/best-picks/BestPicksHubWithSideAdLayout';
 import { BestPicksSiteNav } from '@/components/best-picks/BestPicksSiteNav';
@@ -24,7 +24,8 @@ import { FixtureMatchHistorySection } from '@/components/fixtures/FixtureMatchHi
 import {
   buildKeySignalLines,
   findSelectionStatsForFixture,
-  fixtureContextLoadPath,
+  fixtureContextRtdbPath,
+  fixtureContextsDayRtdbPath,
   parseFixtureContextForFixture,
   type KeySignalLine,
 } from '@/lib/fixture-key-signals';
@@ -54,7 +55,8 @@ export function FixtureDetailView() {
   const [error, setError] = useState<string | null>(null);
 
   const { unanimousPath, selectionPath } = statStrikeRtdbPathsFromEnv(dateKey);
-  const contextPath = fixtureId ? fixtureContextLoadPath(dateKey, fixtureId) : '';
+  const contextDirectPath = fixtureId ? fixtureContextRtdbPath(dateKey, fixtureId) : '';
+  const contextDayPath = fixtureId ? fixtureContextsDayRtdbPath(dateKey) : '';
   const configured = isFirebaseClientConfigured();
 
   useEffect(() => {
@@ -74,84 +76,55 @@ export function FixtureDetailView() {
     }
 
     setLoading(true);
-    let pending = 3;
-    let exportDone = false;
-    let selectionDone = false;
-    let contextDone = false;
+    let cancelled = false;
 
-    const finishIfReady = () => {
-      pending -= 1;
-      if (pending <= 0) setLoading(false);
+    const loadContext = async () => {
+      const directSnap = await get(ref(db, contextDirectPath));
+      if (directSnap.exists()) return directSnap.val();
+      const daySnap = await get(ref(db, contextDayPath));
+      return daySnap.val();
     };
 
-    const exportRef = ref(db, unanimousPath);
-    const selectionRef = ref(db, selectionPath);
-    const contextRef = ref(db, contextPath);
-
-    const unsubExport = onValue(
-      exportRef,
-      (snap) => {
-        setError(null);
-        setExportVal(snap.val());
-        if (!exportDone) {
-          exportDone = true;
-          finishIfReady();
-        }
-      },
-      (err) => {
-        setError(err.message);
-        setExportVal(null);
-        if (!exportDone) {
-          exportDone = true;
-          finishIfReady();
-        }
-      },
-    );
-
-    const unsubSelection = onValue(
-      selectionRef,
-      (snap) => {
-        setSelectionVal(snap.val());
-        if (!selectionDone) {
-          selectionDone = true;
-          finishIfReady();
-        }
-      },
-      () => {
-        setSelectionVal(null);
-        if (!selectionDone) {
-          selectionDone = true;
-          finishIfReady();
-        }
-      },
-    );
-
-    const unsubContext = onValue(
-      contextRef,
-      (snap) => {
-        setContextLoadError(null);
-        setContextVal(snap.val());
-        if (!contextDone) {
-          contextDone = true;
-          finishIfReady();
-        }
-      },
-      (err) => {
-        setContextLoadError(err.message);
-        setContextVal(null);
-        if (!contextDone) {
-          contextDone = true;
-          finishIfReady();
-        }
-      },
-    );
+    void Promise.all([
+      get(ref(db, unanimousPath))
+        .then((snap) => {
+          if (cancelled) return;
+          setError(null);
+          setExportVal(snap.val());
+        })
+        .catch((err: unknown) => {
+          if (cancelled) return;
+          setError(err instanceof Error ? err.message : 'Failed to load fixture export');
+          setExportVal(null);
+        }),
+      get(ref(db, selectionPath))
+        .then((snap) => {
+          if (cancelled) return;
+          setSelectionVal(snap.val());
+        })
+        .catch(() => {
+          if (cancelled) return;
+          setSelectionVal(null);
+        }),
+      loadContext()
+        .then((val) => {
+          if (cancelled) return;
+          setContextLoadError(null);
+          setContextVal(val);
+        })
+        .catch((err: unknown) => {
+          if (cancelled) return;
+          setContextLoadError(err instanceof Error ? err.message : 'Failed to load fixture context');
+          setContextVal(null);
+        }),
+    ]).finally(() => {
+      if (!cancelled) setLoading(false);
+    });
 
     return () => {
-      unsubExport();
-      unsubSelection();
-      unsubContext();
+      cancelled = true;
     };
-  }, [configured, contextPath, fixtureId, selectionPath, unanimousPath]);
+  }, [configured, contextDayPath, contextDirectPath, fixtureId, selectionPath, unanimousPath]);
 
   const pick = useMemo(
     () => (fixtureId ? findFixtureInExport(exportVal, fixtureId) : null),

@@ -10,6 +10,11 @@ import {
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
+const CACHE_HEADERS = {
+  'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120',
+  'CDN-Cache-Control': 'public, s-maxage=60',
+};
+
 /**
  * Public read of StatStrike web blur flag.
  * Uses Admin SDK so it works even before RTDB rules grant client `.read` on this path.
@@ -19,7 +24,7 @@ export async function GET() {
     if (!process.env.FIREBASE_SERVICE_ACCOUNT_JSON?.trim()) {
       return NextResponse.json(
         { config: DEFAULT_STATSTRIKE_WEB_CONFIG, path: statStrikeWebConfigRtdbPath(), source: 'default' },
-        { headers: { 'Cache-Control': 'no-store' } },
+        { headers: CACHE_HEADERS },
       );
     }
     const app = getFirebaseAdminApp();
@@ -27,13 +32,13 @@ export async function GET() {
     const config = parseStatStrikeWebConfig(snap.val());
     return NextResponse.json(
       { config, path: statStrikeWebConfigRtdbPath(), source: 'rtdb' },
-      { headers: { 'Cache-Control': 'no-store' } },
+      { headers: CACHE_HEADERS },
     );
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Server error';
     return NextResponse.json(
       { config: DEFAULT_STATSTRIKE_WEB_CONFIG, error: msg, source: 'error-default' },
-      { status: 200, headers: { 'Cache-Control': 'no-store' } },
+      { status: 200, headers: CACHE_HEADERS },
     );
   }
 }

@@ -10,6 +10,8 @@ import {
   type StatStrikeWebConfig,
 } from '@/lib/statstrike/web-config';
 
+const API_POLL_MS = 60_000;
+
 async function fetchConfigViaApi(): Promise<StatStrikeWebConfig> {
   const res = await fetch('/api/statstrike/web-config', { cache: 'no-store' });
   const json = (await res.json()) as { config?: StatStrikeWebConfig };
@@ -49,10 +51,23 @@ export function useStatStrikeWebBlur(): {
       }
     };
 
+    const clearPoll = () => {
+      if (pollTimer != null) {
+        clearInterval(pollTimer);
+        pollTimer = undefined;
+      }
+    };
+
+    const startPollIfVisible = () => {
+      clearPoll();
+      if (typeof document !== 'undefined' && document.visibilityState !== 'visible') return;
+      pollTimer = setInterval(() => {
+        void loadApi();
+      }, API_POLL_MS);
+    };
+
     void loadApi();
-    pollTimer = setInterval(() => {
-      void loadApi();
-    }, 4_000);
+    startPollIfVisible();
 
     if (isFirebaseClientConfigured()) {
       const db = getFirebaseRealtimeDb();
@@ -71,13 +86,18 @@ export function useStatStrikeWebBlur(): {
     }
 
     const onVis = () => {
-      if (document.visibilityState === 'visible') void loadApi();
+      if (document.visibilityState !== 'visible') {
+        clearPoll();
+        return;
+      }
+      void loadApi();
+      startPollIfVisible();
     };
     document.addEventListener('visibilitychange', onVis);
 
     return () => {
       cancelled = true;
-      if (pollTimer != null) clearInterval(pollTimer);
+      clearPoll();
       unsubRtdb?.();
       document.removeEventListener('visibilitychange', onVis);
     };

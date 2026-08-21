@@ -1,7 +1,7 @@
 'use client';
 
 import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
-import { onValue, ref } from 'firebase/database';
+import { get, ref } from 'firebase/database';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { GoalLabV2FixtureCard } from '@/components/goallab/v2/GoalLabV2FixtureCard';
@@ -117,22 +117,24 @@ function GoalLabV2FixturesListInner() {
     }
 
     setLoading(true);
-    const exportRef = ref(db, unanimousPath);
-    const unsub = onValue(
-      exportRef,
-      (snap) => {
+    let cancelled = false;
+    void get(ref(db, unanimousPath))
+      .then((snap) => {
+        if (cancelled) return;
         setError(null);
         setLoading(false);
         setExportVal(snap.val());
-      },
-      (err) => {
-        setError(err.message);
+      })
+      .catch((err: unknown) => {
+        if (cancelled) return;
+        setError(err instanceof Error ? err.message : 'Failed to load fixtures');
         setLoading(false);
         setExportVal(null);
-      },
-    );
+      });
 
-    return () => unsub();
+    return () => {
+      cancelled = true;
+    };
   }, [configured, unanimousPath]);
 
   const fixtures = useMemo(

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { onValue, ref } from 'firebase/database';
+import { get, ref } from 'firebase/database';
 import {
   BLOG_POSTS_RTDB_ROOT,
   parseBlogPostFromRtdb,
@@ -16,7 +16,7 @@ export type PublishedBlogPostsState = {
   configured: boolean;
 };
 
-/** Live list of published posts from RTDB `blogPosts`, newest first. */
+/** Snapshot list of published posts from RTDB `blogPosts`, newest first. */
 export function usePublishedBlogPosts(): PublishedBlogPostsState {
   const [posts, setPosts] = useState<BlogPostRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -34,10 +34,10 @@ export function usePublishedBlogPosts(): PublishedBlogPostsState {
       setLoading(false);
       return;
     }
-    const r = ref(db, BLOG_POSTS_RTDB_ROOT);
-    const unsub = onValue(
-      r,
-      (snap) => {
+    let cancelled = false;
+    void get(ref(db, BLOG_POSTS_RTDB_ROOT))
+      .then((snap) => {
+        if (cancelled) return;
         setLoading(false);
         setErr(null);
         const v = snap.val();
@@ -50,13 +50,15 @@ export function usePublishedBlogPosts(): PublishedBlogPostsState {
         }
         list.sort((a, b) => (b.publishedAt ?? b.updatedAt).localeCompare(a.publishedAt ?? a.updatedAt));
         setPosts(list);
-      },
-      (e) => {
+      })
+      .catch((e: unknown) => {
+        if (cancelled) return;
         setLoading(false);
-        setErr(e.message);
-      },
-    );
-    return () => unsub();
+        setErr(e instanceof Error ? e.message : 'Failed to load blog posts');
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return {

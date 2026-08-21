@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { onValue, ref } from 'firebase/database';
+import { get, ref } from 'firebase/database';
 import { bestPicksGridTileClassName } from '@/lib/best-picks-panel-shell';
 import {
   formatBandAsGoalsPhrase,
@@ -238,38 +238,39 @@ export function BestPicksResearchAlgorithmPanel({
 
     setConsensusLoading(true);
     setCascadeLoading(true);
+    let cancelled = false;
 
-    const unsubConsensus = onValue(
-      ref(db, dailyConsensusSelectionsPath),
-      (snap) => {
-        setConsensusError(null);
-        setConsensusLoading(false);
-        setConsensus(parseDailyConsensusSelections(snap.val(), dateKey));
-      },
-      (err) => {
-        setConsensusError(err.message);
-        setConsensusLoading(false);
-        setConsensus(null);
-      },
-    );
-
-    const unsubCascade = onValue(
-      ref(db, goalBandCascadeSelectionsPath),
-      (snap) => {
-        setCascadeError(null);
-        setCascadeLoading(false);
-        setCascade(parseGoalBandCascadeSelections(snap.val(), dateKey));
-      },
-      (err) => {
-        setCascadeError(err.message);
-        setCascadeLoading(false);
-        setCascade(null);
-      },
-    );
+    void Promise.all([
+      get(ref(db, dailyConsensusSelectionsPath))
+        .then((snap) => {
+          if (cancelled) return;
+          setConsensusError(null);
+          setConsensusLoading(false);
+          setConsensus(parseDailyConsensusSelections(snap.val(), dateKey));
+        })
+        .catch((err: unknown) => {
+          if (cancelled) return;
+          setConsensusError(err instanceof Error ? err.message : 'Failed to load consensus');
+          setConsensusLoading(false);
+          setConsensus(null);
+        }),
+      get(ref(db, goalBandCascadeSelectionsPath))
+        .then((snap) => {
+          if (cancelled) return;
+          setCascadeError(null);
+          setCascadeLoading(false);
+          setCascade(parseGoalBandCascadeSelections(snap.val(), dateKey));
+        })
+        .catch((err: unknown) => {
+          if (cancelled) return;
+          setCascadeError(err instanceof Error ? err.message : 'Failed to load Goal Band Cascade');
+          setCascadeLoading(false);
+          setCascade(null);
+        }),
+    ]);
 
     return () => {
-      unsubConsensus();
-      unsubCascade();
+      cancelled = true;
     };
   }, [dateKey, dailyConsensusSelectionsPath, goalBandCascadeSelectionsPath]);
 

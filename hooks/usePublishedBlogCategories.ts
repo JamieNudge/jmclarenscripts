@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { onValue, ref } from 'firebase/database';
+import { get, ref } from 'firebase/database';
 import {
   BLOG_CATEGORIES_RTDB_ROOT,
   parseBlogCategoryFromRtdb,
@@ -18,7 +18,7 @@ export type PublishedBlogCategoriesState = {
   configured: boolean;
 };
 
-/** Live map of blog category slugs → labels from RTDB `blogCategories` (public read). */
+/** Snapshot map of blog category slugs → labels from RTDB `blogCategories` (public read). */
 export function usePublishedBlogCategories(): PublishedBlogCategoriesState {
   const [list, setList] = useState<BlogCategoryRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -36,10 +36,10 @@ export function usePublishedBlogCategories(): PublishedBlogCategoriesState {
       setLoading(false);
       return;
     }
-    const r = ref(db, BLOG_CATEGORIES_RTDB_ROOT);
-    const unsub = onValue(
-      r,
-      (snap) => {
+    let cancelled = false;
+    void get(ref(db, BLOG_CATEGORIES_RTDB_ROOT))
+      .then((snap) => {
+        if (cancelled) return;
         setLoading(false);
         setErr(null);
         const v = snap.val();
@@ -51,13 +51,15 @@ export function usePublishedBlogCategories(): PublishedBlogCategoriesState {
           }
         }
         setList(sortBlogCategories(cats));
-      },
-      (e) => {
+      })
+      .catch((e: unknown) => {
+        if (cancelled) return;
         setLoading(false);
-        setErr(e.message);
-      },
-    );
-    return () => unsub();
+        setErr(e instanceof Error ? e.message : 'Failed to load blog categories');
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const labelBySlug = useMemo(() => {
