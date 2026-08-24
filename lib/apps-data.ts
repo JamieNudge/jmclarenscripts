@@ -263,6 +263,7 @@ export const apps: App[] = [
     websiteUrl: 'https://github.com/JamieNudge/IconResizerAppleApps',
     privacyUrl: '/privacy/assetforge',
     supportUrl: '/support/assetforge',
+    termsUrl: '/terms/assetforge',
     accessibilityUrl: '/accessibility/assetforge',
   },
   {

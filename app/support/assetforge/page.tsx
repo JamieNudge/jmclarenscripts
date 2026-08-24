@@ -53,7 +53,8 @@ export default function AssetForgeSupportPage() {
           <h2 className="text-xl font-semibold mt-6">In-app links</h2>
           <p>
             Open <span className="font-semibold">AssetForge → Settings…</span> (⌘,) for Privacy Policy,
-            Support, and Accessibility links that open these pages in your browser.
+            Terms of Use (Apple Standard EULA), Support, and Accessibility links that open these pages in
+            your browser.
           </p>
 
           <h2 className="text-xl font-semibold mt-6">Source code</h2>
@@ -87,6 +88,10 @@ export default function AssetForgeSupportPage() {
           <p>
             <Link href="/privacy/assetforge" className="underline hover:text-blue-300">
               Privacy policy
+            </Link>
+            {' · '}
+            <Link href="/terms/assetforge" className="underline hover:text-blue-300">
+              Terms of Use
             </Link>
             {' · '}
             <Link href="/accessibility/assetforge" className="underline hover:text-blue-300">

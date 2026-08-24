@@ -37,7 +37,8 @@ export default function AssetForgeAccessibilityPage() {
             <li>Drag-and-drop targets are exposed as interactive regions with descriptive labels.</li>
             <li>You can move through the window with Tab and activate controls with Space or Return.</li>
             <li>
-              Settings (⌘,) includes clearly labelled links to Privacy Policy, Support, and Accessibility.
+              Settings (⌘,) includes clearly labelled links to Privacy Policy, Terms of Use, Support, and
+              Accessibility.
             </li>
           </ul>
 
@@ -68,6 +69,10 @@ export default function AssetForgeAccessibilityPage() {
           <p>
             <Link href="/privacy/assetforge" className="underline hover:text-blue-300">
               Privacy policy
+            </Link>
+            {' · '}
+            <Link href="/terms/assetforge" className="underline hover:text-blue-300">
+              Terms of Use
             </Link>
             {' · '}
             <Link href="/support/assetforge" className="underline hover:text-blue-300">

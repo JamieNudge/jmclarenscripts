@@ -102,6 +102,10 @@ export default function AssetForgePrivacyPage() {
               Support
             </Link>
             {' · '}
+            <Link href="/terms/assetforge" className="underline hover:text-blue-300">
+              Terms of Use
+            </Link>
+            {' · '}
             <Link href="/accessibility/assetforge" className="underline hover:text-blue-300">
               Accessibility
             </Link>
