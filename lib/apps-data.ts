@@ -100,7 +100,7 @@ export const apps: App[] = [
     tagline: 'Your postcode. Your events.',
     description:
       'Discover live music and theatre near you. Search by postcode, browse events and venues, save favourites, and plan your week. Open any listing for details, share with friends, or add it to the in-app calendar.',
-    color: '#E07359',
+    color: '#1E40AF',
     icon: '/images/maincode-icon.png',
     screenshots: [
       '/images/maincode-1.png',
