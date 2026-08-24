@@ -1,9 +1,6 @@
-'use client';
-
 import Link from 'next/link';
-import { usePublishedBlogCategories } from '@/hooks/usePublishedBlogCategories';
-import { usePublishedBlogPosts } from '@/hooks/usePublishedBlogPosts';
 import { resolveBlogCategoryLabel } from '@/lib/blog-category';
+import type { BlogPostRecord } from '@/lib/blog-post';
 import { blogTextFontFamily } from '@/lib/fonts';
 
 function BlogCardParts({
@@ -47,31 +44,13 @@ function BlogCardParts({
   );
 }
 
-export function BlogIndexClient() {
-  const { posts, loading, err, configured } = usePublishedBlogPosts();
-  const { labelBySlug } = usePublishedBlogCategories();
-
-  if (!configured) {
-    return (
-      <p className="text-sm text-[var(--hub-text-soft)] leading-relaxed">
-        Firebase is not configured — add keys in <code className="text-xs text-[var(--hub-text-muted)]">.env.local</code> to load
-        posts here.
-      </p>
-    );
-  }
-
-  if (loading) {
-    return <p className="text-sm text-[var(--hub-text-muted)]">Loading posts…</p>;
-  }
-
-  if (err) {
-    return (
-      <p className="text-sm text-[var(--hub-danger)] leading-relaxed" role="alert">
-        {err}
-      </p>
-    );
-  }
-
+export function BlogIndexClient({
+  posts,
+  labelBySlug,
+}: {
+  posts: BlogPostRecord[];
+  labelBySlug: Record<string, string>;
+}) {
   if (posts.length === 0) {
     return <p className="text-sm text-[var(--hub-text-muted)] italic">No posts yet — check back soon.</p>;
   }

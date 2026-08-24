@@ -10,6 +10,7 @@ import {
   type BlogCategoryRecord,
 } from '@/lib/blog-category';
 import { BLOG_POSTS_RTDB_ROOT, normalizeBlogSlug, parseBlogPostFromRtdb } from '@/lib/blog-post';
+import { revalidatePublishedBlogPaths } from '@/lib/blog-revalidate';
 import { getFirebaseAdminApp } from '@/lib/firebase-admin';
 
 export const dynamic = 'force-dynamic';
@@ -115,6 +116,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: `Category slug already exists: ${slug}` }, { status: 409 });
     }
     await categoriesRef().child(slug).set({ label, sortOrder, updatedAt });
+    revalidatePublishedBlogPaths();
     const record: BlogCategoryRecord = { slug, label, sortOrder, updatedAt };
     return NextResponse.json({
       ok: true,
@@ -167,6 +169,7 @@ export async function PATCH(req: NextRequest) {
       sortOrder: c.sortOrder,
       updatedAt: c.updatedAt,
     });
+    revalidatePublishedBlogPaths();
     return NextResponse.json({
       ok: true,
       path: `${BLOG_CATEGORIES_RTDB_ROOT}/${slug}`,
@@ -205,6 +208,7 @@ export async function DELETE(req: NextRequest) {
     }
 
     await categoriesRef().child(slug).remove();
+    revalidatePublishedBlogPaths();
     return NextResponse.json({ ok: true, removed: slug });
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Server error';

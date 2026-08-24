@@ -38,6 +38,7 @@ const PASSTHROUGH_FILES = new Set([
   '/favicon.ico',
   '/icon.png',
   '/robots.txt',
+  '/sitemap.xml',
   '/ads.txt',
   '/app-ads.txt',
 ]);

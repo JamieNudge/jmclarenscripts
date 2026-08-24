@@ -8,6 +8,7 @@ import {
   parseBlogPostFromRtdb,
   type BlogPostRecord,
 } from '@/lib/blog-post';
+import { revalidatePublishedBlogPaths } from '@/lib/blog-revalidate';
 import { getFirebaseAdminApp } from '@/lib/firebase-admin';
 
 export const dynamic = 'force-dynamic';
@@ -94,6 +95,7 @@ export async function POST(req: NextRequest) {
 
   try {
     await postsRef().child(normalized.post.slug).set(normalized.post);
+    revalidatePublishedBlogPaths();
     return NextResponse.json({
       ok: true,
       path: `${BLOG_POSTS_RTDB_ROOT}/${normalized.post.slug}`,
@@ -146,6 +148,7 @@ export async function PATCH(req: NextRequest) {
     }
 
     await postsRef().child(normalized.post.slug).set(normalized.post);
+    revalidatePublishedBlogPaths();
     return NextResponse.json({
       ok: true,
       path: `${BLOG_POSTS_RTDB_ROOT}/${normalized.post.slug}`,
@@ -175,6 +178,7 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
     await postsRef().child(slug).remove();
+    revalidatePublishedBlogPaths();
     return NextResponse.json({ ok: true, removed: slug });
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Server error';

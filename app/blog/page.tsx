@@ -2,7 +2,11 @@ import type { Metadata } from 'next';
 import { GoalLabV2Shell } from '@/components/goallab/v2/GoalLabV2Shell';
 import { HubFootballLink } from '@/components/hub/HubFootballLink';
 import { BlogIndexClient } from '@/components/blog/BlogIndexClient';
+import { categoryLabelBySlug, listPublishedPosts } from '@/lib/blog-server';
 import { FOOTBALL_PREDICTIONS_PAGE_TITLE } from '@/lib/football-predictions-brand';
+
+export const revalidate = 86400;
+export const runtime = 'nodejs';
 
 export const metadata: Metadata = {
   title: `Insights — ${FOOTBALL_PREDICTIONS_PAGE_TITLE}`,
@@ -10,7 +14,9 @@ export const metadata: Metadata = {
     'Original articles and methodology notes behind the forecasting system. Daily forecasts on GoalLab.',
 };
 
-export default function BlogIndexPage() {
+export default async function BlogIndexPage() {
+  const [posts, labelBySlug] = await Promise.all([listPublishedPosts(), categoryLabelBySlug()]);
+
   return (
     <GoalLabV2Shell>
       <div className="mx-auto max-w-6xl px-4 py-10 md:px-6 md:py-14 space-y-8">
@@ -29,7 +35,7 @@ export default function BlogIndexPage() {
         </header>
 
         <div className="gl-v2-hub-bridge">
-          <BlogIndexClient />
+          <BlogIndexClient posts={posts} labelBySlug={labelBySlug} />
         </div>
 
         <p className="text-[11px] leading-relaxed text-[var(--gl-text-muted)] border-t border-[var(--gl-border)] pt-6">

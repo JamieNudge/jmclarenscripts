@@ -9,6 +9,10 @@ function getDatabaseUrl(): string | null {
   );
 }
 
+export function isFirebaseAdminConfigured(): boolean {
+  return Boolean(process.env.FIREBASE_SERVICE_ACCOUNT_JSON?.trim() && getDatabaseUrl());
+}
+
 /** Server-only Firebase Admin app (Realtime Database writes). */
 export function getFirebaseAdminApp(): App {
   if (getApps().length > 0) return getApp();
