@@ -97,15 +97,16 @@ export const apps: App[] = [
   {
     id: 'maincode',
     name: 'MainCode',
-    tagline: 'Local events for your area',
+    tagline: 'Your postcode. Your events.',
     description:
-      'Discover concerts and performing-arts events near you. MainCode fetches events from PredictHQ by postcode (e.g. Bushwick / 11237), then lets you browse by Events or Venues, save favourites, share to friends, and add items to an in-app calendar. Optional Firebase backup for when the API is unavailable.',
+      'Discover live music and theatre near you. Search by postcode, browse events and venues, save favourites, and plan your week. Open any listing for details, share with friends, or add it to the in-app calendar.',
     color: '#E07359',
     icon: '/images/maincode-icon.png',
     screenshots: [
       '/images/maincode-1.png',
       '/images/maincode-2.png',
       '/images/maincode-3.png',
+      '/images/maincode-4.png',
     ],
     features: [
       'Postcode-based event discovery (PredictHQ)',
@@ -116,7 +117,8 @@ export const apps: App[] = [
       'SwiftUI, Firebase Auth & Realtime Database',
     ],
     platform: 'iOS',
-    status: 'in-review',
+    status: 'live',
+    appStoreUrl: 'https://apps.apple.com/gb/app/maincode/id6758269900',
     privacyUrl: '/privacy/maincode',
     supportUrl: '/support/maincode',
   },
