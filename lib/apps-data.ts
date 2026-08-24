@@ -1,4 +1,5 @@
 import { App } from '@/types/app';
+import { statstrikeAndroidMeta } from '@/lib/statstrike-android-beta-meta';
 
 // ADD YOUR APP DATA HERE!
 export const apps: App[] = [
@@ -27,7 +28,8 @@ export const apps: App[] = [
     ],
     platform: 'iOS',
     status: 'live',
-    googlePlayStatus: 'in-review',
+    googlePlayStatus: 'live',
+    googlePlayUrl: statstrikeAndroidMeta.playStoreInstallUrl,
     appStoreUrl: 'https://apps.apple.com/gb/app/statstrike/id6757434374',
     appStoreTrialNote: 'First week free!',
     blueskyUrl: 'https://bsky.app/profile/statstrikeapp.bsky.social',

@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { apps } from '@/lib/apps-data';
+import { statstrikeAndroidMeta } from '@/lib/statstrike-android-beta-meta';
 
 const goalLab = apps.find((a) => a.id === 'goallab');
 const statStrike = apps.find((a) => a.id === 'stat-strike');
@@ -14,6 +15,8 @@ type StatusItem = {
   href?: string;
   hrefLabel?: string;
   external?: boolean;
+  secondaryHref?: string;
+  secondaryHrefLabel?: string;
   trialNote?: string;
 };
 
@@ -37,11 +40,13 @@ const items: StatusItem[] = [
         {
           name: 'StatStrike',
           iconSrc: statStrike.icon,
-          status: 'Live · iOS',
+          status: 'Live · iOS & Android',
           body: 'Subscription forecasting app with confidence gauges and track record.',
           href: statStrike.appStoreUrl,
           hrefLabel: 'App Store',
           external: true,
+          secondaryHref: statstrikeAndroidMeta.playStoreInstallUrl,
+          secondaryHrefLabel: 'Google Play',
           trialNote: statStrike.appStoreTrialNote,
         } satisfies StatusItem,
       ]
@@ -119,7 +124,7 @@ export function GoalLabV2AppsStatus() {
                 </div>
                 <p className="text-sm text-[var(--gl-text-soft)] leading-relaxed">{item.body}</p>
                 {item.href && item.hrefLabel ? (
-                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                     {item.external ? (
                       <a
                         href={item.href}
@@ -134,6 +139,16 @@ export function GoalLabV2AppsStatus() {
                         {item.hrefLabel} →
                       </Link>
                     )}
+                    {item.secondaryHref && item.secondaryHrefLabel ? (
+                      <a
+                        href={item.secondaryHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={linkClass}
+                      >
+                        {item.secondaryHrefLabel} →
+                      </a>
+                    ) : null}
                     {item.trialNote ? (
                       <span className="text-[11px] font-medium text-[var(--gl-text-muted)]">
                         {item.trialNote}

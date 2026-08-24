@@ -2,10 +2,12 @@ import Image from 'next/image';
 import { statstrikeAndroidMeta } from '@/lib/statstrike-android-beta-meta';
 
 /**
- * Compact StatStrike Android promo — used in the home hero under primary CTAs.
+ * Compact StatStrike store promo — used in the home hero under primary CTAs.
  */
 export function GoalLabV2AndroidTesterCard({ className = '' }: { className?: string }) {
   const meta = statstrikeAndroidMeta;
+  const linkClass =
+    'inline-flex text-sm font-semibold text-[var(--gl-accent)] underline-offset-2 hover:underline';
   return (
     <div
       className={`flex gap-3 rounded-xl border border-[var(--gl-border)] bg-[var(--gl-surface)] p-4 shadow-[var(--gl-shadow)] ${className}`}
@@ -21,21 +23,31 @@ export function GoalLabV2AndroidTesterCard({ className = '' }: { className?: str
         <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
           <span className="text-sm font-semibold text-[var(--gl-text)]">{meta.displayName}</span>
           <span className="text-[11px] font-medium uppercase tracking-wide text-[var(--gl-text-soft)]">
-            Now on Google Play
+            Now on Google Play & App Store
           </span>
         </div>
         <p className="text-sm text-[var(--gl-text-soft)] leading-relaxed">
-          StatStrike is now live on Google Play. Install the Android app to get daily football forecasts,
-          BTTS picks, and the public track record.
+          StatStrike is live on Google Play and the App Store. Get daily football forecasts, BTTS
+          picks, and the public track record on Android or iPhone.
         </p>
-        <a
-          href={meta.playStoreInstallUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex text-sm font-semibold text-[var(--gl-accent)] underline-offset-2 hover:underline"
-        >
-          {meta.playStoreInstallLabel} →
-        </a>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <a
+            href={meta.playStoreInstallUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={linkClass}
+          >
+            {meta.playStoreInstallLabel} →
+          </a>
+          <a
+            href={meta.appStoreUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={linkClass}
+          >
+            {meta.appStoreInstallLabel} →
+          </a>
+        </div>
       </div>
     </div>
   );
