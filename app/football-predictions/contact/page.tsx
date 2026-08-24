@@ -33,6 +33,8 @@ export default function BestPicksContactPage() {
           <strong className="font-medium text-[var(--hub-text)]">Email</strong>{' '}
           <a
             href={mailtoHref}
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-[var(--hub-accent-link)] underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)] break-all"
           >
             {CONTACT_EMAIL}

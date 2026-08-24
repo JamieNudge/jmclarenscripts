@@ -29,6 +29,8 @@ export default function BestPicksPrivacyPage() {
           <strong className="font-medium text-[var(--hub-text)]">this publication only</strong>, contact:{' '}
           <a
             href="mailto:jmclarenscripts@gmail.com?subject=GoalLab%20%2F%20blog%20privacy"
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-[var(--hub-accent-link)] underline hover:text-[var(--hub-accent-link-hover)]"
           >
             jmclarenscripts@gmail.com
