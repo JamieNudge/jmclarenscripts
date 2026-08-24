@@ -34,10 +34,6 @@ export default function ContactCareSupportPage() {
             issues, and share feedback about the app.
           </p>
 
-          <p className="text-white/70 italic">
-            This is a placeholder. Full support information will be available when the app is released.
-          </p>
-
           <h2 className="text-xl font-semibold mt-6">Contact</h2>
           <p>
             For support, bug reports, or feature requests:

@@ -8,6 +8,8 @@ export interface App {
   screenshots: string[]; // Paths to phone mockup images
   features: string[];
   appStoreUrl?: string;
+  /** Google Play listing URL when the Android build is public. */
+  googlePlayUrl?: string;
   /** Short promo pill next to App Store (trial, pricing model, etc.). */
   appStoreTrialNote?: string;
   /** Bluesky profile URL, e.g. https://bsky.app/profile/handle.bsky.social */
