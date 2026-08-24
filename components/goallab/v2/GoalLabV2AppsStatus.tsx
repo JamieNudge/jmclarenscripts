@@ -78,7 +78,8 @@ const items: StatusItem[] = [
 export function GoalLabV2AppsStatus() {
   return (
     <section
-      className="rounded-2xl border border-[var(--gl-border)] bg-[var(--gl-surface)] px-5 py-6 md:px-8 md:py-8 shadow-[var(--gl-shadow)] space-y-6"
+      id="apps-status"
+      className="scroll-mt-[calc(var(--gl-nav-h)+1rem)] rounded-2xl border border-[var(--gl-border)] bg-[var(--gl-surface)] px-5 py-6 md:px-8 md:py-8 shadow-[var(--gl-shadow)] space-y-6"
       aria-labelledby="gl-v2-apps-heading"
     >
       <div className="max-w-2xl">

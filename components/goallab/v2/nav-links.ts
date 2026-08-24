@@ -16,6 +16,7 @@ export const goalLabV2NavPrimary = [
   { href: GOAL_LAB_V2_RESEARCH_PATH, label: 'Research' },
   { href: GOAL_LAB_V2_METHODOLOGY_PATH, label: 'Models' },
   { href: GOAL_LAB_V2_BLOG_PATH, label: 'Insights' },
+  { href: `${GOAL_LAB_V2_ABOUT_PATH}#apps-status`, label: 'Apps' },
   { href: GOAL_LAB_V2_ABOUT_PATH, label: 'About' },
 ] as const;
 
@@ -23,5 +24,6 @@ export const goalLabV2NavSecondary = [
   { href: AND_ANOTHER_THING_PATH, label: 'And Another Thing…' },
   { href: '/football-predictions/contact', label: 'Contact' },
   { href: '/football-predictions/privacy', label: 'Privacy' },
+  { href: `${GOAL_LAB_V2_ABOUT_PATH}#apps-status`, label: 'Apps' },
   { href: `${GOAL_LAB_V2_ABOUT_PATH}#other-apps`, label: 'Other apps' },
 ] as const;

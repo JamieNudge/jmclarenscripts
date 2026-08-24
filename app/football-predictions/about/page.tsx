@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BestPicksVideo } from '@/components/best-picks/BestPicksVideo';
+import { GoalLabV2AppsStatus } from '@/components/goallab/v2/GoalLabV2AppsStatus';
 import { GoalLabV2SubpageShell } from '@/components/goallab/v2/GoalLabV2SubpageShell';
 import { HubFootballLink } from '@/components/hub/HubFootballLink';
 import { apps } from '@/lib/apps-data';
@@ -31,7 +32,14 @@ export default function BestPicksAboutPage() {
           >
             insights
           </Link>
-          . Mobile apps (GoalLab, StatStrike, and products in development) are linked from the home page.
+          . Mobile apps (GoalLab, StatStrike, and products in development) are listed under{' '}
+          <HubFootballLink
+            href="/football-predictions/about#apps-status"
+            className="text-[var(--hub-accent-link)] underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)]"
+          >
+            Apps & status
+          </HubFootballLink>
+          .
         </p>
         <p>
           The site is a technical and product surface — not a tipping service, not financial advice, and not
@@ -51,6 +59,8 @@ export default function BestPicksAboutPage() {
           .
         </p>
       </section>
+
+      <GoalLabV2AppsStatus />
 
       <section
         id="other-apps"
