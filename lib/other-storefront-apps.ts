@@ -1,11 +1,15 @@
 import type { App } from '@/types/app';
 
-const FOOTBALL_APP_IDS = new Set(['goallab', 'stat-strike', 'popgoals', 'research-lab']);
+/**
+ * GoalLab About only lists apps we are ready to point traffic at.
+ * Earlier store listings stay on the portfolio until their copy/screenshots are updated.
+ */
+const GOAL_LAB_OTHER_APP_IDS = new Set(['maincode', 'contact-care']);
 
-/** Non-forecasting apps that already have a public App Store or Google Play listing. */
+/** Non-forecasting apps opted into the GoalLab About list, with a public store URL. */
 export function otherStorefrontApps(apps: App[]): App[] {
   return apps.filter((app) => {
-    if (FOOTBALL_APP_IDS.has(app.id)) return false;
+    if (!GOAL_LAB_OTHER_APP_IDS.has(app.id)) return false;
     return Boolean(app.appStoreUrl || app.googlePlayUrl);
   });
 }
