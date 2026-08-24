@@ -3,7 +3,11 @@ import Link from 'next/link';
 import { BestPicksVideo } from '@/components/best-picks/BestPicksVideo';
 import { GoalLabV2SubpageShell } from '@/components/goallab/v2/GoalLabV2SubpageShell';
 import { HubFootballLink } from '@/components/hub/HubFootballLink';
+import { apps } from '@/lib/apps-data';
 import { FOOTBALL_PREDICTIONS_PAGE_TITLE } from '@/lib/football-predictions-brand';
+import { otherStorefrontApps } from '@/lib/other-storefront-apps';
+
+const otherApps = otherStorefrontApps(apps);
 
 export const metadata: Metadata = {
   title: `About — ${FOOTBALL_PREDICTIONS_PAGE_TITLE}`,
@@ -43,6 +47,58 @@ export default function BestPicksAboutPage() {
             className="text-[var(--hub-accent-link)] underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)]"
           >
             Models / Methodology
+          </HubFootballLink>
+          .
+        </p>
+      </section>
+
+      <section
+        id="other-apps"
+        className="space-y-3 border-t border-[var(--hub-border-soft)] pt-6 scroll-mt-[calc(var(--gl-nav-h)+1rem)]"
+      >
+        <h2 className="text-xl font-semibold text-[var(--hub-text)]">Other apps</h2>
+        <p>
+          These are separate products — not part of the forecasting work on this site.
+        </p>
+        <ul className="m-0 list-none space-y-2 p-0">
+          {otherApps.map((app) => (
+            <li key={app.id} className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+              <span className="font-medium text-[var(--hub-text)]">{app.name}</span>
+              {app.appStoreUrl ? (
+                <a
+                  href={app.appStoreUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[var(--hub-accent-link)] underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)]"
+                >
+                  App Store
+                </a>
+              ) : null}
+              {app.appStoreUrl && app.googlePlayUrl ? (
+                <span className="text-[var(--hub-text-muted)]" aria-hidden>
+                  ·
+                </span>
+              ) : null}
+              {app.googlePlayUrl ? (
+                <a
+                  href={app.googlePlayUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[var(--hub-accent-link)] underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)]"
+                >
+                  Google Play
+                </a>
+              ) : null}
+            </li>
+          ))}
+        </ul>
+        <p>
+          If you want a bespoke iOS, Android, or Mac app designed and built,{' '}
+          <HubFootballLink
+            href="/football-predictions/contact"
+            className="text-[var(--hub-accent-link)] underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)]"
+          >
+            get in touch
           </HubFootballLink>
           .
         </p>

@@ -23,4 +23,5 @@ export const goalLabV2NavSecondary = [
   { href: AND_ANOTHER_THING_PATH, label: 'And Another Thing…' },
   { href: '/football-predictions/contact', label: 'Contact' },
   { href: '/football-predictions/privacy', label: 'Privacy' },
+  { href: `${GOAL_LAB_V2_ABOUT_PATH}#other-apps`, label: 'Other apps' },
 ] as const;
