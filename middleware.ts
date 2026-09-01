@@ -43,6 +43,25 @@ const PASSTHROUGH_FILES = new Set([
   '/app-ads.txt',
 ]);
 
+/** Canonical ads.txt paths. Never 308 these off-domain (AdSense crawler). */
+function adsTxtCanonicalPath(pathname: string): '/ads.txt' | '/app-ads.txt' | null {
+  const lower = pathname.toLowerCase().replace(/\/+$/, '') || '/';
+  if (lower === '/ads.txt') return '/ads.txt';
+  if (lower === '/app-ads.txt') return '/app-ads.txt';
+  return null;
+}
+
+function handleAdsTxtPath(request: NextRequest): NextResponse | null {
+  const canonical = adsTxtCanonicalPath(request.nextUrl.pathname);
+  if (!canonical) return null;
+  if (request.nextUrl.pathname !== canonical) {
+    const u = request.nextUrl.clone();
+    u.pathname = canonical;
+    return NextResponse.redirect(u, 301);
+  }
+  return NextResponse.next();
+}
+
 function isDirectAppPolicyPath(pathname: string): boolean {
   if (/^\/(privacy|terms|support|accessibility|disclaimer)\/[^/]+(?:\/.*)?$/.test(pathname)) {
     return true;
@@ -104,6 +123,9 @@ function isLocalDevHost(host: string): boolean {
 }
 
 export function middleware(request: NextRequest) {
+  const adsTxtResponse = handleAdsTxtPath(request);
+  if (adsTxtResponse) return adsTxtResponse;
+
   const forward = { request: { headers: buildForwardedRequestHeaders(request) } };
   const { pathname } = request.nextUrl;
 
@@ -192,6 +214,6 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|.*\\.(?:ico|png|jpg|jpeg|gif|svg|webp)$).*)',
+    '/((?!_next/static|_next/image|ads\\.txt|app-ads\\.txt|robots\\.txt|.*\\.(?:ico|png|jpg|jpeg|gif|svg|webp)$).*)',
   ],
 };

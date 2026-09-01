@@ -33,6 +33,24 @@ const nextConfig = {
   async headers() {
     return [
       {
+        source: '/ads.txt',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=86400, stale-while-revalidate=604800',
+          },
+        ],
+      },
+      {
+        source: '/app-ads.txt',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=86400, stale-while-revalidate=604800',
+          },
+        ],
+      },
+      {
         source: '/football-predictions',
         headers: [{ key: 'Cache-Control', value: 'no-store' }],
       },
