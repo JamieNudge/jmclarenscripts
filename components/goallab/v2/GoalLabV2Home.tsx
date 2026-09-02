@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { onValue, ref } from 'firebase/database';
 import { GoalLabV2AndroidTesterCard } from '@/components/goallab/v2/GoalLabV2AndroidTesterCard';
 import { GoalLabV2AppsStatus } from '@/components/goallab/v2/GoalLabV2AppsStatus';
+import { GoalLabV2StorePromoCard } from '@/components/goallab/v2/GoalLabV2StorePromoCard';
 import { GoalLabV2FixtureCard } from '@/components/goallab/v2/GoalLabV2FixtureCard';
 import { GoalLabV2LiveMetrics } from '@/components/goallab/v2/GoalLabV2LiveMetrics';
 import { GoalLabV2ModelPipeline } from '@/components/goallab/v2/GoalLabV2ModelPipeline';
@@ -118,62 +119,66 @@ export function GoalLabV2Home() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 md:px-6 md:py-14 space-y-16 md:space-y-24">
-      {/* Hero */}
-      <section className="grid gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:items-start">
-        <div className="min-w-0">
-          <p className="text-xs font-semibold tracking-[0.08em] text-[var(--gl-accent)]">
-            GoalLab
-          </p>
-          <h1 className="mt-3 text-4xl md:text-5xl lg:text-[3.25rem] font-semibold tracking-tight text-[var(--gl-text)] leading-[1.1] text-balance">
-            Global football forecasting
-          </h1>
-          <p className="mt-4 max-w-xl text-lg text-[var(--gl-text-soft)] leading-relaxed">
-            Professional match forecasts powered by statistical models — explore today&apos;s fixtures in
-            depth on desktop.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <HubFootballLink
-              href={GOAL_LAB_V2_FIXTURES_PATH}
-              className="inline-flex items-center justify-center rounded-xl bg-[var(--gl-accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90 outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--gl-accent)]"
-            >
-              Explore forecasts
-            </HubFootballLink>
-            <HubFootballLink
-              href={GOAL_LAB_V2_METHODOLOGY_PATH}
-              className="inline-flex items-center justify-center rounded-xl border border-[var(--gl-border-strong)] bg-[var(--gl-surface)] px-4 py-2.5 text-sm font-semibold text-[var(--gl-text)] transition-colors hover:bg-[var(--gl-elevated)] outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--gl-accent)]"
-            >
-              Learn how it works
-            </HubFootballLink>
+      {/* Hero + GoalLab store promo */}
+      <div className="space-y-5">
+        <section className="grid gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:items-start">
+          <div className="min-w-0">
+            <p className="text-xs font-semibold tracking-[0.08em] text-[var(--gl-accent)]">
+              GoalLab
+            </p>
+            <h1 className="mt-3 text-4xl md:text-5xl lg:text-[3.25rem] font-semibold tracking-tight text-[var(--gl-text)] leading-[1.1] text-balance">
+              Global football forecasting
+            </h1>
+            <p className="mt-4 max-w-xl text-lg text-[var(--gl-text-soft)] leading-relaxed">
+              Professional match forecasts powered by statistical models — explore today&apos;s fixtures in
+              depth on desktop.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <HubFootballLink
+                href={GOAL_LAB_V2_FIXTURES_PATH}
+                className="inline-flex items-center justify-center rounded-xl bg-[var(--gl-accent)] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90 outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--gl-accent)]"
+              >
+                Explore forecasts
+              </HubFootballLink>
+              <HubFootballLink
+                href={GOAL_LAB_V2_METHODOLOGY_PATH}
+                className="inline-flex items-center justify-center rounded-xl border border-[var(--gl-border-strong)] bg-[var(--gl-surface)] px-4 py-2.5 text-sm font-semibold text-[var(--gl-text)] transition-colors hover:bg-[var(--gl-elevated)] outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--gl-accent)]"
+              >
+                Learn how it works
+              </HubFootballLink>
+            </div>
+            <GoalLabV2AndroidTesterCard className="mt-5 max-w-xl" />
+            <p className="mt-4 text-xs tabular-nums text-[var(--gl-text-muted)]">London date · {dateKey}</p>
           </div>
-          <GoalLabV2AndroidTesterCard className="mt-5 max-w-xl" />
-          <p className="mt-4 text-xs tabular-nums text-[var(--gl-text-muted)]">London date · {dateKey}</p>
-        </div>
 
-        <div className="min-w-0">
-          {statStrikeWeb ? (
-            <StatStrikeHeroPanel />
-          ) : loading ? (
-            <div className="rounded-2xl border border-[var(--gl-border)] bg-[var(--gl-surface)] p-6 shadow-[var(--gl-shadow)] animate-pulse">
-              <div className="h-3 w-1/3 rounded bg-[var(--gl-elevated)]" />
-              <div className="mt-4 h-7 w-3/4 rounded bg-[var(--gl-elevated)]" />
-              <div className="mt-6 h-1.5 w-full rounded-full bg-[var(--gl-elevated)]" />
-            </div>
-          ) : featured ? (
-            <GoalLabV2FixtureCard fixture={featured} dateKey={dateKey} featured />
-          ) : (
-            <div className="rounded-2xl border border-dashed border-[var(--gl-border-strong)] bg-[var(--gl-surface)] p-6">
-              <p className="text-sm font-medium text-[var(--gl-text)]">No live fixture card yet</p>
-              <p className="mt-1 text-sm text-[var(--gl-text-muted)] leading-relaxed">
-                {error
-                  ? error
-                  : configured
-                    ? 'Waiting for today’s export — browse Research or Methodology in the meantime.'
-                    : 'Firebase is not configured in this environment.'}
-              </p>
-            </div>
-          )}
-        </div>
-      </section>
+          <div className="min-w-0">
+            {statStrikeWeb ? (
+              <StatStrikeHeroPanel />
+            ) : loading ? (
+              <div className="rounded-2xl border border-[var(--gl-border)] bg-[var(--gl-surface)] p-6 shadow-[var(--gl-shadow)] animate-pulse">
+                <div className="h-3 w-1/3 rounded bg-[var(--gl-elevated)]" />
+                <div className="mt-4 h-7 w-3/4 rounded bg-[var(--gl-elevated)]" />
+                <div className="mt-6 h-1.5 w-full rounded-full bg-[var(--gl-elevated)]" />
+              </div>
+            ) : featured ? (
+              <GoalLabV2FixtureCard fixture={featured} dateKey={dateKey} featured />
+            ) : (
+              <div className="rounded-2xl border border-dashed border-[var(--gl-border-strong)] bg-[var(--gl-surface)] p-6">
+                <p className="text-sm font-medium text-[var(--gl-text)]">No live fixture card yet</p>
+                <p className="mt-1 text-sm text-[var(--gl-text-muted)] leading-relaxed">
+                  {error
+                    ? error
+                    : configured
+                      ? 'Waiting for today’s export — browse Research or Methodology in the meantime.'
+                      : 'Firebase is not configured in this environment.'}
+                </p>
+              </div>
+            )}
+          </div>
+        </section>
+
+        <GoalLabV2StorePromoCard className="max-w-xl" />
+      </div>
 
       <div className="grid gap-12 lg:grid-cols-2 lg:gap-8 lg:items-start">
         <GoalLabV2LiveMetrics layout="stack" />

@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { apps } from '@/lib/apps-data';
+import { goallabAndroidMeta } from '@/lib/goallab-android-beta-meta';
 import { statstrikeAndroidMeta } from '@/lib/statstrike-android-beta-meta';
 
 const goalLab = apps.find((a) => a.id === 'goallab');
@@ -26,11 +27,13 @@ const items: StatusItem[] = [
         {
           name: 'GoalLab',
           iconSrc: goalLab.icon,
-          status: 'Live · iOS',
-          body: 'Quick access forecasts on iPhone — the mobile companion to this desktop hub.',
+          status: 'Live · iOS · Android closed test',
+          body: 'Quick access forecasts on iPhone — the mobile companion to this desktop hub. Android is in a Google Play closed test.',
           href: goalLab.appStoreUrl,
           hrefLabel: 'App Store',
           external: true,
+          secondaryHref: goallabAndroidMeta.closedTestUrl,
+          secondaryHrefLabel: 'Join closed test',
           trialNote: goalLab.appStoreTrialNote,
         } satisfies StatusItem,
       ]

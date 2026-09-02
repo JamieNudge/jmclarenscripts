@@ -1,4 +1,5 @@
 import { App } from '@/types/app';
+import { goallabAndroidMeta } from '@/lib/goallab-android-beta-meta';
 import { statstrikeAndroidMeta } from '@/lib/statstrike-android-beta-meta';
 
 // ADD YOUR APP DATA HERE!
@@ -62,8 +63,9 @@ export const apps: App[] = [
     ],
     platform: 'iOS',
     status: 'live',
-    googlePlayStatus: 'in-review',
-    appStoreUrl: 'https://apps.apple.com/gb/app/goallab/id6759168029',
+    googlePlayStatus: 'beta',
+    googlePlayUrl: goallabAndroidMeta.closedTestUrl,
+    appStoreUrl: goallabAndroidMeta.appStoreUrl,
     appStoreTrialNote: '3-day intro trial · monthly or lifetime access',
     contentRatingUrl: '/goallab/content-rating',
     privacyUrl: '/privacy/goallab',
