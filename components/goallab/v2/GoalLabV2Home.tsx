@@ -119,7 +119,7 @@ export function GoalLabV2Home() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 md:px-6 md:py-14 space-y-16 md:space-y-24">
-      {/* Hero + GoalLab store promo */}
+      {/* Hero + store promo row */}
       <div className="space-y-5">
         <section className="grid gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:items-start">
           <div className="min-w-0">
@@ -147,7 +147,6 @@ export function GoalLabV2Home() {
                 Learn how it works
               </HubFootballLink>
             </div>
-            <GoalLabV2AndroidTesterCard className="mt-5 max-w-xl" />
             <p className="mt-4 text-xs tabular-nums text-[var(--gl-text-muted)]">London date · {dateKey}</p>
           </div>
 
@@ -177,7 +176,10 @@ export function GoalLabV2Home() {
           </div>
         </section>
 
-        <GoalLabV2StorePromoCard className="max-w-xl" />
+        <div className="grid gap-3 md:grid-cols-2">
+          <GoalLabV2AndroidTesterCard />
+          <GoalLabV2StorePromoCard />
+        </div>
       </div>
 
       <div className="grid gap-12 lg:grid-cols-2 lg:gap-8 lg:items-start">
