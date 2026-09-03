@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import { BestPicksVideo } from '@/components/best-picks/BestPicksVideo';
 import { GoalLabV2AppsStatus } from '@/components/goallab/v2/GoalLabV2AppsStatus';
@@ -70,35 +71,53 @@ export default function BestPicksAboutPage() {
         <p>
           These are separate products — not part of the forecasting work on this site.
         </p>
-        <ul className="m-0 list-none space-y-2 p-0">
+        <ul className="m-0 list-none space-y-3 p-0">
           {otherApps.map((app) => (
-            <li key={app.id} className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-              <span className="font-medium text-[var(--hub-text)]">{app.name}</span>
-              {app.appStoreUrl ? (
-                <a
-                  href={app.appStoreUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[var(--hub-accent-link)] underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)]"
+            <li key={app.id} className="flex items-center gap-3">
+              {app.icon ? (
+                <Image
+                  src={app.icon}
+                  alt=""
+                  width={40}
+                  height={40}
+                  className="h-10 w-10 shrink-0 rounded-lg object-cover"
+                />
+              ) : (
+                <span
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[var(--hub-border-soft)] bg-[var(--hub-surface)] text-xs font-semibold text-[var(--hub-text-muted)]"
+                  aria-hidden
                 >
-                  App Store
-                </a>
-              ) : null}
-              {app.appStoreUrl && app.googlePlayUrl ? (
-                <span className="text-[var(--hub-text-muted)]" aria-hidden>
-                  ·
+                  {app.name.slice(0, 2)}
                 </span>
-              ) : null}
-              {app.googlePlayUrl ? (
-                <a
-                  href={app.googlePlayUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[var(--hub-accent-link)] underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)]"
-                >
-                  Google Play
-                </a>
-              ) : null}
+              )}
+              <div className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                <span className="font-medium text-[var(--hub-text)]">{app.name}</span>
+                {app.appStoreUrl ? (
+                  <a
+                    href={app.appStoreUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[var(--hub-accent-link)] underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)]"
+                  >
+                    App Store
+                  </a>
+                ) : null}
+                {app.appStoreUrl && app.googlePlayUrl ? (
+                  <span className="text-[var(--hub-text-muted)]" aria-hidden>
+                    ·
+                  </span>
+                ) : null}
+                {app.googlePlayUrl ? (
+                  <a
+                    href={app.googlePlayUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[var(--hub-accent-link)] underline underline-offset-2 hover:text-[var(--hub-accent-link-hover)]"
+                  >
+                    Google Play
+                  </a>
+                ) : null}
+              </div>
             </li>
           ))}
         </ul>
