@@ -258,7 +258,12 @@ export const apps: App[] = [
       'A native macOS developer toolkit: drag in a master image (or prepare it in Image Lab), then generate Xcode-ready Apple icon packs (including watchOS, visionOS, and tvOS), Google Play launcher and Adaptive Icons, store screenshots, Web & Social cards, Brand Assets, and YouTube channel sizes. Exports respect sandboxed folder access on the Mac App Store build.',
     color: '#8B5CF6',
     icon: '/images/icon-resizer-apple-apps-icon.png',
-    screenshots: [],
+    screenshots: [
+      '/images/assetforge-1.png',
+      '/images/assetforge-2.png',
+      '/images/assetforge-3.png',
+      '/images/assetforge-4.png',
+    ],
     features: [
       'Apple AppIcon.appiconset packs for iOS, macOS, watchOS, visionOS, and tvOS',
       'Google Play mipmaps, Adaptive Icons, 512 listing icon, and feature graphic',
