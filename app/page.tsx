@@ -131,10 +131,14 @@ export default function Home() {
 
           <div className="bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10 divide-y divide-white/5">
             {apps.map((app) => (
-              <button
+              <div
                 key={app.id}
+                className="group w-full px-4 sm:px-6 py-4 flex items-center gap-4 hover:bg-white/10 transition-colors"
+              >
+              <button
+                type="button"
                 onClick={() => setSelectedApp(app)}
-                className="group w-full text-left px-4 sm:px-6 py-4 flex items-center gap-4 hover:bg-white/10 transition-colors"
+                className="flex flex-1 min-w-0 items-center gap-4 text-left"
               >
                 {/* Small preview thumbnail */}
                 <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-2xl overflow-hidden bg-white/10 border border-white/10 flex-shrink-0">
@@ -214,6 +218,15 @@ export default function Home() {
                   </div>
                 </div>
               </button>
+                {app.privacyUrl && (
+                  <a
+                    href={app.privacyUrl}
+                    className="flex-shrink-0 text-[11px] sm:text-xs text-white/60 hover:text-white underline underline-offset-2"
+                  >
+                    Privacy
+                  </a>
+                )}
+              </div>
             ))}
           </div>
         </div>

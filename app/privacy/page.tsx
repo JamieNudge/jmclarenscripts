@@ -126,6 +126,11 @@ export default function WebsitePrivacyPage() {
               </Link>
             </li>
             <li>
+              <Link href="/privacy/draw-with-friends" className="underline hover:text-blue-300">
+                Draw With Friends — privacy policy
+              </Link>
+            </li>
+            <li>
               <span className="text-white/90">
                 <Link href="/privacy/aikido-vocabulary" className="underline hover:text-blue-300">
                   Aikido Vocabulary

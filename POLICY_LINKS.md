@@ -50,6 +50,13 @@ Canonical app legal URLs may live on different hosts. Use the full URLs below in
 
 ---
 
+## Draw With Friends
+- Privacy: https://jmclarenscripts.vercel.app/privacy/draw-with-friends
+- Support: https://jamienudge.github.io/DrawWithFriends/support.html
+- App site: https://jamienudge.github.io/DrawWithFriends/
+
+---
+
 ## Other apps
 - Nudgetronic: `/privacy/nudgetronic`, `/support/nudgetronic`
 - Recipe Saviour: `/privacy/recipe-saviour`, `/support/recipe-saviour`
