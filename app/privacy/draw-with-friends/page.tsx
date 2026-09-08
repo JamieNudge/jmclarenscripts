@@ -22,7 +22,7 @@ export default function DrawWithFriendsPrivacyPage() {
         </Link>
 
         <h1 className="text-3xl md:text-4xl font-bold mb-4">Draw With Friends — Privacy Policy</h1>
-        <p className="text-sm text-white/60 mb-8">Last updated: November 16, 2025</p>
+        <p className="text-sm text-white/60 mb-8">Last updated: September 8, 2026</p>
 
         <section className="space-y-6 text-sm md:text-base leading-relaxed text-white/90">
           <p>
@@ -46,8 +46,9 @@ export default function DrawWithFriendsPrivacyPage() {
           <ul className="list-disc list-inside space-y-1 ml-4">
             <li>You can optionally import a photo from your device to use as a drawing background.</li>
             <li>
-              If you import a photo, it is compressed, uploaded to Firebase, shared with people in that
-              drawing room, and automatically deleted after 24 hours of inactivity.
+              If you import a photo, it is resized and compressed (longest side 1024px, under 250 KB),
+              uploaded to Firebase, shared with everyone in that room (up to 4 devices), and removed when
+              the last person leaves or after 24 hours of inactivity.
             </li>
             <li>The app warns you before import so you know the photo will be shared with the room.</li>
             <li>We only access the specific photo you pick — not your whole library.</li>
@@ -65,7 +66,10 @@ export default function DrawWithFriendsPrivacyPage() {
           <ul className="list-disc list-inside space-y-1 ml-4">
             <li>Session data powers real-time collaboration between devices.</li>
             <li>Photo backgrounds (if imported) are shared only with people in that room.</li>
-            <li>All session data, including photos, is deleted after 24 hours of inactivity.</li>
+            <li>
+              Session data, including photos, is removed when the last person leaves. Unused rooms expire
+              after 24 hours of inactivity.
+            </li>
             <li>We do not sell, share, or use this data for any other purpose.</li>
           </ul>
 
@@ -94,7 +98,7 @@ export default function DrawWithFriendsPrivacyPage() {
           <h2 className="text-xl font-semibold text-white mt-8">Your rights</h2>
           <ul className="list-disc list-inside space-y-1 ml-4">
             <li>You can stop using the app at any time.</li>
-            <li>Session data is deleted automatically within 24 hours of inactivity.</li>
+            <li>Session data is deleted when the room ends, or within 24 hours of inactivity.</li>
             <li>You control which photos, if any, you import.</li>
             <li>You can clear the canvas and background during a session.</li>
           </ul>
