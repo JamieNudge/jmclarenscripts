@@ -52,7 +52,7 @@ Canonical app legal URLs may live on different hosts. Use the full URLs below in
 
 ## Draw With Friends
 - Privacy: https://jmclarenscripts.vercel.app/privacy/draw-with-friends
-- Support: https://jamienudge.github.io/DrawWithFriends/support.html
+- Support: https://jmclarenscripts.vercel.app/support/draw-with-friends
 - App site: https://jamienudge.github.io/DrawWithFriends/
 
 ---

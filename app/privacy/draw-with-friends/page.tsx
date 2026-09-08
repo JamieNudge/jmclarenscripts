@@ -112,6 +112,11 @@ export default function DrawWithFriendsPrivacyPage() {
             >
               jmclarenscripts@gmail.com
             </a>
+            . Help using the app:{' '}
+            <Link href="/support/draw-with-friends" className="underline hover:text-blue-300">
+              support
+            </Link>
+            .
           </p>
         </section>
       </div>

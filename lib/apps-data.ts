@@ -178,7 +178,7 @@ export const apps: App[] = [
     appStoreUrl: 'https://apps.apple.com/gb/app/draw-with-friends/id6755112480',
     websiteUrl: 'https://jamienudge.github.io/DrawWithFriends/',
     privacyUrl: '/privacy/draw-with-friends',
-    supportUrl: 'https://jamienudge.github.io/DrawWithFriends/support.html',
+    supportUrl: '/support/draw-with-friends',
     platform: 'iOS',
     status: 'live',
   },
