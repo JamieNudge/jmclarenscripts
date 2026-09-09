@@ -19,6 +19,8 @@ type StatusItem = {
   secondaryHref?: string;
   secondaryHrefLabel?: string;
   trialNote?: string;
+  tertiaryHref?: string;
+  tertiaryHrefLabel?: string;
 };
 
 const items: StatusItem[] = [
@@ -50,6 +52,8 @@ const items: StatusItem[] = [
           external: true,
           secondaryHref: statstrikeAndroidMeta.playStoreInstallUrl,
           secondaryHrefLabel: 'Google Play',
+          tertiaryHref: '/statstrike/competition',
+          tertiaryHrefLabel: 'Competition rules',
           trialNote: statStrike.appStoreTrialNote,
         } satisfies StatusItem,
       ]
@@ -152,6 +156,11 @@ export function GoalLabV2AppsStatus() {
                       >
                         {item.secondaryHrefLabel} →
                       </a>
+                    ) : null}
+                    {item.tertiaryHref && item.tertiaryHrefLabel ? (
+                      <Link href={item.tertiaryHref} className={linkClass}>
+                        {item.tertiaryHrefLabel} →
+                      </Link>
                     ) : null}
                     {item.trialNote ? (
                       <span className="text-[11px] font-medium text-[var(--gl-text-muted)]">
