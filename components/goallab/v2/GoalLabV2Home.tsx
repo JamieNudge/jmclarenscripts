@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { onValue, ref } from 'firebase/database';
 import { GoalLabV2AndroidTesterCard } from '@/components/goallab/v2/GoalLabV2AndroidTesterCard';
 import { GoalLabV2AppsStatus } from '@/components/goallab/v2/GoalLabV2AppsStatus';
+import { GoalLabV2CompetitionPromoCard } from '@/components/goallab/v2/GoalLabV2CompetitionPromoCard';
 import { GoalLabV2StorePromoCard } from '@/components/goallab/v2/GoalLabV2StorePromoCard';
 import { GoalLabV2FixtureCard } from '@/components/goallab/v2/GoalLabV2FixtureCard';
 import { GoalLabV2LiveMetrics } from '@/components/goallab/v2/GoalLabV2LiveMetrics';
@@ -176,7 +177,8 @@ export function GoalLabV2Home() {
           </div>
         </section>
 
-        <div className="grid gap-3 md:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <GoalLabV2CompetitionPromoCard />
           <GoalLabV2AndroidTesterCard />
           <GoalLabV2StorePromoCard />
         </div>
