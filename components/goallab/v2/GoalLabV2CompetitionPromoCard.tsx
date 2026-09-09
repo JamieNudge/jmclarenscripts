@@ -12,6 +12,7 @@ export function GoalLabV2CompetitionPromoCard({ className = '' }: { className?: 
   return (
     <GoalLabV2PromoCard
       className={className}
+      featured
       iconSrc={promo.iconSrc}
       title={promo.title}
       badge={copy.badge}

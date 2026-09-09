@@ -6,7 +6,7 @@ import { statstrikeAndroidMeta } from '@/lib/statstrike-android-beta-meta';
 export const statstrikeCompetitionPromo = {
   live: false,
   iconSrc: statstrikeAndroidMeta.iconSrc,
-  title: 'You vs StatStrike',
+  title: 'You vs StatStrike App Competition!',
   rulesHref: '/statstrike/competition',
   rulesLabel: 'Official rules',
   comingSoon: {
