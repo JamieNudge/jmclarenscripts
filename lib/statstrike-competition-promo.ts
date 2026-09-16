@@ -14,7 +14,7 @@ export const statstrikeCompetitionPromo = {
     body: 'Beat StatStrike’s Over/Under 2.5 tips. Conquer the app over a week and win a free month of Premium. iPhone after App Store review — Android later.',
   },
   liveCopy: {
-    badge: 'Live · iOS',
-    body: 'Open Beat StatStrike in the app. Beat StatStrike’s Over/Under 2.5 tips. Conquer the app over a week and win a free month of Premium. Android later.',
+    badge: 'Live · iOS · Coming soon Android',
+    body: 'Open Beat StatStrike in the iPhone app. Beat Over/Under 2.5 tips over a week for a free month of Premium. Coming soon on StatStrike for Android.',
   },
 } as const;

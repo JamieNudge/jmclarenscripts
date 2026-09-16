@@ -8,6 +8,7 @@ import { StatStrikeBestPerformingPanel } from '@/components/statstrike/StatStrik
 import { StatStrikeBoard } from '@/components/statstrike/StatStrikeBoard';
 import { StatStrikeBoardFilters } from '@/components/statstrike/StatStrikeBoardFilters';
 import { StatStrikeMyRecordPanel } from '@/components/statstrike/StatStrikeMyRecordPanel';
+import { StatStrikeCompetitionFunnel } from '@/components/statstrike/StatStrikeCompetitionFunnel';
 import { StatStrikePremiumGate } from '@/components/statstrike/StatStrikePremiumGate';
 import { useStatStrikeBoard } from '@/hooks/useStatStrikeBoard';
 import { useStatStrikeHistoryWindow } from '@/hooks/useStatStrikeHistoryWindow';
@@ -222,6 +223,7 @@ export function StatStrikeAppShell() {
       </header>
 
       <main className="mx-auto max-w-3xl px-4 py-6">
+        <StatStrikeCompetitionFunnel />
         {blur ? (
           <ComingSoonBlur
             badge={null}
