@@ -1,10 +1,10 @@
 import { statstrikeAndroidMeta } from '@/lib/statstrike-android-beta-meta';
 
 /**
- * Homepage You vs StatStrike promo. Flip `live` after 10.3 is on the App Store.
+ * Homepage You vs StatStrike promo. `live` is true while the iOS contest is on the App Store.
  */
 export const statstrikeCompetitionPromo = {
-  live: false,
+  live: true,
   iconSrc: statstrikeAndroidMeta.iconSrc,
   title: 'You vs StatStrike App Competition!',
   rulesHref: '/statstrike/competition',
