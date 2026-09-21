@@ -1,128 +1,33 @@
-# Portfolio Site - 3D App Carousel
+# Portfolio-site
 
-A modern, interactive portfolio website showcasing your apps with a beautiful 3D carousel interface.
+Next.js 14 site for Jamie McLaren’s apps. One Vercel project (`jmclarenscripts`) serves three hosts.
 
-## 🚀 Quick Start
+Agents: start at [AGENTS.md](AGENTS.md). Do not follow the old carousel files (`START_HERE.md`, `SETUP.md`, `OVERVIEW.txt`, `CUSTOMIZATION_GUIDE.md`) unless you are editing the portfolio home UI.
 
-### 1. Install Dependencies
+## Hosts
 
-First, make sure you have Node.js installed (version 18 or later), then run:
+| Site | URL | Role |
+|------|-----|------|
+| GoalLab | [https://thegoallab.net](https://thegoallab.net) | Football forecasting hub (fixtures, research, blog, StatStrike web) |
+| Portfolio | [https://jmclarenscripts.vercel.app](https://jmclarenscripts.vercel.app) | App showcase |
+| DGC | [https://dgc.jmclarenscripts.vercel.app](https://dgc.jmclarenscripts.vercel.app) | Field of Wealth editor |
+
+Hub routing lives in `middleware.ts`. Canonical GoalLab paths in code are `/football-predictions/...`; thegoallab.net serves the same pages at short URLs (`/`, `/fixtures`, `/blog`).
+
+## Local
 
 ```bash
 npm install
-# or
-yarn install
-# or
-pnpm install
-```
-
-### 2. Run Development Server
-
-```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) for the portfolio. GoalLab pages are at `/football-predictions`. Tests: `npm test`. Copy `.env.example` to `.env.local` for Firebase and other secrets — never commit `.env*.local`.
 
-## 📝 How to Customize
+## Docs
 
-### Adding Your Apps
-
-Edit `/lib/apps-data.ts` to add or modify your apps:
-
-```typescript
-{
-  id: 'your-app-id',
-  name: 'Your App Name',
-  tagline: 'A catchy tagline',
-  description: 'Full description of your app',
-  color: '#FF6B9D', // Hex color for the app's theme
-  icon: '/images/your-app-icon.png',
-  screenshots: [
-    '/images/screenshot1.png',
-    '/images/screenshot2.png',
-  ],
-  features: [
-    'Feature 1',
-    'Feature 2',
-    'Feature 3',
-  ],
-  appStoreUrl: 'https://apps.apple.com/your-app',
-  websiteUrl: 'https://yourapp.com',
-  platform: 'iOS', // or 'macOS', 'Web', 'Cross-platform'
-  status: 'live', // or 'beta', 'coming-soon'
-}
-```
-
-### Adding Images
-
-1. Place your app icons and screenshots in the `/public/images/` folder
-2. Reference them in your app data using `/images/filename.png`
-
-### Customizing Colors & Branding
-
-- **Hero section**: Edit `/app/page.tsx` - change the title, tagline, and description
-- **Background gradient**: Modify the `bg-gradient-to-br` classes in `page.tsx`
-- **Contact links**: Update the footer section in `page.tsx` with your email, Twitter, GitHub, etc.
-- **Global styles**: Edit `/app/globals.css` for fonts, colors, and other global styles
-
-### Customizing the Carousel
-
-The 3D carousel settings can be adjusted in `/components/AppCarousel.tsx`:
-
-- `radius`: Distance of cards from center (line 52)
-- `scale`: Size variation based on position (line 54)
-- `angle`: Rotation angle calculation (line 51)
-
-## 🎨 Features
-
-- ✨ **3D Carousel**: Interactive, draggable carousel with smooth animations
-- 📱 **Responsive**: Works beautifully on mobile, tablet, and desktop
-- 🎭 **Modal Detail Views**: Click any app to see full details
-- 🎯 **Touch & Mouse**: Drag to rotate, click arrows, or use dot indicators
-- 🌙 **Dark Mode Ready**: Supports system dark mode preferences
-- ⚡ **Fast**: Built with Next.js 14 and optimized for performance
-
-## 🛠 Tech Stack
-
-- **Next.js 14** - React framework with App Router
-- **TypeScript** - Type safety
-- **Tailwind CSS** - Utility-first styling
-- **Framer Motion** - Smooth animations
-- **React** - UI library
-
-## 📦 Building for Production
-
-```bash
-npm run build
-npm run start
-```
-
-## 🚀 Deployment
-
-### Vercel (Recommended)
-
-1. Push your code to GitHub
-2. Go to [vercel.com](https://vercel.com)
-3. Import your repository
-4. Deploy! ✨
-
-### Other Platforms
-
-- **Netlify**: Connect your Git repo and deploy
-- **GitHub Pages**: Run `npm run build` and deploy the `out` folder
-- **Custom Server**: Run `npm run build` then `npm run start`
-
-## 📄 License
-
-MIT - Feel free to use this for your own portfolio!
-
-## 🎉 Enjoy!
-
-Built with ❤️ using Next.js and Framer Motion.
-
-
+- [AGENTS.md](AGENTS.md) — new-chat orientation
+- [docs/STATSTRIKE_WEB.md](docs/STATSTRIKE_WEB.md) — StatStrike browser board, blur, supporter pass
+- [docs/RTDB_BANDWIDTH.md](docs/RTDB_BANDWIDTH.md) — Firebase RTDB bandwidth, profiler notes
+- [POLICY_LINKS.md](POLICY_LINKS.md) — App Store / Play legal URLs
+- [BEST_PICKS_SETUP_GUIDE.md](BEST_PICKS_SETUP_GUIDE.md) — Firebase picks and admin
+- `.env.example` — env map

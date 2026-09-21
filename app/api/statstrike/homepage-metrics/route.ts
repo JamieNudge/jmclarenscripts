@@ -1,13 +1,22 @@
 import { NextResponse } from 'next/server';
-import { getDatabase } from 'firebase-admin/database';
+import { getDatabase, type Database } from 'firebase-admin/database';
 import { getFirebaseAdminApp } from '@/lib/firebase-admin';
 import {
   HOMEPAGE_METRICS_WINDOW_DAYS,
   HOMEPAGE_STREAK_WINDOW_DAYS,
   HOMEPAGE_SUCCESS_DEFINITION,
+  applyTodayMetricsToSnapshot,
   buildHomepageMetricsSnapshot,
   type HomepageMetricsSnapshot,
 } from '@/lib/statstrike/homepage-metrics';
+import {
+  homepageMetricsStorePath,
+  isTodayMetricsFresh,
+  isWindowMetricsFresh,
+  parseHomepageMetricsStored,
+  serializeHomepageMetricsStored,
+  type HomepageMetricsStored,
+} from '@/lib/statstrike/homepage-metrics-store';
 import { parseDailySelection } from '@/lib/statstrike/parse-selection';
 import { recordsFromSelection } from '@/lib/statstrike/track-record';
 import {
@@ -19,18 +28,9 @@ import {
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-/**
- * Browser/CDN must not serve a stale snapshot: freshness is bounded by the
- * short in-memory server cache below, so a reload always reaches this handler.
- */
 const CACHE_HEADERS = {
-  'Cache-Control': 'no-store',
+  'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=3600',
 };
-
-/** In-memory guard so bursts/reloads don't hammer RTDB while staying fresh. */
-const SNAPSHOT_TTL_MS = 30_000;
-let cachedSnapshot: (HomepageMetricsSnapshot & { error?: string }) | null = null;
-let cachedAtMs = 0;
 
 function emptyStreakRun() {
   return {
@@ -67,9 +67,92 @@ function emptySnapshot(generatedAt: string, error?: string): HomepageMetricsSnap
   };
 }
 
+function windowDateKeys(): { dateKeys: string[]; streakDateKeys: string[] } {
+  const dateKeys: string[] = [];
+  for (let i = -(HOMEPAGE_METRICS_WINDOW_DAYS - 1); i <= 0; i++) {
+    dateKeys.push(ukSelectionDateKeyOffset(i));
+  }
+  const streakDateKeys: string[] = [];
+  for (let i = -(HOMEPAGE_STREAK_WINDOW_DAYS - 1); i <= 0; i++) {
+    streakDateKeys.push(ukSelectionDateKeyOffset(i));
+  }
+  return { dateKeys, streakDateKeys };
+}
+
+async function persistStore(db: Database, stored: HomepageMetricsStored): Promise<void> {
+  try {
+    await db.ref(homepageMetricsStorePath()).set(serializeHomepageMetricsStored(stored));
+  } catch (err) {
+    console.error('homepage-metrics persist failed', err);
+  }
+}
+
+async function loadStored(db: Database): Promise<HomepageMetricsStored | null> {
+  try {
+    const snap = await db.ref(homepageMetricsStorePath()).once('value');
+    return parseHomepageMetricsStored(snap.val());
+  } catch {
+    return null;
+  }
+}
+
+async function recomputeWindow(
+  db: Database,
+  todayKey: string,
+  now: Date,
+): Promise<HomepageMetricsStored> {
+  const { dateKeys, streakDateKeys } = windowDateKeys();
+  const snaps = await Promise.all(
+    dateKeys.map((dateKey) => db.ref(selectionsPathForDateKey(dateKey)).once('value')),
+  );
+  const records = snaps.flatMap((snap, idx) => {
+    const sel = parseDailySelection(snap.val());
+    if (!sel) return [];
+    return recordsFromSelection(sel, dateKeys[idx]);
+  });
+  const todaySnap = snaps[snaps.length - 1];
+  const todaySelection = parseDailySelection(todaySnap?.val() ?? null);
+  const snapshot = buildHomepageMetricsSnapshot({
+    records,
+    todaySelection,
+    todayDateKey: todayKey,
+    recentDateKeys: streakDateKeys,
+    now,
+  });
+  const iso = now.toISOString();
+  return {
+    todayDateKey: todayKey,
+    todayComputedAt: iso,
+    windowComputedAt: iso,
+    snapshot,
+  };
+}
+
+async function recomputeToday(
+  db: Database,
+  stored: HomepageMetricsStored,
+  todayKey: string,
+  now: Date,
+): Promise<HomepageMetricsStored> {
+  const todaySnap = await db.ref(selectionsPathForDateKey(todayKey)).once('value');
+  const todaySelection = parseDailySelection(todaySnap.val());
+  const snapshot = applyTodayMetricsToSnapshot({
+    snapshot: stored.snapshot,
+    todaySelection,
+    todayDateKey: todayKey,
+    now,
+  });
+  return {
+    ...stored,
+    todayDateKey: todayKey,
+    todayComputedAt: now.toISOString(),
+    snapshot,
+  };
+}
+
 /**
- * Public homepage metrics snapshot from RTDB selections/{date} history.
- * Cached briefly; not computed on every browser client.
+ * Public homepage metrics. Origin reads a small persisted snapshot; fat
+ * `selections/{date}` scans happen at most every 5 min (today) / 60 min (30d).
  */
 export async function GET() {
   const generatedAt = new Date().toISOString();
@@ -81,46 +164,25 @@ export async function GET() {
       });
     }
 
-    if (cachedSnapshot && Date.now() - cachedAtMs < SNAPSHOT_TTL_MS) {
-      return NextResponse.json(cachedSnapshot, { headers: CACHE_HEADERS });
-    }
-
     const app = getFirebaseAdminApp();
     const db = getDatabase(app);
-    const todayKey = ukSelectionDateKey();
-    const dateKeys: string[] = [];
-    for (let i = -(HOMEPAGE_METRICS_WINDOW_DAYS - 1); i <= 0; i++) {
-      dateKeys.push(ukSelectionDateKeyOffset(i));
+    const now = new Date();
+    const nowMs = now.getTime();
+    const todayKey = ukSelectionDateKey(now);
+    const stored = await loadStored(db);
+
+    if (stored && isTodayMetricsFresh(stored, todayKey, nowMs) && isWindowMetricsFresh(stored, todayKey, nowMs)) {
+      return NextResponse.json(stored.snapshot, { headers: CACHE_HEADERS });
     }
-    const streakDateKeys: string[] = [];
-    for (let i = -(HOMEPAGE_STREAK_WINDOW_DAYS - 1); i <= 0; i++) {
-      streakDateKeys.push(ukSelectionDateKeyOffset(i));
+
+    let next: HomepageMetricsStored;
+    if (!stored || !isWindowMetricsFresh(stored, todayKey, nowMs)) {
+      next = await recomputeWindow(db, todayKey, now);
+    } else {
+      next = await recomputeToday(db, stored, todayKey, now);
     }
-
-    const snaps = await Promise.all(
-      dateKeys.map((dateKey) => db.ref(selectionsPathForDateKey(dateKey)).once('value')),
-    );
-
-    const records = snaps.flatMap((snap, idx) => {
-      const sel = parseDailySelection(snap.val());
-      if (!sel) return [];
-      return recordsFromSelection(sel, dateKeys[idx]);
-    });
-
-    const todaySnap = snaps[snaps.length - 1];
-    const todaySelection = parseDailySelection(todaySnap?.val() ?? null);
-
-    const snapshot = buildHomepageMetricsSnapshot({
-      records,
-      todaySelection,
-      todayDateKey: todayKey,
-      recentDateKeys: streakDateKeys,
-    });
-
-    cachedSnapshot = snapshot;
-    cachedAtMs = Date.now();
-
-    return NextResponse.json(snapshot, { headers: CACHE_HEADERS });
+    await persistStore(db, next);
+    return NextResponse.json(next.snapshot, { headers: CACHE_HEADERS });
   } catch (e) {
     const msg = e instanceof Error ? e.message : 'Server error';
     return NextResponse.json(emptySnapshot(generatedAt, msg), {

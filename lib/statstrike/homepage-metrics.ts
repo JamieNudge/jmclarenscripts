@@ -381,3 +381,36 @@ export function buildHomepageMetricsSnapshot(args: {
     modelStatus: computeModelStatus(args.todaySelection, todayRecords, now.getTime()),
   };
 }
+
+/**
+ * Refresh today's streak + model status without reloading the 30-day window.
+ * Hottest-30d / best competition / 7d average stay as previously computed.
+ */
+export function applyTodayMetricsToSnapshot(args: {
+  snapshot: HomepageMetricsSnapshot;
+  todaySelection: StatStrikeDailySelection | null;
+  todayDateKey: string;
+  now?: Date;
+}): HomepageMetricsSnapshot {
+  const now = args.now ?? new Date();
+  const todayRecords = args.todaySelection
+    ? recordsFromSelection(args.todaySelection, args.todayDateKey)
+    : [];
+  const todaySettled = todayRecords.filter(
+    (r) => r.isCorrect != null && r.homeScore != null && r.awayScore != null,
+  );
+  const todayRun = longestStreakRun(todayRecords);
+  return {
+    ...args.snapshot,
+    generatedAt: now.toISOString(),
+    hotStreak: {
+      ...args.snapshot.hotStreak,
+      today: {
+        ...todayRun,
+        settledCount: todaySettled.length,
+        successfulCount: todaySettled.filter((r) => r.isCorrect === true).length,
+      },
+    },
+    modelStatus: computeModelStatus(args.todaySelection, todayRecords, now.getTime()),
+  };
+}

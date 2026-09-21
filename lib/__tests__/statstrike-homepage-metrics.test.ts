@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  applyTodayMetricsToSnapshot,
   buildHomepageMetricsSnapshot,
   computeBestCompetition,
   computeHotStreak,
@@ -263,5 +264,66 @@ describe('homepage metrics', () => {
     expect(snap.modelStatus.status).toBe('live');
     expect(snap.modelStatus.forecastsGeneratedToday).toBe(1);
     expect(snap.successDefinition).toMatch(/tip band/i);
+  });
+
+  it('refreshes today without changing the 30-day window', () => {
+    const prior = buildHomepageMetricsSnapshot({
+      records: [
+        rec({
+          fixtureId: 1,
+          kickoffMs: 1000,
+          isCorrect: true,
+          selectionDateKey: '2026-07-15',
+          homeTeam: 'Old',
+        }),
+      ],
+      todaySelection: null,
+      todayDateKey: '2026-07-16',
+      recentDateKeys: ['2026-07-15', '2026-07-16'],
+      now: new Date('2026-07-16T10:00:00Z'),
+      minSample: 1,
+    });
+    expect(prior.hotStreak.hottest30d.count).toBe(1);
+    expect(prior.hotStreak.today.count).toBe(0);
+
+    const todaySel = parseDailySelection({
+      date: '2026-07-16',
+      lastUpdated: '2026-07-16T12:00:00Z',
+      version: '9',
+      fixtures: [
+        {
+          id: 2,
+          date: '2026-07-16T15:00:00.000Z',
+          homeTeam: { id: 1, name: 'New' },
+          awayTeam: { id: 2, name: 'B' },
+          league: { id: 3, name: 'Liga', country: 'Test' },
+          status: 'FT',
+          homeScore: 3,
+          awayScore: 1,
+        },
+      ],
+      predictions: [
+        {
+          fixtureId: 2,
+          prediction: {
+            level: 'Over 2.5 Goals',
+            matchedCriteria: 6,
+            totalCriteria: 11,
+            significantStats: [],
+          },
+        },
+      ],
+    });
+    const next = applyTodayMetricsToSnapshot({
+      snapshot: prior,
+      todaySelection: todaySel,
+      todayDateKey: '2026-07-16',
+      now: new Date('2026-07-16T12:05:00Z'),
+    });
+    expect(next.hotStreak.hottest30d.count).toBe(1);
+    expect(next.hotStreak.hottest30d.latest?.homeTeam).toBe('Old');
+    expect(next.hotStreak.today.count).toBe(1);
+    expect(next.hotStreak.today.latest?.homeTeam).toBe('New');
+    expect(next.modelStatus.modelVersion).toBe('9');
   });
 });

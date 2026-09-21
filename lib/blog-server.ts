@@ -8,6 +8,8 @@ import {
   BLOG_POSTS_RTDB_ROOT,
   normalizeBlogSlug,
   parseBlogPostFromRtdb,
+  toBlogPostPreview,
+  type BlogPostPreview,
   type BlogPostRecord,
 } from '@/lib/blog-post';
 import { getFirebaseAdminApp, isFirebaseAdminConfigured } from '@/lib/firebase-admin';
@@ -34,6 +36,11 @@ export const listPublishedPosts = cache(async (): Promise<BlogPostRecord[]> => {
   } catch {
     return [];
   }
+});
+
+export const listPublishedPostPreviews = cache(async (): Promise<BlogPostPreview[]> => {
+  const posts = await listPublishedPosts();
+  return posts.map(toBlogPostPreview);
 });
 
 /** Single published post. Cached per request so generateMetadata and the page share one get. */

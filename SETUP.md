@@ -1,3 +1,5 @@
+> **Stale.** This file describes the original 3D carousel starter. Current architecture: [AGENTS.md](AGENTS.md) and [README.md](README.md). Use this only if you are editing the portfolio home UI.
+
 # 🚀 Quick Setup Instructions
 
 ## Prerequisites

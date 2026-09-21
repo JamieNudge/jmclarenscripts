@@ -1,14 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import { get, ref } from 'firebase/database';
-import {
-  BLOG_CATEGORIES_RTDB_ROOT,
-  parseBlogCategoryFromRtdb,
-  sortBlogCategories,
-  type BlogCategoryRecord,
-} from '@/lib/blog-category';
-import { getFirebaseRealtimeDb, isFirebaseClientConfigured } from '@/lib/firebase-client';
+import { useEffect, useState } from 'react';
 
 export type PublishedBlogCategoriesState = {
   /** display label for each category slug; empty if none loaded */
@@ -18,62 +10,39 @@ export type PublishedBlogCategoriesState = {
   configured: boolean;
 };
 
-/** Snapshot map of blog category slugs → labels from RTDB `blogCategories` (public read). */
+/** Category labels via cached API — never the `blogCategories` RTDB root. */
 export function usePublishedBlogCategories(): PublishedBlogCategoriesState {
-  const [list, setList] = useState<BlogCategoryRecord[]>([]);
+  const [labelBySlug, setLabelBySlug] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isFirebaseClientConfigured()) {
-      setLoading(false);
-      setErr(null);
-      setList([]);
-      return;
-    }
-    const db = getFirebaseRealtimeDb();
-    if (!db) {
-      setLoading(false);
-      return;
-    }
     let cancelled = false;
-    void get(ref(db, BLOG_CATEGORIES_RTDB_ROOT))
-      .then((snap) => {
+    void (async () => {
+      try {
+        const res = await fetch('/api/blog/categories');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = (await res.json()) as { labelBySlug?: Record<string, string> };
         if (cancelled) return;
-        setLoading(false);
+        setLabelBySlug(json.labelBySlug && typeof json.labelBySlug === 'object' ? json.labelBySlug : {});
         setErr(null);
-        const v = snap.val();
-        const cats: Parameters<typeof sortBlogCategories>[0] = [];
-        if (v && typeof v === 'object' && !Array.isArray(v)) {
-          for (const k of Object.keys(v)) {
-            const c = parseBlogCategoryFromRtdb(k, v[k]);
-            if (c) cats.push(c);
-          }
-        }
-        setList(sortBlogCategories(cats));
-      })
-      .catch((e: unknown) => {
+      } catch (e) {
         if (cancelled) return;
-        setLoading(false);
+        setLabelBySlug({});
         setErr(e instanceof Error ? e.message : 'Failed to load blog categories');
-      });
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
     return () => {
       cancelled = true;
     };
   }, []);
 
-  const labelBySlug = useMemo(() => {
-    const m: Record<string, string> = {};
-    for (const c of list) {
-      m[c.slug] = c.label;
-    }
-    return m;
-  }, [list]);
-
   return {
     labelBySlug,
     loading,
     err,
-    configured: isFirebaseClientConfigured(),
+    configured: true,
   };
 }

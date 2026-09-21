@@ -42,7 +42,16 @@ function keysForOffset(dayOffset: number) {
   return { todayKey, yesterdayKey };
 }
 
-export function useStatStrikeBoard(initialDayOffset = 0) {
+export type StatStrikeBoardView = {
+  loading: boolean;
+  error: string | null;
+  configured: boolean;
+  todayKey: string;
+  rows: BoardRefreshResult['rows'];
+};
+
+export function useStatStrikeBoard(initialDayOffset = 0, opts?: { enabled?: boolean }) {
+  const enabled = opts?.enabled !== false;
   const keys0 = keysForOffset(initialDayOffset);
   const [dayOffset, setDayOffsetState] = useState(initialDayOffset);
   const [state, setState] = useState<BoardState>({
@@ -94,6 +103,16 @@ export function useStatStrikeBoard(initialDayOffset = 0) {
   }, []);
 
   useEffect(() => {
+    if (!enabled) {
+      setState((s) => ({
+        ...s,
+        loading: false,
+        error: null,
+        rows: [],
+      }));
+      return;
+    }
+
     if (!isFirebaseClientConfigured()) {
       setState((s) => ({
         ...s,
@@ -288,7 +307,7 @@ export function useStatStrikeBoard(initialDayOffset = 0) {
       if (midnightTimer != null) clearTimeout(midnightTimer);
       document.removeEventListener('visibilitychange', onVis);
     };
-  }, [publish]);
+  }, [enabled, publish]);
 
   const setDayOffset = useCallback((next: number) => {
     dayOffsetRef.current = next;

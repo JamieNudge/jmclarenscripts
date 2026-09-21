@@ -14,7 +14,8 @@
  *   ".write": false
  * }
  * ```
- * All writes go through Admin SDK (`/api/admin/blog-posts`, `/api/admin/blog-categories`). Public site reads with the client SDK.
+ * All writes go through Admin SDK (`/api/admin/blog-posts`, `/api/admin/blog-categories`).
+ * Public list/category reads go through `/api/blog/previews` and `/api/blog/categories` (Admin SDK).
  *
  * **Storage** (for `blog/**` uploads from `/api/admin/blog-media`):
  * ```
@@ -138,6 +139,13 @@ export function normalizeBlogPostInput(
     categorySlug,
   };
   return { ok: true, post };
+}
+
+export type BlogPostPreview = Omit<BlogPostRecord, 'bodyMarkdown'>;
+
+export function toBlogPostPreview(post: BlogPostRecord): BlogPostPreview {
+  const { bodyMarkdown: _body, ...rest } = post;
+  return rest;
 }
 
 export function parseBlogPostFromRtdb(val: unknown): BlogPostRecord | null {

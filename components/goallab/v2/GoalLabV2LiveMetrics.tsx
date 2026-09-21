@@ -268,9 +268,7 @@ export function GoalLabV2LiveMetrics({ layout = 'row' }: { layout?: 'row' | 'sta
     if (!silent) setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/statstrike/homepage-metrics?t=${Date.now()}`, {
-        cache: 'no-store',
-      });
+      const res = await fetch('/api/statstrike/homepage-metrics');
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const json = (await res.json()) as HomepageMetricsSnapshot & { error?: string };
       setData(json);
@@ -295,7 +293,7 @@ export function GoalLabV2LiveMetrics({ layout = 'row' }: { layout?: 'row' | 'sta
     const interval = setInterval(() => {
       if (typeof document !== 'undefined' && document.hidden) return;
       void load({ silent: true });
-    }, 60_000);
+    }, 5 * 60_000);
     return () => clearInterval(interval);
   }, [load]);
 

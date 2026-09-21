@@ -1,26 +1,23 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { onValue, ref } from 'firebase/database';
-import { getFirebaseRealtimeDb, isFirebaseClientConfigured } from '@/lib/firebase-client';
 import {
   DEFAULT_STATSTRIKE_WEB_CONFIG,
   parseStatStrikeWebConfig,
-  statStrikeWebConfigRtdbPath,
   type StatStrikeWebConfig,
 } from '@/lib/statstrike/web-config';
 
-const API_POLL_MS = 60_000;
+const API_POLL_MS = 5 * 60_000;
 
 async function fetchConfigViaApi(): Promise<StatStrikeWebConfig> {
-  const res = await fetch('/api/statstrike/web-config', { cache: 'no-store' });
+  const res = await fetch('/api/statstrike/web-config');
   const json = (await res.json()) as { config?: StatStrikeWebConfig };
   return parseStatStrikeWebConfig(json.config ?? null);
 }
 
 /**
- * Live blur flags for StatStrike web + GoalLab Forecasts.
- * Prefers RTDB when rules allow; always polls Admin-backed API as the reliable path.
+ * Blur flags for StatStrike web + GoalLab Forecasts.
+ * Admin-backed API only — no client RTDB listener (the node almost never changes).
  */
 export function useStatStrikeWebBlur(): {
   blur: boolean;
@@ -40,7 +37,6 @@ export function useStatStrikeWebBlur(): {
   useEffect(() => {
     let cancelled = false;
     let pollTimer: ReturnType<typeof setInterval> | undefined;
-    let unsubRtdb: (() => void) | undefined;
 
     const loadApi = async () => {
       try {
@@ -69,22 +65,6 @@ export function useStatStrikeWebBlur(): {
     void loadApi();
     startPollIfVisible();
 
-    if (isFirebaseClientConfigured()) {
-      const db = getFirebaseRealtimeDb();
-      if (db) {
-        unsubRtdb = onValue(
-          ref(db, statStrikeWebConfigRtdbPath()),
-          (snap) => {
-            if (cancelled) return;
-            apply(parseStatStrikeWebConfig(snap.val()));
-          },
-          () => {
-            // Permission denied — keep API poll.
-          },
-        );
-      }
-    }
-
     const onVis = () => {
       if (document.visibilityState !== 'visible') {
         clearPoll();
@@ -98,7 +78,6 @@ export function useStatStrikeWebBlur(): {
     return () => {
       cancelled = true;
       clearPoll();
-      unsubRtdb?.();
       document.removeEventListener('visibilitychange', onVis);
     };
   }, [apply]);

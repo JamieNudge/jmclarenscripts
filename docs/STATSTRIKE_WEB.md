@@ -24,7 +24,7 @@ Stored in RTDB at `statstrikeWebConfig`:
 - Toggle on **`/admin/picks`** → **GoalLab blurs (StatStrike + Forecasts)** (same Bearer key as picks).
   - **StatStrike Web blur** — hero + `/statstrike`
   - **Forecasts** (`/fixtures`) — full-day compact board (fixture + goal band); no overflow blur. `forecastsBlur` may still exist in RTDB unused.
-- Public site reads via **`GET /api/statstrike/web-config`** (Admin SDK).
+- Public site reads via **`GET /api/statstrike/web-config`** (Admin SDK, `s-maxage=60`). The browser polls that API every 5 minutes; it does not attach an RTDB listener.
 - Missing StatStrike blur defaults to **ON**.
 
 ## Routes
@@ -45,7 +45,7 @@ Stored in RTDB at `statstrikeWebConfig`:
 - Reads Firebase RTDB `selections/{yyyy-MM-dd}` (UK / `Europe/London` business day).
 - Merges yesterday **live carry-over** only when viewing **UK calendar today** (iOS-aligned). Browsing Tomorrow/Yesterday shows that day alone.
 - Filters: All / Live / AM–PM–Night / Custom; Best / Upper / Minor; team search.
-- GoalLab “Today’s forecasts” still uses `unanimousExports` — unchanged.
+- GoalLab homepage hero + “Today’s forecasts” share one `useStatStrikeBoard()` when StatStrike web is on. The Forecasts page (`/fixtures`) still uses `unanimousExports`.
 
 ### Homepage live metrics (GoalLab hub)
 
@@ -59,7 +59,7 @@ Public strip on `/football-predictions` (**below the hero**, above “Today’s 
 
 **Success definition (stable):** the model’s **recommended tip band** (e.g. Over 2.5 Goals) matched confirmed full-time total goals. Unfinished / postponed / abandoned fixtures do not affect the streak or competition ranks. This is **not** “match winner” accuracy.
 
-Served by **`GET /api/statstrike/homepage-metrics`** (Admin SDK, ~2 min cache). Source data is existing RTDB `selections/{yyyy-MM-dd}` — no separate Mac metrics publisher.
+Served by **`GET /api/statstrike/homepage-metrics`** (Admin SDK). A compact snapshot is persisted at `footballPredictions/homepageMetrics`. Today’s figures (model status + today’s streak) refresh from one `selections/{date}` node every **5 minutes**; the 30-day aggregate (hottest streak, best competition, 7d average) every **60 minutes**. The HTTP response is CDN-cached (`s-maxage=300`). The homepage polls every 5 minutes without a cache-buster. See [RTDB_BANDWIDTH.md](RTDB_BANDWIDTH.md).
 
 Freshness labels: **live** &lt;30m, **delayed** &lt;2h, **stale** thereafter; missing `lastUpdated` → **unknown** (never labelled Live).
 

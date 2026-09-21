@@ -3,18 +3,16 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { StatStrikeBoard } from '@/components/statstrike/StatStrikeBoard';
-import { useStatStrikeBoard } from '@/hooks/useStatStrikeBoard';
+import type { StatStrikeBoardView } from '@/hooks/useStatStrikeBoard';
 import { useStatStrikePassSession } from '@/hooks/useStatStrikePassSession';
 import { useStatStrikeWebBlur } from '@/hooks/useStatStrikeWebBlur';
 import { passCreatePath } from '@/lib/statstrike/pass-constants';
 
 /**
  * GoalLab hero right cell — branded StatStrike live board.
- * When the pass gate is on, show a clear teaser (no blur); “Open” / Get access
- * send visitors to create a pass. Pass holders get the interactive board.
+ * Parent owns `useStatStrikeBoard` so the homepage does not fetch fat nodes twice.
  */
-export function StatStrikeHeroPanel() {
-  const board = useStatStrikeBoard();
+export function StatStrikeHeroPanel({ board }: { board: StatStrikeBoardView }) {
   const { blur: adminBlur, supporterPassSalesEnabled } = useStatStrikeWebBlur();
   const pass = useStatStrikePassSession();
   const gated = adminBlur && !pass.unlocked;

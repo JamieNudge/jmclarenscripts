@@ -1,61 +1,39 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { get, ref } from 'firebase/database';
-import {
-  BLOG_POSTS_RTDB_ROOT,
-  parseBlogPostFromRtdb,
-  type BlogPostRecord,
-} from '@/lib/blog-post';
-import { getFirebaseRealtimeDb, isFirebaseClientConfigured } from '@/lib/firebase-client';
+import type { BlogPostPreview } from '@/lib/blog-post';
 
 export type PublishedBlogPostsState = {
-  posts: BlogPostRecord[];
+  posts: BlogPostPreview[];
   loading: boolean;
   err: string | null;
   configured: boolean;
 };
 
-/** Snapshot list of published posts from RTDB `blogPosts`, newest first. */
+/** Published post summaries via cached API — never the full `blogPosts` RTDB root. */
 export function usePublishedBlogPosts(): PublishedBlogPostsState {
-  const [posts, setPosts] = useState<BlogPostRecord[]>([]);
+  const [posts, setPosts] = useState<BlogPostPreview[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isFirebaseClientConfigured()) {
-      setLoading(false);
-      setErr(null);
-      setPosts([]);
-      return;
-    }
-    const db = getFirebaseRealtimeDb();
-    if (!db) {
-      setLoading(false);
-      return;
-    }
     let cancelled = false;
-    void get(ref(db, BLOG_POSTS_RTDB_ROOT))
-      .then((snap) => {
+    void (async () => {
+      try {
+        const res = await fetch('/api/blog/previews');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = (await res.json()) as { posts?: BlogPostPreview[] };
         if (cancelled) return;
-        setLoading(false);
+        setPosts(Array.isArray(json.posts) ? json.posts : []);
         setErr(null);
-        const v = snap.val();
-        const list: BlogPostRecord[] = [];
-        if (v && typeof v === 'object' && !Array.isArray(v)) {
-          for (const k of Object.keys(v)) {
-            const p = parseBlogPostFromRtdb(v[k]);
-            if (p && p.published) list.push(p);
-          }
-        }
-        list.sort((a, b) => (b.publishedAt ?? b.updatedAt).localeCompare(a.publishedAt ?? a.updatedAt));
-        setPosts(list);
-      })
-      .catch((e: unknown) => {
+      } catch (e) {
         if (cancelled) return;
-        setLoading(false);
+        setPosts([]);
         setErr(e instanceof Error ? e.message : 'Failed to load blog posts');
-      });
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
     return () => {
       cancelled = true;
     };
@@ -65,6 +43,6 @@ export function usePublishedBlogPosts(): PublishedBlogPostsState {
     posts,
     loading,
     err,
-    configured: isFirebaseClientConfigured(),
+    configured: true,
   };
 }

@@ -49,7 +49,7 @@ type PreviewCard = {
 
 export function GoalLabV2Home() {
   const dateKey = useBestPicksLondonDateKey();
-  const board = useStatStrikeBoard();
+  const board = useStatStrikeBoard(0, { enabled: statStrikeWeb });
   const [exportVal, setExportVal] = useState<unknown>(null);
   const [exportLoading, setExportLoading] = useState(!statStrikeWeb);
   const [error, setError] = useState<string | null>(null);
@@ -153,7 +153,7 @@ export function GoalLabV2Home() {
 
           <div className="min-w-0">
             {statStrikeWeb ? (
-              <StatStrikeHeroPanel />
+              <StatStrikeHeroPanel board={board} />
             ) : loading ? (
               <div className="rounded-2xl border border-[var(--gl-border)] bg-[var(--gl-surface)] p-6 shadow-[var(--gl-shadow)] animate-pulse">
                 <div className="h-3 w-1/3 rounded bg-[var(--gl-elevated)]" />
