@@ -8,6 +8,15 @@ import {
   passDurationLabel,
   type StatStrikePassDuration,
 } from '@/lib/statstrike/pass-constants';
+import {
+  MAX_PASS_CLAIM_ATTEMPTS,
+  passClaimAttemptsKey,
+  passClaimReturnedKey,
+} from '@/lib/statstrike/pass-claim';
+import {
+  safeAdminReturnTo,
+  successPathWithoutClaimParams,
+} from '@/lib/statstrike/pass-return-to';
 import { useStatStrikePassSession } from '@/hooks/useStatStrikePassSession';
 
 type Props = {
@@ -19,25 +28,19 @@ type Props = {
   variant?: 'full' | 'status';
 };
 
-/** Only allow bounce-back to known admin hosts (no open redirect). */
-function safeAdminReturnTo(raw: string | null | undefined): string | null {
-  if (!raw?.trim()) return null;
+function storageGet(key: string): string | null {
   try {
-    const u = new URL(raw.trim());
-    if (u.protocol !== 'https:' && u.protocol !== 'http:') return null;
-    const host = u.hostname.toLowerCase();
-    const hostOk =
-      host === 'thegoallab.net' ||
-      host === 'www.thegoallab.net' ||
-      host === 'localhost' ||
-      host === '127.0.0.1' ||
-      host === 'jmclarenscripts.vercel.app' ||
-      host.endsWith('.vercel.app');
-    if (!hostOk) return null;
-    if (!u.pathname.startsWith('/admin')) return null;
-    return u.toString();
+    return sessionStorage.getItem(key);
   } catch {
     return null;
+  }
+}
+
+function storageSet(key: string, value: string): void {
+  try {
+    sessionStorage.setItem(key, value);
+  } catch {
+    /* private mode */
   }
 }
 
@@ -88,42 +91,104 @@ export function StatStrikeCreatePassPanel({
 
   useEffect(() => {
     if (!autoClaimKey) return;
+    if (session.loading) return;
+
     let cancelled = false;
-    let attempts = 0;
+    const timeouts: number[] = [];
+    const schedule = (fn: () => void, ms: number) => {
+      const id = window.setTimeout(fn, ms);
+      timeouts.push(id);
+    };
+
+    const stripClaimFromUrl = () => {
+      const next = successPathWithoutClaimParams(window.location.href);
+      if (!next || next === `${window.location.pathname}${window.location.search}${window.location.hash}`) {
+        return;
+      }
+      window.history.replaceState(window.history.state, '', next);
+    };
+
+    const goBack = (immediate: boolean) => {
+      stripClaimFromUrl();
+      const back = safeAdminReturnTo(returnToAfterClaim);
+      if (!back) return;
+      setClaimStatus('Pass active — returning to admin…');
+      const navigate = () => {
+        window.location.replace(back);
+      };
+      if (immediate) navigate();
+      else schedule(navigate, 600);
+    };
+
+    const returnedKey = passClaimReturnedKey(autoClaimKey);
+    const attemptsKey = passClaimAttemptsKey(autoClaimKey);
+    const alreadyReturned = storageGet(returnedKey) === '1';
+
+    const markReturnedAndGo = (immediate: boolean) => {
+      storageSet(returnedKey, '1');
+      goBack(immediate);
+    };
 
     const run = async () => {
+      if (cancelled) return;
+
+      if (alreadyReturned) {
+        setClaimStatus('Supporter Pass active — full StatStrike access unlocked.');
+        goBack(true);
+        return;
+      }
+
+      if (session.unlocked) {
+        setClaimStatus('Supporter Pass active — full StatStrike access unlocked.');
+        markReturnedAndGo(false);
+        return;
+      }
+
+      let attempts = Number(storageGet(attemptsKey) || '0') || 0;
+      if (attempts >= MAX_PASS_CLAIM_ATTEMPTS) {
+        setClaimStatus('Could not activate pass. Refresh or contact support.');
+        return;
+      }
+
       setClaimStatus('Confirming your access…');
       const result = await session.claim(autoClaimKey);
       if (cancelled) return;
+
       if (result.ok) {
         setClaimStatus('Supporter Pass active — full StatStrike access unlocked.');
         await session.refresh();
-        const back = safeAdminReturnTo(returnToAfterClaim);
-        if (back) {
-          setClaimStatus('Pass active — returning to admin…');
-          window.setTimeout(() => {
-            window.location.assign(back);
-          }, 600);
-        }
+        if (cancelled) return;
+        markReturnedAndGo(false);
         return;
       }
-      if (result.retry && attempts < 10) {
-        attempts += 1;
+
+      attempts += 1;
+      storageSet(attemptsKey, String(attempts));
+
+      if ((result.retry || result.gone) && attempts < MAX_PASS_CLAIM_ATTEMPTS) {
         setClaimStatus('Payment received — confirming access…');
-        window.setTimeout(() => {
+        schedule(() => {
           void run();
         }, 1500);
         return;
       }
+
       setClaimStatus(result.error || 'Could not activate pass. Refresh or contact support.');
     };
 
     void run();
     return () => {
       cancelled = true;
+      timeouts.forEach((id) => window.clearTimeout(id));
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoClaimKey, returnToAfterClaim]);
+  }, [
+    autoClaimKey,
+    returnToAfterClaim,
+    session.loading,
+    session.unlocked,
+    session.claim,
+    session.refresh,
+  ]);
 
   const startCheckout = useCallback(async () => {
     setBusy(true);

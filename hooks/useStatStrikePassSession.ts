@@ -8,7 +8,9 @@ export type StatStrikePassSession = {
   passId: string | null;
   loading: boolean;
   refresh: () => Promise<void>;
-  claim: (claimKey: string) => Promise<{ ok: boolean; retry?: boolean; error?: string }>;
+  claim: (
+    claimKey: string,
+  ) => Promise<{ ok: boolean; retry?: boolean; gone?: boolean; error?: string }>;
 };
 
 /**
@@ -62,6 +64,9 @@ export function useStatStrikePassSession(): StatStrikePassSession {
         };
         if (res.status === 409 || json.retry) {
           return { ok: false, retry: true, error: json.error };
+        }
+        if (res.status === 410) {
+          return { ok: false, gone: true, error: json.error };
         }
         if (!res.ok) {
           return { ok: false, error: json.error || 'Claim failed' };

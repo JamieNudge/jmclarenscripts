@@ -17,6 +17,7 @@ import {
   markPassClaimed,
   updatePassExpiresAt,
 } from '@/lib/statstrike/pass-store';
+import { decisionForMissingClaimToken } from '@/lib/statstrike/pass-claim';
 import {
   jsonNoStore,
   jsonNoStoreWithPassCookie,
@@ -61,7 +62,13 @@ export async function POST(req: NextRequest) {
   }
 
   if (!claim) {
-    return jsonNoStore({ error: 'Pass not ready yet', retry: true }, { status: 409 });
+    // Consumed keys must not 409-retry (that looks like Stripe lag and loops staff unlock).
+    const session = await readPassSessionFromCookies();
+    const decision = decisionForMissingClaimToken(session);
+    if (decision.kind === 'already_unlocked') {
+      return jsonNoStore(decision.body);
+    }
+    return jsonNoStore(decision.body, { status: decision.status });
   }
 
   let claimedPass = null as Awaited<ReturnType<typeof getPassById>>;

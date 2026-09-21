@@ -100,7 +100,7 @@ Pass holders also **bypass Coming Soon blur** on that browser; anonymous visitor
 | `/support/statstrike/cancelled` | Checkout cancelled |
 | `POST /api/statstrike/pass/checkout` | Create Stripe Checkout Session |
 | `POST /api/statstrike/pass/webhook` | Signed Stripe events → pass record + claim token |
-| `GET/POST /api/statstrike/pass/session` | Session status / claim cookie (stacks +24h if already active) |
+| `GET/POST /api/statstrike/pass/session` | Session status / claim cookie (stacks +24h if already active). Consumed claim + existing cookie → 200; consumed + no cookie → 410 (not 409 retry) |
 | `GET /api/statstrike/pass/survey-cron` | Hourly survey sweep (opt-in only) |
 | `POST /api/statstrike/pass/test-mint` | Preview QA mint (requires `STATSTRIKE_PASS_TEST_SECRET`) |
 

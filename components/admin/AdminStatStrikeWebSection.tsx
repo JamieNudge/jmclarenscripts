@@ -1,6 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { goalLabPublicBase } from '@/lib/hub-football-routes';
+import { hubAdminReturnToUrl } from '@/lib/statstrike/pass-return-to';
 import type { StatStrikeWebConfig } from '@/lib/statstrike/web-config';
 
 type Props = { adminKey: string };
@@ -94,6 +96,7 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
         claimUrl?: string;
       };
       if (!mintRes.ok || !mintJson.claimKey) {
+        setUnlocking(false);
         setStatus(
           mintJson.error
             ? `Staff mint failed (${mintRes.status}): ${mintJson.error}`
@@ -102,11 +105,13 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
         return;
       }
 
-      // Claim on thegoallab.net so the cookie matches GoalLab browsing, then bounce back to admin.
-      const returnTo = encodeURIComponent(window.location.href);
-      const claimUrl = `https://thegoallab.net/support/statstrike/success?claim=${encodeURIComponent(mintJson.claimKey)}&returnTo=${returnTo}`;
-      setStatus('Pass minted — confirming on thegoallab.net, then returning here…');
-      window.location.assign(claimUrl);
+      // Claim on the hub so the cookie matches GoalLab browsing, then return to hub admin.
+      const returnTo = encodeURIComponent(
+        hubAdminReturnToUrl(window.location.pathname, window.location.search),
+      );
+      const claimUrl = `${goalLabPublicBase()}/support/statstrike/success?claim=${encodeURIComponent(mintJson.claimKey)}&returnTo=${returnTo}`;
+      setStatus('Pass minted — confirming on thegoallab.net, then returning to hub admin…');
+      window.location.replace(claimUrl);
     } catch (e) {
       setStatus(e instanceof Error ? e.message : 'Unlock failed');
       setUnlocking(false);
@@ -301,8 +306,8 @@ export function AdminStatStrikeWebSection({ adminKey }: Props) {
           <p className="text-sm font-semibold text-white">Owner unlock (this browser)</p>
           <p className="text-[11px] text-white/50 leading-relaxed mt-0.5">
             Mints a free 7-day staff pass, claims the cookie on{' '}
-            <strong className="text-white/70">thegoallab.net</strong>, then returns you here. Paywall
-            stays on for everyone else.
+            <strong className="text-white/70">thegoallab.net</strong>, then returns you to hub admin.
+            Paywall stays on for everyone else.
           </p>
         </div>
         <button
